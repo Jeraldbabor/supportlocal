@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Link, usePage } from '@inertiajs/react';
-import { ShoppingCart, Menu, X } from 'lucide-react';
+import { Link, usePage, router } from '@inertiajs/react';
+import { ShoppingCart, Menu, X, LogOut } from 'lucide-react';
 import { type SharedData } from '@/types';
 import { dashboard, login, register } from '@/routes';
 
@@ -15,6 +15,10 @@ export default function MainLayout({ children, title, cartItems = 0 }: MainLayou
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     const { auth } = usePage<SharedData>().props;
+
+    const handleLogout = () => {
+        router.post('/logout');
+    };
 
     const navigation = [
         { name: 'Home', href: '/' },
@@ -68,12 +72,21 @@ export default function MainLayout({ children, title, cartItems = 0 }: MainLayou
 
                             <nav className="flex items-center justify-end gap-4">
                                 {auth.user ? (
-                                    <Link
-                                        href={dashboard().url}
-                                        className="inline-block rounded-sm border border-[#19140035] px-5 py-1.5 text-sm leading-normal text-[#1b1b18] hover:border-[#1915014a] dark:border-[#3E3E3A] dark:text-[#EDEDEC] dark:hover:border-[#62605b]"
-                                    >
-                                        Dashboard
-                                    </Link>
+                                    <>
+                                        <Link
+                                            href={dashboard().url}
+                                            className="inline-block rounded-sm border border-[#19140035] px-5 py-1.5 text-sm leading-normal text-[#1b1b18] hover:border-[#1915014a] dark:border-[#3E3E3A] dark:text-[#EDEDEC] dark:hover:border-[#62605b]"
+                                        >
+                                            Dashboard
+                                        </Link>
+                                        <button
+                                            onClick={handleLogout}
+                                            className="inline-flex items-center gap-2 rounded-sm border border-red-200 px-4 py-1.5 text-sm leading-normal text-red-600 hover:border-red-300 hover:bg-red-50 transition-colors duration-200"
+                                        >
+                                            <LogOut className="h-4 w-4" />
+                                            Logout
+                                        </button>
+                                    </>
                                 ) : (
                                     <>
                                         <Link
