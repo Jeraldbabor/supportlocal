@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link, usePage, router } from '@inertiajs/react';
-import { ShoppingCart, Menu, X, LogOut, User, Bell, Heart, Package, Settings, ChevronDown } from 'lucide-react';
+import { ShoppingCart, Menu, X, LogOut, User, Bell, Heart, Package, Settings, ChevronDown, House  } from 'lucide-react';
 import { type SharedData } from '@/types';
 
 interface BuyerLayoutProps {
@@ -36,6 +36,7 @@ export default function BuyerLayout({ children, title, cartItems = 0 }: BuyerLay
     }, []);
 
     const buyerNavigation = [
+        { name: 'Home', href: '/buyer/dashboard', icon: House },
         { name: 'Products', href: '/products', icon: Package },
         { name: 'Wishlist', href: '/buyer/wishlist', icon: Heart },
         { name: 'My Orders', href: '/buyer/orders', icon: Package },
@@ -50,7 +51,10 @@ export default function BuyerLayout({ children, title, cartItems = 0 }: BuyerLay
                     <div className="flex justify-between items-center h-16">
                         {/* Logo */}
                         <div className="flex-shrink-0">
-                            <Link href="/buyer/dashboard" className="text-2xl font-bold text-primary">
+                            <Link 
+                                href="/buyer/dashboard" 
+                                className="text-2xl font-bold text-primary hover:text-primary/80 transition-all duration-200 px-2 py-1 rounded-lg hover:bg-primary/5 active:bg-primary/10 active:scale-95"
+                            >
                                 Support Local
                             </Link>
                         </div>
@@ -64,7 +68,7 @@ export default function BuyerLayout({ children, title, cartItems = 0 }: BuyerLay
                                         <Link
                                             key={item.name}
                                             href={item.href}
-                                            className="flex items-center gap-2 text-gray-700 hover:text-primary px-3 py-2 text-sm font-medium transition-colors duration-200 rounded-md hover:bg-primary/5"
+                                            className="flex items-center gap-2 text-gray-700 hover:text-primary px-3 py-2 text-sm font-medium transition-all duration-200 rounded-md hover:bg-primary/5 active:bg-primary/10 active:scale-95"
                                         >
                                             <Icon className="h-4 w-4" />
                                             {item.name}
@@ -79,10 +83,10 @@ export default function BuyerLayout({ children, title, cartItems = 0 }: BuyerLay
                             {/* Notifications */}
                             <Link
                                 href="/buyer/notifications"
-                                className="relative p-2 text-gray-700 hover:text-primary transition-colors duration-200 rounded-md hover:bg-primary/5"
+                                className="relative p-2 text-gray-700 hover:text-primary transition-all duration-200 rounded-md hover:bg-primary/5 active:bg-primary/10 active:scale-95"
                             >
                                 <Bell className="h-5 w-5" />
-                                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
+                                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center animate-pulse">
                                     3
                                 </span>
                             </Link>
@@ -90,7 +94,7 @@ export default function BuyerLayout({ children, title, cartItems = 0 }: BuyerLay
                             {/* Cart Icon */}
                             <Link
                                 href="/buyer/cart"
-                                className="relative p-2 text-gray-700 hover:text-primary transition-colors duration-200 rounded-md hover:bg-primary/5"
+                                className="relative p-2 text-gray-700 hover:text-primary transition-all duration-200 rounded-md hover:bg-primary/5 active:bg-primary/10 active:scale-95"
                             >
                                 <ShoppingCart className="h-5 w-5" />
                                 {cartItems > 0 && (
@@ -104,7 +108,11 @@ export default function BuyerLayout({ children, title, cartItems = 0 }: BuyerLay
                             <div className="relative flex items-center space-x-3 border-l border-gray-200 pl-4" ref={userMenuRef}>
                                 <button
                                     onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                                    className="flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-50 transition-colors duration-200"
+                                    className={`flex items-center space-x-2 p-2 rounded-lg transition-all duration-200 ${
+                                        isUserMenuOpen 
+                                            ? 'bg-primary/10 ring-2 ring-primary/20 shadow-sm' 
+                                            : 'hover:bg-gray-50 hover:shadow-sm active:bg-gray-100 active:scale-95'
+                                    }`}
                                 >
                                     <div className="h-8 w-8 bg-primary/10 rounded-full flex items-center justify-center">
                                         <User className="h-4 w-4 text-primary" />
@@ -132,19 +140,19 @@ export default function BuyerLayout({ children, title, cartItems = 0 }: BuyerLay
                                         <div className="py-1">
                                             <Link
                                                 href="/buyer/profile"
-                                                className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-200"
+                                                className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-primary/5 hover:text-primary transition-all duration-200 rounded-md mx-1 active:bg-primary/10"
                                                 onClick={() => setIsUserMenuOpen(false)}
                                             >
-                                                <User className="h-4 w-4 mr-3 text-gray-400" />
+                                                <User className="h-4 w-4 mr-3 text-gray-400 group-hover:text-primary transition-colors duration-200" />
                                                 View Profile
                                             </Link>
                                             
                                             <Link
                                                 href="/buyer/settings"
-                                                className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-200"
+                                                className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-primary/5 hover:text-primary transition-all duration-200 rounded-md mx-1 active:bg-primary/10"
                                                 onClick={() => setIsUserMenuOpen(false)}
                                             >
-                                                <Settings className="h-4 w-4 mr-3 text-gray-400" />
+                                                <Settings className="h-4 w-4 mr-3 text-gray-400 group-hover:text-primary transition-colors duration-200" />
                                                 Account Settings
                                             </Link>
 
@@ -155,9 +163,9 @@ export default function BuyerLayout({ children, title, cartItems = 0 }: BuyerLay
                                                     setIsUserMenuOpen(false);
                                                     handleLogout();
                                                 }}
-                                                className="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors duration-200"
+                                                className="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50 hover:text-red-700 transition-all duration-200 rounded-md mx-1 active:bg-red-100"
                                             >
-                                                <LogOut className="h-4 w-4 mr-3" />
+                                                <LogOut className="h-4 w-4 mr-3 transition-colors duration-200" />
                                                 Logout
                                             </button>
                                         </div>
@@ -191,7 +199,7 @@ export default function BuyerLayout({ children, title, cartItems = 0 }: BuyerLay
                                         <Link
                                             key={item.name}
                                             href={item.href}
-                                            className="flex items-center gap-3 text-gray-700 hover:text-primary px-3 py-2 text-base font-medium rounded-md hover:bg-primary/5"
+                                            className="flex items-center gap-3 text-gray-700 hover:text-primary px-3 py-2 text-base font-medium rounded-md hover:bg-primary/5 active:bg-primary/10 transition-all duration-200"
                                             onClick={() => setIsMenuOpen(false)}
                                         >
                                             <Icon className="h-5 w-5" />
@@ -209,7 +217,7 @@ export default function BuyerLayout({ children, title, cartItems = 0 }: BuyerLay
                                     </div>
                                     <button
                                         onClick={handleLogout}
-                                        className="flex items-center gap-3 w-full px-3 py-2 text-left text-red-600 hover:bg-red-50 rounded-md"
+                                        className="flex items-center gap-3 w-full px-3 py-2 text-left text-red-600 hover:bg-red-50 hover:text-red-700 rounded-md transition-all duration-200 active:bg-red-100"
                                     >
                                         <LogOut className="h-4 w-4" />
                                         Logout
