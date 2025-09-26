@@ -21,7 +21,6 @@ export default function MainLayout({ children, title, cartItems = 0 }: MainLayou
         { name: 'Products', href: '/products' },
         { name: 'About', href: '/about' },
         { name: 'Contact', href: '/contact' },
-        { name: 'Tawi', href: '/tawi' },
     ];
 
     return (

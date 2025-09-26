@@ -30,11 +30,6 @@ Route::get('/product/{id}', function ($id) {
     ]);
 })->name('product.detail');
 
-Route::get('/tawi', function () {
-    return Inertia::render('Tawi');
-})->name('tawi');
-
-
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', function () {
         return Inertia::render('dashboard');
