@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
+use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -33,7 +34,31 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->intended(route('dashboard', absolute: false));
+        $user = Auth::user();
+        
+        // Store user role in session for middleware
+        $request->session()->put('user_role', $user->role);
+        
+        // Flash a welcome message with role information
+        $request->session()->flash('status', "Welcome back, {$user->name}! You are logged in as {$user->getRoleDisplayName()}.");
+
+        // Redirect based on user role
+        $redirectUrl = $this->getRoleDashboardUrl($user);
+        
+        return redirect()->intended($redirectUrl);
+    }
+
+    /**
+     * Get the appropriate dashboard URL based on user role
+     */
+    private function getRoleDashboardUrl(User $user): string
+    {
+        return match ($user->role) {
+            User::ROLE_SELLER => route('seller.dashboard', absolute: false),
+            User::ROLE_ADMINISTRATOR => route('admin.dashboard', absolute: false),
+            User::ROLE_BUYER => route('buyer.dashboard', absolute: false),
+            default => route('dashboard', absolute: false),
+        };
     }
 
     /**
