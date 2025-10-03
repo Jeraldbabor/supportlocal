@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link, usePage, router } from '@inertiajs/react';
-import { ShoppingCart, Menu, X, LogOut, User, Bell, Heart, Package, Settings, ChevronDown, House  } from 'lucide-react';
+import { ShoppingCart, Menu, X, LogOut, User, Bell, Heart, Package, Settings, ChevronDown, House, Briefcase  } from 'lucide-react';
 import { type SharedData } from '@/types';
 
 interface BuyerLayoutProps {
@@ -154,6 +154,15 @@ export default function BuyerLayout({ children, title, cartItems = 0 }: BuyerLay
                                             >
                                                 <Settings className="h-4 w-4 mr-3 text-gray-400 group-hover:text-primary transition-colors duration-200" />
                                                 Account Settings
+                                            </Link>
+
+                                            <Link
+                                                href="/seller/apply"
+                                                className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-600 transition-all duration-200 rounded-md mx-1 active:bg-orange-100"
+                                                onClick={() => setIsUserMenuOpen(false)}
+                                            >
+                                                <Briefcase className="h-4 w-4 mr-3 text-gray-400 hover:text-orange-600 transition-colors duration-200" />
+                                                Become a Seller
                                             </Link>
 
                                             <div className="border-t border-gray-100 my-1"></div>

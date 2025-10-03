@@ -3,7 +3,7 @@ import { Link } from '@inertiajs/react';
 import BuyerLayout from '../../layouts/BuyerLayout';
 import { type SharedData } from '@/types/index';
 import { Head, usePage } from '@inertiajs/react';
-import { ShoppingBag, Heart, Star, Package, CreditCard, MapPin, ArrowRight, Bell, TrendingUp, Clock } from 'lucide-react';
+import { ShoppingBag, Heart, Star, Package, CreditCard, MapPin, ArrowRight, Bell, TrendingUp, Clock, User } from 'lucide-react';
 
 export default function BuyerDashboard() {
     const { auth } = usePage<SharedData>().props;
@@ -45,6 +45,13 @@ export default function BuyerDashboard() {
                                 >
                                     <Heart className="mr-2 h-5 w-5" />
                                     View Wishlist
+                                </Link>
+                                <Link
+                                    href="/seller/apply"
+                                    className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-orange-500 to-pink-500 text-white font-semibold rounded-xl hover:from-orange-600 hover:to-pink-600 transform hover:scale-105 transition-all duration-200 shadow-lg hover:shadow-xl"
+                                >
+                                    <User className="mr-2 h-5 w-5" />
+                                    Become a Seller
                                 </Link>
                             </div>
                         </div>

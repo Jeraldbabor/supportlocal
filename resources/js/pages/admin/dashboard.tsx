@@ -1,8 +1,8 @@
 import { PlaceholderPattern } from '@/components/ui/placeholder-pattern';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem, type SharedData } from '@/types';
-import { Head, usePage } from '@inertiajs/react';
-import { Settings, Shield, Users, Database, BarChart3, AlertTriangle } from 'lucide-react';
+import { Head, usePage, Link } from '@inertiajs/react';
+import { Settings, Shield, Users, Database, BarChart3, AlertTriangle, FileText } from 'lucide-react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -130,6 +130,15 @@ export default function AdminDashboard() {
                                     <span className="font-medium">Manage Users</span>
                                 </div>
                             </button>
+                            <Link
+                                href="/admin/seller-applications"
+                                className="w-full rounded-lg border border-orange-200 bg-orange-50 px-4 py-3 text-left text-orange-700 hover:bg-orange-100 dark:border-orange-800 dark:bg-orange-950/50 dark:text-orange-300 dark:hover:bg-orange-950/80 block"
+                            >
+                                <div className="flex items-center gap-3">
+                                    <FileText className="h-5 w-5" />
+                                    <span className="font-medium">Seller Applications</span>
+                                </div>
+                            </Link>
                             <button className="w-full rounded-lg border border-purple-200 bg-purple-50 px-4 py-3 text-left text-purple-700 hover:bg-purple-100 dark:border-purple-800 dark:bg-purple-950/50 dark:text-purple-300 dark:hover:bg-purple-950/80">
                                 <div className="flex items-center gap-3">
                                     <BarChart3 className="h-5 w-5" />
