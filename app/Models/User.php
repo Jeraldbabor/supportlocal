@@ -102,4 +102,12 @@ class User extends Authenticatable
     {
         return self::$roles[$this->role] ?? 'Unknown';
     }
+
+    /**
+     * Get the user's seller application.
+     */
+    public function sellerApplication()
+    {
+        return $this->hasOne(SellerApplication::class);
+    }
 }

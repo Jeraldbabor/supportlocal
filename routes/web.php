@@ -78,6 +78,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/admin/settings', function () {
             return Inertia::render('admin/settings');
         })->name('admin.settings');
+
+        // Seller application management routes
+        Route::get('/admin/seller-applications', [App\Http\Controllers\SellerApplicationController::class, 'index'])->name('admin.seller-applications.index');
+        Route::get('/admin/seller-applications/{application}', [App\Http\Controllers\SellerApplicationController::class, 'show'])->name('admin.seller-applications.show');
+        Route::post('/admin/seller-applications/{application}/approve', [App\Http\Controllers\SellerApplicationController::class, 'approve'])->name('admin.seller-applications.approve');
+        Route::post('/admin/seller-applications/{application}/reject', [App\Http\Controllers\SellerApplicationController::class, 'reject'])->name('admin.seller-applications.reject');
+        Route::get('/admin/seller-applications/{application}/download/{type}', [App\Http\Controllers\SellerApplicationController::class, 'downloadDocument'])->name('admin.seller-applications.download');
     });
 
     Route::middleware(['role:buyer'])->group(function () {
@@ -102,6 +109,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/buyer/wishlist', function () {
             return Inertia::render('buyer/wishlist');
         })->name('buyer.wishlist');
+
+        // Seller application routes for buyers
+        Route::get('/seller/apply', [App\Http\Controllers\SellerApplicationController::class, 'create'])->name('seller.application.create');
+        Route::post('/seller/apply', [App\Http\Controllers\SellerApplicationController::class, 'store'])->name('seller.application.store');
     });
 
     // Routes accessible by multiple roles
