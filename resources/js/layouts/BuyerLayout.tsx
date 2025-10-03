@@ -37,7 +37,7 @@ export default function BuyerLayout({ children, title, cartItems = 0 }: BuyerLay
 
     const buyerNavigation = [
         { name: 'Home', href: '/buyer/dashboard', icon: House },
-        { name: 'Products', href: '/products', icon: Package },
+        { name: 'Products', href: '/buyer/products', icon: Package },
         { name: 'Wishlist', href: '/buyer/wishlist', icon: Heart },
         { name: 'My Orders', href: '/buyer/orders', icon: Package },
         { name: 'Artisans', href: '/artisans', icon: User },
