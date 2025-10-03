@@ -85,6 +85,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
             return Inertia::render('buyer/dashboard');
         })->name('buyer.dashboard');
         
+        Route::get('/buyer/products', function () {
+            return Inertia::render('buyer/products/Index');
+        })->name('buyer.products');
+        
+        Route::get('/buyer/product/{id}', function ($id) {
+            return Inertia::render('buyer/products/Detail', [
+                'productId' => $id
+            ]);
+        })->name('buyer.product.detail');
+        
         Route::get('/buyer/orders', function () {
             return Inertia::render('buyer/orders');
         })->name('buyer.orders');
