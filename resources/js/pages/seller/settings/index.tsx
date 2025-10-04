@@ -72,7 +72,7 @@ export default function SellerSettings() {
     };
 
     const getIconComponent = (iconName: string) => {
-        const iconMap: { [key: string]: React.ComponentType<any> } = {
+        const iconMap: { [key: string]: React.ComponentType<{ className?: string }> } = {
             shield: Shield,
             bell: Bell,
             eye: Eye,

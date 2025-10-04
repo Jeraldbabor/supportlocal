@@ -20,6 +20,7 @@ class DashboardTest extends TestCase
             'email' => 'complete@seller.com',
             'phone_number' => '1234567890',
             'address' => '123 Complete St',
+            'date_of_birth' => '1990-01-01',
             'profile_picture' => 'avatars/complete.jpg',
             'email_verified_at' => now(),
             'last_login_at' => now()->subDays(1),

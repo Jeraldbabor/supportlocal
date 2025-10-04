@@ -97,7 +97,7 @@ export default function SellerProfileShow() {
     const recentActivity = rawRecentActivity || [];
 
     const getIconComponent = (iconName: string) => {
-        const iconMap: { [key: string]: React.ComponentType<any> } = {
+        const iconMap: { [key: string]: React.ComponentType<{ className?: string }> } = {
             user: User,
             mail: Mail,
             'mail-check': CheckCircle,

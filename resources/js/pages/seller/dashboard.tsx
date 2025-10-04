@@ -105,7 +105,7 @@ export default function SellerDashboard() {
     };
 
     const getIconComponent = (iconName: string) => {
-        const iconMap: { [key: string]: React.ComponentType<any> } = {
+        const iconMap: { [key: string]: React.ComponentType<{ className?: string }> } = {
             user: User,
             settings: Settings,
             'check-circle': CheckCircle,
