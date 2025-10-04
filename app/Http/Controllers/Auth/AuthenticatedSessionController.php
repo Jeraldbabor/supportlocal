@@ -35,16 +35,16 @@ class AuthenticatedSessionController extends Controller
         $request->session()->regenerate();
 
         $user = Auth::user();
-        
+
         // Store user role in session for middleware
         $request->session()->put('user_role', $user->role);
-        
+
         // Flash a welcome message with role information
         $request->session()->flash('status', "Welcome back, {$user->name}! You are logged in as {$user->getRoleDisplayName()}.");
 
         // Redirect based on user role
         $redirectUrl = $this->getRoleDashboardUrl($user);
-        
+
         return redirect()->intended($redirectUrl);
     }
 
@@ -53,12 +53,16 @@ class AuthenticatedSessionController extends Controller
      */
     private function getRoleDashboardUrl(User $user): string
     {
-        return match ($user->role) {
-            User::ROLE_SELLER => route('seller.dashboard', absolute: false),
-            User::ROLE_ADMINISTRATOR => route('admin.dashboard', absolute: false),
-            User::ROLE_BUYER => route('buyer.dashboard', absolute: false),
-            default => route('dashboard', absolute: false),
-        };
+        switch ($user->role) {
+            case User::ROLE_SELLER:
+                return route('seller.dashboard', absolute: false);
+            case User::ROLE_ADMINISTRATOR:
+                return route('admin.dashboard', absolute: false);
+            case User::ROLE_BUYER:
+                return route('buyer.dashboard', absolute: false);
+            default:
+                return route('dashboard', absolute: false);
+        }
     }
 
     /**

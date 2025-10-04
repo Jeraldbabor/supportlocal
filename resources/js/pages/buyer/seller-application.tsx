@@ -1,15 +1,15 @@
-import { useState } from 'react';
-import { Head, useForm } from '@inertiajs/react';
+import InputError from '@/components/input-error';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import InputError from '@/components/input-error';
+import { Textarea } from '@/components/ui/textarea';
 import BuyerLayout from '@/layouts/BuyerLayout';
-import { Upload, FileText, AlertCircle, CheckCircle } from 'lucide-react';
+import { Head, useForm } from '@inertiajs/react';
+import { AlertCircle, CheckCircle, FileText, Upload } from 'lucide-react';
+import { useState } from 'react';
 
 interface SellerApplicationFormProps {
     idTypes: Record<string, string>;
@@ -21,11 +21,7 @@ interface SellerApplicationFormProps {
     };
 }
 
-export default function SellerApplicationForm({ 
-    idTypes, 
-    hasExistingApplication = false, 
-    existingApplication 
-}: SellerApplicationFormProps) {
+export default function SellerApplicationForm({ idTypes, hasExistingApplication = false, existingApplication }: SellerApplicationFormProps) {
     const [selectedIdFile, setSelectedIdFile] = useState<File | null>(null);
     const [selectedAdditionalFiles, setSelectedAdditionalFiles] = useState<File[]>([]);
 
@@ -65,7 +61,7 @@ export default function SellerApplicationForm({
         return (
             <BuyerLayout title="Seller Application">
                 <Head title="Apply to Become a Seller" />
-                <div className="max-w-4xl mx-auto p-6">
+                <div className="mx-auto max-w-4xl p-6">
                     <Card>
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2">
@@ -88,27 +84,27 @@ export default function SellerApplicationForm({
                                     </>
                                 )}
                             </CardTitle>
-                            <CardDescription>
-                                Your seller application status
-                            </CardDescription>
+                            <CardDescription>Your seller application status</CardDescription>
                         </CardHeader>
                         <CardContent>
                             <div className="space-y-4">
                                 <div>
                                     <Label className="text-sm font-medium">Application Status</Label>
-                                    <div className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium mt-1 ${
-                                        existingApplication?.status === 'pending' 
-                                            ? 'bg-yellow-100 text-yellow-800'
-                                            : existingApplication?.status === 'approved'
-                                            ? 'bg-green-100 text-green-800'
-                                            : 'bg-red-100 text-red-800'
-                                    }`}>
+                                    <div
+                                        className={`mt-1 inline-flex items-center rounded-full px-3 py-1 text-sm font-medium ${
+                                            existingApplication?.status === 'pending'
+                                                ? 'bg-yellow-100 text-yellow-800'
+                                                : existingApplication?.status === 'approved'
+                                                  ? 'bg-green-100 text-green-800'
+                                                  : 'bg-red-100 text-red-800'
+                                        }`}
+                                    >
                                         {existingApplication?.status === 'pending' && 'Under Review'}
                                         {existingApplication?.status === 'approved' && 'Approved'}
                                         {existingApplication?.status === 'rejected' && 'Rejected'}
                                     </div>
                                 </div>
-                                
+
                                 <div>
                                     <Label className="text-sm font-medium">Submitted</Label>
                                     <p className="text-sm text-gray-600">
@@ -119,9 +115,7 @@ export default function SellerApplicationForm({
                                 {existingApplication?.admin_notes && (
                                     <div>
                                         <Label className="text-sm font-medium">Admin Notes</Label>
-                                        <p className="text-sm text-gray-600 mt-1 p-3 bg-gray-50 rounded-md">
-                                            {existingApplication.admin_notes}
-                                        </p>
+                                        <p className="mt-1 rounded-md bg-gray-50 p-3 text-sm text-gray-600">{existingApplication.admin_notes}</p>
                                     </div>
                                 )}
 
@@ -129,7 +123,8 @@ export default function SellerApplicationForm({
                                     <Alert>
                                         <AlertCircle className="h-4 w-4" />
                                         <AlertDescription>
-                                            Your application is currently being reviewed by our admin team. You will be notified once a decision is made.
+                                            Your application is currently being reviewed by our admin team. You will be notified once a decision is
+                                            made.
                                         </AlertDescription>
                                     </Alert>
                                 )}
@@ -153,22 +148,20 @@ export default function SellerApplicationForm({
     return (
         <BuyerLayout title="Apply to Become a Seller">
             <Head title="Apply to Become a Seller" />
-            <div className="max-w-4xl mx-auto p-6">
+            <div className="mx-auto max-w-4xl p-6">
                 <Card>
                     <CardHeader>
                         <CardTitle>Apply to Become a Seller/Artisan</CardTitle>
                         <CardDescription>
-                            Join our community of talented artisans and start selling your unique products. 
-                            Please provide the required information and documentation for review.
+                            Join our community of talented artisans and start selling your unique products. Please provide the required information
+                            and documentation for review.
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
                         <form onSubmit={handleSubmit} className="space-y-6">
                             {/* Business Description */}
                             <div className="space-y-2">
-                                <Label htmlFor="business_description">
-                                    Business Description *
-                                </Label>
+                                <Label htmlFor="business_description">Business Description *</Label>
                                 <Textarea
                                     id="business_description"
                                     placeholder="Describe your business, the products you plan to sell, and your experience as an artisan..."
@@ -182,9 +175,7 @@ export default function SellerApplicationForm({
 
                             {/* Business Type */}
                             <div className="space-y-2">
-                                <Label htmlFor="business_type">
-                                    Business Type (Optional)
-                                </Label>
+                                <Label htmlFor="business_type">Business Type (Optional)</Label>
                                 <Input
                                     id="business_type"
                                     type="text"
@@ -197,14 +188,8 @@ export default function SellerApplicationForm({
 
                             {/* ID Document Type */}
                             <div className="space-y-2">
-                                <Label htmlFor="id_document_type">
-                                    Valid ID Type *
-                                </Label>
-                                <Select 
-                                    value={data.id_document_type} 
-                                    onValueChange={(value) => setData('id_document_type', value)}
-                                    required
-                                >
+                                <Label htmlFor="id_document_type">Valid ID Type *</Label>
+                                <Select value={data.id_document_type} onValueChange={(value) => setData('id_document_type', value)} required>
                                     <SelectTrigger>
                                         <SelectValue placeholder="Select ID type" />
                                     </SelectTrigger>
@@ -221,10 +206,8 @@ export default function SellerApplicationForm({
 
                             {/* ID Document Upload */}
                             <div className="space-y-2">
-                                <Label htmlFor="id_document">
-                                    Upload Valid ID *
-                                </Label>
-                                <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+                                <Label htmlFor="id_document">Upload Valid ID *</Label>
+                                <div className="rounded-lg border-2 border-dashed border-gray-300 p-6 text-center">
                                     <input
                                         id="id_document"
                                         type="file"
@@ -233,18 +216,11 @@ export default function SellerApplicationForm({
                                         className="hidden"
                                         required
                                     />
-                                    <label
-                                        htmlFor="id_document"
-                                        className="cursor-pointer flex flex-col items-center gap-2"
-                                    >
+                                    <label htmlFor="id_document" className="flex cursor-pointer flex-col items-center gap-2">
                                         <Upload className="h-8 w-8 text-gray-400" />
                                         <div>
-                                            <span className="text-sm font-medium text-blue-600 hover:text-blue-500">
-                                                Click to upload
-                                            </span>
-                                            <p className="text-xs text-gray-500">
-                                                PNG, JPG, or PDF up to 10MB
-                                            </p>
+                                            <span className="text-sm font-medium text-blue-600 hover:text-blue-500">Click to upload</span>
+                                            <p className="text-xs text-gray-500">PNG, JPG, or PDF up to 10MB</p>
                                         </div>
                                     </label>
                                     {selectedIdFile && (
@@ -259,10 +235,8 @@ export default function SellerApplicationForm({
 
                             {/* Additional Documents Upload */}
                             <div className="space-y-2">
-                                <Label htmlFor="additional_documents">
-                                    Additional Documents (Optional)
-                                </Label>
-                                <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+                                <Label htmlFor="additional_documents">Additional Documents (Optional)</Label>
+                                <div className="rounded-lg border-2 border-dashed border-gray-300 p-6 text-center">
                                     <input
                                         id="additional_documents"
                                         type="file"
@@ -271,18 +245,11 @@ export default function SellerApplicationForm({
                                         onChange={handleAdditionalFilesChange}
                                         className="hidden"
                                     />
-                                    <label
-                                        htmlFor="additional_documents"
-                                        className="cursor-pointer flex flex-col items-center gap-2"
-                                    >
+                                    <label htmlFor="additional_documents" className="flex cursor-pointer flex-col items-center gap-2">
                                         <Upload className="h-8 w-8 text-gray-400" />
                                         <div>
-                                            <span className="text-sm font-medium text-blue-600 hover:text-blue-500">
-                                                Click to upload
-                                            </span>
-                                            <p className="text-xs text-gray-500">
-                                                Business certificates, portfolio samples, etc.
-                                            </p>
+                                            <span className="text-sm font-medium text-blue-600 hover:text-blue-500">Click to upload</span>
+                                            <p className="text-xs text-gray-500">Business certificates, portfolio samples, etc.</p>
                                         </div>
                                     </label>
                                     {selectedAdditionalFiles.length > 0 && (
@@ -303,18 +270,13 @@ export default function SellerApplicationForm({
                             <Alert>
                                 <AlertCircle className="h-4 w-4" />
                                 <AlertDescription>
-                                    By submitting this application, you agree to our terms and conditions for sellers. 
-                                    Your application will be reviewed within 3-5 business days.
+                                    By submitting this application, you agree to our terms and conditions for sellers. Your application will be
+                                    reviewed within 3-5 business days.
                                 </AlertDescription>
                             </Alert>
 
                             {/* Submit Button */}
-                            <Button 
-                                type="submit" 
-                                className="w-full" 
-                                disabled={processing}
-                                size="lg"
-                            >
+                            <Button type="submit" className="w-full" disabled={processing} size="lg">
                                 {processing ? 'Submitting Application...' : 'Submit Application'}
                             </Button>
                         </form>

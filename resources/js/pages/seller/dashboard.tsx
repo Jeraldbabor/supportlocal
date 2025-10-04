@@ -1,4 +1,3 @@
-import { PlaceholderPattern } from '@/components/ui/placeholder-pattern';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem, type SharedData } from '@/types';
 import { Head, usePage } from '@inertiajs/react';
@@ -26,15 +25,11 @@ export default function SellerDashboard() {
                             <Package className="h-6 w-6 text-blue-600 dark:text-blue-400" />
                         </div>
                         <div>
-                            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-                                Welcome, {user?.name}!
-                            </h1>
+                            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Welcome, {user?.name}!</h1>
                             <p className="text-gray-600 dark:text-gray-300">
                                 Role: <span className="font-semibold text-blue-600 dark:text-blue-400">Seller/Artisan</span>
                             </p>
-                            <p className="text-sm text-gray-500 dark:text-gray-400">
-                                Manage your products, orders, and customer relationships
-                            </p>
+                            <p className="text-sm text-gray-500 dark:text-gray-400">Manage your products, orders, and customer relationships</p>
                         </div>
                     </div>
                 </div>
@@ -50,7 +45,7 @@ export default function SellerDashboard() {
                             <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">0</p>
                         </div>
                     </div>
-                    
+
                     <div className="flex items-center gap-4 rounded-xl border bg-white p-4 shadow-sm dark:bg-gray-800">
                         <div className="flex h-10 w-10 items-center justify-center rounded-full bg-orange-100 dark:bg-orange-900">
                             <ShoppingBag className="h-5 w-5 text-orange-600 dark:text-orange-400" />
@@ -85,22 +80,16 @@ export default function SellerDashboard() {
                 {/* Main Content Area */}
                 <div className="grid gap-6 md:grid-cols-2">
                     <div className="rounded-xl border bg-white p-6 shadow-sm dark:bg-gray-800">
-                        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
-                            Recent Orders
-                        </h3>
-                        <div className="text-center py-8">
-                            <ShoppingBag className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                        <h3 className="mb-4 text-lg font-semibold text-gray-900 dark:text-gray-100">Recent Orders</h3>
+                        <div className="py-8 text-center">
+                            <ShoppingBag className="mx-auto mb-4 h-12 w-12 text-gray-400" />
                             <p className="text-gray-500 dark:text-gray-400">No orders yet</p>
-                            <p className="text-sm text-gray-400 dark:text-gray-500">
-                                Orders will appear here when customers purchase your products
-                            </p>
+                            <p className="text-sm text-gray-400 dark:text-gray-500">Orders will appear here when customers purchase your products</p>
                         </div>
                     </div>
 
                     <div className="rounded-xl border bg-white p-6 shadow-sm dark:bg-gray-800">
-                        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
-                            Quick Actions
-                        </h3>
+                        <h3 className="mb-4 text-lg font-semibold text-gray-900 dark:text-gray-100">Quick Actions</h3>
                         <div className="space-y-3">
                             <button className="w-full rounded-lg border border-blue-200 bg-blue-50 px-4 py-3 text-left text-blue-700 hover:bg-blue-100 dark:border-blue-800 dark:bg-blue-950/50 dark:text-blue-300 dark:hover:bg-blue-950/80">
                                 <div className="flex items-center gap-3">

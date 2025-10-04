@@ -1,8 +1,7 @@
-import { PlaceholderPattern } from '@/components/ui/placeholder-pattern';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem, type SharedData } from '@/types';
-import { Head, usePage, Link } from '@inertiajs/react';
-import { Settings, Shield, Users, Database, BarChart3, AlertTriangle, FileText } from 'lucide-react';
+import { Head, Link, usePage } from '@inertiajs/react';
+import { AlertTriangle, BarChart3, Database, FileText, Settings, Shield, Users } from 'lucide-react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -26,15 +25,11 @@ export default function AdminDashboard() {
                             <Shield className="h-6 w-6 text-red-600 dark:text-red-400" />
                         </div>
                         <div>
-                            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-                                Welcome, {user?.name}!
-                            </h1>
+                            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Welcome, {user?.name}!</h1>
                             <p className="text-gray-600 dark:text-gray-300">
                                 Role: <span className="font-semibold text-red-600 dark:text-red-400">Administrator</span>
                             </p>
-                            <p className="text-sm text-gray-500 dark:text-gray-400">
-                                Manage users, system settings, and platform operations
-                            </p>
+                            <p className="text-sm text-gray-500 dark:text-gray-400">Manage users, system settings, and platform operations</p>
                         </div>
                     </div>
                 </div>
@@ -50,7 +45,7 @@ export default function AdminDashboard() {
                             <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">3</p>
                         </div>
                     </div>
-                    
+
                     <div className="flex items-center gap-4 rounded-xl border bg-white p-4 shadow-sm dark:bg-gray-800">
                         <div className="flex h-10 w-10 items-center justify-center rounded-full bg-green-100 dark:bg-green-900">
                             <Database className="h-5 w-5 text-green-600 dark:text-green-400" />
@@ -85,34 +80,32 @@ export default function AdminDashboard() {
                 {/* Main Content Area */}
                 <div className="grid gap-6 md:grid-cols-2">
                     <div className="rounded-xl border bg-white p-6 shadow-sm dark:bg-gray-800">
-                        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
-                            User Management
-                        </h3>
+                        <h3 className="mb-4 text-lg font-semibold text-gray-900 dark:text-gray-100">User Management</h3>
                         <div className="space-y-4">
-                            <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg dark:bg-gray-700">
+                            <div className="flex items-center justify-between rounded-lg bg-gray-50 p-3 dark:bg-gray-700">
                                 <div>
                                     <p className="font-medium text-gray-900 dark:text-gray-100">Sellers</p>
                                     <p className="text-sm text-gray-500 dark:text-gray-400">1 registered seller</p>
                                 </div>
-                                <span className="px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full dark:bg-blue-900 dark:text-blue-200">
+                                <span className="rounded-full bg-blue-100 px-2 py-1 text-xs font-medium text-blue-800 dark:bg-blue-900 dark:text-blue-200">
                                     1
                                 </span>
                             </div>
-                            <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg dark:bg-gray-700">
+                            <div className="flex items-center justify-between rounded-lg bg-gray-50 p-3 dark:bg-gray-700">
                                 <div>
                                     <p className="font-medium text-gray-900 dark:text-gray-100">Buyers</p>
                                     <p className="text-sm text-gray-500 dark:text-gray-400">1 registered buyer</p>
                                 </div>
-                                <span className="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full dark:bg-green-900 dark:text-green-200">
+                                <span className="rounded-full bg-green-100 px-2 py-1 text-xs font-medium text-green-800 dark:bg-green-900 dark:text-green-200">
                                     1
                                 </span>
                             </div>
-                            <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg dark:bg-gray-700">
+                            <div className="flex items-center justify-between rounded-lg bg-gray-50 p-3 dark:bg-gray-700">
                                 <div>
                                     <p className="font-medium text-gray-900 dark:text-gray-100">Administrators</p>
                                     <p className="text-sm text-gray-500 dark:text-gray-400">1 admin user</p>
                                 </div>
-                                <span className="px-2 py-1 text-xs font-medium bg-red-100 text-red-800 rounded-full dark:bg-red-900 dark:text-red-200">
+                                <span className="rounded-full bg-red-100 px-2 py-1 text-xs font-medium text-red-800 dark:bg-red-900 dark:text-red-200">
                                     1
                                 </span>
                             </div>
@@ -120,9 +113,7 @@ export default function AdminDashboard() {
                     </div>
 
                     <div className="rounded-xl border bg-white p-6 shadow-sm dark:bg-gray-800">
-                        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
-                            Admin Actions
-                        </h3>
+                        <h3 className="mb-4 text-lg font-semibold text-gray-900 dark:text-gray-100">Admin Actions</h3>
                         <div className="space-y-3">
                             <button className="w-full rounded-lg border border-blue-200 bg-blue-50 px-4 py-3 text-left text-blue-700 hover:bg-blue-100 dark:border-blue-800 dark:bg-blue-950/50 dark:text-blue-300 dark:hover:bg-blue-950/80">
                                 <div className="flex items-center gap-3">
@@ -132,7 +123,7 @@ export default function AdminDashboard() {
                             </button>
                             <Link
                                 href="/admin/seller-applications"
-                                className="w-full rounded-lg border border-orange-200 bg-orange-50 px-4 py-3 text-left text-orange-700 hover:bg-orange-100 dark:border-orange-800 dark:bg-orange-950/50 dark:text-orange-300 dark:hover:bg-orange-950/80 block"
+                                className="block w-full rounded-lg border border-orange-200 bg-orange-50 px-4 py-3 text-left text-orange-700 hover:bg-orange-100 dark:border-orange-800 dark:bg-orange-950/50 dark:text-orange-300 dark:hover:bg-orange-950/80"
                             >
                                 <div className="flex items-center gap-3">
                                     <FileText className="h-5 w-5" />

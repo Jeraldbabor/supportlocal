@@ -16,7 +16,9 @@ class User extends Authenticatable
      * User role constants
      */
     const ROLE_SELLER = 'seller';
+
     const ROLE_BUYER = 'buyer';
+
     const ROLE_ADMINISTRATOR = 'administrator';
 
     /**
@@ -38,6 +40,15 @@ class User extends Authenticatable
         'email',
         'password',
         'role',
+        'phone_number',
+        'address',
+        'date_of_birth',
+        'profile_picture',
+        'delivery_address',
+        'delivery_phone',
+        'delivery_notes',
+        'gcash_number',
+        'gcash_name',
     ];
 
     /**

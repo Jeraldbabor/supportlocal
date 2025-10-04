@@ -26,14 +26,14 @@ Route::get('/cart', function () {
 
 Route::get('/product/{id}', function ($id) {
     return Inertia::render('ProductDetail', [
-        'productId' => $id
+        'productId' => $id,
     ]);
 })->name('product.detail');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', function () {
         $user = auth()->user();
-        
+
         // Redirect to role-specific dashboard
         return match ($user->role) {
             App\Models\User::ROLE_SELLER => redirect()->route('seller.dashboard'),
@@ -48,15 +48,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/seller/products', function () {
             return Inertia::render('seller/products');
         })->name('seller.products');
-        
+
         Route::get('/seller/dashboard', function () {
             return Inertia::render('seller/dashboard');
         })->name('seller.dashboard');
-        
+
         Route::get('/seller/orders', function () {
             return Inertia::render('seller/orders');
         })->name('seller.orders');
-        
+
         Route::get('/seller/analytics', function () {
             return Inertia::render('seller/analytics');
         })->name('seller.analytics');
@@ -66,15 +66,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/admin/users', function () {
             return Inertia::render('admin/users');
         })->name('admin.users');
-        
+
         Route::get('/admin/dashboard', function () {
             return Inertia::render('admin/dashboard');
         })->name('admin.dashboard');
-        
+
         Route::get('/admin/reports', function () {
             return Inertia::render('admin/reports');
         })->name('admin.reports');
-        
+
         Route::get('/admin/settings', function () {
             return Inertia::render('admin/settings');
         })->name('admin.settings');
@@ -91,24 +91,31 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/buyer/dashboard', function () {
             return Inertia::render('buyer/dashboard');
         })->name('buyer.dashboard');
-        
+
         Route::get('/buyer/products', function () {
             return Inertia::render('buyer/products/Index');
         })->name('buyer.products');
-        
+
         Route::get('/buyer/product/{id}', function ($id) {
             return Inertia::render('buyer/products/Detail', [
-                'productId' => $id
+                'productId' => $id,
             ]);
         })->name('buyer.product.detail');
-        
+
         Route::get('/buyer/orders', function () {
             return Inertia::render('buyer/orders');
         })->name('buyer.orders');
-        
+
         Route::get('/buyer/wishlist', function () {
             return Inertia::render('buyer/wishlist');
         })->name('buyer.wishlist');
+
+        // Buyer profile routes
+        Route::get('/buyer/profile', [App\Http\Controllers\BuyerProfileController::class, 'show'])->name('buyer.profile');
+        Route::post('/buyer/profile', [App\Http\Controllers\BuyerProfileController::class, 'update'])->name('buyer.profile.update');
+        Route::post('/buyer/profile/delete-picture', [App\Http\Controllers\BuyerProfileController::class, 'deleteProfilePicture'])->name('buyer.profile.delete-picture');
+        Route::post('/buyer/profile/change-password', [App\Http\Controllers\BuyerProfileController::class, 'changePassword'])->name('buyer.profile.change-password');
+        Route::post('/buyer/profile/delete-account', [App\Http\Controllers\BuyerProfileController::class, 'deleteAccount'])->name('buyer.profile.delete-account');
 
         // Seller application routes for buyers
         Route::get('/seller/apply', [App\Http\Controllers\SellerApplicationController::class, 'create'])->name('seller.application.create');

@@ -14,7 +14,9 @@ class SellerApplication extends Model
      * Application status constants
      */
     const STATUS_PENDING = 'pending';
+
     const STATUS_APPROVED = 'approved';
+
     const STATUS_REJECTED = 'rejected';
 
     /**

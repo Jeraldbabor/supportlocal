@@ -5,7 +5,7 @@ import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, Sid
 import { dashboard } from '@/routes';
 import { type NavItem, type SharedData } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
-import { BookOpen, Folder, LayoutGrid, Package, ShoppingBag, Shield, Users, BarChart3, Settings } from 'lucide-react';
+import { BarChart3, BookOpen, Folder, LayoutGrid, Package, Settings, ShoppingBag, Users } from 'lucide-react';
 import AppLogo from './app-logo';
 
 const footerNavItems: NavItem[] = [
@@ -111,7 +111,7 @@ export function AppSidebar() {
     // Get user data from the page props - this ensures session is maintained
     const { auth } = usePage<SharedData>().props;
     const user = auth.user;
-    
+
     // Get role-specific navigation items
     const mainNavItems = getRoleNavItems(user?.role);
 

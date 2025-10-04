@@ -18,7 +18,7 @@ class RoleMiddleware
     public function handle(Request $request, Closure $next, ...$roles): Response
     {
         // Check if user is authenticated
-        if (!Auth::check()) {
+        if (! Auth::check()) {
             return redirect()->route('login');
         }
 
@@ -34,6 +34,7 @@ class RoleMiddleware
             if ($user->hasRole($role)) {
                 // Store user role in session for easy access
                 session(['user_role' => $user->role]);
+
                 return $next($request);
             }
         }
