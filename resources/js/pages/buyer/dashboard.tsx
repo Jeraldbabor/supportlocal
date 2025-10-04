@@ -31,7 +31,7 @@ export default function BuyerDashboard() {
                             </p>
                             <div className="flex flex-col justify-center gap-4 sm:flex-row">
                                 <Link
-                                    href="/products"
+                                    href="/buyer/products"
                                     className="inline-flex transform items-center rounded-xl bg-primary px-8 py-4 font-semibold text-white shadow-lg transition-all duration-200 hover:scale-105 hover:bg-primary/90 hover:shadow-xl"
                                 >
                                     <ShoppingBag className="mr-2 h-5 w-5" />

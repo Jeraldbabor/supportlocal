@@ -15,6 +15,29 @@ use Inertia\Response;
 class SellerApplicationController extends Controller
 {
     /**
+     * Show the pre-application confirmation message.
+     */
+    public function showPreApplicationMessage(): Response|RedirectResponse
+    {
+        $user = Auth::user();
+
+        // Check if user already has an application
+        $existingApplication = SellerApplication::where('user_id', $user->id)->first();
+
+        // If they already have an application, redirect to the main application page
+        if ($existingApplication) {
+            return redirect()->route('seller.application.create');
+        }
+
+        return Inertia::render('buyer/seller-application-confirmation', [
+            'user' => [
+                'name' => $user->name,
+                'email' => $user->email,
+            ]
+        ]);
+    }
+
+    /**
      * Show the seller application form.
      */
     public function create(): Response
@@ -31,7 +54,19 @@ class SellerApplicationController extends Controller
                 'status' => $existingApplication->status,
                 'created_at' => $existingApplication->created_at->toISOString(),
                 'admin_notes' => $existingApplication->admin_notes,
+                'reviewed_at' => $existingApplication->reviewed_at?->toISOString(),
             ] : null,
+            'userProfile' => [
+                'name' => $user->name,
+                'email' => $user->email,
+                'phone_number' => $user->phone_number,
+                'address' => $user->address,
+                'profile_picture' => $user->profile_picture,
+                'avatar_url' => $user->avatar_url,
+                'profile_completeness' => $user->profile_completeness,
+                'missing_fields' => $user->getMissingSellerProfileFields(),
+                'has_complete_profile' => $user->hasCompleteProfileForSeller(),
+            ]
         ]);
     }
 
@@ -119,8 +154,28 @@ class SellerApplicationController extends Controller
     {
         $application->load(['user', 'reviewer']);
 
+        // Include buyer's current profile information for admin review
+        $buyerProfile = [
+            'name' => $application->user->name,
+            'email' => $application->user->email,
+            'phone_number' => $application->user->phone_number,
+            'address' => $application->user->address,
+            'date_of_birth' => $application->user->date_of_birth,
+            'profile_picture' => $application->user->profile_picture,
+            'avatar_url' => $application->user->avatar_url,
+            'delivery_address' => $application->user->delivery_address,
+            'delivery_phone' => $application->user->delivery_phone,
+            'delivery_notes' => $application->user->delivery_notes,
+            'gcash_number' => $application->user->gcash_number,
+            'gcash_name' => $application->user->gcash_name,
+            'profile_completeness' => $application->user->profile_completeness,
+            'missing_fields' => $application->user->getMissingSellerProfileFields(),
+            'has_complete_profile' => $application->user->hasCompleteProfileForSeller(),
+        ];
+
         return Inertia::render('admin/seller-applications/show', [
             'application' => $application,
+            'buyerProfile' => $buyerProfile,
         ]);
     }
 
@@ -133,10 +188,25 @@ class SellerApplicationController extends Controller
             'admin_notes' => 'nullable|string|max:1000',
         ]);
 
-        $application->approve(Auth::user(), $request->admin_notes);
+        // Store the buyer's profile information before approval for logging
+        $buyerProfile = [
+            'name' => $application->user->name,
+            'email' => $application->user->email,
+            'profile_picture' => $application->user->profile_picture,
+            'phone_number' => $application->user->phone_number,
+            'address' => $application->user->address,
+        ];
 
-        return redirect()->back()->with('success',
-            'Application approved successfully! The user has been granted seller privileges.');
+        try {
+            $application->approve(Auth::user(), $request->admin_notes);
+
+            return redirect()->back()->with('success',
+                'Application approved successfully! The user has been granted seller privileges and their buyer profile information has been preserved.');
+        } catch (\Exception $e) {
+            return redirect()->back()->withErrors([
+                'approval' => $e->getMessage()
+            ]);
+        }
     }
 
     /**

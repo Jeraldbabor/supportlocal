@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Notifications\SellerApplicationApproved;
+use App\Notifications\SellerApplicationRejected;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -97,6 +99,12 @@ class SellerApplication extends Model
      */
     public function approve(User $reviewer, ?string $notes = null): void
     {
+        // Check if the buyer has sufficient profile information
+        if (!$this->user->hasCompleteProfileForSeller()) {
+            $missingFields = $this->user->getMissingSellerProfileFields();
+            throw new \Exception('Cannot approve application. User profile is incomplete. Missing: ' . implode(', ', $missingFields));
+        }
+
         $this->update([
             'status' => self::STATUS_APPROVED,
             'reviewed_at' => now(),
@@ -104,8 +112,47 @@ class SellerApplication extends Model
             'admin_notes' => $notes,
         ]);
 
-        // Update user role to seller
-        $this->user->update(['role' => User::ROLE_SELLER]);
+        // Preserve buyer profile information and update role to seller
+        // Note: All profile fields (name, email, phone, address, avatar, etc.) 
+        // are already stored in the same users table and will be preserved
+        $this->user->update([
+            'role' => User::ROLE_SELLER,
+            'is_active' => true, // Ensure the seller account is active
+        ]);
+
+        // Send notification to the user
+        $this->user->notify(new SellerApplicationApproved($this));
+
+        // Log the role change for audit purposes with complete profile preservation
+        \Log::info('User role changed from buyer to seller with complete data preservation', [
+            'user_id' => $this->user->id,
+            'user_email' => $this->user->email,
+            'application_id' => $this->id,
+            'reviewed_by' => $reviewer->id,
+            'preserved_buyer_data' => [
+                'name' => $this->user->name,
+                'email' => $this->user->email,
+                'phone_number' => $this->user->phone_number,
+                'profile_picture' => $this->user->profile_picture,
+                'address' => $this->user->address,
+                'date_of_birth' => $this->user->date_of_birth,
+                'delivery_address' => $this->user->delivery_address,
+                'delivery_phone' => $this->user->delivery_phone,
+                'delivery_notes' => $this->user->delivery_notes,
+                'gcash_number' => $this->user->gcash_number,
+                'gcash_name' => $this->user->gcash_name,
+                'email_verified_at' => $this->user->email_verified_at,
+                'created_at' => $this->user->created_at,
+                'last_login_at' => $this->user->last_login_at,
+            ],
+            'business_information' => [
+                'business_type' => $this->business_type,
+                'business_description' => $this->business_description,
+                'application_date' => $this->created_at,
+                'approved_date' => now(),
+            ],
+            'data_preservation_complete' => true,
+        ]);
     }
 
     /**
@@ -119,6 +166,9 @@ class SellerApplication extends Model
             'reviewed_by' => $reviewer->id,
             'admin_notes' => $notes,
         ]);
+
+        // Send notification to the user
+        $this->user->notify(new SellerApplicationRejected($this));
     }
 
     /**
