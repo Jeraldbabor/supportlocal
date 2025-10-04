@@ -35,16 +35,16 @@ class AuthenticatedSessionController extends Controller
         $request->session()->regenerate();
 
         $user = Auth::user();
-        
+
         // Store user role in session for middleware
         $request->session()->put('user_role', $user->role);
-        
+
         // Flash a welcome message with role information
         $request->session()->flash('status', "Welcome back, {$user->name}! You are logged in as {$user->getRoleDisplayName()}.");
 
         // Redirect based on user role
         $redirectUrl = $this->getRoleDashboardUrl($user);
-        
+
         return redirect()->intended($redirectUrl);
     }
 

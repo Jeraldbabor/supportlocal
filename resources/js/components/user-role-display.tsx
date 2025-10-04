@@ -1,6 +1,6 @@
 import { type SharedData } from '@/types';
 import { usePage } from '@inertiajs/react';
-import { Shield, Package, ShoppingBag } from 'lucide-react';
+import { Package, Shield, ShoppingBag } from 'lucide-react';
 
 export default function UserRoleDisplay() {
     const { auth } = usePage<SharedData>().props;
@@ -48,7 +48,7 @@ export default function UserRoleDisplay() {
     };
 
     return (
-        <div className={`inline-flex items-center gap-2 px-3 py-1.5 text-xs font-medium rounded-full border ${getRoleColor()}`}>
+        <div className={`inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-medium ${getRoleColor()}`}>
             {getRoleIcon()}
             <span>{getRoleDisplayName()}</span>
         </div>

@@ -16,7 +16,9 @@ class User extends Authenticatable
      * User role constants
      */
     const ROLE_SELLER = 'seller';
+
     const ROLE_BUYER = 'buyer';
+
     const ROLE_ADMINISTRATOR = 'administrator';
 
     /**

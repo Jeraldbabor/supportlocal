@@ -1,39 +1,16 @@
-import { useState } from 'react';
-import { Head, useForm } from '@inertiajs/react';
+import InputError from '@/components/input-error';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { 
-    Dialog, 
-    DialogContent, 
-    DialogDescription, 
-    DialogFooter, 
-    DialogHeader, 
-    DialogTitle, 
-    DialogTrigger 
-} from '@/components/ui/dialog';
-import InputError from '@/components/input-error';
 import BuyerLayout from '@/layouts/BuyerLayout';
-import { 
-    Upload, 
-    User, 
-    Phone, 
-    MapPin, 
-    Calendar, 
-    Truck, 
-    CreditCard, 
-    Camera,
-    Trash2,
-    Save,
-    CheckCircle,
-    Shield,
-    Key,
-    AlertTriangle
-} from 'lucide-react';
+import { Head, useForm } from '@inertiajs/react';
+import { AlertTriangle, Calendar, Camera, CreditCard, Key, MapPin, Phone, Save, Shield, Trash2, Truck, Upload, User } from 'lucide-react';
+import { useState } from 'react';
 
 interface User {
     id: number;
@@ -55,13 +32,12 @@ interface BuyerProfileProps {
 }
 
 export default function BuyerProfile({ user }: BuyerProfileProps) {
-    const [selectedProfilePicture, setSelectedProfilePicture] = useState<File | null>(null);
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
     const [showPasswordForm, setShowPasswordForm] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
-    const [deleteStep, setDeleteStep] = useState(1); 
+    const [deleteStep, setDeleteStep] = useState(1);
 
-    const { data, setData, post, processing, errors, reset } = useForm({
+    const { data, setData, post, processing, errors } = useForm({
         name: user.name || '',
         current_password: '',
         password: '',
@@ -81,19 +57,18 @@ export default function BuyerProfile({ user }: BuyerProfileProps) {
     const passwordForm = useForm({
         current_password: '',
         password: '',
-        password_confirmation: ''
+        password_confirmation: '',
     });
 
     const deleteForm = useForm({
         password: '',
-        confirmation_phrase: ''
+        confirmation_phrase: '',
     });
 
     const handleProfilePictureChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0] || null;
-        setSelectedProfilePicture(file);
         setData('profile_picture', file);
-        
+
         // Create preview URL
         if (file) {
             const url = URL.createObjectURL(file);
@@ -108,7 +83,6 @@ export default function BuyerProfile({ user }: BuyerProfileProps) {
         post('/buyer/profile', {
             forceFormData: true,
             onSuccess: () => {
-                setSelectedProfilePicture(null);
                 setPreviewUrl(null);
             },
         });
@@ -117,7 +91,6 @@ export default function BuyerProfile({ user }: BuyerProfileProps) {
     const handleDeleteProfilePicture = () => {
         post('/buyer/profile/delete-picture', {
             onSuccess: () => {
-                setSelectedProfilePicture(null);
                 setPreviewUrl(null);
             },
         });
@@ -130,7 +103,7 @@ export default function BuyerProfile({ user }: BuyerProfileProps) {
             onSuccess: () => {
                 passwordForm.reset();
                 setShowPasswordForm(false);
-            }
+            },
         });
     };
 
@@ -141,7 +114,7 @@ export default function BuyerProfile({ user }: BuyerProfileProps) {
 
     const handleDeleteConfirmation = (e: React.FormEvent) => {
         e.preventDefault();
-        
+
         // Validate confirmation phrase
         if (deleteForm.data.confirmation_phrase !== 'DELETE MY ACCOUNT') {
             deleteForm.setError('confirmation_phrase', 'Please type "DELETE MY ACCOUNT" to confirm');
@@ -154,7 +127,7 @@ export default function BuyerProfile({ user }: BuyerProfileProps) {
             },
             onError: () => {
                 // Handle errors
-            }
+            },
         });
     };
 
@@ -173,25 +146,30 @@ export default function BuyerProfile({ user }: BuyerProfileProps) {
 
     const getUserInitials = () => {
         return user.name
-            ? user.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
+            ? user.name
+                  .split(' ')
+                  .map((n) => n[0])
+                  .join('')
+                  .toUpperCase()
+                  .slice(0, 2)
             : 'U';
     };
 
     return (
         <BuyerLayout title="My Profile">
             <Head title="My Profile" />
-            
-            <div className="max-w-6xl mx-auto p-6 space-y-6">
+
+            <div className="mx-auto max-w-6xl space-y-6 p-6">
                 {/* Header */}
                 <div className="flex items-center justify-between">
                     <div>
                         <h1 className="text-3xl font-bold text-gray-900">My Profile</h1>
-                        <p className="text-gray-600 mt-1">Manage your personal information and preferences</p>
+                        <p className="mt-1 text-gray-600">Manage your personal information and preferences</p>
                     </div>
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-6">
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
                         {/* Profile Picture Section */}
                         <div className="lg:col-span-1">
                             <Card>
@@ -200,23 +178,18 @@ export default function BuyerProfile({ user }: BuyerProfileProps) {
                                         <Camera className="h-5 w-5" />
                                         Profile Picture
                                     </CardTitle>
-                                    <CardDescription>
-                                        Upload a profile picture to personalize your account
-                                    </CardDescription>
+                                    <CardDescription>Upload a profile picture to personalize your account</CardDescription>
                                 </CardHeader>
                                 <CardContent className="space-y-4">
                                     <div className="flex flex-col items-center space-y-4">
                                         <Avatar className="h-32 w-32">
-                                            <AvatarImage 
-                                                src={getProfilePictureUrl() || ''} 
-                                                alt={user.name}
-                                            />
-                                            <AvatarFallback className="text-2xl font-semibold bg-primary/10 text-primary">
+                                            <AvatarImage src={getProfilePictureUrl() || ''} alt={user.name} />
+                                            <AvatarFallback className="bg-primary/10 text-2xl font-semibold text-primary">
                                                 {getUserInitials()}
                                             </AvatarFallback>
                                         </Avatar>
-                                        
-                                        <div className="flex flex-col gap-2 w-full">
+
+                                        <div className="flex w-full flex-col gap-2">
                                             <input
                                                 id="profile_picture"
                                                 type="file"
@@ -226,28 +199,26 @@ export default function BuyerProfile({ user }: BuyerProfileProps) {
                                             />
                                             <label
                                                 htmlFor="profile_picture"
-                                                className="cursor-pointer flex items-center justify-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors"
+                                                className="flex cursor-pointer items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2 text-white transition-colors hover:bg-primary/90"
                                             >
                                                 <Upload className="h-4 w-4" />
                                                 {user.profile_picture ? 'Change Picture' : 'Upload Picture'}
                                             </label>
-                                            
+
                                             {(user.profile_picture || previewUrl) && (
                                                 <Button
                                                     type="button"
                                                     variant="outline"
                                                     onClick={handleDeleteProfilePicture}
-                                                    className="flex items-center gap-2 text-red-600 hover:text-red-700 hover:bg-red-50"
+                                                    className="flex items-center gap-2 text-red-600 hover:bg-red-50 hover:text-red-700"
                                                 >
                                                     <Trash2 className="h-4 w-4" />
                                                     Remove Picture
                                                 </Button>
                                             )}
                                         </div>
-                                        
-                                        <p className="text-xs text-gray-500 text-center">
-                                            Recommended: Square image, at least 200x200px, max 5MB
-                                        </p>
+
+                                        <p className="text-center text-xs text-gray-500">Recommended: Square image, at least 200x200px, max 5MB</p>
                                     </div>
                                     <InputError message={errors.profile_picture} />
                                 </CardContent>
@@ -255,7 +226,7 @@ export default function BuyerProfile({ user }: BuyerProfileProps) {
                         </div>
 
                         {/* Form Fields */}
-                        <div className="lg:col-span-2 space-y-6">
+                        <div className="space-y-6 lg:col-span-2">
                             {/* Personal Information */}
                             <Card>
                                 <CardHeader>
@@ -263,12 +234,10 @@ export default function BuyerProfile({ user }: BuyerProfileProps) {
                                         <User className="h-5 w-5" />
                                         Personal Information
                                     </CardTitle>
-                                    <CardDescription>
-                                        Your basic personal details
-                                    </CardDescription>
+                                    <CardDescription>Your basic personal details</CardDescription>
                                 </CardHeader>
                                 <CardContent className="space-y-4">
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                                         <div className="space-y-2">
                                             <Label htmlFor="name">Full Name *</Label>
                                             <Input
@@ -294,10 +263,10 @@ export default function BuyerProfile({ user }: BuyerProfileProps) {
                                         </div>
                                     </div>
 
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                                         <div className="space-y-2">
                                             <Label htmlFor="phone_number">
-                                                <Phone className="inline h-4 w-4 mr-1" />
+                                                <Phone className="mr-1 inline h-4 w-4" />
                                                 Phone Number
                                             </Label>
                                             <Input
@@ -312,7 +281,7 @@ export default function BuyerProfile({ user }: BuyerProfileProps) {
 
                                         <div className="space-y-2">
                                             <Label htmlFor="date_of_birth">
-                                                <Calendar className="inline h-4 w-4 mr-1" />
+                                                <Calendar className="mr-1 inline h-4 w-4" />
                                                 Date of Birth
                                             </Label>
                                             <Input
@@ -327,7 +296,7 @@ export default function BuyerProfile({ user }: BuyerProfileProps) {
 
                                     <div className="space-y-2">
                                         <Label htmlFor="address">
-                                            <MapPin className="inline h-4 w-4 mr-1" />
+                                            <MapPin className="mr-1 inline h-4 w-4" />
                                             Address
                                         </Label>
                                         <Textarea
@@ -349,9 +318,7 @@ export default function BuyerProfile({ user }: BuyerProfileProps) {
                                         <Truck className="h-5 w-5" />
                                         Delivery Information
                                     </CardTitle>
-                                    <CardDescription>
-                                        Where should we deliver your orders?
-                                    </CardDescription>
+                                    <CardDescription>Where should we deliver your orders?</CardDescription>
                                 </CardHeader>
                                 <CardContent className="space-y-4">
                                     <div className="space-y-2">
@@ -363,13 +330,11 @@ export default function BuyerProfile({ user }: BuyerProfileProps) {
                                             onChange={(e) => setData('delivery_address', e.target.value)}
                                             rows={2}
                                         />
-                                        <p className="text-xs text-gray-500">
-                                            Leave blank to use your address above
-                                        </p>
+                                        <p className="text-xs text-gray-500">Leave blank to use your address above</p>
                                         <InputError message={errors.delivery_address} />
                                     </div>
 
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                                         <div className="space-y-2">
                                             <Label htmlFor="delivery_phone">Delivery Contact Number</Label>
                                             <Input
@@ -404,12 +369,10 @@ export default function BuyerProfile({ user }: BuyerProfileProps) {
                                         <CreditCard className="h-5 w-5" />
                                         Payment Information
                                     </CardTitle>
-                                    <CardDescription>
-                                        Your GCash details for easy payments
-                                    </CardDescription>
+                                    <CardDescription>Your GCash details for easy payments</CardDescription>
                                 </CardHeader>
                                 <CardContent className="space-y-4">
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                                         <div className="space-y-2">
                                             <Label htmlFor="gcash_number">GCash Mobile Number</Label>
                                             <Input
@@ -447,7 +410,7 @@ export default function BuyerProfile({ user }: BuyerProfileProps) {
                     </div>
 
                     {/* Account Security Section */}
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
                         {/* Password Change */}
                         <Card>
                             <CardHeader>
@@ -455,19 +418,12 @@ export default function BuyerProfile({ user }: BuyerProfileProps) {
                                     <Key className="h-5 w-5" />
                                     Change Password
                                 </CardTitle>
-                                <CardDescription>
-                                    Update your password to keep your account secure
-                                </CardDescription>
+                                <CardDescription>Update your password to keep your account secure</CardDescription>
                             </CardHeader>
                             <CardContent>
                                 {!showPasswordForm ? (
-                                    <Button 
-                                        type="button"
-                                        variant="outline" 
-                                        onClick={() => setShowPasswordForm(true)}
-                                        className="w-full"
-                                    >
-                                        <Shield className="h-4 w-4 mr-2" />
+                                    <Button type="button" variant="outline" onClick={() => setShowPasswordForm(true)} className="w-full">
+                                        <Shield className="mr-2 h-4 w-4" />
                                         Change Password
                                     </Button>
                                 ) : (
@@ -509,16 +465,12 @@ export default function BuyerProfile({ user }: BuyerProfileProps) {
                                         </div>
 
                                         <div className="flex gap-2">
-                                            <Button 
-                                                type="submit" 
-                                                disabled={passwordForm.processing}
-                                                size="sm"
-                                            >
+                                            <Button type="submit" disabled={passwordForm.processing} size="sm">
                                                 {passwordForm.processing ? 'Updating...' : 'Update Password'}
                                             </Button>
-                                            <Button 
-                                                type="button" 
-                                                variant="outline" 
+                                            <Button
+                                                type="button"
+                                                variant="outline"
                                                 size="sm"
                                                 onClick={() => {
                                                     setShowPasswordForm(false);
@@ -540,31 +492,25 @@ export default function BuyerProfile({ user }: BuyerProfileProps) {
                                     <AlertTriangle className="h-5 w-5" />
                                     Delete Account
                                 </CardTitle>
-                                <CardDescription>
-                                    Permanently delete your account and all associated data
-                                </CardDescription>
+                                <CardDescription>Permanently delete your account and all associated data</CardDescription>
                             </CardHeader>
                             <CardContent>
-                                <Alert className="border-red-200 bg-red-50 mb-4">
+                                <Alert className="mb-4 border-red-200 bg-red-50">
                                     <AlertTriangle className="h-4 w-4 text-red-600" />
                                     <AlertDescription className="text-red-800">
-                                        <strong>Warning:</strong> This action cannot be undone. All your data including profile information, orders, and account history will be permanently deleted.
+                                        <strong>Warning:</strong> This action cannot be undone. All your data including profile information, orders,
+                                        and account history will be permanently deleted.
                                     </AlertDescription>
                                 </Alert>
-                                
+
                                 <Dialog open={showDeleteModal} onOpenChange={setShowDeleteModal}>
                                     <DialogTrigger asChild>
-                                        <Button 
-                                            type="button"
-                                            variant="destructive" 
-                                            onClick={handleDeleteAccount}
-                                            className="w-full"
-                                        >
-                                            <Trash2 className="h-4 w-4 mr-2" />
+                                        <Button type="button" variant="destructive" onClick={handleDeleteAccount} className="w-full">
+                                            <Trash2 className="mr-2 h-4 w-4" />
                                             Delete My Account
                                         </Button>
                                     </DialogTrigger>
-                                    
+
                                     <DialogContent className="sm:max-w-md">
                                         <DialogHeader>
                                             <DialogTitle className="flex items-center gap-2 text-red-600">
@@ -572,10 +518,9 @@ export default function BuyerProfile({ user }: BuyerProfileProps) {
                                                 Delete Account
                                             </DialogTitle>
                                             <DialogDescription>
-                                                {deleteStep === 1 
-                                                    ? "This will permanently delete your account and all associated data."
-                                                    : "Please confirm your password and type the confirmation phrase to proceed."
-                                                }
+                                                {deleteStep === 1
+                                                    ? 'This will permanently delete your account and all associated data.'
+                                                    : 'Please confirm your password and type the confirmation phrase to proceed.'}
                                             </DialogDescription>
                                         </DialogHeader>
 
@@ -588,33 +533,34 @@ export default function BuyerProfile({ user }: BuyerProfileProps) {
                                                         <strong>This action cannot be undone.</strong> Once deleted, you will permanently lose:
                                                     </AlertDescription>
                                                 </Alert>
-                                                
+
                                                 <div className="space-y-2 text-sm text-gray-600">
                                                     <div className="flex items-center gap-2">
-                                                        <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+                                                        <div className="h-2 w-2 rounded-full bg-red-500"></div>
                                                         <span>All profile information and personal data</span>
                                                     </div>
                                                     <div className="flex items-center gap-2">
-                                                        <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+                                                        <div className="h-2 w-2 rounded-full bg-red-500"></div>
                                                         <span>Order history and purchase records</span>
                                                     </div>
                                                     <div className="flex items-center gap-2">
-                                                        <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+                                                        <div className="h-2 w-2 rounded-full bg-red-500"></div>
                                                         <span>Saved addresses and payment information</span>
                                                     </div>
                                                     <div className="flex items-center gap-2">
-                                                        <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+                                                        <div className="h-2 w-2 rounded-full bg-red-500"></div>
                                                         <span>Wishlist items and preferences</span>
                                                     </div>
                                                     <div className="flex items-center gap-2">
-                                                        <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+                                                        <div className="h-2 w-2 rounded-full bg-red-500"></div>
                                                         <span>Account settings and configurations</span>
                                                     </div>
                                                 </div>
 
-                                                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+                                                <div className="rounded-lg border border-yellow-200 bg-yellow-50 p-3">
                                                     <p className="text-sm text-yellow-800">
-                                                        <strong>Consider:</strong> You can change your password or update your profile information instead of deleting your account.
+                                                        <strong>Consider:</strong> You can change your password or update your profile information
+                                                        instead of deleting your account.
                                                     </p>
                                                 </div>
                                             </div>
@@ -660,35 +606,20 @@ export default function BuyerProfile({ user }: BuyerProfileProps) {
 
                                         <DialogFooter>
                                             {deleteStep === 1 ? (
-                                                <div className="flex gap-2 w-full">
-                                                    <Button 
-                                                        type="button" 
-                                                        variant="outline" 
-                                                        onClick={resetDeleteModal}
-                                                        className="flex-1"
-                                                    >
+                                                <div className="flex w-full gap-2">
+                                                    <Button type="button" variant="outline" onClick={resetDeleteModal} className="flex-1">
                                                         Cancel
                                                     </Button>
-                                                    <Button 
-                                                        type="button"
-                                                        variant="destructive"
-                                                        onClick={() => setDeleteStep(2)}
-                                                        className="flex-1"
-                                                    >
+                                                    <Button type="button" variant="destructive" onClick={() => setDeleteStep(2)} className="flex-1">
                                                         Continue
                                                     </Button>
                                                 </div>
                                             ) : (
-                                                <div className="flex gap-2 w-full">
-                                                    <Button 
-                                                        type="button" 
-                                                        variant="outline" 
-                                                        onClick={() => setDeleteStep(1)}
-                                                        className="flex-1"
-                                                    >
+                                                <div className="flex w-full gap-2">
+                                                    <Button type="button" variant="outline" onClick={() => setDeleteStep(1)} className="flex-1">
                                                         Back
                                                     </Button>
-                                                    <Button 
+                                                    <Button
                                                         type="button"
                                                         variant="destructive"
                                                         onClick={handleDeleteConfirmation}
@@ -697,12 +628,12 @@ export default function BuyerProfile({ user }: BuyerProfileProps) {
                                                     >
                                                         {deleteForm.processing ? (
                                                             <>
-                                                                <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent mr-2"></div>
+                                                                <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
                                                                 Deleting...
                                                             </>
                                                         ) : (
                                                             <>
-                                                                <Trash2 className="h-4 w-4 mr-2" />
+                                                                <Trash2 className="mr-2 h-4 w-4" />
                                                                 Delete Account
                                                             </>
                                                         )}
@@ -718,15 +649,10 @@ export default function BuyerProfile({ user }: BuyerProfileProps) {
 
                     {/* Submit Button */}
                     <div className="flex justify-end">
-                        <Button 
-                            type="submit" 
-                            disabled={processing}
-                            className="flex items-center gap-2 px-8"
-                            size="lg"
-                        >
+                        <Button type="submit" disabled={processing} className="flex items-center gap-2 px-8" size="lg">
                             {processing ? (
                                 <>
-                                    <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
+                                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
                                     Saving...
                                 </>
                             ) : (

@@ -1,17 +1,13 @@
+import { Clock, Mail, MapPin, Phone, Send } from 'lucide-react';
 import React, { useState } from 'react';
 import MainLayout from '../layouts/MainLayout';
-import { Mail, Phone, MapPin, Clock, Send } from 'lucide-react';
 
-interface ContactProps {
-    // You could add props for contact info if needed
-}
-
-export default function Contact({}: ContactProps) {
+export default function Contact() {
     const [formData, setFormData] = useState({
         name: '',
         email: '',
         subject: '',
-        message: ''
+        message: '',
     });
 
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -19,19 +15,19 @@ export default function Contact({}: ContactProps) {
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
-        setFormData(prev => ({
+        setFormData((prev) => ({
             ...prev,
-            [name]: value
+            [name]: value,
         }));
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsSubmitting(true);
-        
+
         // Simulate form submission
         setTimeout(() => {
-            setSubmitMessage('Thank you for your message! We\'ll get back to you within 24 hours.');
+            setSubmitMessage("Thank you for your message! We'll get back to you within 24 hours.");
             setFormData({ name: '', email: '', subject: '', message: '' });
             setIsSubmitting(false);
         }, 1000);
@@ -39,22 +35,20 @@ export default function Contact({}: ContactProps) {
 
     return (
         <MainLayout title="Contact Us">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+            <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+                <div className="grid grid-cols-1 gap-12 lg:grid-cols-2">
                     {/* Contact Information */}
                     <div>
-                        <h2 className="text-3xl font-bold text-gray-900 mb-6">
-                            Get in Touch
-                        </h2>
-                        <p className="text-lg text-gray-600 mb-8">
-                            We'd love to hear from you! Whether you have questions about our artisans, 
-                            need help with an order, or want to join our marketplace, we're here to help.
+                        <h2 className="mb-6 text-3xl font-bold text-gray-900">Get in Touch</h2>
+                        <p className="mb-8 text-lg text-gray-600">
+                            We'd love to hear from you! Whether you have questions about our artisans, need help with an order, or want to join our
+                            marketplace, we're here to help.
                         </p>
 
                         <div className="space-y-6">
                             <div className="flex items-start">
                                 <div className="flex-shrink-0">
-                                    <Mail className="h-6 w-6 text-primary mt-1" />
+                                    <Mail className="mt-1 h-6 w-6 text-primary" />
                                 </div>
                                 <div className="ml-4">
                                     <h3 className="text-lg font-semibold text-gray-900">Email</h3>
@@ -65,7 +59,7 @@ export default function Contact({}: ContactProps) {
 
                             <div className="flex items-start">
                                 <div className="flex-shrink-0">
-                                    <Phone className="h-6 w-6 text-primary mt-1" />
+                                    <Phone className="mt-1 h-6 w-6 text-primary" />
                                 </div>
                                 <div className="ml-4">
                                     <h3 className="text-lg font-semibold text-gray-900">Phone</h3>
@@ -76,13 +70,15 @@ export default function Contact({}: ContactProps) {
 
                             <div className="flex items-start">
                                 <div className="flex-shrink-0">
-                                    <MapPin className="h-6 w-6 text-primary mt-1" />
+                                    <MapPin className="mt-1 h-6 w-6 text-primary" />
                                 </div>
                                 <div className="ml-4">
                                     <h3 className="text-lg font-semibold text-gray-900">Address</h3>
                                     <p className="text-gray-600">
-                                        123 Artisan Street<br />
-                                        Creative District<br />
+                                        123 Artisan Street
+                                        <br />
+                                        Creative District
+                                        <br />
                                         Portland, OR 97201
                                     </p>
                                 </div>
@@ -90,7 +86,7 @@ export default function Contact({}: ContactProps) {
 
                             <div className="flex items-start">
                                 <div className="flex-shrink-0">
-                                    <Clock className="h-6 w-6 text-primary mt-1" />
+                                    <Clock className="mt-1 h-6 w-6 text-primary" />
                                 </div>
                                 <div className="ml-4">
                                     <h3 className="text-lg font-semibold text-gray-900">Business Hours</h3>
@@ -105,35 +101,27 @@ export default function Contact({}: ContactProps) {
 
                         {/* FAQ Section */}
                         <div className="mt-12">
-                            <h3 className="text-2xl font-bold text-gray-900 mb-6">
-                                Frequently Asked Questions
-                            </h3>
+                            <h3 className="mb-6 text-2xl font-bold text-gray-900">Frequently Asked Questions</h3>
                             <div className="space-y-4">
                                 <div>
-                                    <h4 className="font-semibold text-gray-900 mb-2">
-                                        How can I become an artisan on your platform?
-                                    </h4>
+                                    <h4 className="mb-2 font-semibold text-gray-900">How can I become an artisan on your platform?</h4>
                                     <p className="text-gray-600">
-                                        We welcome applications from skilled artisans. Please use the contact form to 
-                                        express your interest, and we'll send you our artisan application process.
+                                        We welcome applications from skilled artisans. Please use the contact form to express your interest, and we'll
+                                        send you our artisan application process.
                                     </p>
                                 </div>
                                 <div>
-                                    <h4 className="font-semibold text-gray-900 mb-2">
-                                        What is your return policy?
-                                    </h4>
+                                    <h4 className="mb-2 font-semibold text-gray-900">What is your return policy?</h4>
                                     <p className="text-gray-600">
-                                        We offer a 30-day return policy for most items. Since our products are handmade, 
-                                        please contact us if you have any concerns about your purchase.
+                                        We offer a 30-day return policy for most items. Since our products are handmade, please contact us if you have
+                                        any concerns about your purchase.
                                     </p>
                                 </div>
                                 <div>
-                                    <h4 className="font-semibold text-gray-900 mb-2">
-                                        Do you ship internationally?
-                                    </h4>
+                                    <h4 className="mb-2 font-semibold text-gray-900">Do you ship internationally?</h4>
                                     <p className="text-gray-600">
-                                        Currently, we ship within the United States and Canada. We're working on 
-                                        expanding our shipping options to serve more customers worldwide.
+                                        Currently, we ship within the United States and Canada. We're working on expanding our shipping options to
+                                        serve more customers worldwide.
                                     </p>
                                 </div>
                             </div>
@@ -142,20 +130,18 @@ export default function Contact({}: ContactProps) {
 
                     {/* Contact Form */}
                     <div>
-                        <div className="bg-white rounded-lg shadow-lg p-8">
-                            <h2 className="text-2xl font-bold text-gray-900 mb-6">
-                                Send us a Message
-                            </h2>
+                        <div className="rounded-lg bg-white p-8 shadow-lg">
+                            <h2 className="mb-6 text-2xl font-bold text-gray-900">Send us a Message</h2>
 
                             {submitMessage && (
-                                <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-md">
+                                <div className="mb-6 rounded-md border border-green-200 bg-green-50 p-4">
                                     <p className="text-green-800">{submitMessage}</p>
                                 </div>
                             )}
 
                             <form onSubmit={handleSubmit} className="space-y-6">
                                 <div>
-                                    <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
+                                    <label htmlFor="name" className="mb-2 block text-sm font-medium text-gray-700">
                                         Full Name *
                                     </label>
                                     <input
@@ -165,13 +151,13 @@ export default function Contact({}: ContactProps) {
                                         value={formData.name}
                                         onChange={handleInputChange}
                                         required
-                                        className="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-primary"
+                                        className="w-full rounded-md border border-gray-300 px-4 py-3 focus:border-primary focus:ring-2 focus:ring-primary"
                                         placeholder="Enter your full name"
                                     />
                                 </div>
 
                                 <div>
-                                    <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                                    <label htmlFor="email" className="mb-2 block text-sm font-medium text-gray-700">
                                         Email Address *
                                     </label>
                                     <input
@@ -181,13 +167,13 @@ export default function Contact({}: ContactProps) {
                                         value={formData.email}
                                         onChange={handleInputChange}
                                         required
-                                        className="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-primary"
+                                        className="w-full rounded-md border border-gray-300 px-4 py-3 focus:border-primary focus:ring-2 focus:ring-primary"
                                         placeholder="Enter your email address"
                                     />
                                 </div>
 
                                 <div>
-                                    <label htmlFor="subject" className="block text-sm font-medium text-gray-700 mb-2">
+                                    <label htmlFor="subject" className="mb-2 block text-sm font-medium text-gray-700">
                                         Subject *
                                     </label>
                                     <select
@@ -196,7 +182,7 @@ export default function Contact({}: ContactProps) {
                                         value={formData.subject}
                                         onChange={handleInputChange}
                                         required
-                                        className="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-primary"
+                                        className="w-full rounded-md border border-gray-300 px-4 py-3 focus:border-primary focus:ring-2 focus:ring-primary"
                                     >
                                         <option value="">Select a subject</option>
                                         <option value="general">General Inquiry</option>
@@ -209,7 +195,7 @@ export default function Contact({}: ContactProps) {
                                 </div>
 
                                 <div>
-                                    <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-2">
+                                    <label htmlFor="message" className="mb-2 block text-sm font-medium text-gray-700">
                                         Message *
                                     </label>
                                     <textarea
@@ -219,7 +205,7 @@ export default function Contact({}: ContactProps) {
                                         onChange={handleInputChange}
                                         required
                                         rows={6}
-                                        className="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-primary"
+                                        className="w-full rounded-md border border-gray-300 px-4 py-3 focus:border-primary focus:ring-2 focus:ring-primary"
                                         placeholder="Tell us how we can help you..."
                                     />
                                 </div>
@@ -227,16 +213,16 @@ export default function Contact({}: ContactProps) {
                                 <button
                                     type="submit"
                                     disabled={isSubmitting}
-                                    className="w-full bg-primary text-white py-3 px-6 rounded-md font-semibold hover:bg-primary/90 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                                    className="flex w-full items-center justify-center rounded-md bg-primary px-6 py-3 font-semibold text-white transition-colors duration-200 hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
                                 >
                                     {isSubmitting ? (
                                         <>
-                                            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+                                            <div className="mr-2 h-5 w-5 animate-spin rounded-full border-b-2 border-white"></div>
                                             Sending...
                                         </>
                                     ) : (
                                         <>
-                                            <Send className="h-5 w-5 mr-2" />
+                                            <Send className="mr-2 h-5 w-5" />
                                             Send Message
                                         </>
                                     )}
@@ -244,9 +230,7 @@ export default function Contact({}: ContactProps) {
                             </form>
 
                             <div className="mt-6 text-sm text-gray-500">
-                                <p>
-                                    * Required fields. We typically respond within 24 hours during business days.
-                                </p>
+                                <p>* Required fields. We typically respond within 24 hours during business days.</p>
                             </div>
                         </div>
                     </div>

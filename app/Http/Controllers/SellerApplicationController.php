@@ -20,10 +20,10 @@ class SellerApplicationController extends Controller
     public function create(): Response
     {
         $user = Auth::user();
-        
+
         // Check if user already has an application
         $existingApplication = SellerApplication::where('user_id', $user->id)->first();
-        
+
         return Inertia::render('buyer/seller-application', [
             'idTypes' => SellerApplication::ID_TYPES,
             'hasExistingApplication' => $existingApplication !== null,
@@ -41,25 +41,25 @@ class SellerApplicationController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $user = Auth::user();
-        
+
         // Check if user already has an application
         if (SellerApplication::where('user_id', $user->id)->exists()) {
             return redirect()->back()->withErrors([
-                'application' => 'You have already submitted a seller application.'
+                'application' => 'You have already submitted a seller application.',
             ]);
         }
 
         // Check if user is already a seller
         if ($user->isSeller()) {
             return redirect()->back()->withErrors([
-                'application' => 'You are already a seller.'
+                'application' => 'You are already a seller.',
             ]);
         }
 
         $request->validate([
             'business_description' => 'required|string|min:50|max:2000',
             'business_type' => 'nullable|string|max:255',
-            'id_document_type' => 'required|string|in:' . implode(',', array_keys(SellerApplication::ID_TYPES)),
+            'id_document_type' => 'required|string|in:'.implode(',', array_keys(SellerApplication::ID_TYPES)),
             'id_document' => [
                 'required',
                 File::types(['jpg', 'jpeg', 'png', 'pdf'])
@@ -94,7 +94,7 @@ class SellerApplicationController extends Controller
             'status' => SellerApplication::STATUS_PENDING,
         ]);
 
-        return redirect()->route('seller.application.create')->with('success', 
+        return redirect()->route('seller.application.create')->with('success',
             'Your seller application has been submitted successfully! We will review it within 3-5 business days.');
     }
 
@@ -135,7 +135,7 @@ class SellerApplicationController extends Controller
 
         $application->approve(Auth::user(), $request->admin_notes);
 
-        return redirect()->back()->with('success', 
+        return redirect()->back()->with('success',
             'Application approved successfully! The user has been granted seller privileges.');
     }
 
@@ -150,7 +150,7 @@ class SellerApplicationController extends Controller
 
         $application->reject(Auth::user(), $request->admin_notes);
 
-        return redirect()->back()->with('success', 
+        return redirect()->back()->with('success',
             'Application rejected. The user has been notified.');
     }
 
@@ -160,13 +160,13 @@ class SellerApplicationController extends Controller
     public function downloadDocument(SellerApplication $application, string $type): \Symfony\Component\HttpFoundation\StreamedResponse
     {
         // Ensure the user is an admin
-        if (!Auth::user()->isAdministrator()) {
+        if (! Auth::user()->isAdministrator()) {
             abort(403);
         }
 
         // Load the user relationship to avoid PHPStan issues
         $application->load('user');
-        
+
         /** @var \App\Models\User $user */
         $user = $application->user;
 
@@ -175,15 +175,15 @@ class SellerApplicationController extends Controller
 
         if ($type === 'id_document') {
             $path = $application->id_document_path;
-            $filename = 'id_document_' . $user->name . '_' . $application->id;
+            $filename = 'id_document_'.$user->name.'_'.$application->id;
         } elseif ($type === 'additional_documents' && is_array($application->additional_documents_path)) {
             // For simplicity, we'll download the first additional document
             // In a real app, you might want to specify which document to download
             $path = $application->additional_documents_path[0] ?? null;
-            $filename = 'additional_document_' . $user->name . '_' . $application->id;
+            $filename = 'additional_document_'.$user->name.'_'.$application->id;
         }
 
-        if (!$path || !Storage::disk('private')->exists($path)) {
+        if (! $path || ! Storage::disk('private')->exists($path)) {
             abort(404);
         }
 

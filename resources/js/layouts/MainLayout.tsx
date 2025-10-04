@@ -1,9 +1,8 @@
-import React, { useState } from 'react';
-import { Link, usePage, router } from '@inertiajs/react';
-import { ShoppingCart, Menu, X, LogOut } from 'lucide-react';
-import { type SharedData } from '@/types';
 import { dashboard, login, register } from '@/routes';
-
+import { type SharedData } from '@/types';
+import { Link, router, usePage } from '@inertiajs/react';
+import { LogOut, Menu, ShoppingCart, X } from 'lucide-react';
+import React, { useState } from 'react';
 
 interface MainLayoutProps {
     children: React.ReactNode;
@@ -30,9 +29,9 @@ export default function MainLayout({ children, title, cartItems = 0 }: MainLayou
     return (
         <div className="min-h-screen bg-background">
             {/* Navigation Header */}
-            <header className="sticky top-0 z-50 bg-white shadow-sm border-b border-gray-200">
-                <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex justify-between items-center h-16">
+            <header className="sticky top-0 z-50 border-b border-gray-200 bg-white shadow-sm">
+                <nav className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                    <div className="flex h-16 items-center justify-between">
                         {/* Logo */}
                         <div className="flex-shrink-0">
                             <Link href="/" className="text-2xl font-bold text-primary">
@@ -47,7 +46,7 @@ export default function MainLayout({ children, title, cartItems = 0 }: MainLayou
                                     <Link
                                         key={item.name}
                                         href={item.href}
-                                        className="text-gray-700 hover:text-primary px-3 py-2 text-sm font-medium transition-colors duration-200"
+                                        className="px-3 py-2 text-sm font-medium text-gray-700 transition-colors duration-200 hover:text-primary"
                                     >
                                         {item.name}
                                     </Link>
@@ -58,13 +57,10 @@ export default function MainLayout({ children, title, cartItems = 0 }: MainLayou
                         {/* Cart and Mobile Menu Button */}
                         <div className="flex items-center space-x-4">
                             {/* Cart Icon */}
-                            <Link
-                                href="/cart"
-                                className="relative p-2 text-gray-700 hover:text-primary transition-colors duration-200"
-                            >
+                            <Link href="/cart" className="relative p-2 text-gray-700 transition-colors duration-200 hover:text-primary">
                                 <ShoppingCart className="h-6 w-6" />
                                 {cartItems > 0 && (
-                                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                                    <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs text-white">
                                         {cartItems}
                                     </span>
                                 )}
@@ -81,7 +77,7 @@ export default function MainLayout({ children, title, cartItems = 0 }: MainLayou
                                         </Link>
                                         <button
                                             onClick={handleLogout}
-                                            className="inline-flex items-center gap-2 rounded-sm border border-red-200 px-4 py-1.5 text-sm leading-normal text-red-600 hover:border-red-300 hover:bg-red-50 transition-colors duration-200"
+                                            className="inline-flex items-center gap-2 rounded-sm border border-red-200 px-4 py-1.5 text-sm leading-normal text-red-600 transition-colors duration-200 hover:border-red-300 hover:bg-red-50"
                                         >
                                             <LogOut className="h-4 w-4" />
                                             Logout
@@ -107,15 +103,8 @@ export default function MainLayout({ children, title, cartItems = 0 }: MainLayou
 
                             {/* Mobile menu button */}
                             <div className="md:hidden">
-                                <button
-                                    onClick={() => setIsMenuOpen(!isMenuOpen)}
-                                    className="p-2 text-gray-700 hover:text-primary"
-                                >
-                                    {isMenuOpen ? (
-                                        <X className="h-6 w-6" />
-                                    ) : (
-                                        <Menu className="h-6 w-6" />
-                                    )}
+                                <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="p-2 text-gray-700 hover:text-primary">
+                                    {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
                                 </button>
                             </div>
                         </div>
@@ -124,12 +113,12 @@ export default function MainLayout({ children, title, cartItems = 0 }: MainLayou
                     {/* Mobile Navigation Menu */}
                     {isMenuOpen && (
                         <div className="md:hidden">
-                            <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-white border-t border-gray-200">
+                            <div className="space-y-1 border-t border-gray-200 bg-white px-2 pt-2 pb-3 sm:px-3">
                                 {navigation.map((item) => (
                                     <Link
                                         key={item.name}
                                         href={item.href}
-                                        className="text-gray-700 hover:text-primary block px-3 py-2 text-base font-medium"
+                                        className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-primary"
                                         onClick={() => setIsMenuOpen(false)}
                                     >
                                         {item.name}
@@ -144,36 +133,31 @@ export default function MainLayout({ children, title, cartItems = 0 }: MainLayou
             {/* Page Title */}
             {title && (
                 <div className="bg-gray-50 py-8">
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                         <h1 className="text-3xl font-bold text-gray-900">{title}</h1>
                     </div>
                 </div>
             )}
 
             {/* Main Content */}
-            <main className="flex-1">
-                {children}
-            </main>
+            <main className="flex-1">{children}</main>
 
             {/* Footer */}
             <footer className="bg-gray-900 text-white">
-                <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+                    <div className="grid grid-cols-1 gap-8 md:grid-cols-4">
                         <div className="col-span-1 md:col-span-2">
-                            <h3 className="text-2xl font-bold mb-4">ArtisanLocal</h3>
-                            <p className="text-gray-300 mb-4">
+                            <h3 className="mb-4 text-2xl font-bold">ArtisanLocal</h3>
+                            <p className="mb-4 text-gray-300">
                                 Supporting local artisans and craftsmen by connecting them with customers who appreciate handmade, quality products.
                             </p>
                         </div>
                         <div>
-                            <h4 className="text-lg font-semibold mb-4">Quick Links</h4>
+                            <h4 className="mb-4 text-lg font-semibold">Quick Links</h4>
                             <ul className="space-y-2">
                                 {navigation.map((item) => (
                                     <li key={item.name}>
-                                        <Link
-                                            href={item.href}
-                                            className="text-gray-300 hover:text-white transition-colors duration-200"
-                                        >
+                                        <Link href={item.href} className="text-gray-300 transition-colors duration-200 hover:text-white">
                                             {item.name}
                                         </Link>
                                     </li>
@@ -181,15 +165,15 @@ export default function MainLayout({ children, title, cartItems = 0 }: MainLayou
                             </ul>
                         </div>
                         <div>
-                            <h4 className="text-lg font-semibold mb-4">Contact Info</h4>
-                            <div className="text-gray-300 space-y-2">
+                            <h4 className="mb-4 text-lg font-semibold">Contact Info</h4>
+                            <div className="space-y-2 text-gray-300">
                                 <p>Email: hello@artisanlocal.com</p>
                                 <p>Phone: (555) 123-4567</p>
                                 <p>Hours: Mon-Fri 9AM-6PM</p>
                             </div>
                         </div>
                     </div>
-                    <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-300">
+                    <div className="mt-8 border-t border-gray-800 pt-8 text-center text-gray-300">
                         <p>&copy; 2025 ArtisanLocal. All rights reserved.</p>
                     </div>
                 </div>

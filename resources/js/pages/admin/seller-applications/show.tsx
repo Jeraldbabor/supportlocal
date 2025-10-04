@@ -1,25 +1,14 @@
-import { Head, Link, useForm } from '@inertiajs/react';
-import { useState } from 'react';
+import InputError from '@/components/input-error';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import InputError from '@/components/input-error';
+import { Textarea } from '@/components/ui/textarea';
 import AppLayout from '@/layouts/app-layout';
-import { 
-    ArrowLeft, 
-    User, 
-    Calendar, 
-    FileText, 
-    Download, 
-    CheckCircle, 
-    XCircle, 
-    AlertCircle,
-    Mail,
-    Briefcase
-} from 'lucide-react';
+import { Head, Link, useForm } from '@inertiajs/react';
+import { AlertCircle, ArrowLeft, Briefcase, Calendar, CheckCircle, Download, FileText, Mail, User, XCircle } from 'lucide-react';
+import { useState } from 'react';
 
 interface User {
     id: number;
@@ -82,22 +71,22 @@ export default function SellerApplicationShow({ application }: SellerApplication
         switch (status) {
             case 'pending':
                 return (
-                    <Badge className="bg-yellow-50 text-yellow-700 border-yellow-200">
-                        <AlertCircle className="h-3 w-3 mr-1" />
+                    <Badge className="border-yellow-200 bg-yellow-50 text-yellow-700">
+                        <AlertCircle className="mr-1 h-3 w-3" />
                         Pending Review
                     </Badge>
                 );
             case 'approved':
                 return (
-                    <Badge className="bg-green-50 text-green-700 border-green-200">
-                        <CheckCircle className="h-3 w-3 mr-1" />
+                    <Badge className="border-green-200 bg-green-50 text-green-700">
+                        <CheckCircle className="mr-1 h-3 w-3" />
                         Approved
                     </Badge>
                 );
             case 'rejected':
                 return (
-                    <Badge className="bg-red-50 text-red-700 border-red-200">
-                        <XCircle className="h-3 w-3 mr-1" />
+                    <Badge className="border-red-200 bg-red-50 text-red-700">
+                        <XCircle className="mr-1 h-3 w-3" />
                         Rejected
                     </Badge>
                 );
@@ -108,9 +97,9 @@ export default function SellerApplicationShow({ application }: SellerApplication
 
     const getIdTypeDisplay = (type: string) => {
         const types: Record<string, string> = {
-            'national_id': 'National ID',
-            'passport': 'Passport',
-            'drivers_license': 'Driver\'s License',
+            national_id: 'National ID',
+            passport: 'Passport',
+            drivers_license: "Driver's License",
         };
         return types[type] || type;
     };
@@ -118,30 +107,28 @@ export default function SellerApplicationShow({ application }: SellerApplication
     return (
         <AppLayout>
             <Head title={`Seller Application - ${application.user.name}`} />
-            
-            <div className="p-6 max-w-6xl mx-auto space-y-6">
+
+            <div className="mx-auto max-w-6xl space-y-6 p-6">
                 {/* Header */}
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
                         <Link href="/admin/seller-applications">
                             <Button variant="outline" size="sm">
-                                <ArrowLeft className="h-4 w-4 mr-2" />
+                                <ArrowLeft className="mr-2 h-4 w-4" />
                                 Back to Applications
                             </Button>
                         </Link>
                         <div>
-                            <h1 className="text-3xl font-bold text-gray-900">
-                                Seller Application #{application.id}
-                            </h1>
-                            <p className="text-gray-600 mt-1">Review and take action on this application</p>
+                            <h1 className="text-3xl font-bold text-gray-900">Seller Application #{application.id}</h1>
+                            <p className="mt-1 text-gray-600">Review and take action on this application</p>
                         </div>
                     </div>
                     {getStatusBadge(application.status)}
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
                     {/* Main Content */}
-                    <div className="lg:col-span-2 space-y-6">
+                    <div className="space-y-6 lg:col-span-2">
                         {/* Applicant Information */}
                         <Card>
                             <CardHeader>
@@ -151,7 +138,7 @@ export default function SellerApplicationShow({ application }: SellerApplication
                                 </CardTitle>
                             </CardHeader>
                             <CardContent className="space-y-4">
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                                     <div>
                                         <Label className="text-sm font-medium text-gray-600">Full Name</Label>
                                         <p className="font-medium">{application.user.name}</p>
@@ -164,8 +151,8 @@ export default function SellerApplicationShow({ application }: SellerApplication
                                         </div>
                                     </div>
                                 </div>
-                                
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+                                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                                     <div>
                                         <Label className="text-sm font-medium text-gray-600">Application Date</Label>
                                         <div className="flex items-center gap-2">
@@ -176,7 +163,7 @@ export default function SellerApplicationShow({ application }: SellerApplication
                                                     month: 'long',
                                                     day: 'numeric',
                                                     hour: '2-digit',
-                                                    minute: '2-digit'
+                                                    minute: '2-digit',
                                                 })}
                                             </p>
                                         </div>
@@ -199,9 +186,7 @@ export default function SellerApplicationShow({ application }: SellerApplication
                             </CardHeader>
                             <CardContent>
                                 <div className="prose max-w-none">
-                                    <p className="text-gray-700 whitespace-pre-wrap leading-relaxed">
-                                        {application.business_description}
-                                    </p>
+                                    <p className="leading-relaxed whitespace-pre-wrap text-gray-700">{application.business_description}</p>
                                 </div>
                             </CardContent>
                         </Card>
@@ -216,20 +201,18 @@ export default function SellerApplicationShow({ application }: SellerApplication
                             </CardHeader>
                             <CardContent className="space-y-4">
                                 {/* ID Document */}
-                                <div className="border rounded-lg p-4">
+                                <div className="rounded-lg border p-4">
                                     <div className="flex items-center justify-between">
                                         <div>
                                             <h4 className="font-medium">Valid ID Document</h4>
-                                            <p className="text-sm text-gray-600">
-                                                Type: {getIdTypeDisplay(application.id_document_type)}
-                                            </p>
+                                            <p className="text-sm text-gray-600">Type: {getIdTypeDisplay(application.id_document_type)}</p>
                                         </div>
-                                        <Button 
-                                            variant="outline" 
+                                        <Button
+                                            variant="outline"
                                             size="sm"
                                             onClick={() => window.open(`/admin/seller-applications/${application.id}/download/id_document`)}
                                         >
-                                            <Download className="h-4 w-4 mr-2" />
+                                            <Download className="mr-2 h-4 w-4" />
                                             Download
                                         </Button>
                                     </div>
@@ -237,7 +220,7 @@ export default function SellerApplicationShow({ application }: SellerApplication
 
                                 {/* Additional Documents */}
                                 {application.additional_documents_path && application.additional_documents_path.length > 0 && (
-                                    <div className="border rounded-lg p-4">
+                                    <div className="rounded-lg border p-4">
                                         <div className="flex items-center justify-between">
                                             <div>
                                                 <h4 className="font-medium">Additional Documents</h4>
@@ -245,12 +228,14 @@ export default function SellerApplicationShow({ application }: SellerApplication
                                                     {application.additional_documents_path.length} file(s) submitted
                                                 </p>
                                             </div>
-                                            <Button 
-                                                variant="outline" 
+                                            <Button
+                                                variant="outline"
                                                 size="sm"
-                                                onClick={() => window.open(`/admin/seller-applications/${application.id}/download/additional_documents`)}
+                                                onClick={() =>
+                                                    window.open(`/admin/seller-applications/${application.id}/download/additional_documents`)
+                                                }
                                             >
-                                                <Download className="h-4 w-4 mr-2" />
+                                                <Download className="mr-2 h-4 w-4" />
                                                 Download
                                             </Button>
                                         </div>
@@ -266,14 +251,11 @@ export default function SellerApplicationShow({ application }: SellerApplication
                                     <CardTitle>Admin Notes</CardTitle>
                                 </CardHeader>
                                 <CardContent>
-                                    <div className="bg-gray-50 rounded-lg p-4">
-                                        <p className="text-gray-700 whitespace-pre-wrap">
-                                            {application.admin_notes}
-                                        </p>
+                                    <div className="rounded-lg bg-gray-50 p-4">
+                                        <p className="whitespace-pre-wrap text-gray-700">{application.admin_notes}</p>
                                         {application.reviewed_at && application.reviewer && (
-                                            <div className="mt-3 pt-3 border-t border-gray-200 text-sm text-gray-600">
-                                                Reviewed by {application.reviewer.name} on{' '}
-                                                {new Date(application.reviewed_at).toLocaleDateString()}
+                                            <div className="mt-3 border-t border-gray-200 pt-3 text-sm text-gray-600">
+                                                Reviewed by {application.reviewer.name} on {new Date(application.reviewed_at).toLocaleDateString()}
                                             </div>
                                         )}
                                     </div>
@@ -292,19 +274,12 @@ export default function SellerApplicationShow({ application }: SellerApplication
                                 <CardContent className="space-y-4">
                                     {!showApprovalForm && !showRejectionForm && (
                                         <>
-                                            <Button 
-                                                onClick={() => setShowApprovalForm(true)}
-                                                className="w-full bg-green-600 hover:bg-green-700"
-                                            >
-                                                <CheckCircle className="h-4 w-4 mr-2" />
+                                            <Button onClick={() => setShowApprovalForm(true)} className="w-full bg-green-600 hover:bg-green-700">
+                                                <CheckCircle className="mr-2 h-4 w-4" />
                                                 Approve Application
                                             </Button>
-                                            <Button 
-                                                onClick={() => setShowRejectionForm(true)}
-                                                variant="destructive"
-                                                className="w-full"
-                                            >
-                                                <XCircle className="h-4 w-4 mr-2" />
+                                            <Button onClick={() => setShowRejectionForm(true)} variant="destructive" className="w-full">
+                                                <XCircle className="mr-2 h-4 w-4" />
                                                 Reject Application
                                             </Button>
                                         </>
@@ -319,7 +294,7 @@ export default function SellerApplicationShow({ application }: SellerApplication
                                                     Approving this application will grant the user seller privileges and change their role to seller.
                                                 </AlertDescription>
                                             </Alert>
-                                            
+
                                             <div>
                                                 <Label htmlFor="approve_notes">Admin Notes (Optional)</Label>
                                                 <Textarea
@@ -331,16 +306,16 @@ export default function SellerApplicationShow({ application }: SellerApplication
                                                 />
                                                 <InputError message={approveForm.errors.admin_notes} />
                                             </div>
-                                            
+
                                             <div className="flex gap-2">
-                                                <Button 
-                                                    type="submit" 
+                                                <Button
+                                                    type="submit"
                                                     disabled={approveForm.processing}
                                                     className="flex-1 bg-green-600 hover:bg-green-700"
                                                 >
                                                     {approveForm.processing ? 'Approving...' : 'Confirm Approval'}
                                                 </Button>
-                                                <Button 
+                                                <Button
                                                     type="button"
                                                     variant="outline"
                                                     onClick={() => setShowApprovalForm(false)}
@@ -361,7 +336,7 @@ export default function SellerApplicationShow({ application }: SellerApplication
                                                     Rejecting this application will notify the user that their application was not approved.
                                                 </AlertDescription>
                                             </Alert>
-                                            
+
                                             <div>
                                                 <Label htmlFor="reject_notes">Reason for Rejection *</Label>
                                                 <Textarea
@@ -374,17 +349,12 @@ export default function SellerApplicationShow({ application }: SellerApplication
                                                 />
                                                 <InputError message={rejectForm.errors.admin_notes} />
                                             </div>
-                                            
+
                                             <div className="flex gap-2">
-                                                <Button 
-                                                    type="submit" 
-                                                    disabled={rejectForm.processing}
-                                                    variant="destructive"
-                                                    className="flex-1"
-                                                >
+                                                <Button type="submit" disabled={rejectForm.processing} variant="destructive" className="flex-1">
                                                     {rejectForm.processing ? 'Rejecting...' : 'Confirm Rejection'}
                                                 </Button>
-                                                <Button 
+                                                <Button
                                                     type="button"
                                                     variant="outline"
                                                     onClick={() => setShowRejectionForm(false)}
@@ -411,16 +381,12 @@ export default function SellerApplicationShow({ application }: SellerApplication
                                 </div>
                                 <div className="flex justify-between">
                                     <span className="text-gray-600">Submitted:</span>
-                                    <span className="font-medium">
-                                        {new Date(application.created_at).toLocaleDateString()}
-                                    </span>
+                                    <span className="font-medium">{new Date(application.created_at).toLocaleDateString()}</span>
                                 </div>
                                 {application.reviewed_at && (
                                     <div className="flex justify-between">
                                         <span className="text-gray-600">Reviewed:</span>
-                                        <span className="font-medium">
-                                            {new Date(application.reviewed_at).toLocaleDateString()}
-                                        </span>
+                                        <span className="font-medium">{new Date(application.reviewed_at).toLocaleDateString()}</span>
                                     </div>
                                 )}
                                 <div className="flex justify-between">

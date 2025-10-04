@@ -15,7 +15,7 @@ test('authenticated users can visit the dashboard', function () {
 
     // The dashboard route now redirects to role-specific dashboards
     $this->get(route('dashboard'))->assertRedirect(route('buyer.dashboard'));
-    
+
     // Test that the user can actually access their role-specific dashboard
     $this->get(route('buyer.dashboard'))->assertOk();
 });

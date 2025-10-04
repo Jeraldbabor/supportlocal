@@ -20,7 +20,7 @@ class BuyerProfileController extends Controller
     public function show(): Response
     {
         $user = Auth::user();
-        
+
         return Inertia::render('buyer/profile', [
             'user' => $user,
         ]);
@@ -32,10 +32,10 @@ class BuyerProfileController extends Controller
     public function update(Request $request): RedirectResponse
     {
         $user = Auth::user();
-        
+
         $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
+            'email' => 'required|string|email|max:255|unique:users,email,'.$user->id,
             'phone_number' => 'nullable|string|max:20',
             'address' => 'nullable|string|max:500',
             'date_of_birth' => 'nullable|date|before:today',
@@ -70,7 +70,7 @@ class BuyerProfileController extends Controller
             if ($user->profile_picture) {
                 Storage::disk('public')->delete($user->profile_picture);
             }
-            
+
             // Store new profile picture
             $path = $request->file('profile_picture')->store('profile-pictures', 'public');
             $updateData['profile_picture'] = $path;
@@ -87,7 +87,7 @@ class BuyerProfileController extends Controller
     public function deleteProfilePicture(): RedirectResponse
     {
         $user = Auth::user();
-        
+
         if ($user->profile_picture) {
             Storage::disk('public')->delete($user->profile_picture);
             $user->update(['profile_picture' => null]);
@@ -102,14 +102,14 @@ class BuyerProfileController extends Controller
     public function changePassword(Request $request): RedirectResponse
     {
         $user = Auth::user();
-        
+
         $request->validate([
             'current_password' => 'required|string',
             'password' => 'required|string|min:8|confirmed',
         ]);
 
         // Verify current password
-        if (!Hash::check($request->current_password, $user->password)) {
+        if (! Hash::check($request->current_password, $user->password)) {
             throw ValidationException::withMessages([
                 'current_password' => ['The provided password does not match your current password.'],
             ]);
@@ -129,7 +129,7 @@ class BuyerProfileController extends Controller
     public function deleteAccount(Request $request): RedirectResponse
     {
         $user = Auth::user();
-        
+
         // Validate password and confirmation phrase
         $request->validate([
             'password' => 'required|string',
@@ -139,12 +139,12 @@ class BuyerProfileController extends Controller
         ]);
 
         // Verify current password
-        if (!Hash::check($request->password, $user->password)) {
+        if (! Hash::check($request->password, $user->password)) {
             throw ValidationException::withMessages([
                 'password' => ['The provided password does not match your current password.'],
             ]);
         }
-        
+
         // Delete profile picture if exists
         if ($user->profile_picture) {
             Storage::disk('public')->delete($user->profile_picture);
