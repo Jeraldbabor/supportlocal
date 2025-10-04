@@ -140,7 +140,7 @@ class ProfileTest extends TestCase
 
         $this->seller->refresh();
         $this->assertNotNull($this->seller->profile_picture);
-        $this->assertStringContains('avatars/', $this->seller->profile_picture);
+        $this->assertStringContainsString('avatars/', $this->seller->profile_picture);
         
         Storage::disk('public')->assertExists($this->seller->profile_picture);
     }
@@ -192,7 +192,7 @@ class ProfileTest extends TestCase
         $sellerApplication->refresh();
         
         $this->assertEquals('Art & Design', $sellerApplication->business_type);
-        $this->assertStringContains('Updated business description', $sellerApplication->business_description);
+        $this->assertStringContainsString('Updated business description', $sellerApplication->business_description);
     }
 
     /** @test */
