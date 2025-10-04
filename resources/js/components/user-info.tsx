@@ -6,7 +6,7 @@ export function UserInfo({ user, showEmail = false }: { user: User; showEmail?: 
     const getInitials = useInitials();
     
     // Use avatar_url from backend accessor (includes default avatars)
-    const avatarSrc = (user as any).avatar_url || user.avatar;
+    const avatarSrc = (user as User & { avatar_url?: string }).avatar_url || user.avatar;
 
     return (
         <>

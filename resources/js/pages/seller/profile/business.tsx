@@ -7,7 +7,6 @@ import {
     AlertTriangle,
     CheckCircle,
     Calendar,
-    User,
     FileText
 } from 'lucide-react';
 import { FormEventHandler } from 'react';
@@ -17,12 +16,6 @@ const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Profile', href: '/seller/profile' },
     { title: 'Business Info', href: '/seller/profile/business' },
 ];
-
-interface SellerUser {
-    name: string;
-    email: string;
-    avatar_url?: string;
-}
 
 interface BusinessInfo {
     id: number;
@@ -40,13 +33,12 @@ interface BusinessTypes {
 }
 
 interface SellerBusinessProps extends SharedData {
-    user: SellerUser;
     business?: BusinessInfo;
     businessTypes: BusinessTypes;
 }
 
 export default function SellerBusinessProfile() {
-    const { user, business: rawBusiness, businessTypes } = usePage<SellerBusinessProps>().props;
+    const { business: rawBusiness, businessTypes } = usePage<SellerBusinessProps>().props;
 
     // Provide default values for business
     const business = rawBusiness || {

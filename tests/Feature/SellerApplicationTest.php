@@ -287,4 +287,65 @@ class SellerApplicationTest extends TestCase
         $this->assertContains('Phone Number', $incompleteUser->getMissingSellerProfileFields());
         $this->assertContains('Address', $incompleteUser->getMissingSellerProfileFields());
     }
+
+    /** @test */
+    public function buyer_can_view_seller_application_confirmation_page()
+    {
+        $buyer = User::factory()->create([
+            'role' => User::ROLE_BUYER,
+            'name' => 'John Doe',
+            'email' => 'john@example.com',
+        ]);
+
+        $this->actingAs($buyer);
+
+        $response = $this->get(route('seller.application.confirm'));
+
+        $response->assertOk();
+        $response->assertInertia(fn ($page) => 
+            $page->component('buyer/seller-application-confirmation')
+                ->has('user')
+                ->where('user.name', 'John Doe')
+                ->where('user.email', 'john@example.com')
+        );
+    }
+
+    /** @test */
+    public function buyer_with_existing_application_is_redirected_from_confirmation_to_form()
+    {
+        $buyer = User::factory()->create(['role' => User::ROLE_BUYER]);
+        
+        // Create an existing application
+        SellerApplication::factory()->create([
+            'user_id' => $buyer->id,
+            'status' => SellerApplication::STATUS_PENDING,
+        ]);
+
+        $this->actingAs($buyer);
+
+        $response = $this->get(route('seller.application.confirm'));
+
+        $response->assertRedirect(route('seller.application.create'));
+    }
+
+    /** @test */
+    public function buyer_can_access_application_form_directly_via_new_route()
+    {
+        $buyer = User::factory()->create([
+            'role' => User::ROLE_BUYER,
+            'name' => 'John Doe',
+            'email' => 'john@example.com',
+        ]);
+
+        $this->actingAs($buyer);
+
+        $response = $this->get(route('seller.application.create'));
+
+        $response->assertOk();
+        $response->assertInertia(fn ($page) => 
+            $page->component('buyer/seller-application')
+                ->has('idTypes')
+                ->where('hasExistingApplication', false)
+        );
+    }
 }

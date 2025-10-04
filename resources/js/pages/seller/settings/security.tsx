@@ -72,7 +72,6 @@ export default function SellerSecuritySettings() {
     const [showNewPassword, setShowNewPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
-    const [deletePassword, setDeletePassword] = useState('');
     const [showDeletePassword, setShowDeletePassword] = useState(false);
     const [deleteError, setDeleteError] = useState('');
 
@@ -120,7 +119,6 @@ export default function SellerSecuritySettings() {
         deletePost('/seller/settings/deactivate', {
             onSuccess: () => {
                 setShowDeleteModal(false);
-                setDeletePassword('');
                 setDeleteData('password', '');
                 setDeleteError('');
             },
@@ -139,7 +137,6 @@ export default function SellerSecuritySettings() {
 
     const handleCancelDelete = () => {
         setShowDeleteModal(false);
-        setDeletePassword('');
         setDeleteData('password', '');
         setDeleteError(''); // Clear errors when canceling
     };

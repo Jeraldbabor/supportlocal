@@ -5,7 +5,7 @@ import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, Sid
 import { dashboard } from '@/routes';
 import { type NavItem, type SharedData } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
-import { BarChart3, BookOpen, Folder, LayoutGrid, Package, Settings, ShoppingBag, Users, User } from 'lucide-react';
+import { BarChart3, BookOpen, Folder, LayoutGrid, Package, Settings, ShoppingBag, Users } from 'lucide-react';
 import AppLogo from './app-logo';
 
 const footerNavItems: NavItem[] = [

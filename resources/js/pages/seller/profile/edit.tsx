@@ -11,8 +11,7 @@ import {
     Save,
     Upload,
     X,
-    AlertTriangle,
-    CheckCircle
+    AlertTriangle
 } from 'lucide-react';
 import { FormEventHandler, useRef, useState } from 'react';
 

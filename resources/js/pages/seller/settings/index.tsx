@@ -12,7 +12,6 @@ import {
     Key,
     CheckCircle,
     AlertTriangle,
-    Edit,
     User,
     Clock
 } from 'lucide-react';
@@ -57,7 +56,7 @@ interface SellerSettingsProps extends SharedData {
 }
 
 export default function SellerSettings() {
-    const { user, settingsSummary = {}, recentActivity = [] } = usePage<SellerSettingsProps>().props;
+    const { settingsSummary = {}, recentActivity = [] } = usePage<SellerSettingsProps>().props;
 
     // Provide default values for settingsSummary
     const settings = {
