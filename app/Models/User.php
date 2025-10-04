@@ -38,6 +38,15 @@ class User extends Authenticatable
         'email',
         'password',
         'role',
+        'phone_number',
+        'address',
+        'date_of_birth',
+        'profile_picture',
+        'delivery_address',
+        'delivery_phone',
+        'delivery_notes',
+        'gcash_number',
+        'gcash_name',
     ];
 
     /**

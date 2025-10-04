@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link, usePage, router } from '@inertiajs/react';
-import { ShoppingCart, Menu, X, LogOut, User, Bell, Heart, Package, Settings, ChevronDown, House, Briefcase  } from 'lucide-react';
+import { ShoppingCart, Menu, X, LogOut, User, Bell, Heart, Package, Settings, ChevronDown, House, Briefcase } from 'lucide-react';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { type SharedData } from '@/types';
 
 interface BuyerLayoutProps {
@@ -21,7 +22,7 @@ export default function BuyerLayout({ children, title, cartItems = 0 }: BuyerLay
         router.post('/logout');
     };
 
-    // Close user menu when clicking outside
+
     useEffect(() => {
         function handleClickOutside(event: MouseEvent) {
             if (userMenuRef.current && !userMenuRef.current.contains(event.target as Node)) {
@@ -51,8 +52,8 @@ export default function BuyerLayout({ children, title, cartItems = 0 }: BuyerLay
                     <div className="flex justify-between items-center h-16">
                         {/* Logo */}
                         <div className="flex-shrink-0">
-                            <Link 
-                                href="/buyer/dashboard" 
+                            <Link
+                                href="/buyer/dashboard"
                                 className="text-2xl font-bold text-primary hover:text-primary/80 transition-all duration-200 px-2 py-1 rounded-lg hover:bg-primary/5 active:bg-primary/10 active:scale-95"
                             >
                                 Support Local
@@ -108,15 +109,20 @@ export default function BuyerLayout({ children, title, cartItems = 0 }: BuyerLay
                             <div className="relative flex items-center space-x-3 border-l border-gray-200 pl-4" ref={userMenuRef}>
                                 <button
                                     onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                                    className={`flex items-center space-x-2 p-2 rounded-lg transition-all duration-200 ${
-                                        isUserMenuOpen 
-                                            ? 'bg-primary/10 ring-2 ring-primary/20 shadow-sm' 
+                                    className={`flex items-center space-x-2 p-2 rounded-lg transition-all duration-200 ${isUserMenuOpen
+                                            ? 'bg-primary/10 ring-2 ring-primary/20 shadow-sm'
                                             : 'hover:bg-gray-50 hover:shadow-sm active:bg-gray-100 active:scale-95'
-                                    }`}
+                                        }`}
                                 >
-                                    <div className="h-8 w-8 bg-primary/10 rounded-full flex items-center justify-center">
-                                        <User className="h-4 w-4 text-primary" />
-                                    </div>
+                                    <Avatar className="h-8 w-8">
+                                        <AvatarImage
+                                            src={user?.profile_picture ? `/storage/${user.profile_picture}` : ''}
+                                            alt={user?.name || 'User'}
+                                        />
+                                        <AvatarFallback className="bg-primary/10 text-primary text-sm font-medium">
+                                            {user?.name ? user.name.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2) : 'U'}
+                                        </AvatarFallback>
+                                    </Avatar>
                                     <div className="hidden sm:block text-left">
                                         <p className="text-sm font-medium text-gray-900">{user?.name}</p>
                                         <p className="text-xs text-gray-500">Buyer</p>
@@ -144,17 +150,10 @@ export default function BuyerLayout({ children, title, cartItems = 0 }: BuyerLay
                                                 onClick={() => setIsUserMenuOpen(false)}
                                             >
                                                 <User className="h-4 w-4 mr-3 text-gray-400 group-hover:text-primary transition-colors duration-200" />
-                                                View Profile
+                                                Profile & Settings
                                             </Link>
-                                            
-                                            <Link
-                                                href="/buyer/settings"
-                                                className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-primary/5 hover:text-primary transition-all duration-200 rounded-md mx-1 active:bg-primary/10"
-                                                onClick={() => setIsUserMenuOpen(false)}
-                                            >
-                                                <Settings className="h-4 w-4 mr-3 text-gray-400 group-hover:text-primary transition-colors duration-200" />
-                                                Account Settings
-                                            </Link>
+
+                                            <div className="border-t border-gray-100 my-1"></div>
 
                                             <Link
                                                 href="/seller/apply"
