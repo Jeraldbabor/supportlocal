@@ -63,13 +63,37 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 
     Route::middleware(['role:administrator'])->group(function () {
-        Route::get('/admin/users', function () {
-            return Inertia::render('admin/users');
-        })->name('admin.users');
+        // Test route for debugging
+        Route::get('/admin/users-test', function () {
+            return response()->json([
+                'message' => 'Admin users route is accessible',
+                'user_count' => \App\Models\User::count(),
+                'auth_user' => auth()->user()->name,
+                'auth_role' => auth()->user()->role,
+            ]);
+        })->name('admin.users.test');
+        
+        // User Management Routes
+        Route::resource('admin/users', App\Http\Controllers\Admin\UserController::class, [
+            'names' => [
+                'index' => 'admin.users.index',
+                'create' => 'admin.users.create',
+                'store' => 'admin.users.store',
+                'show' => 'admin.users.show',
+                'edit' => 'admin.users.edit',
+                'update' => 'admin.users.update',
+                'destroy' => 'admin.users.destroy',
+            ]
+        ]);
+        
+        // Additional user management routes
+        Route::post('/admin/users/{user}/toggle-status', [App\Http\Controllers\Admin\UserController::class, 'toggleStatus'])->name('admin.users.toggle-status');
+        Route::post('/admin/users/{user}/reset-password', [App\Http\Controllers\Admin\UserController::class, 'resetPassword'])->name('admin.users.reset-password');
+        Route::post('/admin/users/{user}/verify-email', [App\Http\Controllers\Admin\UserController::class, 'verifyEmail'])->name('admin.users.verify-email');
+        Route::post('/admin/users/{user}/send-verification', [App\Http\Controllers\Admin\UserController::class, 'sendVerification'])->name('admin.users.send-verification');
+        Route::post('/admin/users/{user}/upload-avatar', [App\Http\Controllers\Admin\UserController::class, 'uploadAvatar'])->name('admin.users.upload-avatar');
 
-        Route::get('/admin/dashboard', function () {
-            return Inertia::render('admin/dashboard');
-        })->name('admin.dashboard');
+        Route::get('/admin/dashboard', [App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('admin.dashboard');
 
         Route::get('/admin/reports', function () {
             return Inertia::render('admin/reports');
@@ -130,5 +154,40 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 });
 
+// Profile Management Routes (available to all authenticated users)
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [App\Http\Controllers\ProfileController::class, 'edit'])->name('user.profile.edit');
+    Route::put('/profile', [App\Http\Controllers\ProfileController::class, 'update'])->name('user.profile.update');
+    Route::post('/profile/password', [App\Http\Controllers\ProfileController::class, 'updatePassword'])->name('user.profile.password');
+    Route::post('/profile/avatar', [App\Http\Controllers\ProfileController::class, 'updateAvatar'])->name('user.profile.avatar');
+    Route::delete('/profile/avatar', [App\Http\Controllers\ProfileController::class, 'deleteAvatar'])->name('user.profile.avatar.delete');
+    Route::post('/profile/send-verification', [App\Http\Controllers\ProfileController::class, 'sendVerification'])->name('user.profile.send-verification');
+    Route::delete('/profile', [App\Http\Controllers\ProfileController::class, 'destroy'])->name('user.profile.destroy');
+});
+
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';
+
+// API placeholder image route
+Route::get('/api/placeholder/{width}/{height}', function ($width, $height) {
+    // Create a simple placeholder image
+    $image = imagecreate($width, $height);
+    $bgColor = imagecolorallocate($image, 240, 240, 240); // Light gray background
+    $textColor = imagecolorallocate($image, 100, 100, 100); // Dark gray text
+    
+    // Add text to show dimensions
+    $text = "{$width}x{$height}";
+    $fontSize = min($width, $height) / 10;
+    $x = ($width - strlen($text) * $fontSize * 0.6) / 2;
+    $y = ($height + $fontSize) / 2;
+    
+    imagestring($image, 5, $x, $y - 10, $text, $textColor);
+    
+    // Output the image
+    header('Content-Type: image/png');
+    header('Cache-Control: public, max-age=31536000'); // Cache for 1 year
+    imagepng($image);
+    imagedestroy($image);
+    
+    return response('', 200);
+})->where(['width' => '[0-9]+', 'height' => '[0-9]+']);
