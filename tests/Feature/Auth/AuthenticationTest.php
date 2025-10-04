@@ -11,7 +11,8 @@ test('login screen can be rendered', function () {
 });
 
 test('users can authenticate using the login screen', function () {
-    $user = User::factory()->create();
+    // Create a user with a specific role to ensure predictable behavior
+    $user = User::factory()->buyer()->create();
 
     $response = $this->post(route('login.store'), [
         'email' => $user->email,
@@ -19,7 +20,7 @@ test('users can authenticate using the login screen', function () {
     ]);
 
     $this->assertAuthenticated();
-    $response->assertRedirect(route('dashboard', absolute: false));
+    $response->assertRedirect(route('buyer.dashboard', absolute: false));
 });
 
 test('users can not authenticate with invalid password', function () {

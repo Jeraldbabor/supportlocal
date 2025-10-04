@@ -9,7 +9,13 @@ test('guests are redirected to the login page', function () {
 });
 
 test('authenticated users can visit the dashboard', function () {
-    $this->actingAs($user = User::factory()->create());
+    // Create a buyer user to ensure predictable behavior
+    $user = User::factory()->buyer()->create();
+    $this->actingAs($user);
 
-    $this->get(route('dashboard'))->assertOk();
+    // The dashboard route now redirects to role-specific dashboards
+    $this->get(route('dashboard'))->assertRedirect(route('buyer.dashboard'));
+    
+    // Test that the user can actually access their role-specific dashboard
+    $this->get(route('buyer.dashboard'))->assertOk();
 });
