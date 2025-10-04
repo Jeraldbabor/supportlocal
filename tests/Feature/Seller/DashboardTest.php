@@ -175,6 +175,12 @@ class DashboardTest extends TestCase
             $page->has('recommendations')
                  ->has('recommendations.0', fn ($recommendation) => 
                      $recommendation->where('priority', 'high')
+                         ->has('type')
+                         ->has('title')
+                         ->has('description')
+                         ->has('action')
+                         ->has('url')
+                         ->has('icon')
                  )
         );
     }
@@ -197,9 +203,8 @@ class DashboardTest extends TestCase
         $response = $this->get(route('seller.dashboard'));
 
         $response->assertInertia(fn ($page) => 
-            $page->has('recommendations', fn ($recommendations) => 
-                $recommendations->count() <= 5
-            )
+            $page->has('recommendations')
+                 ->where('recommendations', fn ($recommendations) => count($recommendations) <= 5)
         );
     }
 
@@ -213,6 +218,8 @@ class DashboardTest extends TestCase
             'phone_number' => '1234567890',
             'address' => '123 No App St',
             'email_verified_at' => now(),
+            'date_of_birth' => '1990-01-01',
+            'profile_picture' => 'path/to/picture.jpg',
         ]);
 
         // No seller application created
@@ -224,9 +231,8 @@ class DashboardTest extends TestCase
         $response->assertInertia(fn ($page) => 
             $page->where('settingsSummary.business_setup', false)
                  ->where('businessInfo', null)
-                 ->has('recommendations', fn ($recommendations) => 
-                     $recommendations->contains('type', 'business')
-                 )
+                 ->has('recommendations')
+                 ->where('recommendations.0.type', 'business')
         );
     }
 }
