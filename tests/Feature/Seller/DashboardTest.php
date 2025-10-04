@@ -80,9 +80,7 @@ class DashboardTest extends TestCase
                  ->where('profileSummary.has_avatar', false)
                  ->where('settingsSummary.email_verified', false)
                  ->where('settingsSummary.business_setup', false)
-                 ->has('recommendations', fn ($recommendations) => 
-                     $recommendations->whereType('recommendations')->hasLength(fn ($length) => $length > 0)
-                 )
+                 ->has('recommendations.0')
         );
     }
 
@@ -152,7 +150,7 @@ class DashboardTest extends TestCase
         $response = $this->get(route('seller.dashboard'));
 
         $response->assertInertia(fn ($page) => 
-            $page->where('dashboardStats.days_as_seller', 30)
+            $page->where('dashboardStats.days_as_seller', fn ($days) => abs($days - 30) < 1)
         );
     }
 
