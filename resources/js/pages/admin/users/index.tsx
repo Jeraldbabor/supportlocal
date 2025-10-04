@@ -53,10 +53,16 @@ interface Stats {
     buyers: number;
 }
 
+interface PaginationLink {
+    url?: string;
+    label: string;
+    active: boolean;
+}
+
 interface Props {
     users: {
         data: UserData[];
-        links: any[];
+        links: PaginationLink[];
         total: number;
         per_page: number;
         current_page: number;
@@ -68,7 +74,6 @@ interface Props {
     };
     roles: Record<string, string>;
     stats: Stats;
-    debug?: any;
 }
 
 const breadcrumbs: BreadcrumbItem[] = [

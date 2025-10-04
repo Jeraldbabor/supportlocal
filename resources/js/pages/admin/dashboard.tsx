@@ -2,7 +2,6 @@ import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem, type SharedData } from '@/types';
 import { Head, Link, usePage } from '@inertiajs/react';
 import { 
-    AlertTriangle, 
     BarChart3, 
     Database, 
     FileText, 
@@ -11,7 +10,6 @@ import {
     Users, 
     UserPlus,
     CheckCircle,
-    XCircle,
     Clock,
     TrendingUp,
     TrendingDown,

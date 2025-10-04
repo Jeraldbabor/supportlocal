@@ -22,6 +22,19 @@ import {
     Truck,
 } from 'lucide-react';
 
+interface SellerApplication {
+    id: number;
+    status: string;
+    business_name: string;
+    business_type: string;
+    business_address: string;
+    business_phone: string;
+    business_email: string;
+    business_description?: string;
+    created_at: string;
+    updated_at: string;
+}
+
 interface UserData extends User {
     role_display: string;
     avatar_url: string;
@@ -33,7 +46,7 @@ interface UserData extends User {
     delivery_notes?: string;
     gcash_number?: string;
     gcash_name?: string;
-    seller_application?: any;
+    seller_application?: SellerApplication;
 }
 
 interface Props {

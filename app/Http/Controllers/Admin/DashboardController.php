@@ -157,14 +157,16 @@ class DashboardController extends Controller
         // Recent seller applications
         $recentApplications = SellerApplication::with('user')->latest()->limit(2)->get();
         foreach ($recentApplications as $application) {
-            $activities[] = [
-                'type' => 'seller_application',
-                'title' => 'New seller application',
-                'description' => "{$application->user->name} submitted a seller application",
-                'time' => $application->created_at,
-                'icon' => 'file-text',
-                'color' => 'orange'
-            ];
+            if ($application->user) {
+                $activities[] = [
+                    'type' => 'seller_application',
+                    'title' => 'New seller application',
+                    'description' => "{$application->user->name} submitted a seller application", // @phpstan-ignore-line
+                    'time' => $application->created_at,
+                    'icon' => 'file-text',
+                    'color' => 'orange'
+                ];
+            }
         }
 
         // Sort by time (most recent first)

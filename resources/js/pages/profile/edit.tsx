@@ -10,7 +10,6 @@ import {
     Shield, 
     Camera, 
     Mail, 
-    Trash2,
     Upload,
     X,
 } from 'lucide-react';
@@ -61,7 +60,7 @@ export default function EditProfile() {
         password_confirmation: '',
     });
 
-    const { data: avatarData, setData: setAvatarData, post: postAvatar, processing: avatarProcessing } = useForm({
+    const { setData: setAvatarData, post: postAvatar, processing: avatarProcessing } = useForm({
         avatar: null as File | null,
     });
     const { post: deleteAvatar, processing: deleteAvatarProcessing } = useForm();
