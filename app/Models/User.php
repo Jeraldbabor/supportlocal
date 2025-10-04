@@ -49,6 +49,9 @@ class User extends Authenticatable
         'delivery_notes',
         'gcash_number',
         'gcash_name',
+        'is_active',
+        'email_verified_at',
+        'last_login_at',
     ];
 
     /**
@@ -71,6 +74,9 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'date_of_birth' => 'date',
+            'last_login_at' => 'datetime',
+            'is_active' => 'boolean',
         ];
     }
 
@@ -120,5 +126,93 @@ class User extends Authenticatable
     public function sellerApplication()
     {
         return $this->hasOne(SellerApplication::class);
+    }
+
+    /**
+     * Check if user is active
+     */
+    public function isActive(): bool
+    {
+        return $this->is_active ?? true;
+    }
+
+    /**
+     * Activate the user
+     */
+    public function activate(): bool
+    {
+        return $this->update(['is_active' => true]);
+    }
+
+    /**
+     * Deactivate the user
+     */
+    public function deactivate(): bool
+    {
+        return $this->update(['is_active' => false]);
+    }
+
+    /**
+     * Get user's full name with role
+     */
+    public function getDisplayNameAttribute(): string
+    {
+        return $this->name . ' (' . $this->getRoleDisplayName() . ')';
+    }
+
+    /**
+     * Get user avatar URL
+     */
+    public function getAvatarUrlAttribute(): string
+    {
+        if ($this->profile_picture) {
+            return asset('storage/' . $this->profile_picture);
+        }
+        
+        // Default avatar using initials
+        return 'https://ui-avatars.com/api/?name=' . urlencode($this->name) . '&color=7F9CF5&background=EBF4FF';
+    }
+
+    /**
+     * Update last login timestamp
+     */
+    public function updateLastLogin(): bool
+    {
+        return $this->update(['last_login_at' => now()]);
+    }
+
+    /**
+     * Scope to filter by role
+     */
+    public function scopeByRole($query, string $role)
+    {
+        return $query->where('role', $role);
+    }
+
+    /**
+     * Scope to filter active users
+     */
+    public function scopeActive($query)
+    {
+        return $query->where('is_active', true);
+    }
+
+    /**
+     * Scope to filter inactive users
+     */
+    public function scopeInactive($query)
+    {
+        return $query->where('is_active', false);
+    }
+
+    /**
+     * Scope to search users by name or email
+     */
+    public function scopeSearch($query, string $search)
+    {
+        return $query->where(function ($q) use ($search) {
+            $q->where('name', 'like', "%{$search}%")
+              ->orWhere('email', 'like', "%{$search}%");
+        });
     }
 }
