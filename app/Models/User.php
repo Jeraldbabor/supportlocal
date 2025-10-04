@@ -65,6 +65,15 @@ class User extends Authenticatable
     ];
 
     /**
+     * The accessors to append to the model's array form.
+     *
+     * @var array<string>
+     */
+    protected $appends = [
+        'avatar_url',
+    ];
+
+    /**
      * Get the attributes that should be cast.
      *
      * @return array<string, string>
@@ -214,5 +223,57 @@ class User extends Authenticatable
             $q->where('name', 'like', "%{$search}%")
               ->orWhere('email', 'like', "%{$search}%");
         });
+    }
+
+    /**
+     * Check if the user has a complete profile for seller transition
+     */
+    public function hasCompleteProfileForSeller(): bool
+    {
+        return !empty($this->name) && 
+               !empty($this->email) &&
+               !empty($this->phone_number);
+    }
+
+    /**
+     * Get profile completeness percentage
+     */
+    public function getProfileCompletenessAttribute(): int
+    {
+        $fields = [
+            'name', 'email', 'phone_number', 'address', 
+            'date_of_birth', 'profile_picture'
+        ];
+        
+        $completed = 0;
+        foreach ($fields as $field) {
+            if (!empty($this->$field)) {
+                $completed++;
+            }
+        }
+        
+        return round(($completed / count($fields)) * 100);
+    }
+
+    /**
+     * Get missing profile fields for seller account
+     */
+    public function getMissingSellerProfileFields(): array
+    {
+        $requiredFields = [
+            'name' => 'Full Name',
+            'email' => 'Email Address', 
+            'phone_number' => 'Phone Number',
+            'address' => 'Address'
+        ];
+        
+        $missing = [];
+        foreach ($requiredFields as $field => $label) {
+            if (empty($this->$field)) {
+                $missing[] = $label;
+            }
+        }
+        
+        return $missing;
     }
 }

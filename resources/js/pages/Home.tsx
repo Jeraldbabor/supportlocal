@@ -62,7 +62,7 @@ export default function Home({ featuredProducts = [] }: HomeProps) {
                     <div className="text-center">
                         <h1 className="mb-6 text-4xl font-bold text-gray-900 md:text-6xl">
                             Discover Local
-                            <span className="block text-primary">Artisan Crafts</span>
+                            <span className="block text-primary">Artisan Crafts in Hinoba-an</span>
                         </h1>
                         <p className="mx-auto mb-8 max-w-3xl text-xl text-gray-600">
                             Support local craftsmen and women by purchasing unique, handmade items created with passion and skill in your community.

@@ -49,9 +49,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
             return Inertia::render('seller/products');
         })->name('seller.products');
 
-        Route::get('/seller/dashboard', function () {
-            return Inertia::render('seller/dashboard');
-        })->name('seller.dashboard');
+        Route::get('/seller/dashboard', [App\Http\Controllers\Seller\DashboardController::class, 'index'])->name('seller.dashboard');
 
         Route::get('/seller/orders', function () {
             return Inertia::render('seller/orders');
@@ -60,6 +58,26 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/seller/analytics', function () {
             return Inertia::render('seller/analytics');
         })->name('seller.analytics');
+
+        // Seller Profile Routes
+        Route::get('/seller/profile', [App\Http\Controllers\Seller\ProfileController::class, 'show'])->name('seller.profile.show');
+        Route::get('/seller/profile/edit', [App\Http\Controllers\Seller\ProfileController::class, 'edit'])->name('seller.profile.edit');
+        Route::put('/seller/profile', [App\Http\Controllers\Seller\ProfileController::class, 'update'])->name('seller.profile.update');
+        Route::post('/seller/profile/avatar', [App\Http\Controllers\Seller\ProfileController::class, 'updateAvatar'])->name('seller.profile.avatar.update');
+        Route::delete('/seller/profile/avatar', [App\Http\Controllers\Seller\ProfileController::class, 'deleteAvatar'])->name('seller.profile.avatar.delete');
+        Route::get('/seller/profile/business', [App\Http\Controllers\Seller\ProfileController::class, 'business'])->name('seller.profile.business');
+        Route::put('/seller/profile/business', [App\Http\Controllers\Seller\ProfileController::class, 'updateBusiness'])->name('seller.profile.business.update');
+
+        // Seller Settings Routes
+        Route::get('/seller/settings', [App\Http\Controllers\Seller\SettingsController::class, 'index'])->name('seller.settings.index');
+        Route::get('/seller/settings/security', [App\Http\Controllers\Seller\SettingsController::class, 'security'])->name('seller.settings.security');
+        Route::put('/seller/settings/password', [App\Http\Controllers\Seller\SettingsController::class, 'updatePassword'])->name('seller.settings.password.update');
+        Route::get('/seller/settings/notifications', [App\Http\Controllers\Seller\SettingsController::class, 'notifications'])->name('seller.settings.notifications');
+        Route::get('/seller/settings/business', [App\Http\Controllers\Seller\SettingsController::class, 'business'])->name('seller.settings.business');
+        Route::get('/seller/settings/account', [App\Http\Controllers\Seller\SettingsController::class, 'account'])->name('seller.settings.account');
+        Route::post('/seller/settings/deactivate', [App\Http\Controllers\Seller\SettingsController::class, 'deactivate'])->name('seller.settings.deactivate');
+        Route::get('/seller/settings/analytics', [App\Http\Controllers\Seller\SettingsController::class, 'analytics'])->name('seller.settings.analytics');
+        Route::post('/seller/settings/email-verification', [App\Http\Controllers\Seller\SettingsController::class, 'sendEmailVerification'])->name('seller.settings.email.verify');
     });
 
     Route::middleware(['role:administrator'])->group(function () {
@@ -142,7 +160,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/buyer/profile/delete-account', [App\Http\Controllers\BuyerProfileController::class, 'deleteAccount'])->name('buyer.profile.delete-account');
 
         // Seller application routes for buyers
-        Route::get('/seller/apply', [App\Http\Controllers\SellerApplicationController::class, 'create'])->name('seller.application.create');
+        Route::get('/seller/apply', [App\Http\Controllers\SellerApplicationController::class, 'showPreApplicationMessage'])->name('seller.application.confirm');
+        Route::get('/seller/apply/form', [App\Http\Controllers\SellerApplicationController::class, 'create'])->name('seller.application.create');
         Route::post('/seller/apply', [App\Http\Controllers\SellerApplicationController::class, 'store'])->name('seller.application.store');
     });
 
