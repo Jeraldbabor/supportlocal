@@ -134,7 +134,7 @@ class UserController extends Controller
                 'gcash_name' => $user->gcash_name,
                 'created_at' => $user->created_at,
                 'updated_at' => $user->updated_at,
-                'seller_application' => $user->sellerApplication, // @phpstan-ignore-line
+                'seller_application' => $user->sellerApplication,
             ],
         ]);
     }
