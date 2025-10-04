@@ -164,17 +164,23 @@ class SellerApplicationController extends Controller
             abort(403);
         }
 
+        // Load the user relationship to avoid PHPStan issues
+        $application->load('user');
+        
+        /** @var \App\Models\User $user */
+        $user = $application->user;
+
         $path = null;
         $filename = null;
 
         if ($type === 'id_document') {
             $path = $application->id_document_path;
-            $filename = 'id_document_' . $application->user->name . '_' . $application->id;
+            $filename = 'id_document_' . $user->name . '_' . $application->id;
         } elseif ($type === 'additional_documents' && is_array($application->additional_documents_path)) {
             // For simplicity, we'll download the first additional document
             // In a real app, you might want to specify which document to download
             $path = $application->additional_documents_path[0] ?? null;
-            $filename = 'additional_document_' . $application->user->name . '_' . $application->id;
+            $filename = 'additional_document_' . $user->name . '_' . $application->id;
         }
 
         if (!$path || !Storage::disk('private')->exists($path)) {

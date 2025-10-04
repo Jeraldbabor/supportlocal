@@ -53,12 +53,16 @@ class AuthenticatedSessionController extends Controller
      */
     private function getRoleDashboardUrl(User $user): string
     {
-        return match ($user->role) {
-            User::ROLE_SELLER => route('seller.dashboard', absolute: false),
-            User::ROLE_ADMINISTRATOR => route('admin.dashboard', absolute: false),
-            User::ROLE_BUYER => route('buyer.dashboard', absolute: false),
-            default => route('dashboard', absolute: false),
-        };
+        switch ($user->role) {
+            case User::ROLE_SELLER:
+                return route('seller.dashboard', absolute: false);
+            case User::ROLE_ADMINISTRATOR:
+                return route('admin.dashboard', absolute: false);
+            case User::ROLE_BUYER:
+                return route('buyer.dashboard', absolute: false);
+            default:
+                return route('dashboard', absolute: false);
+        }
     }
 
     /**
