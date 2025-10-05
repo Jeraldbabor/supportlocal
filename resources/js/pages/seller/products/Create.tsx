@@ -1,22 +1,10 @@
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem, type SharedData } from '@/types';
-import { Head, Link, useForm, router } from '@inertiajs/react';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Head, Link, router, useForm } from '@inertiajs/react';
+import { ArrowLeft, CheckCircle, DollarSign, Info, Package, Save, Tag, Truck, Upload, X } from 'lucide-react';
+import { useRef, useState } from 'react';
 import Swal from 'sweetalert2';
-import { 
-    ArrowLeft, 
-    Save, 
-    Eye, 
-    Upload,
-    X,
-    Package,
-    Info,
-    DollarSign,
-    Truck,
-    Tag,
-    CheckCircle
-} from 'lucide-react';
-import { useState, useRef } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -47,7 +35,7 @@ interface CreateProductProps extends SharedData {
     stockStatuses: Record<string, string>;
 }
 
-export default function CreateProduct({ categories, statuses, conditions }: CreateProductProps) {
+export default function CreateProduct({ categories, conditions }: CreateProductProps) {
     const [selectedImages, setSelectedImages] = useState<File[]>([]);
     const [imagePreviewUrls, setImagePreviewUrls] = useState<string[]>([]);
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -95,20 +83,20 @@ export default function CreateProduct({ categories, statuses, conditions }: Crea
         const newImages = Array.from(files);
         const newPreviews: string[] = [];
 
-        newImages.forEach(file => {
+        newImages.forEach((file) => {
             const reader = new FileReader();
             reader.onload = (e) => {
                 if (e.target?.result) {
                     newPreviews.push(e.target.result as string);
                     if (newPreviews.length === newImages.length) {
-                        setImagePreviewUrls(prev => [...prev, ...newPreviews]);
+                        setImagePreviewUrls((prev) => [...prev, ...newPreviews]);
                     }
                 }
             };
             reader.readAsDataURL(file);
         });
 
-        setSelectedImages(prev => [...prev, ...newImages]);
+        setSelectedImages((prev) => [...prev, ...newImages]);
         setData('images', [...selectedImages, ...newImages]);
     };
 
@@ -127,14 +115,17 @@ export default function CreateProduct({ categories, statuses, conditions }: Crea
     };
 
     const removeTag = (index: number) => {
-        setData('tags', data.tags.filter((_, i) => i !== index));
+        setData(
+            'tags',
+            data.tags.filter((_, i) => i !== index),
+        );
     };
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         setShowError(false);
         setShowSuccess(false);
-        
+
         post('/seller/products', {
             onSuccess: () => {
                 Swal.fire({
@@ -142,7 +133,7 @@ export default function CreateProduct({ categories, statuses, conditions }: Crea
                     text: 'Product created successfully!',
                     icon: 'success',
                     confirmButtonColor: '#16a34a',
-                    confirmButtonText: 'View Products'
+                    confirmButtonText: 'View Products',
                 }).then((result) => {
                     if (result.isConfirmed) {
                         router.visit('/seller/products');
@@ -152,16 +143,15 @@ export default function CreateProduct({ categories, statuses, conditions }: Crea
             onError: (errors) => {
                 console.error('Product creation failed:', errors);
                 console.log('Detailed errors:', JSON.stringify(errors, null, 2));
-                
+
                 // Extract meaningful error message
                 const errorMessages = Object.values(errors).flat();
-                const detailedMessage = errorMessages.length > 0 
-                    ? errorMessages.join(', ') 
-                    : 'Failed to create product. Please check your input and try again.';
-                
+                const detailedMessage =
+                    errorMessages.length > 0 ? errorMessages.join(', ') : 'Failed to create product. Please check your input and try again.';
+
                 setErrorMessage(detailedMessage);
                 setShowError(true);
-            }
+            },
         });
     };
 
@@ -176,7 +166,7 @@ export default function CreateProduct({ categories, statuses, conditions }: Crea
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Create Product - Seller Dashboard" />
-            
+
             <div className="flex h-full flex-1 flex-col gap-6 overflow-x-auto rounded-xl p-4">
                 {/* Header */}
                 <div className="flex items-center justify-between">
@@ -205,7 +195,7 @@ export default function CreateProduct({ categories, statuses, conditions }: Crea
                             onClick={() => setData('status', 'active')}
                             className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
                         >
-                            <Save className="mr-2 h-4 w-4 inline" />
+                            <Save className="mr-2 inline h-4 w-4" />
                             Save & Publish
                         </button>
                     </div>
@@ -215,9 +205,7 @@ export default function CreateProduct({ categories, statuses, conditions }: Crea
                 {showSuccess && (
                     <Alert className="mb-6 border-green-500 bg-green-50 text-green-800 dark:bg-green-900/50 dark:text-green-200">
                         <CheckCircle className="h-4 w-4" />
-                        <AlertDescription>
-                            Product created successfully! Redirecting to products list...
-                        </AlertDescription>
+                        <AlertDescription>Product created successfully! Redirecting to products list...</AlertDescription>
                     </Alert>
                 )}
 
@@ -225,9 +213,7 @@ export default function CreateProduct({ categories, statuses, conditions }: Crea
                 {showError && (
                     <Alert className="mb-6 border-red-500 bg-red-50 text-red-800 dark:bg-red-900/50 dark:text-red-200">
                         <X className="h-4 w-4" />
-                        <AlertDescription>
-                            {errorMessage}
-                        </AlertDescription>
+                        <AlertDescription>{errorMessage}</AlertDescription>
                     </Alert>
                 )}
 
@@ -243,7 +229,7 @@ export default function CreateProduct({ categories, statuses, conditions }: Crea
                                             key={tab.id}
                                             type="button"
                                             onClick={() => setActiveTab(tab.id)}
-                                            className={`w-full flex items-center gap-3 rounded-lg px-3 py-2 text-left text-sm font-medium transition-colors ${
+                                            className={`flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-sm font-medium transition-colors ${
                                                 activeTab === tab.id
                                                     ? 'bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300'
                                                     : 'text-gray-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-800'
@@ -259,36 +245,32 @@ export default function CreateProduct({ categories, statuses, conditions }: Crea
                     </div>
 
                     {/* Main Content */}
-                    <div className="lg:col-span-3 space-y-6">
+                    <div className="space-y-6 lg:col-span-3">
                         {/* Basic Info Tab */}
                         {activeTab === 'basic' && (
                             <div className="rounded-lg border bg-white p-6 dark:bg-gray-900">
                                 <h2 className="mb-4 text-xl font-semibold text-gray-900 dark:text-gray-100">Basic Information</h2>
-                                
+
                                 <div className="space-y-4">
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                            Product Name *
-                                        </label>
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Product Name *</label>
                                         <input
                                             type="text"
                                             value={data.name}
                                             onChange={(e) => setData('name', e.target.value)}
-                                            className="mt-1 block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800"
+                                            className="mt-1 block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-800"
                                             placeholder="Enter product name"
                                         />
                                         {errors.name && <p className="mt-1 text-sm text-red-600">{errors.name}</p>}
                                     </div>
 
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                            Short Description
-                                        </label>
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Short Description</label>
                                         <input
                                             type="text"
                                             value={data.short_description}
                                             onChange={(e) => setData('short_description', e.target.value)}
-                                            className="mt-1 block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800"
+                                            className="mt-1 block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-800"
                                             placeholder="Brief description for listings"
                                             maxLength={500}
                                         />
@@ -296,14 +278,12 @@ export default function CreateProduct({ categories, statuses, conditions }: Crea
                                     </div>
 
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                            Description *
-                                        </label>
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Description *</label>
                                         <textarea
                                             value={data.description}
                                             onChange={(e) => setData('description', e.target.value)}
                                             rows={6}
-                                            className="mt-1 block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800"
+                                            className="mt-1 block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-800"
                                             placeholder="Detailed description of your handcrafted product..."
                                         />
                                         {errors.description && <p className="mt-1 text-sm text-red-600">{errors.description}</p>}
@@ -311,13 +291,11 @@ export default function CreateProduct({ categories, statuses, conditions }: Crea
 
                                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                                Category
-                                            </label>
+                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Category</label>
                                             <select
                                                 value={data.category_id}
                                                 onChange={(e) => setData('category_id', e.target.value)}
-                                                className="mt-1 block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800"
+                                                className="mt-1 block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-800"
                                             >
                                                 <option value="">Select Category</option>
                                                 {categories.map((category) => (
@@ -330,13 +308,11 @@ export default function CreateProduct({ categories, statuses, conditions }: Crea
                                         </div>
 
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                                Condition *
-                                            </label>
+                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Condition *</label>
                                             <select
                                                 value={data.condition}
                                                 onChange={(e) => setData('condition', e.target.value)}
-                                                className="mt-1 block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800"
+                                                className="mt-1 block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-800"
                                             >
                                                 {Object.entries(conditions).map(([key, label]) => (
                                                     <option key={key} value={key}>
@@ -350,18 +326,16 @@ export default function CreateProduct({ categories, statuses, conditions }: Crea
 
                                     {/* Product Images */}
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                            Product Images
-                                        </label>
-                                        
+                                        <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Product Images</label>
+
                                         {/* Image Grid */}
                                         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
                                             {imagePreviewUrls.map((url, index) => (
-                                                <div key={index} className="relative group">
+                                                <div key={index} className="group relative">
                                                     <img
                                                         src={url}
                                                         alt={`Preview ${index + 1}`}
-                                                        className="h-24 w-full object-cover rounded-lg border"
+                                                        className="h-24 w-full rounded-lg border object-cover"
                                                     />
                                                     <button
                                                         type="button"
@@ -377,7 +351,7 @@ export default function CreateProduct({ categories, statuses, conditions }: Crea
                                                     )}
                                                 </div>
                                             ))}
-                                            
+
                                             {/* Upload Button */}
                                             <button
                                                 type="button"
@@ -387,7 +361,7 @@ export default function CreateProduct({ categories, statuses, conditions }: Crea
                                                 <Upload className="h-6 w-6 text-gray-400" />
                                             </button>
                                         </div>
-                                        
+
                                         <input
                                             ref={fileInputRef}
                                             type="file"
@@ -396,7 +370,7 @@ export default function CreateProduct({ categories, statuses, conditions }: Crea
                                             onChange={handleImageSelect}
                                             className="hidden"
                                         />
-                                        
+
                                         <p className="mt-2 text-sm text-gray-500">
                                             Upload up to 10 images. First image will be used as featured image.
                                         </p>
@@ -405,11 +379,9 @@ export default function CreateProduct({ categories, statuses, conditions }: Crea
 
                                     {/* Tags */}
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                            Tags
-                                        </label>
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Tags</label>
                                         <div className="mt-1">
-                                            <div className="flex flex-wrap gap-2 mb-2">
+                                            <div className="mb-2 flex flex-wrap gap-2">
                                                 {data.tags.map((tag, index) => (
                                                     <span
                                                         key={index}
@@ -429,7 +401,7 @@ export default function CreateProduct({ categories, statuses, conditions }: Crea
                                             <input
                                                 type="text"
                                                 placeholder="Add tags (press Enter)"
-                                                className="block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800"
+                                                className="block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-800"
                                                 onKeyDown={(e) => {
                                                     if (e.key === 'Enter') {
                                                         e.preventDefault();
@@ -439,9 +411,7 @@ export default function CreateProduct({ categories, statuses, conditions }: Crea
                                                 }}
                                             />
                                         </div>
-                                        <p className="mt-1 text-sm text-gray-500">
-                                            Press Enter to add tags. Example: handmade, ceramic, artisan
-                                        </p>
+                                        <p className="mt-1 text-sm text-gray-500">Press Enter to add tags. Example: handmade, ceramic, artisan</p>
                                     </div>
                                 </div>
                             </div>
@@ -451,35 +421,31 @@ export default function CreateProduct({ categories, statuses, conditions }: Crea
                         {activeTab === 'pricing' && (
                             <div className="rounded-lg border bg-white p-6 dark:bg-gray-900">
                                 <h2 className="mb-4 text-xl font-semibold text-gray-900 dark:text-gray-100">Pricing</h2>
-                                
+
                                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                            Price * (₱)
-                                        </label>
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Price * (₱)</label>
                                         <input
                                             type="number"
                                             step="0.01"
                                             min="0"
                                             value={data.price}
                                             onChange={(e) => setData('price', e.target.value)}
-                                            className="mt-1 block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800"
+                                            className="mt-1 block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-800"
                                             placeholder="0.00"
                                         />
                                         {errors.price && <p className="mt-1 text-sm text-red-600">{errors.price}</p>}
                                     </div>
 
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                            Compare Price (₱)
-                                        </label>
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Compare Price (₱)</label>
                                         <input
                                             type="number"
                                             step="0.01"
                                             min="0"
                                             value={data.compare_price}
                                             onChange={(e) => setData('compare_price', e.target.value)}
-                                            className="mt-1 block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800"
+                                            className="mt-1 block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-800"
                                             placeholder="0.00"
                                         />
                                         <p className="mt-1 text-xs text-gray-500">Original price for discount display</p>
@@ -487,16 +453,14 @@ export default function CreateProduct({ categories, statuses, conditions }: Crea
                                     </div>
 
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                            Cost Price (₱)
-                                        </label>
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Cost Price (₱)</label>
                                         <input
                                             type="number"
                                             step="0.01"
                                             min="0"
                                             value={data.cost_price}
                                             onChange={(e) => setData('cost_price', e.target.value)}
-                                            className="mt-1 block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800"
+                                            className="mt-1 block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-800"
                                             placeholder="0.00"
                                         />
                                         <p className="mt-1 text-xs text-gray-500">Your cost for profit calculation</p>
@@ -510,19 +474,17 @@ export default function CreateProduct({ categories, statuses, conditions }: Crea
                         {activeTab === 'inventory' && (
                             <div className="rounded-lg border bg-white p-6 dark:bg-gray-900">
                                 <h2 className="mb-4 text-xl font-semibold text-gray-900 dark:text-gray-100">Inventory</h2>
-                                
+
                                 <div className="space-y-4">
                                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                                Quantity *
-                                            </label>
+                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Quantity *</label>
                                             <input
                                                 type="number"
                                                 min="0"
                                                 value={data.quantity}
                                                 onChange={(e) => setData('quantity', e.target.value)}
-                                                className="mt-1 block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800"
+                                                className="mt-1 block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-800"
                                                 placeholder="0"
                                             />
                                             {errors.quantity && <p className="mt-1 text-sm text-red-600">{errors.quantity}</p>}
@@ -537,7 +499,7 @@ export default function CreateProduct({ categories, statuses, conditions }: Crea
                                                 min="0"
                                                 value={data.low_stock_threshold}
                                                 onChange={(e) => setData('low_stock_threshold', e.target.value)}
-                                                className="mt-1 block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800"
+                                                className="mt-1 block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-800"
                                                 placeholder="5"
                                             />
                                             <p className="mt-1 text-xs text-gray-500">Alert when stock falls below this number</p>
@@ -580,7 +542,7 @@ export default function CreateProduct({ categories, statuses, conditions }: Crea
                         {activeTab === 'shipping' && (
                             <div className="rounded-lg border bg-white p-6 dark:bg-gray-900">
                                 <h2 className="mb-4 text-xl font-semibold text-gray-900 dark:text-gray-100">Shipping</h2>
-                                
+
                                 <div className="space-y-4">
                                     <div className="space-y-3">
                                         <div className="flex items-center">
@@ -625,9 +587,7 @@ export default function CreateProduct({ categories, statuses, conditions }: Crea
 
                                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                                Weight
-                                            </label>
+                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Weight</label>
                                             <div className="mt-1 flex">
                                                 <input
                                                     type="number"
@@ -635,13 +595,13 @@ export default function CreateProduct({ categories, statuses, conditions }: Crea
                                                     min="0"
                                                     value={data.weight}
                                                     onChange={(e) => setData('weight', e.target.value)}
-                                                    className="block w-full rounded-l-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800"
+                                                    className="block w-full rounded-l-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-800"
                                                     placeholder="0.00"
                                                 />
                                                 <select
                                                     value={data.weight_unit}
                                                     onChange={(e) => setData('weight_unit', e.target.value)}
-                                                    className="rounded-r-lg border border-l-0 border-gray-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800"
+                                                    className="rounded-r-lg border border-l-0 border-gray-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-800"
                                                 >
                                                     <option value="kg">kg</option>
                                                     <option value="g">g</option>
@@ -653,9 +613,7 @@ export default function CreateProduct({ categories, statuses, conditions }: Crea
                                         </div>
 
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                                Shipping Cost (₱)
-                                            </label>
+                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Shipping Cost (₱)</label>
                                             <input
                                                 type="number"
                                                 step="0.01"
@@ -663,7 +621,7 @@ export default function CreateProduct({ categories, statuses, conditions }: Crea
                                                 value={data.shipping_cost}
                                                 onChange={(e) => setData('shipping_cost', e.target.value)}
                                                 disabled={data.free_shipping}
-                                                className="mt-1 block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100 dark:border-gray-600 dark:bg-gray-800"
+                                                className="mt-1 block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none disabled:bg-gray-100 dark:border-gray-600 dark:bg-gray-800"
                                                 placeholder="0.00"
                                             />
                                             {errors.shipping_cost && <p className="mt-1 text-sm text-red-600">{errors.shipping_cost}</p>}
@@ -671,9 +629,7 @@ export default function CreateProduct({ categories, statuses, conditions }: Crea
                                     </div>
 
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                            Dimensions (cm)
-                                        </label>
+                                        <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Dimensions (cm)</label>
                                         <div className="grid grid-cols-3 gap-4">
                                             <div>
                                                 <input
@@ -682,7 +638,7 @@ export default function CreateProduct({ categories, statuses, conditions }: Crea
                                                     min="0"
                                                     value={data.dimensions.length}
                                                     onChange={(e) => setData('dimensions', { ...data.dimensions, length: e.target.value })}
-                                                    className="block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800"
+                                                    className="block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-800"
                                                     placeholder="Length"
                                                 />
                                             </div>
@@ -693,7 +649,7 @@ export default function CreateProduct({ categories, statuses, conditions }: Crea
                                                     min="0"
                                                     value={data.dimensions.width}
                                                     onChange={(e) => setData('dimensions', { ...data.dimensions, width: e.target.value })}
-                                                    className="block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800"
+                                                    className="block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-800"
                                                     placeholder="Width"
                                                 />
                                             </div>
@@ -704,7 +660,7 @@ export default function CreateProduct({ categories, statuses, conditions }: Crea
                                                     min="0"
                                                     value={data.dimensions.height}
                                                     onChange={(e) => setData('dimensions', { ...data.dimensions, height: e.target.value })}
-                                                    className="block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800"
+                                                    className="block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-800"
                                                     placeholder="Height"
                                                 />
                                             </div>
@@ -718,41 +674,33 @@ export default function CreateProduct({ categories, statuses, conditions }: Crea
                         {activeTab === 'seo' && (
                             <div className="rounded-lg border bg-white p-6 dark:bg-gray-900">
                                 <h2 className="mb-4 text-xl font-semibold text-gray-900 dark:text-gray-100">SEO & Meta</h2>
-                                
+
                                 <div className="space-y-4">
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                            Meta Title
-                                        </label>
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Meta Title</label>
                                         <input
                                             type="text"
                                             value={data.meta_title}
                                             onChange={(e) => setData('meta_title', e.target.value)}
-                                            className="mt-1 block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800"
+                                            className="mt-1 block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-800"
                                             placeholder="SEO title for search engines"
                                             maxLength={255}
                                         />
-                                        <p className="mt-1 text-xs text-gray-500">
-                                            {data.meta_title.length}/255 characters
-                                        </p>
+                                        <p className="mt-1 text-xs text-gray-500">{data.meta_title.length}/255 characters</p>
                                         {errors.meta_title && <p className="mt-1 text-sm text-red-600">{errors.meta_title}</p>}
                                     </div>
 
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                            Meta Description
-                                        </label>
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Meta Description</label>
                                         <textarea
                                             value={data.meta_description}
                                             onChange={(e) => setData('meta_description', e.target.value)}
                                             rows={3}
-                                            className="mt-1 block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800"
+                                            className="mt-1 block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-800"
                                             placeholder="SEO description for search engines"
                                             maxLength={500}
                                         />
-                                        <p className="mt-1 text-xs text-gray-500">
-                                            {data.meta_description.length}/500 characters
-                                        </p>
+                                        <p className="mt-1 text-xs text-gray-500">{data.meta_description.length}/500 characters</p>
                                         {errors.meta_description && <p className="mt-1 text-sm text-red-600">{errors.meta_description}</p>}
                                     </div>
 

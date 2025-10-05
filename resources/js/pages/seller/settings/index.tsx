@@ -1,20 +1,7 @@
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem, type SharedData } from '@/types';
 import { Head, Link, usePage } from '@inertiajs/react';
-import { 
-    Settings, 
-    Shield, 
-    Bell, 
-    Eye, 
-    Mail, 
-    Smartphone,
-    Lock,
-    Key,
-    CheckCircle,
-    AlertTriangle,
-    User,
-    Clock
-} from 'lucide-react';
+import { AlertTriangle, Bell, CheckCircle, Clock, Eye, Key, Lock, Mail, Settings, Shield, Smartphone, User } from 'lucide-react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Seller Dashboard', href: '/seller/dashboard' },
@@ -68,7 +55,7 @@ export default function SellerSettings() {
         password_strength: 'weak' as const,
         last_login_location: '',
         active_sessions_count: 0,
-        ...settingsSummary
+        ...settingsSummary,
     };
 
     const getIconComponent = (iconName: string) => {
@@ -87,16 +74,19 @@ export default function SellerSettings() {
 
     const getPasswordStrengthColor = (strength: string) => {
         switch (strength) {
-            case 'strong': return 'text-green-600 dark:text-green-400';
-            case 'medium': return 'text-yellow-600 dark:text-yellow-400';
-            default: return 'text-red-600 dark:text-red-400';
+            case 'strong':
+                return 'text-green-600 dark:text-green-400';
+            case 'medium':
+                return 'text-yellow-600 dark:text-yellow-400';
+            default:
+                return 'text-red-600 dark:text-red-400';
         }
     };
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Account Settings" />
-            
+
             <div className="flex h-full flex-1 flex-col gap-6 overflow-x-auto rounded-xl p-4">
                 {/* Header */}
                 <div className="rounded-xl border bg-gradient-to-r from-blue-50 to-indigo-50 p-6 dark:from-blue-950/20 dark:to-indigo-950/20">
@@ -106,9 +96,7 @@ export default function SellerSettings() {
                         </div>
                         <div>
                             <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Account Settings</h1>
-                            <p className="text-gray-600 dark:text-gray-300 mt-1">
-                                Manage your account security, privacy, and preferences
-                            </p>
+                            <p className="mt-1 text-gray-600 dark:text-gray-300">Manage your account security, privacy, and preferences</p>
                         </div>
                     </div>
                 </div>
@@ -117,8 +105,12 @@ export default function SellerSettings() {
                 <div className="grid gap-4 md:grid-cols-4">
                     <div className="rounded-xl border bg-white p-4 dark:bg-gray-800">
                         <div className="flex items-center gap-3">
-                            <div className={`rounded-full p-2 ${settings.email_verified ? 'bg-green-100 dark:bg-green-900' : 'bg-red-100 dark:bg-red-900'}`}>
-                                <Mail className={`h-5 w-5 ${settings.email_verified ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`} />
+                            <div
+                                className={`rounded-full p-2 ${settings.email_verified ? 'bg-green-100 dark:bg-green-900' : 'bg-red-100 dark:bg-red-900'}`}
+                            >
+                                <Mail
+                                    className={`h-5 w-5 ${settings.email_verified ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}
+                                />
                             </div>
                             <div>
                                 <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Email</p>
@@ -128,11 +120,15 @@ export default function SellerSettings() {
                             </div>
                         </div>
                     </div>
-                    
+
                     <div className="rounded-xl border bg-white p-4 dark:bg-gray-800">
                         <div className="flex items-center gap-3">
-                            <div className={`rounded-full p-2 ${settings.two_factor_enabled ? 'bg-green-100 dark:bg-green-900' : 'bg-yellow-100 dark:bg-yellow-900'}`}>
-                                <Shield className={`h-5 w-5 ${settings.two_factor_enabled ? 'text-green-600 dark:text-green-400' : 'text-yellow-600 dark:text-yellow-400'}`} />
+                            <div
+                                className={`rounded-full p-2 ${settings.two_factor_enabled ? 'bg-green-100 dark:bg-green-900' : 'bg-yellow-100 dark:bg-yellow-900'}`}
+                            >
+                                <Shield
+                                    className={`h-5 w-5 ${settings.two_factor_enabled ? 'text-green-600 dark:text-green-400' : 'text-yellow-600 dark:text-yellow-400'}`}
+                                />
                             </div>
                             <div>
                                 <p className="text-sm font-medium text-gray-600 dark:text-gray-300">2FA</p>
@@ -142,7 +138,7 @@ export default function SellerSettings() {
                             </div>
                         </div>
                     </div>
-                    
+
                     <div className="rounded-xl border bg-white p-4 dark:bg-gray-800">
                         <div className="flex items-center gap-3">
                             <div className="rounded-full bg-blue-100 p-2 dark:bg-blue-900">
@@ -156,7 +152,7 @@ export default function SellerSettings() {
                             </div>
                         </div>
                     </div>
-                    
+
                     <div className="rounded-xl border bg-white p-4 dark:bg-gray-800">
                         <div className="flex items-center gap-3">
                             <div className="rounded-full bg-purple-100 p-2 dark:bg-purple-900">
@@ -164,9 +160,7 @@ export default function SellerSettings() {
                             </div>
                             <div>
                                 <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Sessions</p>
-                                <p className="text-sm font-bold text-gray-900 dark:text-gray-100">
-                                    {settings.active_sessions_count} Active
-                                </p>
+                                <p className="text-sm font-bold text-gray-900 dark:text-gray-100">{settings.active_sessions_count} Active</p>
                             </div>
                         </div>
                     </div>
@@ -178,38 +172,31 @@ export default function SellerSettings() {
                         <div className="space-y-6">
                             {/* Security Settings */}
                             <div className="rounded-xl border bg-white p-6 dark:bg-gray-800">
-                                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-6 flex items-center gap-2">
+                                <h3 className="mb-6 flex items-center gap-2 text-lg font-semibold text-gray-900 dark:text-gray-100">
                                     <Shield className="h-5 w-5" />
                                     Security Settings
                                 </h3>
-                                
+
                                 <div className="space-y-4">
-                                    <div className="flex items-center justify-between p-4 border rounded-lg dark:border-gray-700">
+                                    <div className="flex items-center justify-between rounded-lg border p-4 dark:border-gray-700">
                                         <div className="flex items-center gap-3">
                                             <Key className="h-5 w-5 text-gray-600 dark:text-gray-300" />
                                             <div>
                                                 <h4 className="font-medium text-gray-900 dark:text-gray-100">Password</h4>
-                                                <p className="text-sm text-gray-600 dark:text-gray-300">
-                                                    Change your account password
-                                                </p>
+                                                <p className="text-sm text-gray-600 dark:text-gray-300">Change your account password</p>
                                             </div>
                                         </div>
-                                        <Link
-                                            href="/seller/settings/security"
-                                            className="text-blue-500 hover:text-blue-600 text-sm font-medium"
-                                        >
+                                        <Link href="/seller/settings/security" className="text-sm font-medium text-blue-500 hover:text-blue-600">
                                             Change
                                         </Link>
                                     </div>
-                                    
-                                    <div className="flex items-center justify-between p-4 border rounded-lg dark:border-gray-700">
+
+                                    <div className="flex items-center justify-between rounded-lg border p-4 dark:border-gray-700">
                                         <div className="flex items-center gap-3">
                                             <Shield className="h-5 w-5 text-gray-600 dark:text-gray-300" />
                                             <div>
                                                 <h4 className="font-medium text-gray-900 dark:text-gray-100">Two-Factor Authentication</h4>
-                                                <p className="text-sm text-gray-600 dark:text-gray-300">
-                                                    Add extra security to your account
-                                                </p>
+                                                <p className="text-sm text-gray-600 dark:text-gray-300">Add extra security to your account</p>
                                             </div>
                                         </div>
                                         <div className="flex items-center gap-2">
@@ -218,23 +205,18 @@ export default function SellerSettings() {
                                             ) : (
                                                 <AlertTriangle className="h-5 w-5 text-yellow-500" />
                                             )}
-                                            <Link
-                                                href="/seller/settings/security"
-                                                className="text-blue-500 hover:text-blue-600 text-sm font-medium"
-                                            >
+                                            <Link href="/seller/settings/security" className="text-sm font-medium text-blue-500 hover:text-blue-600">
                                                 {settings.two_factor_enabled ? 'Manage' : 'Enable'}
                                             </Link>
                                         </div>
                                     </div>
-                                    
-                                    <div className="flex items-center justify-between p-4 border rounded-lg dark:border-gray-700">
+
+                                    <div className="flex items-center justify-between rounded-lg border p-4 dark:border-gray-700">
                                         <div className="flex items-center gap-3">
                                             <Mail className="h-5 w-5 text-gray-600 dark:text-gray-300" />
                                             <div>
                                                 <h4 className="font-medium text-gray-900 dark:text-gray-100">Email Verification</h4>
-                                                <p className="text-sm text-gray-600 dark:text-gray-300">
-                                                    Verify your email address
-                                                </p>
+                                                <p className="text-sm text-gray-600 dark:text-gray-300">Verify your email address</p>
                                             </div>
                                         </div>
                                         <div className="flex items-center gap-2">
@@ -253,44 +235,34 @@ export default function SellerSettings() {
 
                             {/* Privacy Settings */}
                             <div className="rounded-xl border bg-white p-6 dark:bg-gray-800">
-                                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-6 flex items-center gap-2">
+                                <h3 className="mb-6 flex items-center gap-2 text-lg font-semibold text-gray-900 dark:text-gray-100">
                                     <Eye className="h-5 w-5" />
                                     Privacy Settings
                                 </h3>
-                                
+
                                 <div className="space-y-4">
-                                    <div className="flex items-center justify-between p-4 border rounded-lg dark:border-gray-700">
+                                    <div className="flex items-center justify-between rounded-lg border p-4 dark:border-gray-700">
                                         <div className="flex items-center gap-3">
                                             <User className="h-5 w-5 text-gray-600 dark:text-gray-300" />
                                             <div>
                                                 <h4 className="font-medium text-gray-900 dark:text-gray-100">Profile Visibility</h4>
-                                                <p className="text-sm text-gray-600 dark:text-gray-300">
-                                                    Control who can see your profile
-                                                </p>
+                                                <p className="text-sm text-gray-600 dark:text-gray-300">Control who can see your profile</p>
                                             </div>
                                         </div>
-                                        <Link
-                                            href="/seller/settings/privacy"
-                                            className="text-blue-500 hover:text-blue-600 text-sm font-medium"
-                                        >
+                                        <Link href="/seller/settings/privacy" className="text-sm font-medium text-blue-500 hover:text-blue-600">
                                             Configure
                                         </Link>
                                     </div>
-                                    
-                                    <div className="flex items-center justify-between p-4 border rounded-lg dark:border-gray-700">
+
+                                    <div className="flex items-center justify-between rounded-lg border p-4 dark:border-gray-700">
                                         <div className="flex items-center gap-3">
                                             <Bell className="h-5 w-5 text-gray-600 dark:text-gray-300" />
                                             <div>
                                                 <h4 className="font-medium text-gray-900 dark:text-gray-100">Data Collection</h4>
-                                                <p className="text-sm text-gray-600 dark:text-gray-300">
-                                                    Manage data collection preferences
-                                                </p>
+                                                <p className="text-sm text-gray-600 dark:text-gray-300">Manage data collection preferences</p>
                                             </div>
                                         </div>
-                                        <Link
-                                            href="/seller/settings/privacy"
-                                            className="text-blue-500 hover:text-blue-600 text-sm font-medium"
-                                        >
+                                        <Link href="/seller/settings/privacy" className="text-sm font-medium text-blue-500 hover:text-blue-600">
                                             Manage
                                         </Link>
                                     </div>
@@ -299,20 +271,18 @@ export default function SellerSettings() {
 
                             {/* Notification Settings */}
                             <div className="rounded-xl border bg-white p-6 dark:bg-gray-800">
-                                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-6 flex items-center gap-2">
+                                <h3 className="mb-6 flex items-center gap-2 text-lg font-semibold text-gray-900 dark:text-gray-100">
                                     <Bell className="h-5 w-5" />
                                     Notification Settings
                                 </h3>
-                                
+
                                 <div className="space-y-4">
-                                    <div className="flex items-center justify-between p-4 border rounded-lg dark:border-gray-700">
+                                    <div className="flex items-center justify-between rounded-lg border p-4 dark:border-gray-700">
                                         <div className="flex items-center gap-3">
                                             <Mail className="h-5 w-5 text-gray-600 dark:text-gray-300" />
                                             <div>
                                                 <h4 className="font-medium text-gray-900 dark:text-gray-100">Email Notifications</h4>
-                                                <p className="text-sm text-gray-600 dark:text-gray-300">
-                                                    Order updates, account alerts
-                                                </p>
+                                                <p className="text-sm text-gray-600 dark:text-gray-300">Order updates, account alerts</p>
                                             </div>
                                         </div>
                                         <div className="flex items-center gap-2">
@@ -323,21 +293,19 @@ export default function SellerSettings() {
                                             )}
                                             <Link
                                                 href="/seller/settings/notifications"
-                                                className="text-blue-500 hover:text-blue-600 text-sm font-medium"
+                                                className="text-sm font-medium text-blue-500 hover:text-blue-600"
                                             >
                                                 Configure
                                             </Link>
                                         </div>
                                     </div>
-                                    
-                                    <div className="flex items-center justify-between p-4 border rounded-lg dark:border-gray-700">
+
+                                    <div className="flex items-center justify-between rounded-lg border p-4 dark:border-gray-700">
                                         <div className="flex items-center gap-3">
                                             <Bell className="h-5 w-5 text-gray-600 dark:text-gray-300" />
                                             <div>
                                                 <h4 className="font-medium text-gray-900 dark:text-gray-100">Marketing Communications</h4>
-                                                <p className="text-sm text-gray-600 dark:text-gray-300">
-                                                    Newsletter, promotions, tips
-                                                </p>
+                                                <p className="text-sm text-gray-600 dark:text-gray-300">Newsletter, promotions, tips</p>
                                             </div>
                                         </div>
                                         <div className="flex items-center gap-2">
@@ -348,7 +316,7 @@ export default function SellerSettings() {
                                             )}
                                             <Link
                                                 href="/seller/settings/notifications"
-                                                className="text-blue-500 hover:text-blue-600 text-sm font-medium"
+                                                className="text-sm font-medium text-blue-500 hover:text-blue-600"
                                             >
                                                 Manage
                                             </Link>
@@ -361,24 +329,27 @@ export default function SellerSettings() {
 
                     {/* Recent Activity */}
                     <div className="rounded-xl border bg-white p-6 dark:bg-gray-800">
-                        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-6 flex items-center gap-2">
+                        <h3 className="mb-6 flex items-center gap-2 text-lg font-semibold text-gray-900 dark:text-gray-100">
                             <Clock className="h-5 w-5" />
                             Recent Security Activity
                         </h3>
-                        
+
                         {recentActivity && recentActivity.length > 0 ? (
                             <div className="space-y-4">
                                 {recentActivity.map((activity, index) => {
                                     const IconComponent = getIconComponent(activity.icon);
                                     return (
-                                        <div key={index} className="flex items-start gap-3 pb-4 border-b border-gray-100 dark:border-gray-700 last:border-0 last:pb-0">
+                                        <div
+                                            key={index}
+                                            className="flex items-start gap-3 border-b border-gray-100 pb-4 last:border-0 last:pb-0 dark:border-gray-700"
+                                        >
                                             <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900">
                                                 <IconComponent className="h-4 w-4 text-blue-600 dark:text-blue-400" />
                                             </div>
-                                            <div className="flex-1 min-w-0">
+                                            <div className="min-w-0 flex-1">
                                                 <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{activity.title}</p>
-                                                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{activity.description}</p>
-                                                <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">{activity.date}</p>
+                                                <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">{activity.description}</p>
+                                                <p className="mt-1 text-xs text-gray-400 dark:text-gray-500">{activity.date}</p>
                                             </div>
                                         </div>
                                     );
@@ -390,11 +361,11 @@ export default function SellerSettings() {
                                 <p className="text-gray-500 dark:text-gray-400">No recent activity</p>
                             </div>
                         )}
-                        
-                        <div className="mt-6 pt-4 border-t dark:border-gray-700">
+
+                        <div className="mt-6 border-t pt-4 dark:border-gray-700">
                             <Link
                                 href="/seller/settings/security"
-                                className="w-full inline-flex items-center justify-center gap-2 rounded-lg bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
+                                className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
                             >
                                 <Shield className="h-4 w-4" />
                                 View All Security Logs

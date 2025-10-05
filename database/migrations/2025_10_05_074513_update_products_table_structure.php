@@ -12,6 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('products', function (Blueprint $table) {
+            // Drop the index that includes the category column first
+            $table->dropIndex(['category', 'status']);
+            
             // Add missing handle field for SEO-friendly URLs (nullable first)
             $table->string('handle')->nullable()->after('slug');
             
@@ -41,6 +44,9 @@ return new class extends Migration
         Schema::table('products', function (Blueprint $table) {
             $table->dropColumn('handle');
             $table->string('category')->nullable();
+            
+            // Re-add the index that was dropped
+            $table->index(['category', 'status']);
         });
     }
 };

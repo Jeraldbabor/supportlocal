@@ -1,25 +1,25 @@
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem, type SharedData, type User } from '@/types';
 import { Head, Link, router, usePage } from '@inertiajs/react';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { 
-    ArrowLeft, 
-    Edit, 
-    Mail, 
-    Phone, 
-    MapPin, 
-    Calendar, 
-    Shield, 
-    User as UserIcon,
+import {
+    ArrowLeft,
+    Calendar,
     CheckCircle,
-    XCircle,
-    UserCheck,
-    UserX,
-    Trash2,
     CreditCard,
+    Edit,
+    Mail,
+    MapPin,
+    Phone,
+    Shield,
+    Trash2,
     Truck,
+    UserCheck,
+    User as UserIcon,
+    UserX,
+    XCircle,
 } from 'lucide-react';
 
 interface SellerApplication {
@@ -63,15 +63,23 @@ export default function ShowUser() {
     const { user } = usePage<SharedData & Props>().props;
 
     const handleToggleStatus = () => {
-        router.post(`/admin/users/${user.id}/toggle-status`, {}, {
-            preserveScroll: true,
-        });
+        router.post(
+            `/admin/users/${user.id}/toggle-status`,
+            {},
+            {
+                preserveScroll: true,
+            },
+        );
     };
 
     const handleVerifyEmail = () => {
-        router.post(`/admin/users/${user.id}/verify-email`, {}, {
-            preserveScroll: true,
-        });
+        router.post(
+            `/admin/users/${user.id}/verify-email`,
+            {},
+            {
+                preserveScroll: true,
+            },
+        );
     };
 
     const handleDelete = () => {
@@ -98,7 +106,7 @@ export default function ShowUser() {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title={`User Details - ${user.name}`} />
-            
+
             <div className="flex flex-col gap-6">
                 {/* Header */}
                 <div className="flex items-center justify-between">
@@ -111,9 +119,7 @@ export default function ShowUser() {
                         </Link>
                         <div>
                             <h1 className="text-3xl font-bold tracking-tight">User Details</h1>
-                            <p className="text-muted-foreground">
-                                View and manage user information
-                            </p>
+                            <p className="text-muted-foreground">View and manage user information</p>
                         </div>
                     </div>
                     <div className="flex items-center gap-2">
@@ -123,10 +129,7 @@ export default function ShowUser() {
                                 Edit User
                             </Button>
                         </Link>
-                        <Button 
-                            variant={user.is_active ? "destructive" : "default"}
-                            onClick={handleToggleStatus}
-                        >
+                        <Button variant={user.is_active ? 'destructive' : 'default'} onClick={handleToggleStatus}>
                             {user.is_active ? (
                                 <>
                                     <UserX className="mr-2 h-4 w-4" />
@@ -145,19 +148,13 @@ export default function ShowUser() {
                 <div className="grid gap-6 lg:grid-cols-3">
                     {/* User Profile Card */}
                     <Card className="lg:col-span-1">
-                        <CardHeader className="text-center pb-4">
-                            <div className="flex justify-center mb-4">
-                                <img
-                                    src={user.avatar_url}
-                                    alt={user.name}
-                                    className="h-24 w-24 rounded-full border-4 border-white shadow-lg"
-                                />
+                        <CardHeader className="pb-4 text-center">
+                            <div className="mb-4 flex justify-center">
+                                <img src={user.avatar_url} alt={user.name} className="h-24 w-24 rounded-full border-4 border-white shadow-lg" />
                             </div>
                             <CardTitle className="text-xl">{user.name}</CardTitle>
                             <div className="flex justify-center">
-                                <Badge className={getRoleColor(user.role || '')}>
-                                    {user.role_display}
-                                </Badge>
+                                <Badge className={getRoleColor(user.role || '')}>{user.role_display}</Badge>
                             </div>
                         </CardHeader>
                         <CardContent className="space-y-4">
@@ -170,75 +167,63 @@ export default function ShowUser() {
                                     <XCircle className="h-4 w-4 text-red-600" />
                                 )}
                             </div>
-                            
+
                             {user.phone_number && (
                                 <div className="flex items-center gap-3">
                                     <Phone className="h-4 w-4 text-muted-foreground" />
                                     <span className="text-sm">{user.phone_number}</span>
                                 </div>
                             )}
-                            
+
                             {user.address && (
                                 <div className="flex items-start gap-3">
-                                    <MapPin className="h-4 w-4 text-muted-foreground mt-0.5" />
+                                    <MapPin className="mt-0.5 h-4 w-4 text-muted-foreground" />
                                     <span className="text-sm">{user.address}</span>
                                 </div>
                             )}
-                            
+
                             {user.date_of_birth && (
                                 <div className="flex items-center gap-3">
                                     <Calendar className="h-4 w-4 text-muted-foreground" />
-                                    <span className="text-sm">
-                                        {new Date(user.date_of_birth).toLocaleDateString()}
-                                    </span>
+                                    <span className="text-sm">{new Date(user.date_of_birth).toLocaleDateString()}</span>
                                 </div>
                             )}
 
-                            <div className="pt-4 border-t">
+                            <div className="border-t pt-4">
                                 <div className="flex items-center justify-between text-sm">
                                     <span className="text-muted-foreground">Status:</span>
                                     <Badge
                                         variant={user.is_active ? 'default' : 'secondary'}
-                                        className={user.is_active 
-                                            ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400'
-                                            : 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400'
+                                        className={
+                                            user.is_active
+                                                ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400'
+                                                : 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400'
                                         }
                                     >
                                         {user.is_active ? 'Active' : 'Inactive'}
                                     </Badge>
                                 </div>
-                                
-                                <div className="flex items-center justify-between text-sm mt-2">
+
+                                <div className="mt-2 flex items-center justify-between text-sm">
                                     <span className="text-muted-foreground">Email Verified:</span>
                                     {user.email_verified_at ? (
-                                        <span className="text-green-600 font-medium">Yes</span>
+                                        <span className="font-medium text-green-600">Yes</span>
                                     ) : (
                                         <div className="flex items-center gap-2">
-                                            <span className="text-red-600 font-medium">No</span>
-                                            <Button 
-                                                size="sm" 
-                                                variant="outline" 
-                                                onClick={handleVerifyEmail}
-                                                className="h-6 px-2 text-xs"
-                                            >
+                                            <span className="font-medium text-red-600">No</span>
+                                            <Button size="sm" variant="outline" onClick={handleVerifyEmail} className="h-6 px-2 text-xs">
                                                 Verify
                                             </Button>
                                         </div>
                                     )}
                                 </div>
 
-                                <div className="flex items-center justify-between text-sm mt-2">
+                                <div className="mt-2 flex items-center justify-between text-sm">
                                     <span className="text-muted-foreground">Last Login:</span>
-                                    <span>
-                                        {user.last_login_at ? (
-                                            new Date(user.last_login_at as string).toLocaleDateString()
-                                        ) : (
-                                            'Never'
-                                        )}
-                                    </span>
+                                    <span>{user.last_login_at ? new Date(user.last_login_at as string).toLocaleDateString() : 'Never'}</span>
                                 </div>
 
-                                <div className="flex items-center justify-between text-sm mt-2">
+                                <div className="mt-2 flex items-center justify-between text-sm">
                                     <span className="text-muted-foreground">Member Since:</span>
                                     <span>{new Date(user.created_at).toLocaleDateString()}</span>
                                 </div>
@@ -247,7 +232,7 @@ export default function ShowUser() {
                     </Card>
 
                     {/* User Details */}
-                    <div className="lg:col-span-2 space-y-6">
+                    <div className="space-y-6 lg:col-span-2">
                         {/* Account Information */}
                         <Card>
                             <CardHeader>
@@ -273,9 +258,7 @@ export default function ShowUser() {
                                     <div>
                                         <label className="text-sm font-medium text-muted-foreground">Role</label>
                                         <div className="mt-1">
-                                            <Badge className={getRoleColor(user.role || '')}>
-                                                {user.role_display}
-                                            </Badge>
+                                            <Badge className={getRoleColor(user.role || '')}>{user.role_display}</Badge>
                                         </div>
                                     </div>
                                 </div>
@@ -330,7 +313,7 @@ export default function ShowUser() {
                                         {user.gcash_number && (
                                             <div>
                                                 <label className="text-sm font-medium text-muted-foreground">GCash Number</label>
-                                                <p className="text-sm font-mono">{user.gcash_number}</p>
+                                                <p className="font-mono text-sm">{user.gcash_number}</p>
                                             </div>
                                         )}
                                         {user.gcash_name && (
@@ -357,9 +340,7 @@ export default function ShowUser() {
                                     <div className="space-y-3">
                                         <div className="flex items-center justify-between">
                                             <span className="text-sm font-medium text-muted-foreground">Status:</span>
-                                            <Badge 
-                                                variant={user.seller_application.status === 'approved' ? 'default' : 'secondary'}
-                                            >
+                                            <Badge variant={user.seller_application.status === 'approved' ? 'default' : 'secondary'}>
                                                 {user.seller_application.status}
                                             </Badge>
                                         </div>
@@ -373,9 +354,7 @@ export default function ShowUser() {
                                         </div>
                                         <div>
                                             <label className="text-sm font-medium text-muted-foreground">Applied Date</label>
-                                            <p className="text-sm">
-                                                {new Date(user.seller_application.created_at).toLocaleDateString()}
-                                            </p>
+                                            <p className="text-sm">{new Date(user.seller_application.created_at).toLocaleDateString()}</p>
                                         </div>
                                     </div>
                                 </CardContent>
@@ -395,11 +374,7 @@ export default function ShowUser() {
                                             Permanently delete this user and all associated data. This action cannot be undone.
                                         </p>
                                     </div>
-                                    <Button 
-                                        variant="destructive" 
-                                        onClick={handleDelete}
-                                        className="ml-4"
-                                    >
+                                    <Button variant="destructive" onClick={handleDelete} className="ml-4">
                                         <Trash2 className="mr-2 h-4 w-4" />
                                         Delete User
                                     </Button>

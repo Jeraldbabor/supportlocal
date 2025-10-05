@@ -1,17 +1,11 @@
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem, type SharedData, type User } from '@/types';
 import { Head, Link, useForm, usePage } from '@inertiajs/react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { 
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue 
-} from '@/components/ui/select';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowLeft, Save, Edit, Shield } from 'lucide-react';
+import { ArrowLeft, Edit, Save, Shield } from 'lucide-react';
 import { FormEvent } from 'react';
 
 interface UserData extends User {
@@ -38,7 +32,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 
 export default function EditUser() {
     const { user, roles } = usePage<SharedData & Props>().props;
-    
+
     const { data, setData, put, processing, errors } = useForm({
         name: user.name || '',
         email: user.email || '',
@@ -64,7 +58,7 @@ export default function EditUser() {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title={`Edit User - ${user.name}`} />
-            
+
             <div className="flex flex-col gap-6">
                 {/* Header */}
                 <div className="flex items-center justify-between">
@@ -77,9 +71,7 @@ export default function EditUser() {
                         </Link>
                         <div>
                             <h1 className="text-3xl font-bold tracking-tight">Edit User</h1>
-                            <p className="text-muted-foreground">
-                                Update user information for {user.name}
-                            </p>
+                            <p className="text-muted-foreground">Update user information for {user.name}</p>
                         </div>
                     </div>
                 </div>
@@ -105,9 +97,7 @@ export default function EditUser() {
                                         className={errors.name ? 'border-red-500' : ''}
                                         placeholder="Enter full name"
                                     />
-                                    {errors.name && (
-                                        <p className="text-sm text-red-600">{errors.name}</p>
-                                    )}
+                                    {errors.name && <p className="text-sm text-red-600">{errors.name}</p>}
                                 </div>
 
                                 <div className="space-y-2">
@@ -119,9 +109,7 @@ export default function EditUser() {
                                         className={errors.email ? 'border-red-500' : ''}
                                         placeholder="Enter email address"
                                     />
-                                    {errors.email && (
-                                        <p className="text-sm text-red-600">{errors.email}</p>
-                                    )}
+                                    {errors.email && <p className="text-sm text-red-600">{errors.email}</p>}
                                 </div>
 
                                 <div className="space-y-2">
@@ -138,9 +126,7 @@ export default function EditUser() {
                                             ))}
                                         </SelectContent>
                                     </Select>
-                                    {errors.role && (
-                                        <p className="text-sm text-red-600">{errors.role}</p>
-                                    )}
+                                    {errors.role && <p className="text-sm text-red-600">{errors.role}</p>}
                                 </div>
 
                                 <div className="space-y-2">
@@ -152,9 +138,7 @@ export default function EditUser() {
                                         className={errors.phone_number ? 'border-red-500' : ''}
                                         placeholder="Enter phone number"
                                     />
-                                    {errors.phone_number && (
-                                        <p className="text-sm text-red-600">{errors.phone_number}</p>
-                                    )}
+                                    {errors.phone_number && <p className="text-sm text-red-600">{errors.phone_number}</p>}
                                 </div>
 
                                 <div className="space-y-2">
@@ -165,9 +149,7 @@ export default function EditUser() {
                                         onChange={(e) => setData('date_of_birth', e.target.value)}
                                         className={errors.date_of_birth ? 'border-red-500' : ''}
                                     />
-                                    {errors.date_of_birth && (
-                                        <p className="text-sm text-red-600">{errors.date_of_birth}</p>
-                                    )}
+                                    {errors.date_of_birth && <p className="text-sm text-red-600">{errors.date_of_birth}</p>}
                                 </div>
 
                                 <div className="space-y-2">
@@ -175,13 +157,11 @@ export default function EditUser() {
                                     <textarea
                                         value={data.address}
                                         onChange={(e) => setData('address', e.target.value)}
-                                        className={`flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 ${errors.address ? 'border-red-500' : ''}`}
+                                        className={`flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 ${errors.address ? 'border-red-500' : ''}`}
                                         placeholder="Enter address"
                                         rows={3}
                                     />
-                                    {errors.address && (
-                                        <p className="text-sm text-red-600">{errors.address}</p>
-                                    )}
+                                    {errors.address && <p className="text-sm text-red-600">{errors.address}</p>}
                                 </div>
                             </CardContent>
                         </Card>
@@ -205,9 +185,7 @@ export default function EditUser() {
                                             className={errors.password ? 'border-red-500' : ''}
                                             placeholder="Leave blank to keep current password"
                                         />
-                                        {errors.password && (
-                                            <p className="text-sm text-red-600">{errors.password}</p>
-                                        )}
+                                        {errors.password && <p className="text-sm text-red-600">{errors.password}</p>}
                                     </div>
 
                                     <div className="space-y-2">
@@ -219,9 +197,7 @@ export default function EditUser() {
                                             className={errors.password_confirmation ? 'border-red-500' : ''}
                                             placeholder="Confirm new password"
                                         />
-                                        {errors.password_confirmation && (
-                                            <p className="text-sm text-red-600">{errors.password_confirmation}</p>
-                                        )}
+                                        {errors.password_confirmation && <p className="text-sm text-red-600">{errors.password_confirmation}</p>}
                                     </div>
 
                                     <div className="flex items-center space-x-2">
@@ -236,9 +212,7 @@ export default function EditUser() {
                                             Active User
                                         </label>
                                     </div>
-                                    <p className="text-xs text-muted-foreground">
-                                        Inactive users cannot log in to the system
-                                    </p>
+                                    <p className="text-xs text-muted-foreground">Inactive users cannot log in to the system</p>
                                 </CardContent>
                             </Card>
 
@@ -253,7 +227,7 @@ export default function EditUser() {
                                         <textarea
                                             value={data.delivery_address}
                                             onChange={(e) => setData('delivery_address', e.target.value)}
-                                            className="flex min-h-[60px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                            className="flex min-h-[60px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
                                             placeholder="Enter delivery address"
                                             rows={2}
                                         />
@@ -274,7 +248,7 @@ export default function EditUser() {
                                         <textarea
                                             value={data.delivery_notes}
                                             onChange={(e) => setData('delivery_notes', e.target.value)}
-                                            className="flex min-h-[60px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                            className="flex min-h-[60px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
                                             placeholder="Enter delivery notes"
                                             rows={2}
                                         />

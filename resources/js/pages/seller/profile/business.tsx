@@ -1,14 +1,7 @@
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem, type SharedData } from '@/types';
 import { Head, useForm, usePage } from '@inertiajs/react';
-import { 
-    Store, 
-    Save,
-    AlertTriangle,
-    CheckCircle,
-    Calendar,
-    FileText
-} from 'lucide-react';
+import { AlertTriangle, Calendar, CheckCircle, FileText, Save, Store } from 'lucide-react';
 import { FormEventHandler } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -49,7 +42,7 @@ export default function SellerBusinessProfile() {
         reviewed_at: undefined,
         admin_notes: undefined,
         created_at: '',
-        can_edit: true
+        can_edit: true,
     };
 
     const { data, setData, put, processing, errors } = useForm({
@@ -64,16 +57,19 @@ export default function SellerBusinessProfile() {
 
     const getStatusColor = (status: string) => {
         switch (status) {
-            case 'approved': return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200';
-            case 'rejected': return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200';
-            default: return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200';
+            case 'approved':
+                return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200';
+            case 'rejected':
+                return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200';
+            default:
+                return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200';
         }
     };
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Business Information" />
-            
+
             <div className="flex h-full flex-1 flex-col gap-6 overflow-x-auto rounded-xl p-4">
                 {/* Header */}
                 <div className="rounded-xl border bg-gradient-to-r from-blue-50 to-indigo-50 p-6 dark:from-blue-950/20 dark:to-indigo-950/20">
@@ -83,9 +79,7 @@ export default function SellerBusinessProfile() {
                         </div>
                         <div>
                             <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Business Information</h1>
-                            <p className="text-gray-600 dark:text-gray-300 mt-1">
-                                Manage your business details and seller application status
-                            </p>
+                            <p className="mt-1 text-gray-600 dark:text-gray-300">Manage your business details and seller application status</p>
                         </div>
                     </div>
                 </div>
@@ -95,43 +89,37 @@ export default function SellerBusinessProfile() {
                         {/* Business Status */}
                         <div className="lg:col-span-1">
                             <div className="rounded-xl border bg-white p-6 dark:bg-gray-800">
-                                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Application Status</h3>
-                                
+                                <h3 className="mb-4 text-lg font-semibold text-gray-900 dark:text-gray-100">Application Status</h3>
+
                                 <div className="space-y-4">
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">
-                                            Current Status
-                                        </label>
-                                        <span className={`inline-flex items-center rounded-full px-3 py-1 text-sm font-medium ${getStatusColor(business.status)}`}>
+                                        <label className="mb-2 block text-sm font-medium text-gray-600 dark:text-gray-300">Current Status</label>
+                                        <span
+                                            className={`inline-flex items-center rounded-full px-3 py-1 text-sm font-medium ${getStatusColor(business.status)}`}
+                                        >
                                             {business.status === 'approved' && <CheckCircle className="mr-2 h-4 w-4" />}
                                             {business.status === 'rejected' && <AlertTriangle className="mr-2 h-4 w-4" />}
                                             {business.status === 'pending' && <Calendar className="mr-2 h-4 w-4" />}
                                             {business.status.charAt(0).toUpperCase() + business.status.slice(1)}
                                         </span>
                                     </div>
-                                    
+
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">
-                                            Application Date
-                                        </label>
+                                        <label className="mb-2 block text-sm font-medium text-gray-600 dark:text-gray-300">Application Date</label>
                                         <p className="text-sm text-gray-900 dark:text-gray-100">{business.created_at}</p>
                                     </div>
-                                    
+
                                     {business.reviewed_at && (
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">
-                                                Review Date
-                                            </label>
+                                            <label className="mb-2 block text-sm font-medium text-gray-600 dark:text-gray-300">Review Date</label>
                                             <p className="text-sm text-gray-900 dark:text-gray-100">{business.reviewed_at}</p>
                                         </div>
                                     )}
-                                    
+
                                     {business.admin_notes && (
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">
-                                                Admin Notes
-                                            </label>
-                                            <div className="p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                                            <label className="mb-2 block text-sm font-medium text-gray-600 dark:text-gray-300">Admin Notes</label>
+                                            <div className="rounded-lg bg-gray-50 p-3 dark:bg-gray-700">
                                                 <p className="text-sm text-gray-900 dark:text-gray-100">{business.admin_notes}</p>
                                             </div>
                                         </div>
@@ -143,7 +131,7 @@ export default function SellerBusinessProfile() {
                         {/* Business Form */}
                         <div className="lg:col-span-2">
                             <div className="rounded-xl border bg-white p-6 dark:bg-gray-800">
-                                <div className="flex items-center justify-between mb-6">
+                                <div className="mb-6 flex items-center justify-between">
                                     <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Business Details</h3>
                                     {!business.can_edit && (
                                         <div className="flex items-center gap-2 text-sm text-amber-600 dark:text-amber-400">
@@ -152,33 +140,35 @@ export default function SellerBusinessProfile() {
                                         </div>
                                     )}
                                 </div>
-                                
+
                                 <form onSubmit={handleSubmit} className="space-y-6">
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                            <Store className="inline h-4 w-4 mr-2" />
+                                        <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                            <Store className="mr-2 inline h-4 w-4" />
                                             Business Type *
                                         </label>
                                         <select
                                             value={data.business_type}
                                             onChange={(e) => setData('business_type', e.target.value)}
                                             disabled={!business.can_edit}
-                                            className="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 disabled:bg-gray-100 dark:disabled:bg-gray-600 disabled:cursor-not-allowed"
+                                            className="w-full rounded-lg border-gray-300 disabled:cursor-not-allowed disabled:bg-gray-100 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:disabled:bg-gray-600"
                                             required
                                         >
                                             <option value="">Select a business type</option>
                                             {Object.entries(businessTypes).map(([key, value]) => (
-                                                <option key={key} value={key}>{value}</option>
+                                                <option key={key} value={key}>
+                                                    {value}
+                                                </option>
                                             ))}
                                         </select>
                                         {errors.business_type && (
                                             <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.business_type}</p>
                                         )}
                                     </div>
-                                    
+
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                            <FileText className="inline h-4 w-4 mr-2" />
+                                        <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                            <FileText className="mr-2 inline h-4 w-4" />
                                             Business Description *
                                         </label>
                                         <textarea
@@ -186,7 +176,7 @@ export default function SellerBusinessProfile() {
                                             onChange={(e) => setData('business_description', e.target.value)}
                                             disabled={!business.can_edit}
                                             rows={6}
-                                            className="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 disabled:bg-gray-100 dark:disabled:bg-gray-600 disabled:cursor-not-allowed"
+                                            className="w-full rounded-lg border-gray-300 disabled:cursor-not-allowed disabled:bg-gray-100 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:disabled:bg-gray-600"
                                             placeholder="Describe your business, products, and services in detail (minimum 50 characters)..."
                                             required
                                         />
@@ -197,7 +187,7 @@ export default function SellerBusinessProfile() {
                                             <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.business_description}</p>
                                         )}
                                     </div>
-                                    
+
                                     {business.can_edit && (
                                         <div className="flex items-center justify-end">
                                             <button
@@ -217,8 +207,8 @@ export default function SellerBusinessProfile() {
                 ) : (
                     <div className="rounded-xl border bg-white p-12 text-center dark:bg-gray-800">
                         <Store className="mx-auto mb-4 h-12 w-12 text-gray-400" />
-                        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">No Business Application</h3>
-                        <p className="text-gray-600 dark:text-gray-300 mb-6">
+                        <h3 className="mb-2 text-lg font-semibold text-gray-900 dark:text-gray-100">No Business Application</h3>
+                        <p className="mb-6 text-gray-600 dark:text-gray-300">
                             You don't have a seller application yet. Apply to become a seller to access business features.
                         </p>
                         <a
