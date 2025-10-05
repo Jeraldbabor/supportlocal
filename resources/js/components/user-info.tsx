@@ -4,7 +4,7 @@ import { type User } from '@/types';
 
 export function UserInfo({ user, showEmail = false }: { user: User; showEmail?: boolean }) {
     const getInitials = useInitials();
-    
+
     // Use avatar_url from backend accessor (includes default avatars)
     const avatarSrc = (user as User & { avatar_url?: string }).avatar_url || user.avatar;
 

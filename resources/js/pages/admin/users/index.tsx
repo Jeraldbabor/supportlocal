@@ -1,42 +1,36 @@
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem, type SharedData, type User } from '@/types';
 import { Head, Link, router, usePage } from '@inertiajs/react';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { 
-    DropdownMenu, 
-    DropdownMenuContent, 
-    DropdownMenuItem, 
-    DropdownMenuLabel, 
-    DropdownMenuSeparator, 
-    DropdownMenuTrigger 
-} from '@/components/ui/dropdown-menu';
-import { Input } from '@/components/ui/input';
-import { 
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue 
-} from '@/components/ui/select';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { 
-    Eye, 
-    Edit, 
-    Trash2, 
-    UserPlus, 
-    Search, 
-    Filter, 
-    MoreHorizontal,
+import {
     CheckCircle,
-    XCircle,
+    Edit,
+    Eye,
+    Filter,
     Mail,
+    MoreHorizontal,
+    Search,
     Shield,
-    Users,
+    Trash2,
     UserCheck,
+    UserPlus,
+    Users,
     UserX,
+    XCircle,
 } from 'lucide-react';
-import { useState, ChangeEvent, KeyboardEvent } from 'react';
+import { ChangeEvent, KeyboardEvent, useState } from 'react';
 
 interface UserData extends User {
     role_display: string;
@@ -83,20 +77,24 @@ const breadcrumbs: BreadcrumbItem[] = [
 
 export default function UsersIndex() {
     const { users, filters, roles, stats } = usePage<SharedData & Props>().props;
-    
+
     const [searchTerm, setSearchTerm] = useState(filters.search || '');
     const [selectedRole, setSelectedRole] = useState(filters.role || 'all');
     const [selectedStatus, setSelectedStatus] = useState(filters.status || 'all');
 
     const handleSearch = () => {
-        router.get('/admin/users', {
-            search: searchTerm,
-            role: selectedRole === 'all' ? '' : selectedRole,
-            status: selectedStatus === 'all' ? '' : selectedStatus,
-        }, {
-            preserveState: true,
-            replace: true,
-        });
+        router.get(
+            '/admin/users',
+            {
+                search: searchTerm,
+                role: selectedRole === 'all' ? '' : selectedRole,
+                status: selectedStatus === 'all' ? '' : selectedStatus,
+            },
+            {
+                preserveState: true,
+                replace: true,
+            },
+        );
     };
 
     const handleClearFilters = () => {
@@ -107,9 +105,13 @@ export default function UsersIndex() {
     };
 
     const handleToggleStatus = (userId: number) => {
-        router.post(`/admin/users/${userId}/toggle-status`, {}, {
-            preserveScroll: true,
-        });
+        router.post(
+            `/admin/users/${userId}/toggle-status`,
+            {},
+            {
+                preserveScroll: true,
+            },
+        );
     };
 
     const handleDelete = (userId: number) => {
@@ -136,7 +138,7 @@ export default function UsersIndex() {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="User Management" />
-            
+
             <div className="flex flex-col gap-6">
                 {/* Stats Cards */}
                 <div className="grid gap-4 md:grid-cols-6">
@@ -149,7 +151,7 @@ export default function UsersIndex() {
                             <div className="text-2xl font-bold">{stats.total}</div>
                         </CardContent>
                     </Card>
-                    
+
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                             <CardTitle className="text-sm font-medium">Active</CardTitle>
@@ -159,7 +161,7 @@ export default function UsersIndex() {
                             <div className="text-2xl font-bold text-green-600">{stats.active}</div>
                         </CardContent>
                     </Card>
-                    
+
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                             <CardTitle className="text-sm font-medium">Inactive</CardTitle>
@@ -169,7 +171,7 @@ export default function UsersIndex() {
                             <div className="text-2xl font-bold text-red-600">{stats.inactive}</div>
                         </CardContent>
                     </Card>
-                    
+
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                             <CardTitle className="text-sm font-medium">Administrators</CardTitle>
@@ -179,7 +181,7 @@ export default function UsersIndex() {
                             <div className="text-2xl font-bold">{stats.administrators}</div>
                         </CardContent>
                     </Card>
-                    
+
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                             <CardTitle className="text-sm font-medium">Sellers</CardTitle>
@@ -189,7 +191,7 @@ export default function UsersIndex() {
                             <div className="text-2xl font-bold">{stats.sellers}</div>
                         </CardContent>
                     </Card>
-                    
+
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                             <CardTitle className="text-sm font-medium">Buyers</CardTitle>
@@ -205,9 +207,7 @@ export default function UsersIndex() {
                 <div className="flex items-center justify-between">
                     <div>
                         <h1 className="text-3xl font-bold tracking-tight">User Management</h1>
-                        <p className="text-muted-foreground">
-                            Manage all users in the system
-                        </p>
+                        <p className="text-muted-foreground">Manage all users in the system</p>
                     </div>
                     <Link href="/admin/users/create">
                         <Button>
@@ -224,7 +224,7 @@ export default function UsersIndex() {
                             <div className="flex-1">
                                 <label className="text-sm font-medium">Search</label>
                                 <div className="relative">
-                                    <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                                    <Search className="absolute top-3 left-3 h-4 w-4 text-muted-foreground" />
                                     <Input
                                         placeholder="Search by name or email..."
                                         value={searchTerm}
@@ -234,7 +234,7 @@ export default function UsersIndex() {
                                     />
                                 </div>
                             </div>
-                            
+
                             <div className="w-48">
                                 <label className="text-sm font-medium">Role</label>
                                 <Select value={selectedRole} onValueChange={setSelectedRole}>
@@ -251,7 +251,7 @@ export default function UsersIndex() {
                                     </SelectContent>
                                 </Select>
                             </div>
-                            
+
                             <div className="w-48">
                                 <label className="text-sm font-medium">Status</label>
                                 <Select value={selectedStatus} onValueChange={setSelectedStatus}>
@@ -265,7 +265,7 @@ export default function UsersIndex() {
                                     </SelectContent>
                                 </Select>
                             </div>
-                            
+
                             <div className="flex gap-2">
                                 <Button onClick={handleSearch}>
                                     <Filter className="mr-2 h-4 w-4" />
@@ -286,49 +286,44 @@ export default function UsersIndex() {
                             <table className="w-full">
                                 <thead className="border-b bg-gray-50 dark:bg-gray-800">
                                     <tr>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email Verified</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Last Login</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-[70px]">Actions</th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">User</th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">Role</th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">Status</th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">
+                                            Email Verified
+                                        </th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">Last Login</th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">Created</th>
+                                        <th className="w-[70px] px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">
+                                            Actions
+                                        </th>
                                     </tr>
                                 </thead>
-                                <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
+                                <tbody className="divide-y divide-gray-200 bg-white dark:divide-gray-700 dark:bg-gray-900">
                                     {users.data.map((user) => (
                                         <tr key={user.id} className="hover:bg-gray-50 dark:hover:bg-gray-800">
                                             <td className="px-6 py-4">
                                                 <div className="flex items-center gap-3">
-                                                    <img
-                                                        src={user.avatar_url}
-                                                        alt={user.name}
-                                                        className="h-8 w-8 rounded-full"
-                                                    />
+                                                    <img src={user.avatar_url} alt={user.name} className="h-8 w-8 rounded-full" />
                                                     <div>
                                                         <div className="font-medium">{user.name}</div>
-                                                        <div className="text-sm text-muted-foreground">
-                                                            {user.email}
-                                                        </div>
+                                                        <div className="text-sm text-muted-foreground">{user.email}</div>
                                                         {user.phone_number && (
-                                                            <div className="text-xs text-muted-foreground">
-                                                                {user.phone_number}
-                                                            </div>
+                                                            <div className="text-xs text-muted-foreground">{user.phone_number}</div>
                                                         )}
                                                     </div>
                                                 </div>
                                             </td>
                                             <td className="px-6 py-4">
-                                                <Badge className={getRoleColor(user.role || '')}>
-                                                    {user.role_display}
-                                                </Badge>
+                                                <Badge className={getRoleColor(user.role || '')}>{user.role_display}</Badge>
                                             </td>
                                             <td className="px-6 py-4">
                                                 <Badge
                                                     variant={user.is_active ? 'default' : 'secondary'}
-                                                    className={user.is_active 
-                                                        ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400'
-                                                        : 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400'
+                                                    className={
+                                                        user.is_active
+                                                            ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400'
+                                                            : 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400'
                                                     }
                                                 >
                                                     {user.is_active ? 'Active' : 'Inactive'}
@@ -349,17 +344,13 @@ export default function UsersIndex() {
                                             </td>
                                             <td className="px-6 py-4">
                                                 {user.last_login_at ? (
-                                                    <span className="text-sm">
-                                                        {new Date(user.last_login_at as string).toLocaleDateString()}
-                                                    </span>
+                                                    <span className="text-sm">{new Date(user.last_login_at as string).toLocaleDateString()}</span>
                                                 ) : (
                                                     <span className="text-sm text-muted-foreground">Never</span>
                                                 )}
                                             </td>
                                             <td className="px-6 py-4">
-                                                <span className="text-sm">
-                                                    {new Date(user.created_at).toLocaleDateString()}
-                                                </span>
+                                                <span className="text-sm">{new Date(user.created_at).toLocaleDateString()}</span>
                                             </td>
                                             <td className="px-6 py-4">
                                                 <DropdownMenu>
@@ -383,9 +374,7 @@ export default function UsersIndex() {
                                                             </Link>
                                                         </DropdownMenuItem>
                                                         <DropdownMenuSeparator />
-                                                        <DropdownMenuItem 
-                                                            onClick={() => handleToggleStatus(user.id)}
-                                                        >
+                                                        <DropdownMenuItem onClick={() => handleToggleStatus(user.id)}>
                                                             {user.is_active ? (
                                                                 <>
                                                                     <UserX className="mr-2 h-4 w-4" />
@@ -407,10 +396,7 @@ export default function UsersIndex() {
                                                             </DropdownMenuItem>
                                                         )}
                                                         <DropdownMenuSeparator />
-                                                        <DropdownMenuItem 
-                                                            onClick={() => handleDelete(user.id)}
-                                                            className="text-red-600"
-                                                        >
+                                                        <DropdownMenuItem onClick={() => handleDelete(user.id)} className="text-red-600">
                                                             <Trash2 className="mr-2 h-4 w-4" />
                                                             Delete User
                                                         </DropdownMenuItem>
@@ -422,16 +408,15 @@ export default function UsersIndex() {
                                 </tbody>
                             </table>
                         </div>
-                        
+
                         {users.data.length === 0 && (
                             <div className="flex flex-col items-center justify-center py-12">
-                                <Users className="h-12 w-12 text-muted-foreground mb-4" />
+                                <Users className="mb-4 h-12 w-12 text-muted-foreground" />
                                 <h3 className="text-lg font-medium">No users found</h3>
                                 <p className="text-muted-foreground">
                                     {filters.search || filters.role || filters.status
                                         ? 'Try adjusting your filters'
-                                        : 'Get started by creating your first user'
-                                    }
+                                        : 'Get started by creating your first user'}
                                 </p>
                             </div>
                         )}
@@ -441,20 +426,19 @@ export default function UsersIndex() {
                 {/* Pagination */}
                 {users.links && users.links.length > 3 && (
                     <div className="flex items-center justify-center gap-2">
-                        {users.links.map((link, index) => (
-                            link.url && (
-                                <Link
-                                    key={index}
-                                    href={link.url}
-                                    className={`px-3 py-2 text-sm rounded-md ${
-                                        link.active
-                                            ? 'bg-primary text-primary-foreground'
-                                            : 'bg-background border hover:bg-muted'
-                                    }`}
-                                    dangerouslySetInnerHTML={{ __html: link.label }}
-                                />
-                            )
-                        ))}
+                        {users.links.map(
+                            (link, index) =>
+                                link.url && (
+                                    <Link
+                                        key={index}
+                                        href={link.url}
+                                        className={`rounded-md px-3 py-2 text-sm ${
+                                            link.active ? 'bg-primary text-primary-foreground' : 'border bg-background hover:bg-muted'
+                                        }`}
+                                        dangerouslySetInnerHTML={{ __html: link.label }}
+                                    />
+                                ),
+                        )}
                     </div>
                 )}
             </div>

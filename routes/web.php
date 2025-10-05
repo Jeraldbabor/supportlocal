@@ -45,9 +45,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Role-specific routes examples
     Route::middleware(['role:seller'])->group(function () {
-        Route::get('/seller/products', function () {
-            return Inertia::render('seller/products');
-        })->name('seller.products');
+        // Product Management Routes
+        Route::resource('seller/products', App\Http\Controllers\Seller\ProductController::class, [
+            'as' => 'seller',
+            'except' => ['show']
+        ]);
+        Route::get('/seller/products/{product}', [App\Http\Controllers\Seller\ProductController::class, 'show'])->name('seller.products.show');
+        Route::post('/seller/products/{product}/toggle-status', [App\Http\Controllers\Seller\ProductController::class, 'toggleStatus'])->name('seller.products.toggle-status');
+        Route::post('/seller/products/{product}/duplicate', [App\Http\Controllers\Seller\ProductController::class, 'duplicate'])->name('seller.products.duplicate');
+        Route::patch('/seller/products/{product}/inventory', [App\Http\Controllers\Seller\ProductController::class, 'updateInventory'])->name('seller.products.inventory.update');
 
         Route::get('/seller/dashboard', [App\Http\Controllers\Seller\DashboardController::class, 'index'])->name('seller.dashboard');
 

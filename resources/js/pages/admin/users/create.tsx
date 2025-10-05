@@ -1,16 +1,10 @@
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem, type SharedData } from '@/types';
 import { Head, Link, useForm, usePage } from '@inertiajs/react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { 
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue 
-} from '@/components/ui/select';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ArrowLeft, Save, UserPlus } from 'lucide-react';
 import { FormEvent } from 'react';
 
@@ -26,7 +20,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 
 export default function CreateUser() {
     const { roles } = usePage<SharedData & Props>().props;
-    
+
     const { data, setData, post, processing, errors } = useForm({
         name: '',
         email: '',
@@ -47,7 +41,7 @@ export default function CreateUser() {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Create User" />
-            
+
             <div className="flex flex-col gap-6">
                 {/* Header */}
                 <div className="flex items-center justify-between">
@@ -60,9 +54,7 @@ export default function CreateUser() {
                         </Link>
                         <div>
                             <h1 className="text-3xl font-bold tracking-tight">Create New User</h1>
-                            <p className="text-muted-foreground">
-                                Add a new user to the system
-                            </p>
+                            <p className="text-muted-foreground">Add a new user to the system</p>
                         </div>
                     </div>
                 </div>
@@ -88,9 +80,7 @@ export default function CreateUser() {
                                         className={errors.name ? 'border-red-500' : ''}
                                         placeholder="Enter full name"
                                     />
-                                    {errors.name && (
-                                        <p className="text-sm text-red-600">{errors.name}</p>
-                                    )}
+                                    {errors.name && <p className="text-sm text-red-600">{errors.name}</p>}
                                 </div>
 
                                 <div className="space-y-2">
@@ -102,9 +92,7 @@ export default function CreateUser() {
                                         className={errors.email ? 'border-red-500' : ''}
                                         placeholder="Enter email address"
                                     />
-                                    {errors.email && (
-                                        <p className="text-sm text-red-600">{errors.email}</p>
-                                    )}
+                                    {errors.email && <p className="text-sm text-red-600">{errors.email}</p>}
                                 </div>
 
                                 <div className="space-y-2">
@@ -121,9 +109,7 @@ export default function CreateUser() {
                                             ))}
                                         </SelectContent>
                                     </Select>
-                                    {errors.role && (
-                                        <p className="text-sm text-red-600">{errors.role}</p>
-                                    )}
+                                    {errors.role && <p className="text-sm text-red-600">{errors.role}</p>}
                                 </div>
 
                                 <div className="space-y-2">
@@ -135,9 +121,7 @@ export default function CreateUser() {
                                         className={errors.phone_number ? 'border-red-500' : ''}
                                         placeholder="Enter phone number"
                                     />
-                                    {errors.phone_number && (
-                                        <p className="text-sm text-red-600">{errors.phone_number}</p>
-                                    )}
+                                    {errors.phone_number && <p className="text-sm text-red-600">{errors.phone_number}</p>}
                                 </div>
 
                                 <div className="space-y-2">
@@ -148,9 +132,7 @@ export default function CreateUser() {
                                         onChange={(e) => setData('date_of_birth', e.target.value)}
                                         className={errors.date_of_birth ? 'border-red-500' : ''}
                                     />
-                                    {errors.date_of_birth && (
-                                        <p className="text-sm text-red-600">{errors.date_of_birth}</p>
-                                    )}
+                                    {errors.date_of_birth && <p className="text-sm text-red-600">{errors.date_of_birth}</p>}
                                 </div>
                             </CardContent>
                         </Card>
@@ -158,9 +140,7 @@ export default function CreateUser() {
                         {/* Security & Additional Info */}
                         <Card>
                             <CardHeader>
-                                <CardTitle className="flex items-center gap-2">
-                                    Security & Additional Information
-                                </CardTitle>
+                                <CardTitle className="flex items-center gap-2">Security & Additional Information</CardTitle>
                             </CardHeader>
                             <CardContent className="space-y-4">
                                 <div className="space-y-2">
@@ -172,9 +152,7 @@ export default function CreateUser() {
                                         className={errors.password ? 'border-red-500' : ''}
                                         placeholder="Enter password"
                                     />
-                                    {errors.password && (
-                                        <p className="text-sm text-red-600">{errors.password}</p>
-                                    )}
+                                    {errors.password && <p className="text-sm text-red-600">{errors.password}</p>}
                                 </div>
 
                                 <div className="space-y-2">
@@ -186,9 +164,7 @@ export default function CreateUser() {
                                         className={errors.password_confirmation ? 'border-red-500' : ''}
                                         placeholder="Confirm password"
                                     />
-                                    {errors.password_confirmation && (
-                                        <p className="text-sm text-red-600">{errors.password_confirmation}</p>
-                                    )}
+                                    {errors.password_confirmation && <p className="text-sm text-red-600">{errors.password_confirmation}</p>}
                                 </div>
 
                                 <div className="space-y-2">
@@ -196,13 +172,11 @@ export default function CreateUser() {
                                     <textarea
                                         value={data.address}
                                         onChange={(e) => setData('address', e.target.value)}
-                                        className={`flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 ${errors.address ? 'border-red-500' : ''}`}
+                                        className={`flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 ${errors.address ? 'border-red-500' : ''}`}
                                         placeholder="Enter address"
                                         rows={3}
                                     />
-                                    {errors.address && (
-                                        <p className="text-sm text-red-600">{errors.address}</p>
-                                    )}
+                                    {errors.address && <p className="text-sm text-red-600">{errors.address}</p>}
                                 </div>
 
                                 <div className="flex items-center space-x-2">
@@ -217,9 +191,7 @@ export default function CreateUser() {
                                         Active User
                                     </label>
                                 </div>
-                                <p className="text-xs text-muted-foreground">
-                                    Inactive users cannot log in to the system
-                                </p>
+                                <p className="text-xs text-muted-foreground">Inactive users cannot log in to the system</p>
                             </CardContent>
                         </Card>
                     </div>

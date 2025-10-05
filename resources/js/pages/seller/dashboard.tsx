@@ -1,7 +1,7 @@
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem, type SharedData } from '@/types';
 import { Head, Link, usePage } from '@inertiajs/react';
-import { Package, ShoppingBag, TrendingUp, Users, User, Settings, CheckCircle, AlertTriangle, BarChart3, Target, Calendar, Star } from 'lucide-react';
+import { AlertTriangle, BarChart3, Calendar, CheckCircle, Package, Settings, ShoppingBag, Star, Target, TrendingUp, User, Users } from 'lucide-react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -55,7 +55,14 @@ interface SellerDashboardProps extends SharedData {
 }
 
 export default function SellerDashboard() {
-    const { auth, profileSummary = {}, settingsSummary = {}, dashboardStats = {}, recommendations = [], recentActivity = [] } = usePage<SellerDashboardProps>().props;
+    const {
+        auth,
+        profileSummary = {},
+        settingsSummary = {},
+        dashboardStats = {},
+        recommendations = [],
+        recentActivity = [],
+    } = usePage<SellerDashboardProps>().props;
     const user = auth.user;
 
     // Provide default values
@@ -65,7 +72,7 @@ export default function SellerDashboard() {
         has_avatar: false,
         email_verified: false,
         business_setup: false,
-        ...profileSummary
+        ...profileSummary,
     };
 
     const settings = {
@@ -73,14 +80,14 @@ export default function SellerDashboard() {
         two_factor_enabled: false,
         privacy_settings_configured: false,
         marketing_preferences_set: false,
-        ...settingsSummary
+        ...settingsSummary,
     };
 
     const stats = {
         profile_completeness: 0,
         account_health_score: 0,
         days_as_seller: 0,
-        ...dashboardStats
+        ...dashboardStats,
     };
 
     const getHealthScoreColor = (score: number) => {
@@ -97,10 +104,14 @@ export default function SellerDashboard() {
 
     const getPriorityColor = (priority: string) => {
         switch (priority) {
-            case 'high': return 'border-red-200 bg-red-50 text-red-700 dark:border-red-800 dark:bg-red-950/50 dark:text-red-300';
-            case 'medium': return 'border-yellow-200 bg-yellow-50 text-yellow-700 dark:border-yellow-800 dark:bg-yellow-950/50 dark:text-yellow-300';
-            case 'low': return 'border-blue-200 bg-blue-50 text-blue-700 dark:border-blue-800 dark:bg-blue-950/50 dark:text-blue-300';
-            default: return 'border-gray-200 bg-gray-50 text-gray-700 dark:border-gray-800 dark:bg-gray-950/50 dark:text-gray-300';
+            case 'high':
+                return 'border-red-200 bg-red-50 text-red-700 dark:border-red-800 dark:bg-red-950/50 dark:text-red-300';
+            case 'medium':
+                return 'border-yellow-200 bg-yellow-50 text-yellow-700 dark:border-yellow-800 dark:bg-yellow-950/50 dark:text-yellow-300';
+            case 'low':
+                return 'border-blue-200 bg-blue-50 text-blue-700 dark:border-blue-800 dark:bg-blue-950/50 dark:text-blue-300';
+            default:
+                return 'border-gray-200 bg-gray-50 text-gray-700 dark:border-gray-800 dark:bg-gray-950/50 dark:text-gray-300';
         }
     };
 
@@ -133,29 +144,32 @@ export default function SellerDashboard() {
                                 <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Welcome, {user?.name}!</h1>
                                 <p className="text-gray-600 dark:text-gray-300">
                                     Role: <span className="font-semibold text-blue-600 dark:text-blue-400">Seller/Artisan</span>
-                                    {stats.days_as_seller > 0 && (
-                                        <span className="ml-2 text-sm">• {stats.days_as_seller} days as seller</span>
-                                    )}
+                                    {stats.days_as_seller > 0 && <span className="ml-2 text-sm">• {stats.days_as_seller} days as seller</span>}
                                 </p>
                                 <p className="text-sm text-gray-500 dark:text-gray-400">Manage your products, orders, and customer relationships</p>
                             </div>
                         </div>
-                        
+
                         {/* Account Health Score */}
                         <div className="text-right">
                             <div className="flex items-center gap-2">
                                 <span className="text-sm font-medium text-gray-600 dark:text-gray-300">Account Health</span>
-                                <div className={`flex h-8 w-8 items-center justify-center rounded-full ${getHealthScoreBg(stats.account_health_score)}`}>
+                                <div
+                                    className={`flex h-8 w-8 items-center justify-center rounded-full ${getHealthScoreBg(stats.account_health_score)}`}
+                                >
                                     <span className={`text-sm font-bold ${getHealthScoreColor(stats.account_health_score)}`}>
                                         {stats.account_health_score}%
                                     </span>
                                 </div>
                             </div>
                             <div className="mt-1 h-2 w-24 rounded-full bg-gray-200 dark:bg-gray-700">
-                                <div 
+                                <div
                                     className={`h-2 rounded-full transition-all duration-500 ${
-                                        stats.account_health_score >= 80 ? 'bg-green-500' :
-                                        stats.account_health_score >= 60 ? 'bg-yellow-500' : 'bg-red-500'
+                                        stats.account_health_score >= 80
+                                            ? 'bg-green-500'
+                                            : stats.account_health_score >= 60
+                                              ? 'bg-yellow-500'
+                                              : 'bg-red-500'
                                     }`}
                                     style={{ width: `${stats.account_health_score}%` }}
                                 ></div>
@@ -168,23 +182,21 @@ export default function SellerDashboard() {
                 <div className="grid gap-4 md:grid-cols-2">
                     {/* Profile Completeness Widget */}
                     <div className="rounded-xl border bg-white p-6 shadow-sm dark:bg-gray-800">
-                        <div className="flex items-center justify-between mb-4">
-                            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
+                        <div className="mb-4 flex items-center justify-between">
+                            <h3 className="flex items-center gap-2 text-lg font-semibold text-gray-900 dark:text-gray-100">
                                 <User className="h-5 w-5" />
                                 Profile Completeness
                             </h3>
-                            <span className="text-2xl font-bold text-blue-600 dark:text-blue-400">
-                                {profile.profile_completeness}%
-                            </span>
+                            <span className="text-2xl font-bold text-blue-600 dark:text-blue-400">{profile.profile_completeness}%</span>
                         </div>
-                        
+
                         <div className="mb-4 h-2 w-full rounded-full bg-gray-200 dark:bg-gray-700">
-                            <div 
+                            <div
                                 className="h-2 rounded-full bg-blue-500 transition-all duration-500"
                                 style={{ width: `${profile.profile_completeness}%` }}
                             ></div>
                         </div>
-                        
+
                         <div className="space-y-2">
                             <div className="flex items-center gap-2 text-sm">
                                 {profile.has_avatar ? (
@@ -211,25 +223,23 @@ export default function SellerDashboard() {
                                 <span className="text-gray-600 dark:text-gray-300">Business Setup</span>
                             </div>
                         </div>
-                        
+
                         {profile.missing_fields && profile.missing_fields.length > 0 && (
-                            <div className="mt-4 p-3 bg-amber-50 dark:bg-amber-950/20 rounded-lg">
-                                <p className="text-sm text-amber-700 dark:text-amber-300 font-medium">
-                                    Missing: {profile.missing_fields.join(', ')}
-                                </p>
+                            <div className="mt-4 rounded-lg bg-amber-50 p-3 dark:bg-amber-950/20">
+                                <p className="text-sm font-medium text-amber-700 dark:text-amber-300">Missing: {profile.missing_fields.join(', ')}</p>
                             </div>
                         )}
                     </div>
 
                     {/* Account Settings Widget */}
                     <div className="rounded-xl border bg-white p-6 shadow-sm dark:bg-gray-800">
-                        <div className="flex items-center justify-between mb-4">
-                            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
+                        <div className="mb-4 flex items-center justify-between">
+                            <h3 className="flex items-center gap-2 text-lg font-semibold text-gray-900 dark:text-gray-100">
                                 <Settings className="h-5 w-5" />
                                 Account Settings
                             </h3>
                         </div>
-                        
+
                         <div className="space-y-3">
                             <div className="flex items-center justify-between">
                                 <span className="text-sm text-gray-600 dark:text-gray-300">Notifications</span>
@@ -314,11 +324,11 @@ export default function SellerDashboard() {
                 <div className="grid gap-6 lg:grid-cols-3">
                     {/* Profile & Settings Overview */}
                     <div className="lg:col-span-2">
-                        <div className="grid gap-4 md:grid-cols-2 mb-6">
+                        <div className="mb-6 grid gap-4 md:grid-cols-2">
                             {/* Quick Profile Access */}
                             <div className="rounded-xl border bg-white p-4 dark:bg-gray-800">
-                                <div className="flex items-center justify-between mb-3">
-                                    <h4 className="font-medium text-gray-900 dark:text-gray-100 flex items-center gap-2">
+                                <div className="mb-3 flex items-center justify-between">
+                                    <h4 className="flex items-center gap-2 font-medium text-gray-900 dark:text-gray-100">
                                         <User className="h-4 w-4" />
                                         Profile Management
                                     </h4>
@@ -326,19 +336,19 @@ export default function SellerDashboard() {
                                 <div className="space-y-2">
                                     <Link
                                         href="/seller/profile"
-                                        className="block w-full text-left px-3 py-2 text-sm text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-lg dark:text-blue-400 dark:hover:text-blue-300 dark:hover:bg-blue-950/50"
+                                        className="block w-full rounded-lg px-3 py-2 text-left text-sm text-blue-600 hover:bg-blue-50 hover:text-blue-800 dark:text-blue-400 dark:hover:bg-blue-950/50 dark:hover:text-blue-300"
                                     >
                                         → View Profile
                                     </Link>
                                     <Link
                                         href="/seller/profile/edit"
-                                        className="block w-full text-left px-3 py-2 text-sm text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-lg dark:text-blue-400 dark:hover:text-blue-300 dark:hover:bg-blue-950/50"
+                                        className="block w-full rounded-lg px-3 py-2 text-left text-sm text-blue-600 hover:bg-blue-50 hover:text-blue-800 dark:text-blue-400 dark:hover:bg-blue-950/50 dark:hover:text-blue-300"
                                     >
                                         → Edit Profile
                                     </Link>
                                     <Link
                                         href="/seller/profile/business"
-                                        className="block w-full text-left px-3 py-2 text-sm text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-lg dark:text-blue-400 dark:hover:text-blue-300 dark:hover:bg-blue-950/50"
+                                        className="block w-full rounded-lg px-3 py-2 text-left text-sm text-blue-600 hover:bg-blue-50 hover:text-blue-800 dark:text-blue-400 dark:hover:bg-blue-950/50 dark:hover:text-blue-300"
                                     >
                                         → Business Info
                                     </Link>
@@ -347,8 +357,8 @@ export default function SellerDashboard() {
 
                             {/* Quick Settings Access */}
                             <div className="rounded-xl border bg-white p-4 dark:bg-gray-800">
-                                <div className="flex items-center justify-between mb-3">
-                                    <h4 className="font-medium text-gray-900 dark:text-gray-100 flex items-center gap-2">
+                                <div className="mb-3 flex items-center justify-between">
+                                    <h4 className="flex items-center gap-2 font-medium text-gray-900 dark:text-gray-100">
                                         <Settings className="h-4 w-4" />
                                         Account Settings
                                     </h4>
@@ -356,19 +366,19 @@ export default function SellerDashboard() {
                                 <div className="space-y-2">
                                     <Link
                                         href="/seller/settings"
-                                        className="block w-full text-left px-3 py-2 text-sm text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-lg dark:text-blue-400 dark:hover:text-blue-300 dark:hover:bg-blue-950/50"
+                                        className="block w-full rounded-lg px-3 py-2 text-left text-sm text-blue-600 hover:bg-blue-50 hover:text-blue-800 dark:text-blue-400 dark:hover:bg-blue-950/50 dark:hover:text-blue-300"
                                     >
                                         → Settings Overview
                                     </Link>
                                     <Link
                                         href="/seller/settings/security"
-                                        className="block w-full text-left px-3 py-2 text-sm text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-lg dark:text-blue-400 dark:hover:text-blue-300 dark:hover:bg-blue-950/50"
+                                        className="block w-full rounded-lg px-3 py-2 text-left text-sm text-blue-600 hover:bg-blue-50 hover:text-blue-800 dark:text-blue-400 dark:hover:bg-blue-950/50 dark:hover:text-blue-300"
                                     >
                                         → Security Settings
                                     </Link>
                                     <Link
                                         href="/seller/settings/notifications"
-                                        className="block w-full text-left px-3 py-2 text-sm text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-lg dark:text-blue-400 dark:hover:text-blue-300 dark:hover:bg-blue-950/50"
+                                        className="block w-full rounded-lg px-3 py-2 text-left text-sm text-blue-600 hover:bg-blue-50 hover:text-blue-800 dark:text-blue-400 dark:hover:bg-blue-950/50 dark:hover:text-blue-300"
                                     >
                                         → Notifications
                                     </Link>
@@ -378,7 +388,7 @@ export default function SellerDashboard() {
 
                         {/* Recommendations */}
                         <div className="rounded-xl border bg-white p-6 shadow-sm dark:bg-gray-800">
-                            <h3 className="mb-4 text-lg font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
+                            <h3 className="mb-4 flex items-center gap-2 text-lg font-semibold text-gray-900 dark:text-gray-100">
                                 <Target className="h-5 w-5" />
                                 Recommendations for You
                             </h3>
@@ -389,21 +399,25 @@ export default function SellerDashboard() {
                                         return (
                                             <div key={index} className={`rounded-lg border p-4 ${getPriorityColor(rec.priority)}`}>
                                                 <div className="flex items-start gap-3">
-                                                    <IconComponent className="h-5 w-5 mt-0.5" />
+                                                    <IconComponent className="mt-0.5 h-5 w-5" />
                                                     <div className="flex-1">
                                                         <h4 className="font-medium">{rec.title}</h4>
-                                                        <p className="text-sm opacity-80 mt-1">{rec.description}</p>
+                                                        <p className="mt-1 text-sm opacity-80">{rec.description}</p>
                                                         {rec.action && (
                                                             <button className="mt-2 text-xs font-medium underline hover:no-underline">
                                                                 {rec.action}
                                                             </button>
                                                         )}
                                                     </div>
-                                                    <span className={`text-xs px-2 py-1 rounded-full ${
-                                                        rec.priority === 'high' ? 'bg-red-100 text-red-700 dark:bg-red-900/50 dark:text-red-300' :
-                                                        rec.priority === 'medium' ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/50 dark:text-yellow-300' :
-                                                        'bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300'
-                                                    }`}>
+                                                    <span
+                                                        className={`rounded-full px-2 py-1 text-xs ${
+                                                            rec.priority === 'high'
+                                                                ? 'bg-red-100 text-red-700 dark:bg-red-900/50 dark:text-red-300'
+                                                                : rec.priority === 'medium'
+                                                                  ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/50 dark:text-yellow-300'
+                                                                  : 'bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300'
+                                                        }`}
+                                                    >
                                                         {rec.priority}
                                                     </span>
                                                 </div>
@@ -425,7 +439,7 @@ export default function SellerDashboard() {
                     <div className="space-y-6">
                         {/* Recent Activity */}
                         <div className="rounded-xl border bg-white p-6 shadow-sm dark:bg-gray-800">
-                            <h3 className="mb-4 text-lg font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
+                            <h3 className="mb-4 flex items-center gap-2 text-lg font-semibold text-gray-900 dark:text-gray-100">
                                 <Calendar className="h-5 w-5" />
                                 Recent Activity
                             </h3>
@@ -434,14 +448,17 @@ export default function SellerDashboard() {
                                     {recentActivity.map((activity, index) => {
                                         const IconComponent = getIconComponent(activity.icon);
                                         return (
-                                            <div key={index} className="flex items-start gap-3 pb-3 border-b border-gray-100 dark:border-gray-700 last:border-0 last:pb-0">
+                                            <div
+                                                key={index}
+                                                className="flex items-start gap-3 border-b border-gray-100 pb-3 last:border-0 last:pb-0 dark:border-gray-700"
+                                            >
                                                 <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900">
                                                     <IconComponent className="h-4 w-4 text-blue-600 dark:text-blue-400" />
                                                 </div>
-                                                <div className="flex-1 min-w-0">
+                                                <div className="min-w-0 flex-1">
                                                     <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{activity.title}</p>
-                                                    <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{activity.description}</p>
-                                                    <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">{activity.date}</p>
+                                                    <p className="truncate text-xs text-gray-500 dark:text-gray-400">{activity.description}</p>
+                                                    <p className="mt-1 text-xs text-gray-400 dark:text-gray-500">{activity.date}</p>
                                                 </div>
                                             </div>
                                         );

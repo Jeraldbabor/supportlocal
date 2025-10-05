@@ -1,18 +1,7 @@
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem, type SharedData } from '@/types';
-import { Head, useForm, usePage, router } from '@inertiajs/react';
-import { 
-    User, 
-    Mail, 
-    Phone, 
-    MapPin, 
-    Calendar, 
-    CreditCard, 
-    Save,
-    Upload,
-    X,
-    AlertTriangle
-} from 'lucide-react';
+import { Head, router, useForm, usePage } from '@inertiajs/react';
+import { AlertTriangle, Calendar, CreditCard, Mail, MapPin, Phone, Save, Upload, User, X } from 'lucide-react';
 import { FormEventHandler, useRef, useState } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -75,7 +64,7 @@ export default function SellerProfileEdit() {
         if (selectedAvatar) {
             const formData = new FormData();
             formData.append('avatar', selectedAvatar);
-            
+
             router.post('/seller/profile/avatar', formData, {
                 onSuccess: () => {
                     setSelectedAvatar(null);
@@ -93,39 +82,33 @@ export default function SellerProfileEdit() {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Edit Profile" />
-            
+
             <div className="flex h-full flex-1 flex-col gap-6 overflow-x-auto rounded-xl p-4">
                 {/* Header */}
                 <div className="rounded-xl border bg-gradient-to-r from-blue-50 to-indigo-50 p-6 dark:from-blue-950/20 dark:to-indigo-950/20">
                     <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Edit Profile</h1>
-                    <p className="text-gray-600 dark:text-gray-300 mt-2">
-                        Update your personal information and preferences
-                    </p>
+                    <p className="mt-2 text-gray-600 dark:text-gray-300">Update your personal information and preferences</p>
                 </div>
 
                 {/* Profile Completeness */}
                 <div className="rounded-xl border bg-white p-6 dark:bg-gray-800">
-                    <div className="flex items-center justify-between mb-4">
+                    <div className="mb-4 flex items-center justify-between">
                         <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Profile Completeness</h3>
-                        <span className="text-2xl font-bold text-blue-600 dark:text-blue-400">
-                            {user.profile_completeness}%
-                        </span>
+                        <span className="text-2xl font-bold text-blue-600 dark:text-blue-400">{user.profile_completeness}%</span>
                     </div>
-                    
+
                     <div className="mb-4 h-2 w-full rounded-full bg-gray-200 dark:bg-gray-700">
-                        <div 
+                        <div
                             className="h-2 rounded-full bg-blue-500 transition-all duration-500"
                             style={{ width: `${user.profile_completeness}%` }}
                         ></div>
                     </div>
-                    
+
                     {user.missing_fields && user.missing_fields.length > 0 && (
-                        <div className="p-3 bg-amber-50 dark:bg-amber-950/20 rounded-lg">
-                            <div className="flex items-center gap-2 mb-2">
+                        <div className="rounded-lg bg-amber-50 p-3 dark:bg-amber-950/20">
+                            <div className="mb-2 flex items-center gap-2">
                                 <AlertTriangle className="h-4 w-4 text-amber-600 dark:text-amber-400" />
-                                <p className="text-sm font-medium text-amber-700 dark:text-amber-300">
-                                    Missing Information
-                                </p>
+                                <p className="text-sm font-medium text-amber-700 dark:text-amber-300">Missing Information</p>
                             </div>
                             <p className="text-sm text-amber-600 dark:text-amber-400">
                                 Complete these fields to improve your profile: {user.missing_fields.join(', ')}
@@ -137,23 +120,15 @@ export default function SellerProfileEdit() {
                 <div className="grid gap-6 lg:grid-cols-3">
                     {/* Avatar Upload */}
                     <div className="rounded-xl border bg-white p-6 dark:bg-gray-800">
-                        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Profile Picture</h3>
-                        
+                        <h3 className="mb-4 text-lg font-semibold text-gray-900 dark:text-gray-100">Profile Picture</h3>
+
                         <div className="flex flex-col items-center space-y-4">
                             <div className="relative">
-                                <div className="h-32 w-32 rounded-full bg-gray-200 dark:bg-gray-700 overflow-hidden">
+                                <div className="h-32 w-32 overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700">
                                     {previewUrl ? (
-                                        <img 
-                                            src={previewUrl} 
-                                            alt="Preview"
-                                            className="h-full w-full object-cover"
-                                        />
+                                        <img src={previewUrl} alt="Preview" className="h-full w-full object-cover" />
                                     ) : user.avatar_url ? (
-                                        <img 
-                                            src={user.avatar_url} 
-                                            alt={user.name}
-                                            className="h-full w-full object-cover"
-                                        />
+                                        <img src={user.avatar_url} alt={user.name} className="h-full w-full object-cover" />
                                     ) : (
                                         <div className="flex h-full w-full items-center justify-center">
                                             <User className="h-16 w-16 text-gray-400" />
@@ -172,15 +147,9 @@ export default function SellerProfileEdit() {
                                     </button>
                                 )}
                             </div>
-                            
-                            <input
-                                ref={fileInputRef}
-                                type="file"
-                                accept="image/*"
-                                onChange={handleAvatarSelect}
-                                className="hidden"
-                            />
-                            
+
+                            <input ref={fileInputRef} type="file" accept="image/*" onChange={handleAvatarSelect} className="hidden" />
+
                             <div className="flex gap-2">
                                 <button
                                     type="button"
@@ -190,7 +159,7 @@ export default function SellerProfileEdit() {
                                     <Upload className="h-4 w-4" />
                                     Choose Photo
                                 </button>
-                                
+
                                 {selectedAvatar && (
                                     <button
                                         type="button"
@@ -203,10 +172,8 @@ export default function SellerProfileEdit() {
                                     </button>
                                 )}
                             </div>
-                            
-                            <p className="text-xs text-gray-500 dark:text-gray-400 text-center">
-                                JPG, PNG or GIF (max 2MB)
-                            </p>
+
+                            <p className="text-center text-xs text-gray-500 dark:text-gray-400">JPG, PNG or GIF (max 2MB)</p>
                         </div>
                     </div>
 
@@ -215,12 +182,12 @@ export default function SellerProfileEdit() {
                         <form onSubmit={handleSubmit} className="space-y-6">
                             {/* Personal Information */}
                             <div className="rounded-xl border bg-white p-6 dark:bg-gray-800">
-                                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-6">Personal Information</h3>
-                                
+                                <h3 className="mb-6 text-lg font-semibold text-gray-900 dark:text-gray-100">Personal Information</h3>
+
                                 <div className="grid gap-6 md:grid-cols-2">
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                            <User className="inline h-4 w-4 mr-2" />
+                                        <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                            <User className="mr-2 inline h-4 w-4" />
                                             Full Name *
                                         </label>
                                         <input
@@ -230,14 +197,12 @@ export default function SellerProfileEdit() {
                                             className="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100"
                                             required
                                         />
-                                        {errors.name && (
-                                            <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.name}</p>
-                                        )}
+                                        {errors.name && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.name}</p>}
                                     </div>
-                                    
+
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                            <Mail className="inline h-4 w-4 mr-2" />
+                                        <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                            <Mail className="mr-2 inline h-4 w-4" />
                                             Email Address *
                                         </label>
                                         <input
@@ -247,14 +212,12 @@ export default function SellerProfileEdit() {
                                             className="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100"
                                             required
                                         />
-                                        {errors.email && (
-                                            <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.email}</p>
-                                        )}
+                                        {errors.email && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.email}</p>}
                                     </div>
-                                    
+
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                            <Phone className="inline h-4 w-4 mr-2" />
+                                        <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                            <Phone className="mr-2 inline h-4 w-4" />
                                             Phone Number *
                                         </label>
                                         <input
@@ -264,14 +227,12 @@ export default function SellerProfileEdit() {
                                             className="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100"
                                             required
                                         />
-                                        {errors.phone_number && (
-                                            <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.phone_number}</p>
-                                        )}
+                                        {errors.phone_number && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.phone_number}</p>}
                                     </div>
-                                    
+
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                            <Calendar className="inline h-4 w-4 mr-2" />
+                                        <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                            <Calendar className="mr-2 inline h-4 w-4" />
                                             Date of Birth
                                         </label>
                                         <input
@@ -284,10 +245,10 @@ export default function SellerProfileEdit() {
                                             <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.date_of_birth}</p>
                                         )}
                                     </div>
-                                    
+
                                     <div className="md:col-span-2">
-                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                            <MapPin className="inline h-4 w-4 mr-2" />
+                                        <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                            <MapPin className="mr-2 inline h-4 w-4" />
                                             Address *
                                         </label>
                                         <textarea
@@ -297,21 +258,19 @@ export default function SellerProfileEdit() {
                                             className="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100"
                                             required
                                         />
-                                        {errors.address && (
-                                            <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.address}</p>
-                                        )}
+                                        {errors.address && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.address}</p>}
                                     </div>
                                 </div>
                             </div>
 
                             {/* Delivery & Payment Information */}
                             <div className="rounded-xl border bg-white p-6 dark:bg-gray-800">
-                                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-6">Delivery & Payment Information</h3>
-                                
+                                <h3 className="mb-6 text-lg font-semibold text-gray-900 dark:text-gray-100">Delivery & Payment Information</h3>
+
                                 <div className="grid gap-6 md:grid-cols-2">
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                            <Phone className="inline h-4 w-4 mr-2" />
+                                        <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                            <Phone className="mr-2 inline h-4 w-4" />
                                             Delivery Phone
                                         </label>
                                         <input
@@ -325,10 +284,10 @@ export default function SellerProfileEdit() {
                                             <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.delivery_phone}</p>
                                         )}
                                     </div>
-                                    
+
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                            <CreditCard className="inline h-4 w-4 mr-2" />
+                                        <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                            <CreditCard className="mr-2 inline h-4 w-4" />
                                             GCash Number
                                         </label>
                                         <input
@@ -338,15 +297,11 @@ export default function SellerProfileEdit() {
                                             className="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100"
                                             placeholder="09XXXXXXXXX"
                                         />
-                                        {errors.gcash_number && (
-                                            <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.gcash_number}</p>
-                                        )}
+                                        {errors.gcash_number && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.gcash_number}</p>}
                                     </div>
-                                    
+
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                            GCash Account Name
-                                        </label>
+                                        <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">GCash Account Name</label>
                                         <input
                                             type="text"
                                             value={data.gcash_name}
@@ -354,14 +309,12 @@ export default function SellerProfileEdit() {
                                             className="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100"
                                             placeholder="Name registered on GCash"
                                         />
-                                        {errors.gcash_name && (
-                                            <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.gcash_name}</p>
-                                        )}
+                                        {errors.gcash_name && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.gcash_name}</p>}
                                     </div>
-                                    
+
                                     <div className="md:col-span-2">
-                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                            <MapPin className="inline h-4 w-4 mr-2" />
+                                        <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                            <MapPin className="mr-2 inline h-4 w-4" />
                                             Delivery Address
                                         </label>
                                         <textarea
@@ -375,11 +328,9 @@ export default function SellerProfileEdit() {
                                             <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.delivery_address}</p>
                                         )}
                                     </div>
-                                    
+
                                     <div className="md:col-span-2">
-                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                            Delivery Notes
-                                        </label>
+                                        <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Delivery Notes</label>
                                         <textarea
                                             value={data.delivery_notes}
                                             onChange={(e) => setData('delivery_notes', e.target.value)}

@@ -1,24 +1,24 @@
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem, type SharedData } from '@/types';
 import { Head, Link, usePage } from '@inertiajs/react';
-import { 
-    BarChart3, 
-    Database, 
-    FileText, 
-    Settings, 
-    Shield, 
-    Users, 
-    UserPlus,
+import {
+    Activity,
+    BarChart3,
     CheckCircle,
     Clock,
-    TrendingUp,
-    TrendingDown,
-    Activity,
+    Database,
+    FileText,
+    HardDrive,
     Server,
-    HardDrive
+    Settings,
+    Shield,
+    TrendingDown,
+    TrendingUp,
+    UserPlus,
+    Users,
 } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 
 interface UserStats {
     total: number;
@@ -90,33 +90,32 @@ const getGrowthPercentage = (current: number, previous: number): { percentage: n
 
 const getActivityIcon = (iconName: string) => {
     switch (iconName) {
-        case 'user-plus': return <UserPlus className="h-4 w-4" />;
-        case 'file-text': return <FileText className="h-4 w-4" />;
-        default: return <Activity className="h-4 w-4" />;
+        case 'user-plus':
+            return <UserPlus className="h-4 w-4" />;
+        case 'file-text':
+            return <FileText className="h-4 w-4" />;
+        default:
+            return <Activity className="h-4 w-4" />;
     }
 };
 
 const getActivityColor = (color: string) => {
     switch (color) {
-        case 'blue': return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200';
-        case 'orange': return 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200';
-        case 'green': return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200';
-        default: return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200';
+        case 'blue':
+            return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200';
+        case 'orange':
+            return 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200';
+        case 'green':
+            return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200';
+        default:
+            return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200';
     }
 };
 
 export default function AdminDashboard() {
-    const { 
-        auth, 
-        userStats, 
-        sellerApplicationStats, 
-        systemStats, 
-        recentActivity, 
-        growthMetrics,
-        recentUsersCount,
-        recentActiveUsersCount 
-    } = usePage<DashboardProps>().props;
-    
+    const { auth, userStats, sellerApplicationStats, systemStats, recentActivity, growthMetrics, recentUsersCount, recentActiveUsersCount } =
+        usePage<DashboardProps>().props;
+
     const user = auth.user;
 
     const userGrowth = getGrowthPercentage(growthMetrics.users_this_month, growthMetrics.users_last_month);
@@ -154,7 +153,7 @@ export default function AdminDashboard() {
                             <div>
                                 <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Total Users</p>
                                 <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{userStats.total}</p>
-                                <div className="flex items-center gap-1 mt-1">
+                                <div className="mt-1 flex items-center gap-1">
                                     {userGrowth.isPositive ? (
                                         <TrendingUp className="h-3 w-3 text-green-600" />
                                     ) : (
@@ -191,7 +190,7 @@ export default function AdminDashboard() {
                             <div>
                                 <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Applications</p>
                                 <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{sellerApplicationStats.total}</p>
-                                <div className="flex items-center gap-1 mt-1">
+                                <div className="mt-1 flex items-center gap-1">
                                     {applicationGrowth.isPositive ? (
                                         <TrendingUp className="h-3 w-3 text-green-600" />
                                     ) : (
@@ -213,9 +212,7 @@ export default function AdminDashboard() {
                             <div>
                                 <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Pending</p>
                                 <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{sellerApplicationStats.pending}</p>
-                                <p className="text-xs text-gray-500 dark:text-gray-400">
-                                    Require review
-                                </p>
+                                <p className="text-xs text-gray-500 dark:text-gray-400">Require review</p>
                             </div>
                         </CardContent>
                     </Card>
@@ -277,16 +274,14 @@ export default function AdminDashboard() {
                                 {recentActivity.length > 0 ? (
                                     recentActivity.map((activity, index) => (
                                         <div key={index} className="flex items-start gap-3">
-                                            <div className={`flex h-8 w-8 items-center justify-center rounded-full ${getActivityColor(activity.color)}`}>
+                                            <div
+                                                className={`flex h-8 w-8 items-center justify-center rounded-full ${getActivityColor(activity.color)}`}
+                                            >
                                                 {getActivityIcon(activity.icon)}
                                             </div>
-                                            <div className="flex-1 min-w-0">
-                                                <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                                                    {activity.title}
-                                                </p>
-                                                <p className="text-sm text-gray-500 dark:text-gray-400 truncate">
-                                                    {activity.description}
-                                                </p>
+                                            <div className="min-w-0 flex-1">
+                                                <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{activity.title}</p>
+                                                <p className="truncate text-sm text-gray-500 dark:text-gray-400">{activity.description}</p>
                                                 <p className="text-xs text-gray-400 dark:text-gray-500">
                                                     {new Date(activity.time).toLocaleDateString()} {new Date(activity.time).toLocaleTimeString()}
                                                 </p>
@@ -294,9 +289,7 @@ export default function AdminDashboard() {
                                         </div>
                                     ))
                                 ) : (
-                                    <p className="text-sm text-gray-500 dark:text-gray-400 text-center py-4">
-                                        No recent activity
-                                    </p>
+                                    <p className="py-4 text-center text-sm text-gray-500 dark:text-gray-400">No recent activity</p>
                                 )}
                             </div>
                         </CardContent>
@@ -313,30 +306,26 @@ export default function AdminDashboard() {
                         <CardContent className="space-y-3">
                             <Link
                                 href="/admin/users"
-                                className="flex items-center gap-3 w-full rounded-lg border border-blue-200 bg-blue-50 px-4 py-3 text-left text-blue-700 hover:bg-blue-100 dark:border-blue-800 dark:bg-blue-950/50 dark:text-blue-300 dark:hover:bg-blue-950/80"
+                                className="flex w-full items-center gap-3 rounded-lg border border-blue-200 bg-blue-50 px-4 py-3 text-left text-blue-700 hover:bg-blue-100 dark:border-blue-800 dark:bg-blue-950/50 dark:text-blue-300 dark:hover:bg-blue-950/80"
                             >
                                 <Users className="h-5 w-5" />
                                 <span className="font-medium">Manage Users</span>
                             </Link>
                             <Link
                                 href="/admin/seller-applications"
-                                className="flex items-center gap-3 w-full rounded-lg border border-orange-200 bg-orange-50 px-4 py-3 text-left text-orange-700 hover:bg-orange-100 dark:border-orange-800 dark:bg-orange-950/50 dark:text-orange-300 dark:hover:bg-orange-950/80"
+                                className="flex w-full items-center gap-3 rounded-lg border border-orange-200 bg-orange-50 px-4 py-3 text-left text-orange-700 hover:bg-orange-100 dark:border-orange-800 dark:bg-orange-950/50 dark:text-orange-300 dark:hover:bg-orange-950/80"
                             >
                                 <FileText className="h-5 w-5" />
                                 <div>
-                                    <span className="font-medium block">Seller Applications</span>
-                                    {sellerApplicationStats.pending > 0 && (
-                                        <span className="text-xs">
-                                            {sellerApplicationStats.pending} pending
-                                        </span>
-                                    )}
+                                    <span className="block font-medium">Seller Applications</span>
+                                    {sellerApplicationStats.pending > 0 && <span className="text-xs">{sellerApplicationStats.pending} pending</span>}
                                 </div>
                             </Link>
-                            <button className="flex items-center gap-3 w-full rounded-lg border border-purple-200 bg-purple-50 px-4 py-3 text-left text-purple-700 hover:bg-purple-100 dark:border-purple-800 dark:bg-purple-950/50 dark:text-purple-300 dark:hover:bg-purple-950/80">
+                            <button className="flex w-full items-center gap-3 rounded-lg border border-purple-200 bg-purple-50 px-4 py-3 text-left text-purple-700 hover:bg-purple-100 dark:border-purple-800 dark:bg-purple-950/50 dark:text-purple-300 dark:hover:bg-purple-950/80">
                                 <BarChart3 className="h-5 w-5" />
                                 <span className="font-medium">View Reports</span>
                             </button>
-                            <button className="flex items-center gap-3 w-full rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 text-left text-gray-700 hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700">
+                            <button className="flex w-full items-center gap-3 rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 text-left text-gray-700 hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700">
                                 <Settings className="h-5 w-5" />
                                 <span className="font-medium">System Settings</span>
                             </button>
@@ -371,9 +360,7 @@ export default function AdminDashboard() {
                                 </div>
                                 <div>
                                     <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Tables</p>
-                                    <p className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                                        {systemStats.total_tables}
-                                    </p>
+                                    <p className="text-lg font-semibold text-gray-900 dark:text-gray-100">{systemStats.total_tables}</p>
                                 </div>
                             </div>
                             <div className="flex items-center gap-3">
@@ -393,9 +380,7 @@ export default function AdminDashboard() {
                                 </div>
                                 <div>
                                     <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Uptime</p>
-                                    <p className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                                        {systemStats.server_uptime}
-                                    </p>
+                                    <p className="text-lg font-semibold text-gray-900 dark:text-gray-100">{systemStats.server_uptime}</p>
                                 </div>
                             </div>
                         </div>
@@ -413,7 +398,7 @@ export default function AdminDashboard() {
                                 </div>
                                 <CheckCircle className="h-8 w-8 text-green-600 dark:text-green-400" />
                             </div>
-                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                            <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
                                 {Math.round((userStats.verified / userStats.total) * 100)}% verification rate
                             </p>
                         </CardContent>
@@ -428,8 +413,11 @@ export default function AdminDashboard() {
                                 </div>
                                 <CheckCircle className="h-8 w-8 text-green-600 dark:text-green-400" />
                             </div>
-                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
-                                {sellerApplicationStats.total > 0 ? Math.round((sellerApplicationStats.approved / sellerApplicationStats.total) * 100) : 0}% approval rate
+                            <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
+                                {sellerApplicationStats.total > 0
+                                    ? Math.round((sellerApplicationStats.approved / sellerApplicationStats.total) * 100)
+                                    : 0}
+                                % approval rate
                             </p>
                         </CardContent>
                     </Card>
@@ -443,9 +431,7 @@ export default function AdminDashboard() {
                                 </div>
                                 <UserPlus className="h-8 w-8 text-blue-600 dark:text-blue-400" />
                             </div>
-                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
-                                User registrations (30 days)
-                            </p>
+                            <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">User registrations (30 days)</p>
                         </CardContent>
                     </Card>
                 </div>
