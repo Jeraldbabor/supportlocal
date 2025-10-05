@@ -3,20 +3,25 @@ import { type SharedData } from '@/types';
 import { Link, router, usePage } from '@inertiajs/react';
 import { Bell, Briefcase, ChevronDown, Heart, House, LogOut, Menu, Package, ShoppingCart, User, X } from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react';
+import { useCart } from '@/contexts/CartContext';
+import { useNotifications, NotificationsProvider } from '@/contexts/NotificationsContext';
 
 interface BuyerLayoutProps {
     children: React.ReactNode;
     title?: string;
-    cartItems?: number;
 }
 
-export default function BuyerLayout({ children, title, cartItems = 0 }: BuyerLayoutProps) {
+function BuyerLayoutContent({ children, title }: BuyerLayoutProps) {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
     const userMenuRef = useRef<HTMLDivElement>(null);
+    const mobileMenuRef = useRef<HTMLDivElement>(null);
 
+    const { totalItems } = useCart();
+    const { unreadCount } = useNotifications();
     const { auth } = usePage<SharedData>().props;
     const user = auth.user;
+    const currentPath = usePage().url;
 
     const handleLogout = () => {
         router.post('/logout');
@@ -27,6 +32,9 @@ export default function BuyerLayout({ children, title, cartItems = 0 }: BuyerLay
             if (userMenuRef.current && !userMenuRef.current.contains(event.target as Node)) {
                 setIsUserMenuOpen(false);
             }
+            if (mobileMenuRef.current && !mobileMenuRef.current.contains(event.target as Node)) {
+                setIsMenuOpen(false);
+            }
         }
 
         document.addEventListener('mousedown', handleClickOutside);
@@ -34,6 +42,17 @@ export default function BuyerLayout({ children, title, cartItems = 0 }: BuyerLay
             document.removeEventListener('mousedown', handleClickOutside);
         };
     }, []);
+
+    // Close menus when route changes
+    useEffect(() => {
+        setIsMenuOpen(false);
+        setIsUserMenuOpen(false);
+    }, [currentPath]);
+
+    // Check if navigation item is active
+    const isActiveRoute = (href: string) => {
+        return currentPath.startsWith(href);
+    };
 
     const buyerNavigation = [
         { name: 'Home', href: '/buyer/dashboard', icon: House },
@@ -68,7 +87,11 @@ export default function BuyerLayout({ children, title, cartItems = 0 }: BuyerLay
                                         <Link
                                             key={item.name}
                                             href={item.href}
-                                            className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-gray-700 transition-all duration-200 hover:bg-primary/5 hover:text-primary active:scale-95 active:bg-primary/10"
+                                            className={`flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-all duration-200 ${
+                                                isActiveRoute(item.href)
+                                                    ? 'bg-primary/10 text-primary border border-primary/20'
+                                                    : 'text-gray-700 hover:bg-primary/5 hover:text-primary'
+                                            } active:scale-95 active:bg-primary/10`}
                                         >
                                             <Icon className="h-4 w-4" />
                                             {item.name}
@@ -86,9 +109,11 @@ export default function BuyerLayout({ children, title, cartItems = 0 }: BuyerLay
                                 className="relative rounded-md p-2 text-gray-700 transition-all duration-200 hover:bg-primary/5 hover:text-primary active:scale-95 active:bg-primary/10"
                             >
                                 <Bell className="h-5 w-5" />
-                                <span className="absolute -top-1 -right-1 flex h-4 w-4 animate-pulse items-center justify-center rounded-full bg-red-500 text-xs text-white">
-                                    3
-                                </span>
+                                {unreadCount > 0 && (
+                                    <span className="absolute -top-1 -right-1 flex h-4 w-4 animate-pulse items-center justify-center rounded-full bg-red-500 text-xs text-white">
+                                        {unreadCount > 9 ? '9+' : unreadCount}
+                                    </span>
+                                )}
                             </Link>
 
                             {/* Cart Icon */}
@@ -97,9 +122,9 @@ export default function BuyerLayout({ children, title, cartItems = 0 }: BuyerLay
                                 className="relative rounded-md p-2 text-gray-700 transition-all duration-200 hover:bg-primary/5 hover:text-primary active:scale-95 active:bg-primary/10"
                             >
                                 <ShoppingCart className="h-5 w-5" />
-                                {cartItems > 0 && (
+                                {totalItems > 0 && (
                                     <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs text-white">
-                                        {cartItems}
+                                        {totalItems > 99 ? '99+' : totalItems}
                                     </span>
                                 )}
                             </Link>
@@ -201,16 +226,23 @@ export default function BuyerLayout({ children, title, cartItems = 0 }: BuyerLay
 
                     {/* Mobile Navigation Menu */}
                     {isMenuOpen && (
-                        <div className="md:hidden">
-                            <div className="space-y-1 border-t border-gray-200 bg-white px-2 pt-2 pb-3 sm:px-3">
+                        <div className="md:hidden" ref={mobileMenuRef}>
+                            <div className="space-y-1 border-t border-gray-200 bg-white px-2 pt-2 pb-3 shadow-lg sm:px-3">
                                 {buyerNavigation.map((item) => {
                                     const Icon = item.icon;
                                     return (
                                         <Link
                                             key={item.name}
                                             href={item.href}
-                                            className="flex items-center gap-3 rounded-md px-3 py-2 text-base font-medium text-gray-700 transition-all duration-200 hover:bg-primary/5 hover:text-primary active:bg-primary/10"
-                                            onClick={() => setIsMenuOpen(false)}
+                                            className={`flex items-center gap-3 rounded-md px-3 py-2 text-base font-medium transition-all duration-200 ${
+                                                isActiveRoute(item.href)
+                                                    ? 'bg-primary/10 text-primary border border-primary/20'
+                                                    : 'text-gray-700 hover:bg-primary/5 hover:text-primary'
+                                            } active:bg-primary/10`}
+                                            onClick={() => {
+                                                setIsMenuOpen(false);
+                                                setIsUserMenuOpen(false);
+                                            }}
                                         >
                                             <Icon className="h-5 w-5" />
                                             {item.name}
@@ -311,5 +343,21 @@ export default function BuyerLayout({ children, title, cartItems = 0 }: BuyerLay
                 </div>
             </footer>
         </div>
+    );
+}
+
+export default function BuyerLayout({ children, title }: BuyerLayoutProps) {
+    const { props } = usePage<SharedData & { unreadNotificationsCount?: number }>();
+    const unreadNotificationsCount = props.unreadNotificationsCount || 0;
+
+    return (
+        <NotificationsProvider 
+            initialUnreadCount={unreadNotificationsCount}
+            userRole="buyer"
+        >
+            <BuyerLayoutContent title={title}>
+                {children}
+            </BuyerLayoutContent>
+        </NotificationsProvider>
     );
 }

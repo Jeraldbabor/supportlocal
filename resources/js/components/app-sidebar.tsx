@@ -89,11 +89,6 @@ function getRoleNavItems(userRole?: string): NavItem[] {
                     href: '/buyer/orders',
                     icon: ShoppingBag,
                 },
-                {
-                    title: 'Wishlist',
-                    href: '/buyer/wishlist',
-                    icon: BookOpen,
-                },
             ];
 
         default:

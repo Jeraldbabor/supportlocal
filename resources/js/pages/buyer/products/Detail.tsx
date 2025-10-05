@@ -92,12 +92,6 @@ export default function Detail({ product, productId }: ProductDetailProps) {
         alert(`Added ${quantity} ${displayProduct.name} to cart!`);
     };
 
-    const addToWishlist = () => {
-        setIsFavorited(!isFavorited);
-        const action = isFavorited ? 'removed from' : 'added to';
-        alert(`${displayProduct.name} ${action} wishlist!`);
-    };
-
     return (
         <BuyerLayout title={displayProduct.name}>
             <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
@@ -215,23 +209,13 @@ export default function Detail({ product, productId }: ProductDetailProps) {
                             </div>
 
                             <div className="flex space-x-4">
-                                <button
+                                                                <button
                                     onClick={addToCart}
                                     disabled={!displayProduct.inStock}
-                                    className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-primary px-6 py-3 font-semibold text-white transition-all duration-200 hover:bg-primary/90 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
+                                    className="w-full flex items-center justify-center gap-2 rounded-lg bg-primary px-6 py-3 font-semibold text-white transition-all duration-200 hover:bg-primary/90 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
                                 >
                                     <ShoppingCart className="h-5 w-5" />
                                     {displayProduct.inStock ? 'Add to Cart' : 'Out of Stock'}
-                                </button>
-                                <button
-                                    onClick={addToWishlist}
-                                    className={`rounded-lg border-2 p-3 transition-all duration-200 active:scale-95 ${
-                                        isFavorited
-                                            ? 'border-red-500 bg-red-50 text-red-500'
-                                            : 'border-gray-300 text-gray-600 hover:border-red-500 hover:text-red-500'
-                                    }`}
-                                >
-                                    <Heart className={`h-6 w-6 ${isFavorited ? 'fill-current' : ''}`} />
                                 </button>
                             </div>
                         </div>

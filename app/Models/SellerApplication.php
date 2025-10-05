@@ -35,6 +35,7 @@ class SellerApplication extends Model
      */
     protected $fillable = [
         'user_id',
+        'business_name',
         'business_description',
         'business_type',
         'id_document_path',
