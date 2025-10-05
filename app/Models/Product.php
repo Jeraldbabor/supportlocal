@@ -15,22 +15,29 @@ class Product extends Model
      * Product status constants
      */
     const STATUS_DRAFT = 'draft';
+
     const STATUS_ACTIVE = 'active';
+
     const STATUS_INACTIVE = 'inactive';
+
     const STATUS_ARCHIVED = 'archived';
 
     /**
      * Stock status constants
      */
     const STOCK_IN_STOCK = 'in_stock';
+
     const STOCK_OUT_OF_STOCK = 'out_of_stock';
+
     const STOCK_LOW_STOCK = 'low_stock';
 
     /**
      * Product condition constants
      */
     const CONDITION_NEW = 'new';
+
     const CONDITION_USED = 'used';
+
     const CONDITION_REFURBISHED = 'refurbished';
 
     /**
@@ -125,7 +132,7 @@ class Product extends Model
         'is_digital' => 'boolean',
         'requires_shipping' => 'boolean',
         'free_shipping' => 'boolean',
-                'published_at' => 'datetime',
+        'published_at' => 'datetime',
     ];
 
     /**
@@ -151,12 +158,12 @@ class Product extends Model
         static::creating(function ($product) {
             // Generate SKU if not provided
             if (empty($product->sku)) {
-                $product->sku = 'PRD-' . strtoupper(Str::random(8));
+                $product->sku = 'PRD-'.strtoupper(Str::random(8));
             }
 
             // Generate slug if not provided
             if (empty($product->slug)) {
-                $product->slug = Str::slug($product->name) . '-' . strtolower(Str::random(6));
+                $product->slug = Str::slug($product->name).'-'.strtolower(Str::random(6));
             }
 
             // Update stock status based on quantity
@@ -171,7 +178,7 @@ class Product extends Model
 
             // Update slug if name changes
             if ($product->isDirty('name') && empty($product->getOriginal('slug'))) {
-                $product->slug = Str::slug($product->name) . '-' . strtolower(Str::random(6));
+                $product->slug = Str::slug($product->name).'-'.strtolower(Str::random(6));
             }
         });
     }
@@ -197,8 +204,9 @@ class Product extends Model
      */
     public function updateStockStatus(): void
     {
-        if (!$this->track_quantity) {
+        if (! $this->track_quantity) {
             $this->stock_status = self::STOCK_IN_STOCK;
+
             return;
         }
 
@@ -216,7 +224,7 @@ class Product extends Model
      */
     public function isInStock(): bool
     {
-        return $this->stock_status === self::STOCK_IN_STOCK || 
+        return $this->stock_status === self::STOCK_IN_STOCK ||
                ($this->stock_status === self::STOCK_LOW_STOCK && $this->quantity > 0);
     }
 
@@ -249,7 +257,7 @@ class Product extends Model
      */
     public function getFormattedPriceAttribute(): string
     {
-        return '₱' . number_format($this->price, 2);
+        return '₱'.number_format($this->price, 2);
     }
 
     /**
@@ -257,7 +265,7 @@ class Product extends Model
      */
     public function getFormattedComparePriceAttribute(): ?string
     {
-        return $this->compare_price ? '₱' . number_format($this->compare_price, 2) : null;
+        return $this->compare_price ? '₱'.number_format($this->compare_price, 2) : null;
     }
 
     /**
@@ -265,7 +273,7 @@ class Product extends Model
      */
     public function getDiscountPercentageAttribute(): ?float
     {
-        if (!$this->compare_price || $this->compare_price <= $this->price) {
+        if (! $this->compare_price || $this->compare_price <= $this->price) {
             return null;
         }
 
@@ -277,7 +285,7 @@ class Product extends Model
      */
     public function getProfitMarginAttribute(): ?float
     {
-        if (!$this->cost_price || $this->cost_price >= $this->price) {
+        if (! $this->cost_price || $this->cost_price >= $this->price) {
             return null;
         }
 
@@ -306,7 +314,7 @@ class Product extends Model
     public function scopeActive($query)
     {
         return $query->where('status', self::STATUS_ACTIVE)
-                    ->whereNotNull('published_at');
+            ->whereNotNull('published_at');
     }
 
     /**
@@ -348,8 +356,8 @@ class Product extends Model
     {
         return $query->where(function ($q) use ($search) {
             $q->where('name', 'like', "%{$search}%")
-              ->orWhere('description', 'like', "%{$search}%")
-              ->orWhere('short_description', 'like', "%{$search}%");
+                ->orWhere('description', 'like', "%{$search}%")
+                ->orWhere('short_description', 'like', "%{$search}%");
         });
     }
 
@@ -358,11 +366,11 @@ class Product extends Model
      */
     public function reduceStock(int $quantity): bool
     {
-        if (!$this->track_quantity) {
+        if (! $this->track_quantity) {
             return true;
         }
 
-        if ($this->quantity < $quantity && !$this->allow_backorders) {
+        if ($this->quantity < $quantity && ! $this->allow_backorders) {
             return false;
         }
 

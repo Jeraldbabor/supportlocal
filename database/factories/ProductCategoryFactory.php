@@ -18,7 +18,7 @@ class ProductCategoryFactory extends Factory
     public function definition(): array
     {
         $name = $this->faker->words(rand(1, 3), true);
-        
+
         return [
             'name' => ucwords($name),
             'slug' => Str::slug($name),

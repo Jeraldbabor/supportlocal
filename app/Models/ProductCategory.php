@@ -77,7 +77,7 @@ class ProductCategory extends Model
      */
     public function products(): HasMany
     {
-        return $this->hasMany(Product::class, 'category', 'slug');
+        return $this->hasMany(Product::class, 'category_id');
     }
 
     /**
@@ -110,9 +110,9 @@ class ProductCategory extends Model
     public function getFullPathAttribute(): string
     {
         if ($this->parent) {
-            return $this->parent->full_path . ' > ' . $this->name;
+            return $this->parent->full_path.' > '.$this->name;
         }
-        
+
         return $this->name;
     }
 
@@ -130,12 +130,12 @@ class ProductCategory extends Model
     public function descendants()
     {
         $descendants = collect();
-        
+
         foreach ($this->children as $child) {
             $descendants->push($child);
             $descendants = $descendants->merge($child->descendants());
         }
-        
+
         return $descendants;
     }
 
@@ -146,12 +146,12 @@ class ProductCategory extends Model
     {
         $breadcrumbs = [];
         $category = $this;
-        
+
         while ($category) {
             array_unshift($breadcrumbs, $category);
             $category = $category->parent;
         }
-        
+
         return $breadcrumbs;
     }
 }

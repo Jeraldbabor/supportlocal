@@ -39,7 +39,7 @@ class SellerApplicationApproved extends Notification implements ShouldQueue
     {
         return (new MailMessage)
             ->subject('🎉 Your Seller Application Has Been Approved!')
-            ->greeting('Congratulations, ' . $notifiable->name . '!')
+            ->greeting('Congratulations, '.$notifiable->name.'!')
             ->line('Your seller/artisan application has been approved and you now have seller privileges on SupportLocal.')
             ->line('Your buyer profile information, including your avatar and personal details, has been preserved in your new seller account.')
             ->line('You can now:')
@@ -64,7 +64,7 @@ class SellerApplicationApproved extends Notification implements ShouldQueue
             'message' => 'Your seller application has been approved! Your profile information has been preserved.',
             'application_id' => $this->application->id,
             'action_url' => route('seller.dashboard'),
-            'type' => 'seller_application_approved'
+            'type' => 'seller_application_approved',
         ];
     }
 }

@@ -4,7 +4,6 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Validation\Rule;
 
 class UpdateProductRequest extends FormRequest
 {
@@ -14,8 +13,9 @@ class UpdateProductRequest extends FormRequest
     public function authorize(): bool
     {
         $product = $this->route('product');
-        return Auth::check() && 
-               Auth::user()->hasRole('seller') && 
+
+        return Auth::check() &&
+               Auth::user()->hasRole('seller') &&
                $product->seller_id === Auth::id();
     }
 
@@ -27,7 +27,7 @@ class UpdateProductRequest extends FormRequest
     public function rules(): array
     {
         $product = $this->route('product');
-        
+
         return [
             'name' => 'required|string|max:255',
             'description' => 'required|string|min:10',

@@ -17,7 +17,7 @@ class ProfileController extends Controller
     public function edit(Request $request): Response
     {
         $user = $request->user();
-        
+
         return Inertia::render('profile/edit', [
             'user' => [
                 'id' => $user->id,
@@ -47,7 +47,7 @@ class ProfileController extends Controller
     public function update(Request $request)
     {
         $user = $request->user();
-        
+
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
@@ -76,12 +76,12 @@ class ProfileController extends Controller
             'password' => ['required', 'string', 'min:8', 'confirmed'],
         ]);
 
-        if (!Hash::check($validated['current_password'], $request->user()->password)) {
+        if (! Hash::check($validated['current_password'], $request->user()->password)) {
             return back()->withErrors(['current_password' => 'The current password is incorrect.']);
         }
 
         $request->user()->update([
-            'password' => Hash::make($validated['password'])
+            'password' => Hash::make($validated['password']),
         ]);
 
         return back()->with('message', 'Password updated successfully.');
@@ -104,9 +104,9 @@ class ProfileController extends Controller
         }
 
         $path = $request->file('avatar')->store('avatars', 'public');
-        
+
         $user->update([
-            'profile_picture' => $path
+            'profile_picture' => $path,
         ]);
 
         return back()->with('message', 'Profile picture updated successfully.');
@@ -122,7 +122,7 @@ class ProfileController extends Controller
         if ($user->profile_picture) {
             Storage::disk('public')->delete($user->profile_picture);
             $user->update(['profile_picture' => null]);
-            
+
             return back()->with('message', 'Profile picture deleted successfully.');
         }
 
@@ -141,7 +141,7 @@ class ProfileController extends Controller
         // In a real application, you would send an email here
         // For now, we'll just mark it as verified for demo purposes
         $request->user()->update([
-            'email_verified_at' => now()
+            'email_verified_at' => now(),
         ]);
 
         return back()->with('message', 'Email verification sent successfully.');
@@ -158,7 +158,7 @@ class ProfileController extends Controller
 
         $user = $request->user();
 
-        if (!Hash::check($request->password, $user->password)) {
+        if (! Hash::check($request->password, $user->password)) {
             return back()->withErrors(['password' => 'The password is incorrect.']);
         }
 

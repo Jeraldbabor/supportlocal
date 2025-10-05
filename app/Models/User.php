@@ -182,7 +182,7 @@ class User extends Authenticatable
      */
     public function getDisplayNameAttribute(): string
     {
-        return $this->name . ' (' . $this->getRoleDisplayName() . ')';
+        return $this->name.' ('.$this->getRoleDisplayName().')';
     }
 
     /**
@@ -191,11 +191,11 @@ class User extends Authenticatable
     public function getAvatarUrlAttribute(): string
     {
         if ($this->profile_picture) {
-            return asset('storage/' . $this->profile_picture);
+            return asset('storage/'.$this->profile_picture);
         }
-        
+
         // Default avatar using initials
-        return 'https://ui-avatars.com/api/?name=' . urlencode($this->name) . '&color=7F9CF5&background=EBF4FF';
+        return 'https://ui-avatars.com/api/?name='.urlencode($this->name).'&color=7F9CF5&background=EBF4FF';
     }
 
     /**
@@ -237,7 +237,7 @@ class User extends Authenticatable
     {
         return $query->where(function ($q) use ($search) {
             $q->where('name', 'like', "%{$search}%")
-              ->orWhere('email', 'like', "%{$search}%");
+                ->orWhere('email', 'like', "%{$search}%");
         });
     }
 
@@ -246,9 +246,9 @@ class User extends Authenticatable
      */
     public function hasCompleteProfileForSeller(): bool
     {
-        return !empty($this->name) && 
-               !empty($this->email) &&
-               !empty($this->phone_number);
+        return ! empty($this->name) &&
+               ! empty($this->email) &&
+               ! empty($this->phone_number);
     }
 
     /**
@@ -257,17 +257,17 @@ class User extends Authenticatable
     public function getProfileCompletenessAttribute(): int
     {
         $fields = [
-            'name', 'email', 'phone_number', 'address', 
-            'date_of_birth', 'profile_picture'
+            'name', 'email', 'phone_number', 'address',
+            'date_of_birth', 'profile_picture',
         ];
-        
+
         $completed = 0;
         foreach ($fields as $field) {
-            if (!empty($this->$field)) {
+            if (! empty($this->$field)) {
                 $completed++;
             }
         }
-        
+
         return round(($completed / count($fields)) * 100);
     }
 
@@ -278,18 +278,18 @@ class User extends Authenticatable
     {
         $requiredFields = [
             'name' => 'Full Name',
-            'email' => 'Email Address', 
+            'email' => 'Email Address',
             'phone_number' => 'Phone Number',
-            'address' => 'Address'
+            'address' => 'Address',
         ];
-        
+
         $missing = [];
         foreach ($requiredFields as $field => $label) {
             if (empty($this->$field)) {
                 $missing[] = $label;
             }
         }
-        
+
         return $missing;
     }
 }

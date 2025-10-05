@@ -31,7 +31,7 @@ class SellerApplicationTest extends TestCase
             'email' => 'john@example.com',
             'phone_number' => '1234567890',
             'address' => '123 Main St',
-            'profile_picture' => 'avatars/john.jpg'
+            'profile_picture' => 'avatars/john.jpg',
         ]);
 
         $this->actingAs($buyer);
@@ -74,7 +74,7 @@ class SellerApplicationTest extends TestCase
             'delivery_address' => '456 Oak Ave',
             'delivery_phone' => '9876543210',
             'gcash_number' => '09123456789',
-            'gcash_name' => 'Jane Smith'
+            'gcash_name' => 'Jane Smith',
         ]);
 
         $admin = User::factory()->create(['role' => User::ROLE_ADMINISTRATOR]);
@@ -220,11 +220,10 @@ class SellerApplicationTest extends TestCase
         $response = $this->get(route('seller.application.create'));
 
         $response->assertOk();
-        $response->assertInertia(fn ($page) => 
-            $page->component('buyer/seller-application')
-                 ->has('existingApplication')
-                 ->where('existingApplication.status', SellerApplication::STATUS_PENDING)
-                 ->where('existingApplication.admin_notes', 'Under review')
+        $response->assertInertia(fn ($page) => $page->component('buyer/seller-application')
+            ->has('existingApplication')
+            ->where('existingApplication.status', SellerApplication::STATUS_PENDING)
+            ->where('existingApplication.admin_notes', 'Under review')
         );
     }
 
@@ -267,7 +266,7 @@ class SellerApplicationTest extends TestCase
             'phone_number' => '1234567890',
             'address' => '123 Complete St',
             'date_of_birth' => '1990-01-01',
-            'profile_picture' => 'avatar.jpg'
+            'profile_picture' => 'avatar.jpg',
         ]);
 
         $this->assertTrue($completeUser->hasCompleteProfileForSeller());
@@ -302,11 +301,10 @@ class SellerApplicationTest extends TestCase
         $response = $this->get(route('seller.application.confirm'));
 
         $response->assertOk();
-        $response->assertInertia(fn ($page) => 
-            $page->component('buyer/seller-application-confirmation')
-                ->has('user')
-                ->where('user.name', 'John Doe')
-                ->where('user.email', 'john@example.com')
+        $response->assertInertia(fn ($page) => $page->component('buyer/seller-application-confirmation')
+            ->has('user')
+            ->where('user.name', 'John Doe')
+            ->where('user.email', 'john@example.com')
         );
     }
 
@@ -314,7 +312,7 @@ class SellerApplicationTest extends TestCase
     public function buyer_with_existing_application_is_redirected_from_confirmation_to_form()
     {
         $buyer = User::factory()->create(['role' => User::ROLE_BUYER]);
-        
+
         // Create an existing application
         SellerApplication::factory()->create([
             'user_id' => $buyer->id,
@@ -342,10 +340,9 @@ class SellerApplicationTest extends TestCase
         $response = $this->get(route('seller.application.create'));
 
         $response->assertOk();
-        $response->assertInertia(fn ($page) => 
-            $page->component('buyer/seller-application')
-                ->has('idTypes')
-                ->where('hasExistingApplication', false)
+        $response->assertInertia(fn ($page) => $page->component('buyer/seller-application')
+            ->has('idTypes')
+            ->where('hasExistingApplication', false)
         );
     }
 }

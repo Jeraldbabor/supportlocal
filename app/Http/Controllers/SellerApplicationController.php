@@ -33,7 +33,7 @@ class SellerApplicationController extends Controller
             'user' => [
                 'name' => $user->name,
                 'email' => $user->email,
-            ]
+            ],
         ]);
     }
 
@@ -66,7 +66,7 @@ class SellerApplicationController extends Controller
                 'profile_completeness' => $user->profile_completeness,
                 'missing_fields' => $user->getMissingSellerProfileFields(),
                 'has_complete_profile' => $user->hasCompleteProfileForSeller(),
-            ]
+            ],
         ]);
     }
 
@@ -204,7 +204,7 @@ class SellerApplicationController extends Controller
                 'Application approved successfully! The user has been granted seller privileges and their buyer profile information has been preserved.');
         } catch (\Exception $e) {
             return redirect()->back()->withErrors([
-                'approval' => $e->getMessage()
+                'approval' => $e->getMessage(),
             ]);
         }
     }

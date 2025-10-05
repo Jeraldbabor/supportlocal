@@ -549,10 +549,6 @@ export default function BuyerProfile({ user }: BuyerProfileProps) {
                                                     </div>
                                                     <div className="flex items-center gap-2">
                                                         <div className="h-2 w-2 rounded-full bg-red-500"></div>
-                                                        <span>Wishlist items and preferences</span>
-                                                    </div>
-                                                    <div className="flex items-center gap-2">
-                                                        <div className="h-2 w-2 rounded-full bg-red-500"></div>
                                                         <span>Account settings and configurations</span>
                                                     </div>
                                                 </div>

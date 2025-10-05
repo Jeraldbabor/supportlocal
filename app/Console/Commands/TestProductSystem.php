@@ -2,10 +2,10 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
-use App\Models\User;
 use App\Models\Product;
 use App\Models\ProductCategory;
+use App\Models\User;
+use Illuminate\Console\Command;
 
 class TestProductSystem extends Command
 {
@@ -37,11 +37,11 @@ class TestProductSystem extends Command
 
         // Test 2: Create or find seller
         $seller = User::where('role', 'seller')->first();
-        if (!$seller) {
+        if (! $seller) {
             $seller = User::factory()->create([
                 'role' => 'seller',
                 'name' => 'Test Seller',
-                'email' => 'testseller@example.com'
+                'email' => 'testseller@example.com',
             ]);
             $this->info("✓ Created test seller: {$seller->name}");
         } else {
@@ -72,7 +72,7 @@ class TestProductSystem extends Command
                     'taxable' => true,
                     'track_quantity' => true,
                     'tags' => ['handmade', 'pottery', 'ceramic'],
-                    'handle' => 'test-handmade-pottery-bowl-' . time()
+                    'handle' => 'test-handmade-pottery-bowl-'.time(),
                 ]);
                 $this->info("✓ Created new product: {$product->name} (ID: {$product->id})");
             }
@@ -86,11 +86,11 @@ class TestProductSystem extends Command
                 $this->warn("⚠ Product has no category assigned (category_id: {$product->category_id})");
             }
             $this->info("✓ Product stock status: {$product->stock_status}");
-            $this->info("✓ Product tags: " . implode(', ', $product->tags));
+            $this->info('✓ Product tags: '.implode(', ', $product->tags));
 
             // Test stock methods
-            $this->info("✓ Is in stock: " . ($product->isInStock() ? 'Yes' : 'No'));
-            $this->info("✓ Has low stock: " . ($product->hasLowStock() ? 'Yes' : 'No'));
+            $this->info('✓ Is in stock: '.($product->isInStock() ? 'Yes' : 'No'));
+            $this->info('✓ Has low stock: '.($product->hasLowStock() ? 'Yes' : 'No'));
 
             // Test product statistics
             $totalProducts = Product::where('seller_id', $seller->id)->count();
@@ -98,13 +98,14 @@ class TestProductSystem extends Command
             $this->info("✓ Seller has {$totalProducts} total products, {$activeProducts} active");
 
         } catch (\Exception $e) {
-            $this->error("✗ Error testing product: " . $e->getMessage());
+            $this->error('✗ Error testing product: '.$e->getMessage());
+
             return Command::FAILURE;
         }
 
         $this->newLine();
         $this->info('🎉 Product Management System Test Complete!');
-        
+
         return Command::SUCCESS;
     }
 }

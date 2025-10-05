@@ -30,6 +30,10 @@ Route::get('/product/{id}', function ($id) {
     ]);
 })->name('product.detail');
 
+// Public artisans/sellers browsing (no authentication required)
+Route::get('/artisans', [App\Http\Controllers\Buyer\SellerController::class, 'index'])->name('public.artisans');
+Route::get('/artisan/{seller}', [App\Http\Controllers\Buyer\SellerController::class, 'show'])->name('public.artisan.show');
+
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', function () {
         $user = auth()->user();
@@ -48,7 +52,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         // Product Management Routes
         Route::resource('seller/products', App\Http\Controllers\Seller\ProductController::class, [
             'as' => 'seller',
-            'except' => ['show']
+            'except' => ['show'],
         ]);
         Route::get('/seller/products/{product}', [App\Http\Controllers\Seller\ProductController::class, 'show'])->name('seller.products.show');
         Route::post('/seller/products/{product}/toggle-status', [App\Http\Controllers\Seller\ProductController::class, 'toggleStatus'])->name('seller.products.toggle-status');
@@ -57,9 +61,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         Route::get('/seller/dashboard', [App\Http\Controllers\Seller\DashboardController::class, 'index'])->name('seller.dashboard');
 
-        Route::get('/seller/orders', function () {
-            return Inertia::render('seller/orders');
-        })->name('seller.orders');
+        // Order Management Routes
+        Route::get('/seller/orders', [App\Http\Controllers\Seller\OrderController::class, 'index'])->name('seller.orders');
+        Route::get('/seller/orders/{order}', [App\Http\Controllers\Seller\OrderController::class, 'show'])->name('seller.orders.show');
+        Route::post('/seller/orders/{order}/confirm', [App\Http\Controllers\Seller\OrderController::class, 'confirm'])->name('seller.orders.confirm');
+        Route::post('/seller/orders/{order}/reject', [App\Http\Controllers\Seller\OrderController::class, 'reject'])->name('seller.orders.reject');
+        Route::post('/seller/orders/{order}/complete', [App\Http\Controllers\Seller\OrderController::class, 'complete'])->name('seller.orders.complete');
 
         Route::get('/seller/analytics', function () {
             return Inertia::render('seller/analytics');
@@ -84,6 +91,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/seller/settings/deactivate', [App\Http\Controllers\Seller\SettingsController::class, 'deactivate'])->name('seller.settings.deactivate');
         Route::get('/seller/settings/analytics', [App\Http\Controllers\Seller\SettingsController::class, 'analytics'])->name('seller.settings.analytics');
         Route::post('/seller/settings/email-verification', [App\Http\Controllers\Seller\SettingsController::class, 'sendEmailVerification'])->name('seller.settings.email.verify');
+
+        // Seller Notification Routes
+        Route::get('/seller/notifications', [App\Http\Controllers\Seller\NotificationController::class, 'index'])->name('seller.notifications.index');
+        Route::post('/seller/notifications/{id}/read', [App\Http\Controllers\Seller\NotificationController::class, 'markAsRead'])->name('seller.notifications.read');
+        Route::delete('/seller/notifications/{id}', [App\Http\Controllers\Seller\NotificationController::class, 'destroy'])->name('seller.notifications.destroy');
+        Route::post('/seller/notifications/read-all', [App\Http\Controllers\Seller\NotificationController::class, 'markAllAsRead'])->name('seller.notifications.read-all');
+        Route::post('/seller/notifications/clear-all', [App\Http\Controllers\Seller\NotificationController::class, 'clearAllHistory'])->name('seller.notifications.clear-all');
     });
 
     Route::middleware(['role:administrator'])->group(function () {
@@ -96,7 +110,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
                 'auth_role' => auth()->user()->role,
             ]);
         })->name('admin.users.test');
-        
+
         // User Management Routes
         Route::resource('admin/users', App\Http\Controllers\Admin\UserController::class, [
             'names' => [
@@ -107,9 +121,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
                 'edit' => 'admin.users.edit',
                 'update' => 'admin.users.update',
                 'destroy' => 'admin.users.destroy',
-            ]
+            ],
         ]);
-        
+
         // Additional user management routes
         Route::post('/admin/users/{user}/toggle-status', [App\Http\Controllers\Admin\UserController::class, 'toggleStatus'])->name('admin.users.toggle-status');
         Route::post('/admin/users/{user}/reset-password', [App\Http\Controllers\Admin\UserController::class, 'resetPassword'])->name('admin.users.reset-password');
@@ -140,23 +154,42 @@ Route::middleware(['auth', 'verified'])->group(function () {
             return Inertia::render('buyer/dashboard');
         })->name('buyer.dashboard');
 
-        Route::get('/buyer/products', function () {
-            return Inertia::render('buyer/products/Index');
-        })->name('buyer.products');
+        // Product browsing routes
+        Route::get('/buyer/products', [App\Http\Controllers\Buyer\ProductController::class, 'index'])->name('buyer.products');
+        Route::get('/buyer/product/{product}', [App\Http\Controllers\Buyer\ProductController::class, 'show'])->name('buyer.product.show');
 
-        Route::get('/buyer/product/{id}', function ($id) {
-            return Inertia::render('buyer/products/Detail', [
-                'productId' => $id,
+        // Seller browsing routes
+        Route::get('/buyer/sellers', [App\Http\Controllers\Buyer\SellerController::class, 'index'])->name('buyer.sellers');
+        Route::get('/buyer/seller/{seller}', [App\Http\Controllers\Buyer\SellerController::class, 'show'])->name('buyer.seller.show');
+
+        // Cart and checkout routes
+        Route::get('/buyer/cart', function () {
+            return Inertia::render('buyer/Cart');
+        })->name('buyer.cart');
+
+        Route::get('/buyer/checkout', function () {
+            $user = auth()->user();
+
+            return Inertia::render('buyer/Checkout', [
+                'user' => $user,
             ]);
-        })->name('buyer.product.detail');
+        })->name('buyer.checkout');
 
-        Route::get('/buyer/orders', function () {
-            return Inertia::render('buyer/orders');
-        })->name('buyer.orders');
+        // Order Management Routes
+        Route::resource('/buyer/orders', App\Http\Controllers\Buyer\OrderController::class, [
+            'as' => 'buyer',
+            'only' => ['index', 'store', 'show', 'destroy'],
+        ]);
 
-        Route::get('/buyer/wishlist', function () {
-            return Inertia::render('buyer/wishlist');
-        })->name('buyer.wishlist');
+        // Additional order routes
+        Route::post('/buyer/orders/clear-all', [App\Http\Controllers\Buyer\OrderController::class, 'clearAllHistory'])->name('buyer.orders.clear-all');
+
+        // Buyer Notification Routes
+        Route::get('/buyer/notifications', [App\Http\Controllers\Buyer\NotificationController::class, 'index'])->name('buyer.notifications.index');
+        Route::post('/buyer/notifications/{id}/read', [App\Http\Controllers\Buyer\NotificationController::class, 'markAsRead'])->name('buyer.notifications.read');
+        Route::delete('/buyer/notifications/{id}', [App\Http\Controllers\Buyer\NotificationController::class, 'destroy'])->name('buyer.notifications.destroy');
+        Route::post('/buyer/notifications/read-all', [App\Http\Controllers\Buyer\NotificationController::class, 'markAllAsRead'])->name('buyer.notifications.read-all');
+        Route::post('/buyer/notifications/clear-all', [App\Http\Controllers\Buyer\NotificationController::class, 'clearAllHistory'])->name('buyer.notifications.clear-all');
 
         // Buyer profile routes
         Route::get('/buyer/profile', [App\Http\Controllers\BuyerProfileController::class, 'show'])->name('buyer.profile');
@@ -199,20 +232,20 @@ Route::get('/api/placeholder/{width}/{height}', function ($width, $height) {
     $image = imagecreate($width, $height);
     $bgColor = imagecolorallocate($image, 240, 240, 240); // Light gray background
     $textColor = imagecolorallocate($image, 100, 100, 100); // Dark gray text
-    
+
     // Add text to show dimensions
     $text = "{$width}x{$height}";
     $fontSize = min($width, $height) / 10;
     $x = ($width - strlen($text) * $fontSize * 0.6) / 2;
     $y = ($height + $fontSize) / 2;
-    
+
     imagestring($image, 5, $x, $y - 10, $text, $textColor);
-    
+
     // Output the image
     header('Content-Type: image/png');
     header('Cache-Control: public, max-age=31536000'); // Cache for 1 year
     imagepng($image);
     imagedestroy($image);
-    
+
     return response('', 200);
 })->where(['width' => '[0-9]+', 'height' => '[0-9]+']);

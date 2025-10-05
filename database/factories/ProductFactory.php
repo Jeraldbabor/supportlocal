@@ -24,14 +24,14 @@ class ProductFactory extends Factory
         $price = $this->faker->randomFloat(2, 10, 1000);
         $comparePrice = $this->faker->boolean(30) ? $price + $this->faker->randomFloat(2, 5, 100) : null;
         $costPrice = $this->faker->randomFloat(2, 5, $price - 5);
-        
+
         return [
             'seller_id' => User::where('role', 'seller')->inRandomOrder()->first()?->id ?? User::factory()->create(['role' => 'seller'])->id,
             'name' => ucwords($name),
             'description' => $this->faker->paragraphs(3, true),
             'short_description' => $this->faker->sentence(12),
-            'sku' => 'PRD-' . strtoupper(Str::random(8)),
-            'slug' => Str::slug($name) . '-' . strtolower(Str::random(6)),
+            'sku' => 'PRD-'.strtoupper(Str::random(8)),
+            'slug' => Str::slug($name).'-'.strtolower(Str::random(6)),
             'price' => $price,
             'compare_price' => $comparePrice,
             'cost_price' => $costPrice,

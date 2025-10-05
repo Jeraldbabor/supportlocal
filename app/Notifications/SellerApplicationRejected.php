@@ -39,13 +39,13 @@ class SellerApplicationRejected extends Notification implements ShouldQueue
     {
         $message = (new MailMessage)
             ->subject('Update on Your Seller Application')
-            ->greeting('Hello ' . $notifiable->name . ',')
+            ->greeting('Hello '.$notifiable->name.',')
             ->line('Thank you for your interest in becoming a seller on SupportLocal.')
             ->line('After careful review, we were unable to approve your seller application at this time.');
 
         if ($this->application->admin_notes) {
             $message->line('Feedback from our review team:')
-                   ->line('"' . $this->application->admin_notes . '"');
+                ->line('"'.$this->application->admin_notes.'"');
         }
 
         return $message
@@ -69,7 +69,7 @@ class SellerApplicationRejected extends Notification implements ShouldQueue
             'application_id' => $this->application->id,
             'admin_notes' => $this->application->admin_notes,
             'action_url' => route('seller.application.create'),
-            'type' => 'seller_application_rejected'
+            'type' => 'seller_application_rejected',
         ];
     }
 }

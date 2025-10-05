@@ -25,13 +25,13 @@ class SellerApplicationFactory extends Factory
             'business_description' => fake()->paragraph(5),
             'business_type' => fake()->randomElement([
                 'Handmade Crafts',
-                'Food & Beverages', 
+                'Food & Beverages',
                 'Clothing & Accessories',
                 'Art & Design',
                 'Home & Garden',
-                'Electronics & Gadgets'
+                'Electronics & Gadgets',
             ]),
-            'id_document_path' => 'seller-applications/id-documents/' . fake()->uuid() . '.pdf',
+            'id_document_path' => 'seller-applications/id-documents/'.fake()->uuid().'.pdf',
             'id_document_type' => fake()->randomElement(array_keys(SellerApplication::ID_TYPES)),
             'additional_documents_path' => [],
             'status' => SellerApplication::STATUS_PENDING,

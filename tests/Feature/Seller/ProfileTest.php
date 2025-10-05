@@ -6,7 +6,6 @@ use App\Models\SellerApplication;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
@@ -19,9 +18,9 @@ class ProfileTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         Storage::fake('public');
-        
+
         // Create a seller with complete profile
         $this->seller = User::factory()->create([
             'role' => User::ROLE_SELLER,
@@ -49,13 +48,12 @@ class ProfileTest extends TestCase
         $response = $this->get(route('seller.profile.show'));
 
         $response->assertOk();
-        $response->assertInertia(fn ($page) => 
-            $page->component('seller/profile/show')
-                 ->has('user')
-                 ->where('user.name', 'John Seller')
-                 ->where('user.email', 'john@seller.com')
-                 ->has('sellerApplication')
-                 ->where('sellerApplication.business_type', 'Handmade Crafts')
+        $response->assertInertia(fn ($page) => $page->component('seller/profile/show')
+            ->has('user')
+            ->where('user.name', 'John Seller')
+            ->where('user.email', 'john@seller.com')
+            ->has('sellerApplication')
+            ->where('sellerApplication.business_type', 'Handmade Crafts')
         );
     }
 
@@ -67,10 +65,9 @@ class ProfileTest extends TestCase
         $response = $this->get(route('seller.profile.edit'));
 
         $response->assertOk();
-        $response->assertInertia(fn ($page) => 
-            $page->component('seller/profile/edit')
-                 ->has('user')
-                 ->where('user.name', 'John Seller')
+        $response->assertInertia(fn ($page) => $page->component('seller/profile/edit')
+            ->has('user')
+            ->where('user.name', 'John Seller')
         );
     }
 
@@ -141,7 +138,7 @@ class ProfileTest extends TestCase
         $this->seller->refresh();
         $this->assertNotNull($this->seller->profile_picture);
         $this->assertStringContainsString('avatars/', $this->seller->profile_picture);
-        
+
         Storage::disk('public')->assertExists($this->seller->profile_picture);
     }
 
@@ -167,11 +164,10 @@ class ProfileTest extends TestCase
         $response = $this->get(route('seller.profile.business'));
 
         $response->assertOk();
-        $response->assertInertia(fn ($page) => 
-            $page->component('seller/profile/business')
-                 ->has('business')
-                 ->where('business.type', 'Handmade Crafts')
-                 ->where('business.description', 'Creating beautiful handmade items')
+        $response->assertInertia(fn ($page) => $page->component('seller/profile/business')
+            ->has('business')
+            ->where('business.type', 'Handmade Crafts')
+            ->where('business.description', 'Creating beautiful handmade items')
         );
     }
 
@@ -190,7 +186,7 @@ class ProfileTest extends TestCase
 
         $sellerApplication = $this->seller->sellerApplication;
         $sellerApplication->refresh();
-        
+
         $this->assertEquals('Art & Design', $sellerApplication->business_type);
         $this->assertStringContainsString('Updated business description', $sellerApplication->business_description);
     }
@@ -200,7 +196,7 @@ class ProfileTest extends TestCase
     {
         // Create seller without approved application
         $sellerWithoutApp = User::factory()->create(['role' => User::ROLE_SELLER]);
-        
+
         $this->actingAs($sellerWithoutApp);
 
         $response = $this->put(route('seller.profile.business.update'), [
@@ -229,7 +225,7 @@ class ProfileTest extends TestCase
 
         // Test email uniqueness validation
         $otherUser = User::factory()->create(['email' => 'existing@email.com']);
-        
+
         $response = $this->put(route('seller.profile.update'), [
             'name' => 'Test Name',
             'email' => 'existing@email.com',

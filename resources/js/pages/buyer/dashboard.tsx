@@ -1,6 +1,6 @@
 import { type SharedData } from '@/types/index';
 import { Head, Link, usePage } from '@inertiajs/react';
-import { ArrowRight, Bell, Clock, CreditCard, Heart, MapPin, Package, ShoppingBag, Star, TrendingUp, User } from 'lucide-react';
+import { ArrowRight, Bell, Clock, CreditCard, MapPin, Package, ShoppingBag, Star, TrendingUp, User } from 'lucide-react';
 import BuyerLayout from '../../layouts/BuyerLayout';
 
 export default function BuyerDashboard() {
@@ -38,13 +38,6 @@ export default function BuyerDashboard() {
                                     Browse Products
                                 </Link>
                                 <Link
-                                    href="/buyer/wishlist"
-                                    className="inline-flex items-center rounded-xl border-2 border-primary px-8 py-4 font-semibold text-primary shadow-md transition-all duration-200 hover:bg-primary hover:text-white hover:shadow-lg"
-                                >
-                                    <Heart className="mr-2 h-5 w-5" />
-                                    View Wishlist
-                                </Link>
-                                <Link
                                     href="/seller/apply"
                                     className="inline-flex transform items-center rounded-xl bg-gradient-to-r from-orange-500 to-pink-500 px-8 py-4 font-semibold text-white shadow-lg transition-all duration-200 hover:scale-105 hover:from-orange-600 hover:to-pink-600 hover:shadow-xl"
                                 >
@@ -61,7 +54,7 @@ export default function BuyerDashboard() {
                     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                         <div className="mb-12 text-center">
                             <h2 className="mb-4 text-3xl font-bold text-gray-900 md:text-4xl">Your Shopping Journey</h2>
-                            <p className="text-lg text-gray-600">Track your orders, wishlist, and shopping activity at a glance</p>
+                            <p className="text-lg text-gray-600">Track your orders and shopping activity at a glance</p>
                         </div>
 
                         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
@@ -79,22 +72,6 @@ export default function BuyerDashboard() {
                                     <span className="text-sm text-gray-600">orders placed</span>
                                 </div>
                                 <p className="mt-2 text-sm text-gray-500">Start shopping to see your orders here</p>
-                            </div>
-
-                            {/* Wishlist Card */}
-                            <div className="group rounded-xl border border-red-200 bg-gradient-to-br from-red-50 to-pink-100 p-6 transition-all duration-200 hover:shadow-lg">
-                                <div className="mb-4 flex items-center justify-between">
-                                    <div className="rounded-full bg-red-500 p-3 transition-transform duration-200 group-hover:scale-110">
-                                        <Heart className="h-6 w-6 text-white" />
-                                    </div>
-                                    <Heart className="h-4 w-4 text-red-600" />
-                                </div>
-                                <h3 className="mb-2 text-lg font-semibold text-gray-800">Wishlist Items</h3>
-                                <div className="flex items-baseline space-x-2">
-                                    <p className="text-3xl font-bold text-red-600">0</p>
-                                    <span className="text-sm text-gray-600">items saved</span>
-                                </div>
-                                <p className="mt-2 text-sm text-gray-500">Save items you love for later</p>
                             </div>
 
                             {/* Reviews Card */}
@@ -220,20 +197,6 @@ export default function BuyerDashboard() {
                                             <div className="flex-1">
                                                 <span className="font-semibold">Browse Products</span>
                                                 <p className="text-sm text-green-600">Discover new items</p>
-                                            </div>
-                                            <ArrowRight className="h-4 w-4 opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
-                                        </Link>
-
-                                        <Link
-                                            href="/buyer/wishlist"
-                                            className="group flex w-full items-center gap-4 rounded-xl border border-red-200 bg-gradient-to-r from-red-50 to-pink-50 px-6 py-4 text-red-700 transition-all duration-200 hover:border-red-300 hover:from-red-100 hover:to-pink-100"
-                                        >
-                                            <div className="rounded-lg bg-red-500 p-2 transition-transform duration-200 group-hover:scale-110">
-                                                <Heart className="h-5 w-5 text-white" />
-                                            </div>
-                                            <div className="flex-1">
-                                                <span className="font-semibold">View Wishlist</span>
-                                                <p className="text-sm text-red-600">Saved favorites</p>
                                             </div>
                                             <ArrowRight className="h-4 w-4 opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
                                         </Link>
@@ -367,7 +330,7 @@ export default function BuyerDashboard() {
                                         </div>
 
                                         <Link
-                                            href="/notifications"
+                                            href="/buyer/notifications"
                                             className="block pt-2 text-center text-sm font-medium text-blue-600 hover:text-blue-800"
                                         >
                                             View all notifications →
