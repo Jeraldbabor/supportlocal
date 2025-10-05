@@ -4,7 +4,6 @@ namespace App\Notifications;
 
 use App\Models\Order;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
@@ -13,12 +12,13 @@ class OrderStatusUpdated extends Notification
     use Queueable;
 
     public $order;
+
     public $message;
 
     /**
      * Create a new notification instance.
      */
-    public function __construct(Order $order, string $message = null)
+    public function __construct(Order $order, ?string $message = null)
     {
         $this->order = $order;
         $this->message = $message ?? $this->getDefaultMessage();
@@ -40,14 +40,14 @@ class OrderStatusUpdated extends Notification
     public function toMail(object $notifiable): MailMessage
     {
         $subject = "Order #{$this->order->id} - Status Update";
-        
+
         return (new MailMessage)
             ->subject($subject)
             ->greeting("Hello {$notifiable->name}!")
             ->line($this->message)
             ->line("Order ID: #{$this->order->id}")
-            ->line("Total Amount: ₱" . number_format($this->order->total_amount, 2))
-            ->line("Status: " . ucfirst(str_replace('_', ' ', $this->order->status)))
+            ->line('Total Amount: ₱'.number_format($this->order->total_amount, 2))
+            ->line('Status: '.ucfirst(str_replace('_', ' ', $this->order->status)))
             ->action('View Order', $this->getOrderUrl($notifiable))
             ->line('Thank you for using SupportLocal!');
     }

@@ -1,9 +1,9 @@
 import { Head, Link, router } from '@inertiajs/react';
-import { ArrowLeft, User, MapPin, Star, Eye, Package, Phone, Mail, Calendar, ShoppingCart, Zap } from 'lucide-react';
+import { ArrowLeft, Calendar, Eye, Mail, MapPin, Package, Phone, ShoppingCart, Star, User } from 'lucide-react';
 import React, { useState } from 'react';
-import BuyerLayout from '../../../layouts/BuyerLayout';
-import { useCart } from '../../../contexts/CartContext';
 import Toast from '../../../components/Toast';
+import { useCart } from '../../../contexts/CartContext';
+import BuyerLayout from '../../../layouts/BuyerLayout';
 
 interface Product {
     id: number;
@@ -15,6 +15,10 @@ interface Product {
     average_rating: number;
     view_count: number;
     quantity: number;
+    seller: {
+        id: number;
+        name: string;
+    };
 }
 
 interface Seller {
@@ -37,7 +41,7 @@ interface SellerShowProps {
     seller: Seller;
     products: {
         data: Product[];
-        links: any[];
+        links: { url: string | null; label: string; active: boolean }[];
         current_page: number;
         last_page: number;
         total: number;
@@ -71,7 +75,16 @@ export default function Show({ seller, products, filters }: SellerShowProps) {
     const handleAddToCart = (e: React.MouseEvent, product: Product) => {
         e.stopPropagation();
         if (product.stock_status === 'out_of_stock') return;
-        addToCart(product, 1);
+        
+        const productWithSeller = {
+            ...product,
+            seller: {
+                id: seller.id,
+                name: seller.name
+            }
+        };
+        
+        addToCart(productWithSeller, 1);
         setToastMessage(`${product.name} added to cart!`);
         setShowToast(true);
     };
@@ -79,35 +92,37 @@ export default function Show({ seller, products, filters }: SellerShowProps) {
     const handleBuyNow = (e: React.MouseEvent, product: Product) => {
         e.stopPropagation();
         if (product.stock_status === 'out_of_stock') return;
-        addToCart(product, 1);
+        
+        const productWithSeller = {
+            ...product,
+            seller: {
+                id: seller.id,
+                name: seller.name
+            }
+        };
+        
+        addToCart(productWithSeller, 1);
         router.visit('/buyer/checkout');
     };
 
     return (
         <BuyerLayout title={seller.business_name || seller.name}>
             <Head title={seller.business_name || seller.name} />
-            
+
             <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
                 <div className="mb-6">
-                    <Link 
-                        href="/buyer/sellers" 
-                        className="inline-flex items-center text-sm text-gray-500 hover:text-gray-700"
-                    >
+                    <Link href="/buyer/sellers" className="inline-flex items-center text-sm text-gray-500 hover:text-gray-700">
                         <ArrowLeft className="mr-2 h-4 w-4" />
                         Back to Sellers
                     </Link>
                 </div>
 
                 {/* Seller Profile Header */}
-                <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-8">
-                    <div className="flex flex-col md:flex-row md:items-start space-y-4 md:space-y-0 md:space-x-6">
+                <div className="mb-8 rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+                    <div className="flex flex-col space-y-4 md:flex-row md:items-start md:space-y-0 md:space-x-6">
                         <div className="flex-shrink-0">
                             {seller.profile_image ? (
-                                <img
-                                    src={`/storage/${seller.profile_image}`}
-                                    alt={seller.name}
-                                    className="h-24 w-24 rounded-full object-cover"
-                                />
+                                <img src={`/storage/${seller.profile_image}`} alt={seller.name} className="h-24 w-24 rounded-full object-cover" />
                             ) : (
                                 <div className="flex h-24 w-24 items-center justify-center rounded-full bg-gray-200">
                                     <User className="h-12 w-12 text-gray-400" />
@@ -119,33 +134,31 @@ export default function Show({ seller, products, filters }: SellerShowProps) {
                             <div className="flex flex-col md:flex-row md:items-center md:justify-between">
                                 <div>
                                     <div className="flex items-center space-x-3">
-                                        <h1 className="text-2xl font-bold text-gray-900">
-                                            {seller.business_name || seller.name}
-                                        </h1>
+                                        <h1 className="text-2xl font-bold text-gray-900">{seller.business_name || seller.name}</h1>
                                         {seller.is_verified && (
                                             <span className="inline-flex items-center rounded-full bg-blue-100 px-3 py-1 text-sm font-medium text-blue-800">
                                                 Verified Seller
                                             </span>
                                         )}
                                     </div>
-                                    <p className="text-gray-600 mt-1">by {seller.name}</p>
-                                    
+                                    <p className="mt-1 text-gray-600">by {seller.name}</p>
+
                                     {seller.location && (
-                                        <div className="flex items-center mt-2 text-sm text-gray-500">
+                                        <div className="mt-2 flex items-center text-sm text-gray-500">
                                             <MapPin className="mr-1 h-4 w-4" />
                                             {seller.location}
                                         </div>
                                     )}
                                 </div>
 
-                                <div className="flex items-center space-x-6 mt-4 md:mt-0">
+                                <div className="mt-4 flex items-center space-x-6 md:mt-0">
                                     <div className="text-center">
                                         <div className="text-2xl font-bold text-gray-900">{seller.products_count}</div>
                                         <div className="text-sm text-gray-500">Products</div>
                                     </div>
                                     <div className="text-center">
                                         <div className="flex items-center justify-center">
-                                            <Star className="h-5 w-5 text-yellow-400 fill-current mr-1" />
+                                            <Star className="mr-1 h-5 w-5 fill-current text-yellow-400" />
                                             <span className="text-2xl font-bold text-gray-900">
                                                 {seller.average_rating ? seller.average_rating.toFixed(1) : '0.0'}
                                             </span>
@@ -161,8 +174,8 @@ export default function Show({ seller, products, filters }: SellerShowProps) {
 
                             {seller.business_description && (
                                 <div className="mt-4">
-                                    <h3 className="text-lg font-semibold text-gray-900 mb-2">About</h3>
-                                    <p className="text-gray-600 leading-relaxed">{seller.business_description}</p>
+                                    <h3 className="mb-2 text-lg font-semibold text-gray-900">About</h3>
+                                    <p className="leading-relaxed text-gray-600">{seller.business_description}</p>
                                 </div>
                             )}
 
@@ -191,18 +204,18 @@ export default function Show({ seller, products, filters }: SellerShowProps) {
                 {/* Products Section */}
                 <div>
                     <div className="mb-6">
-                        <h2 className="text-2xl font-bold text-gray-900 mb-4">Products by {seller.business_name || seller.name}</h2>
-                        
-                        <div className="flex flex-col md:flex-row gap-4">
+                        <h2 className="mb-4 text-2xl font-bold text-gray-900">Products by {seller.business_name || seller.name}</h2>
+
+                        <div className="flex flex-col gap-4 md:flex-row">
                             <form onSubmit={handleSearch} className="flex-1">
                                 <div className="relative">
-                                    <Package className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                                    <Package className="absolute top-3 left-3 h-4 w-4 text-gray-400" />
                                     <input
                                         type="text"
                                         placeholder="Search products..."
                                         value={searchTerm}
                                         onChange={(e) => setSearchTerm(e.target.value)}
-                                        className="w-full rounded-lg border border-gray-300 pl-10 pr-4 py-2 focus:border-primary focus:ring-primary"
+                                        className="w-full rounded-lg border border-gray-300 py-2 pr-4 pl-10 focus:border-primary focus:ring-primary"
                                     />
                                 </div>
                             </form>
@@ -230,7 +243,7 @@ export default function Show({ seller, products, filters }: SellerShowProps) {
                                         onClick={() => handleProductClick(product.id)}
                                         className="group cursor-pointer overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm transition-all hover:shadow-lg"
                                     >
-                                        <div className="relative overflow-hidden bg-gray-100 aspect-square">
+                                        <div className="relative aspect-square overflow-hidden bg-gray-100">
                                             {product.primary_image ? (
                                                 <img
                                                     src={`/storage/${product.primary_image}`}
@@ -245,22 +258,18 @@ export default function Show({ seller, products, filters }: SellerShowProps) {
                                         </div>
 
                                         <div className="p-4">
-                                            <h3 className="text-lg font-semibold text-gray-900 line-clamp-1">
-                                                {product.name}
-                                            </h3>
-                                            
-                                            <p className="mt-1 text-sm text-gray-600 line-clamp-2">
-                                                {product.short_description}
-                                            </p>
+                                            <h3 className="line-clamp-1 text-lg font-semibold text-gray-900">{product.name}</h3>
+
+                                            <p className="mt-1 line-clamp-2 text-sm text-gray-600">{product.short_description}</p>
 
                                             <div className="mt-2 flex items-center justify-between">
                                                 <div className="flex items-center">
-                                                    <Star className="h-4 w-4 text-yellow-400 fill-current" />
+                                                    <Star className="h-4 w-4 fill-current text-yellow-400" />
                                                     <span className="ml-1 text-sm text-gray-600">
                                                         {product.average_rating ? product.average_rating.toFixed(1) : '0.0'}
                                                     </span>
                                                 </div>
-                                                
+
                                                 <div className="flex items-center">
                                                     <Eye className="mr-1 h-3 w-3 text-gray-400" />
                                                     <span className="text-xs text-gray-500">{product.view_count}</span>
@@ -268,30 +277,33 @@ export default function Show({ seller, products, filters }: SellerShowProps) {
                                             </div>
 
                                             <div className="mt-3">
-                                                <div className="flex items-center justify-between mb-2">
-                                                    <span className="text-lg font-bold text-gray-900">
-                                                        ₱{product.price}
-                                                    </span>
-                                                    <span className={`px-2 py-1 text-xs rounded-full ${
-                                                        product.stock_status === 'in_stock' 
-                                                            ? 'bg-green-100 text-green-800' 
+                                                <div className="mb-2 flex items-center justify-between">
+                                                    <span className="text-lg font-bold text-gray-900">₱{product.price}</span>
+                                                    <span
+                                                        className={`rounded-full px-2 py-1 text-xs ${
+                                                            product.stock_status === 'in_stock'
+                                                                ? 'bg-green-100 text-green-800'
+                                                                : product.stock_status === 'low_stock'
+                                                                  ? 'bg-yellow-100 text-yellow-800'
+                                                                  : 'bg-red-100 text-red-800'
+                                                        }`}
+                                                    >
+                                                        {product.stock_status === 'in_stock'
+                                                            ? 'In Stock'
                                                             : product.stock_status === 'low_stock'
-                                                            ? 'bg-yellow-100 text-yellow-800'
-                                                            : 'bg-red-100 text-red-800'
-                                                    }`}>
-                                                        {product.stock_status === 'in_stock' ? 'In Stock' : 
-                                                         product.stock_status === 'low_stock' ? 'Low Stock' : 'Out of Stock'}
+                                                              ? 'Low Stock'
+                                                              : 'Out of Stock'}
                                                     </span>
                                                 </div>
-                                                
+
                                                 <div className="flex gap-2">
                                                     <button
                                                         onClick={(e) => handleAddToCart(e, product)}
                                                         disabled={product.stock_status === 'out_of_stock' || isLoading}
-                                                        className={`flex-1 flex items-center justify-center gap-1 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200 transform ${
+                                                        className={`flex flex-1 transform items-center justify-center gap-1 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200 ${
                                                             product.stock_status === 'out_of_stock' || isLoading
-                                                                ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                                                                : 'bg-blue-500 text-white hover:bg-blue-600 shadow-md hover:shadow-lg hover:-translate-y-0.5 active:transform-none focus:ring-2 focus:ring-blue-200'
+                                                                ? 'cursor-not-allowed bg-gray-100 text-gray-400'
+                                                                : 'bg-blue-500 text-white shadow-md hover:-translate-y-0.5 hover:bg-blue-600 hover:shadow-lg focus:ring-2 focus:ring-blue-200 active:transform-none'
                                                         }`}
                                                     >
                                                         <ShoppingCart className="h-4 w-4" />
@@ -300,10 +312,10 @@ export default function Show({ seller, products, filters }: SellerShowProps) {
                                                     <button
                                                         onClick={(e) => handleBuyNow(e, product)}
                                                         disabled={product.stock_status === 'out_of_stock' || isLoading}
-                                                        className={`flex items-center justify-center rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200 transform ${
+                                                        className={`flex transform items-center justify-center rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200 ${
                                                             product.stock_status === 'out_of_stock' || isLoading
-                                                                ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                                                                : 'bg-green-500 text-white hover:bg-green-600 shadow-md hover:shadow-lg hover:-translate-y-0.5 active:transform-none focus:ring-2 focus:ring-green-200'
+                                                                ? 'cursor-not-allowed bg-gray-100 text-gray-400'
+                                                                : 'bg-green-500 text-white shadow-md hover:-translate-y-0.5 hover:bg-green-600 hover:shadow-lg focus:ring-2 focus:ring-green-200 active:transform-none'
                                                         }`}
                                                         title="Buy Now"
                                                     >
@@ -324,11 +336,9 @@ export default function Show({ seller, products, filters }: SellerShowProps) {
                                             <Link
                                                 key={index}
                                                 href={link.url || '#'}
-                                                className={`px-3 py-2 rounded-md text-sm ${
-                                                    link.active
-                                                        ? 'bg-primary text-white'
-                                                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                                                } ${!link.url ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                                className={`rounded-md px-3 py-2 text-sm ${
+                                                    link.active ? 'bg-primary text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                                } ${!link.url ? 'cursor-not-allowed opacity-50' : ''}`}
                                                 dangerouslySetInnerHTML={{ __html: link.label }}
                                             />
                                         ))}
@@ -337,11 +347,11 @@ export default function Show({ seller, products, filters }: SellerShowProps) {
                             )}
                         </>
                     ) : (
-                        <div className="text-center py-12">
-                            <div className="mx-auto h-12 w-12 text-gray-400 mb-4">
+                        <div className="py-12 text-center">
+                            <div className="mx-auto mb-4 h-12 w-12 text-gray-400">
                                 <Package className="h-full w-full" />
                             </div>
-                            <h3 className="text-lg font-medium text-gray-900 mb-2">No products found</h3>
+                            <h3 className="mb-2 text-lg font-medium text-gray-900">No products found</h3>
                             <p className="text-gray-600">
                                 {seller.business_name || seller.name} hasn't added any products yet or no products match your search.
                             </p>
@@ -351,13 +361,7 @@ export default function Show({ seller, products, filters }: SellerShowProps) {
             </div>
 
             {/* Toast Notification */}
-            {showToast && (
-                <Toast
-                    message={toastMessage}
-                    type="success"
-                    onClose={() => setShowToast(false)}
-                />
-            )}
+            {showToast && <Toast message={toastMessage} type="success" onClose={() => setShowToast(false)} />}
         </BuyerLayout>
     );
 }

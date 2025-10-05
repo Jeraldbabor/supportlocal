@@ -1,6 +1,6 @@
 import { type SharedData } from '@/types/index';
 import { Head, Link, usePage } from '@inertiajs/react';
-import { ArrowRight, Bell, Clock, CreditCard, Heart, MapPin, Package, ShoppingBag, Star, TrendingUp, User } from 'lucide-react';
+import { ArrowRight, Bell, Clock, CreditCard, MapPin, Package, ShoppingBag, Star, TrendingUp, User } from 'lucide-react';
 import BuyerLayout from '../../layouts/BuyerLayout';
 
 export default function BuyerDashboard() {

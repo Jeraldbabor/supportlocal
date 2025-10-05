@@ -1,5 +1,5 @@
 import { Link } from '@inertiajs/react';
-import { ArrowLeft, Heart, Minus, Plus, Shield, ShoppingCart, Star, Truck } from 'lucide-react';
+import { ArrowLeft, Minus, Plus, Shield, ShoppingCart, Star, Truck } from 'lucide-react';
 import { useState } from 'react';
 import BuyerLayout from '../../../layouts/BuyerLayout';
 
@@ -83,7 +83,6 @@ export default function Detail({ product, productId }: ProductDetailProps) {
     const displayProduct = product || sampleProducts.find((p) => p.id === Number(productId)) || sampleProducts[0];
     const [selectedImage, setSelectedImage] = useState(0);
     const [quantity, setQuantity] = useState(1);
-    const [isFavorited, setIsFavorited] = useState(false);
 
     const addToCart = () => {
         if (!displayProduct.inStock) return;
@@ -209,10 +208,10 @@ export default function Detail({ product, productId }: ProductDetailProps) {
                             </div>
 
                             <div className="flex space-x-4">
-                                                                <button
+                                <button
                                     onClick={addToCart}
                                     disabled={!displayProduct.inStock}
-                                    className="w-full flex items-center justify-center gap-2 rounded-lg bg-primary px-6 py-3 font-semibold text-white transition-all duration-200 hover:bg-primary/90 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
+                                    className="flex w-full items-center justify-center gap-2 rounded-lg bg-primary px-6 py-3 font-semibold text-white transition-all duration-200 hover:bg-primary/90 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
                                 >
                                     <ShoppingCart className="h-5 w-5" />
                                     {displayProduct.inStock ? 'Add to Cart' : 'Out of Stock'}

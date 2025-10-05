@@ -1,8 +1,8 @@
-import { Head, Link, router } from '@inertiajs/react';
-import { Package, Clock, CheckCircle, XCircle, Eye, MessageSquare, X, Trash2 } from 'lucide-react';
-import React, { useState } from 'react';
 import BuyerLayout from '@/layouts/BuyerLayout';
 import { formatPeso } from '@/utils/currency';
+import { Head, Link, router } from '@inertiajs/react';
+import { CheckCircle, Clock, Eye, MessageSquare, Package, Trash2, X, XCircle } from 'lucide-react';
+import { useState } from 'react';
 
 interface OrderItem {
     id: number;
@@ -31,7 +31,7 @@ interface Order {
 interface OrdersIndexProps {
     orders: {
         data: Order[];
-        links: any[];
+        links: { url: string | null; label: string; active: boolean }[];
         current_page: number;
         last_page: number;
         total: number;
@@ -45,13 +45,17 @@ export default function Orders({ orders }: OrdersIndexProps) {
 
     const handleClearAllHistory = () => {
         setIsDeleting(true);
-        router.post('/buyer/orders/clear-all', {}, {
-            preserveState: true,
-            onFinish: () => {
-                setIsDeleting(false);
-                setShowClearAllConfirm(false);
-            }
-        });
+        router.post(
+            '/buyer/orders/clear-all',
+            {},
+            {
+                preserveState: true,
+                onFinish: () => {
+                    setIsDeleting(false);
+                    setShowClearAllConfirm(false);
+                },
+            },
+        );
     };
 
     const handleDeleteOrder = (orderId: number) => {
@@ -61,7 +65,7 @@ export default function Orders({ orders }: OrdersIndexProps) {
             onFinish: () => {
                 setIsDeleting(false);
                 setShowDeleteConfirm(null);
-            }
+            },
         });
     };
 
@@ -123,17 +127,17 @@ export default function Orders({ orders }: OrdersIndexProps) {
         return (
             <BuyerLayout title="My Orders">
                 <Head title="My Orders" />
-                
+
                 <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8">
-                    <div className="text-center py-16">
-                        <div className="mx-auto h-24 w-24 text-gray-400 mb-6">
+                    <div className="py-16 text-center">
+                        <div className="mx-auto mb-6 h-24 w-24 text-gray-400">
                             <Package className="h-full w-full" />
                         </div>
-                        <h2 className="text-2xl font-bold text-gray-900 mb-4">No orders yet</h2>
-                        <p className="text-gray-600 mb-8">You haven't placed any orders yet. Start shopping to see your orders here.</p>
+                        <h2 className="mb-4 text-2xl font-bold text-gray-900">No orders yet</h2>
+                        <p className="mb-8 text-gray-600">You haven't placed any orders yet. Start shopping to see your orders here.</p>
                         <Link
                             href="/buyer/products"
-                            className="inline-flex items-center gap-2 rounded-lg bg-primary px-6 py-3 font-medium text-white transition-colors hover:bg-primary-dark"
+                            className="hover:bg-primary-dark inline-flex items-center gap-2 rounded-lg bg-primary px-6 py-3 font-medium text-white transition-colors"
                         >
                             <Package className="h-5 w-5" />
                             Start Shopping
@@ -147,15 +151,15 @@ export default function Orders({ orders }: OrdersIndexProps) {
     return (
         <BuyerLayout title="My Orders">
             <Head title="My Orders" />
-            
+
             <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
                 <div className="mb-8 flex items-center justify-between">
                     <div>
                         <h1 className="text-3xl font-bold text-gray-900">My Orders</h1>
-                        <p className="text-gray-600 mt-2">Track and manage your orders</p>
+                        <p className="mt-2 text-gray-600">Track and manage your orders</p>
                     </div>
-                    
-                    {orders.data.some(order => canDelete(order.status)) && (
+
+                    {orders.data.some((order) => canDelete(order.status)) && (
                         <button
                             onClick={() => setShowClearAllConfirm(true)}
                             className="inline-flex items-center gap-2 rounded-lg border border-red-300 bg-white px-4 py-2 text-sm font-medium text-red-700 transition-colors hover:bg-red-50"
@@ -169,40 +173,34 @@ export default function Orders({ orders }: OrdersIndexProps) {
 
                 <div className="space-y-6">
                     {orders.data.map((order) => (
-                        <div key={order.id} className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
+                        <div key={order.id} className="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm">
                             {/* Order Header */}
-                            <div className="px-6 py-4 bg-gray-50 border-b border-gray-200">
+                            <div className="border-b border-gray-200 bg-gray-50 px-6 py-4">
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center space-x-4">
                                         <div>
-                                            <h3 className="text-lg font-semibold text-gray-900">
-                                                Order #{order.order_number}
-                                            </h3>
-                                            <p className="text-sm text-gray-600">
-                                                Placed on {new Date(order.created_at).toLocaleDateString()}
-                                            </p>
+                                            <h3 className="text-lg font-semibold text-gray-900">Order #{order.order_number}</h3>
+                                            <p className="text-sm text-gray-600">Placed on {new Date(order.created_at).toLocaleDateString()}</p>
                                         </div>
                                         <div className="flex items-center space-x-2">
                                             {getStatusIcon(order.status)}
-                                            <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(order.status)}`}>
+                                            <span className={`rounded-full px-3 py-1 text-sm font-medium ${getStatusColor(order.status)}`}>
                                                 {getStatusText(order.status)}
                                             </span>
                                         </div>
                                     </div>
                                     <div className="flex items-center space-x-4">
                                         <div className="text-right">
-                                            <div className="text-lg font-bold text-gray-900">
-                                                {formatPeso(order.total_amount)}
-                                            </div>
+                                            <div className="text-lg font-bold text-gray-900">{formatPeso(order.total_amount)}</div>
                                             <div className="text-sm text-gray-600">
                                                 {order.order_items?.length || 0} item{(order.order_items?.length || 0) !== 1 ? 's' : ''}
                                             </div>
                                         </div>
-                                        
+
                                         {canDelete(order.status) && (
                                             <button
                                                 onClick={() => setShowDeleteConfirm(order.id)}
-                                                className="inline-flex items-center justify-center w-8 h-8 rounded-full border border-red-300 bg-white text-red-500 transition-colors hover:bg-red-50 hover:text-red-700"
+                                                className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-red-300 bg-white text-red-500 transition-colors hover:bg-red-50 hover:text-red-700"
                                                 disabled={isDeleting}
                                                 title="Delete Order"
                                             >
@@ -231,23 +229,17 @@ export default function Orders({ orders }: OrdersIndexProps) {
                                                     </div>
                                                 )}
                                             </div>
-                                            
-                                            <div className="flex-1 min-w-0">
-                                                <h4 className="text-sm font-medium text-gray-900 line-clamp-1">
-                                                    {item.product_name}
-                                                </h4>
-                                                <p className="text-sm text-gray-600">
-                                                    Sold by {item.seller_name}
-                                                </p>
+
+                                            <div className="min-w-0 flex-1">
+                                                <h4 className="line-clamp-1 text-sm font-medium text-gray-900">{item.product_name}</h4>
+                                                <p className="text-sm text-gray-600">Sold by {item.seller_name}</p>
                                                 <p className="text-sm text-gray-600">
                                                     Quantity: {item.quantity} × {formatPeso(item.price)}
                                                 </p>
                                             </div>
-                                            
+
                                             <div className="text-right">
-                                                <div className="text-sm font-medium text-gray-900">
-                                                    {formatPeso(item.total)}
-                                                </div>
+                                                <div className="text-sm font-medium text-gray-900">{formatPeso(item.total)}</div>
                                             </div>
                                         </div>
                                     ))}
@@ -255,19 +247,15 @@ export default function Orders({ orders }: OrdersIndexProps) {
                             </div>
 
                             {/* Order Footer */}
-                            <div className="px-6 py-4 bg-gray-50 border-t border-gray-200">
+                            <div className="border-t border-gray-200 bg-gray-50 px-6 py-4">
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center space-x-4">
                                         <div className="text-sm text-gray-600">
                                             <span className="font-medium">Payment:</span> {order.payment_method}
                                         </div>
-                                        {order.seller_confirmed_at && (
-                                            <div className="text-sm text-green-600">
-                                                ✓ Confirmed by seller
-                                            </div>
-                                        )}
+                                        {order.seller_confirmed_at && <div className="text-sm text-green-600">✓ Confirmed by seller</div>}
                                     </div>
-                                    
+
                                     <div className="flex items-center space-x-3">
                                         <Link
                                             href={`/buyer/orders/${order.id}`}
@@ -276,9 +264,9 @@ export default function Orders({ orders }: OrdersIndexProps) {
                                             <Eye className="h-4 w-4" />
                                             View Details
                                         </Link>
-                                        
+
                                         {order.status === 'delivered' && (
-                                            <button className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-primary-dark">
+                                            <button className="hover:bg-primary-dark inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white transition-colors">
                                                 <MessageSquare className="h-4 w-4" />
                                                 Leave Review
                                             </button>
@@ -298,11 +286,9 @@ export default function Orders({ orders }: OrdersIndexProps) {
                                 <Link
                                     key={index}
                                     href={link.url || '#'}
-                                    className={`px-3 py-2 rounded-md text-sm ${
-                                        link.active
-                                            ? 'bg-primary text-white'
-                                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                                    } ${!link.url ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                    className={`rounded-md px-3 py-2 text-sm ${
+                                        link.active ? 'bg-primary text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                    } ${!link.url ? 'cursor-not-allowed opacity-50' : ''}`}
                                     dangerouslySetInnerHTML={{ __html: link.label }}
                                 />
                             ))}
@@ -312,9 +298,9 @@ export default function Orders({ orders }: OrdersIndexProps) {
 
                 {/* Clear All History Confirmation Dialog */}
                 {showClearAllConfirm && (
-                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                        <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
-                            <div className="flex items-center mb-4">
+                    <div className="bg-opacity-50 fixed inset-0 z-50 flex items-center justify-center bg-black">
+                        <div className="mx-4 w-full max-w-md rounded-lg bg-white p-6">
+                            <div className="mb-4 flex items-center">
                                 <div className="flex-shrink-0">
                                     <Trash2 className="h-6 w-6 text-red-600" />
                                 </div>
@@ -324,20 +310,21 @@ export default function Orders({ orders }: OrdersIndexProps) {
                             </div>
                             <div className="mb-4">
                                 <p className="text-sm text-gray-600">
-                                    Are you sure you want to clear all your order history? This will permanently delete all cancelled and delivered orders. This action cannot be undone.
+                                    Are you sure you want to clear all your order history? This will permanently delete all cancelled and delivered
+                                    orders. This action cannot be undone.
                                 </p>
                             </div>
-                            <div className="flex gap-3 justify-end">
+                            <div className="flex justify-end gap-3">
                                 <button
                                     onClick={() => setShowClearAllConfirm(false)}
-                                    className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+                                    className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
                                     disabled={isDeleting}
                                 >
                                     Cancel
                                 </button>
                                 <button
                                     onClick={handleClearAllHistory}
-                                    className="px-4 py-2 text-sm font-medium text-white bg-red-600 border border-transparent rounded-md hover:bg-red-700 disabled:opacity-50"
+                                    className="rounded-md border border-transparent bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 disabled:opacity-50"
                                     disabled={isDeleting}
                                 >
                                     {isDeleting ? 'Clearing...' : 'Clear All'}
@@ -349,9 +336,9 @@ export default function Orders({ orders }: OrdersIndexProps) {
 
                 {/* Delete Individual Order Confirmation Dialog */}
                 {showDeleteConfirm && (
-                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                        <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
-                            <div className="flex items-center mb-4">
+                    <div className="bg-opacity-50 fixed inset-0 z-50 flex items-center justify-center bg-black">
+                        <div className="mx-4 w-full max-w-md rounded-lg bg-white p-6">
+                            <div className="mb-4 flex items-center">
                                 <div className="flex-shrink-0">
                                     <X className="h-6 w-6 text-red-600" />
                                 </div>
@@ -360,21 +347,19 @@ export default function Orders({ orders }: OrdersIndexProps) {
                                 </div>
                             </div>
                             <div className="mb-4">
-                                <p className="text-sm text-gray-600">
-                                    Are you sure you want to delete this order? This action cannot be undone.
-                                </p>
+                                <p className="text-sm text-gray-600">Are you sure you want to delete this order? This action cannot be undone.</p>
                             </div>
-                            <div className="flex gap-3 justify-end">
+                            <div className="flex justify-end gap-3">
                                 <button
                                     onClick={() => setShowDeleteConfirm(null)}
-                                    className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+                                    className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
                                     disabled={isDeleting}
                                 >
                                     Cancel
                                 </button>
                                 <button
                                     onClick={() => handleDeleteOrder(showDeleteConfirm)}
-                                    className="px-4 py-2 text-sm font-medium text-white bg-red-600 border border-transparent rounded-md hover:bg-red-700 disabled:opacity-50"
+                                    className="rounded-md border border-transparent bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 disabled:opacity-50"
                                     disabled={isDeleting}
                                 >
                                     {isDeleting ? 'Deleting...' : 'Delete'}

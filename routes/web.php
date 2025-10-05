@@ -3,8 +3,6 @@
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-
-
 // E-commerce routes
 Route::get('/', function () {
     return Inertia::render('Home');
@@ -54,7 +52,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         // Product Management Routes
         Route::resource('seller/products', App\Http\Controllers\Seller\ProductController::class, [
             'as' => 'seller',
-            'except' => ['show']
+            'except' => ['show'],
         ]);
         Route::get('/seller/products/{product}', [App\Http\Controllers\Seller\ProductController::class, 'show'])->name('seller.products.show');
         Route::post('/seller/products/{product}/toggle-status', [App\Http\Controllers\Seller\ProductController::class, 'toggleStatus'])->name('seller.products.toggle-status');
@@ -112,7 +110,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
                 'auth_role' => auth()->user()->role,
             ]);
         })->name('admin.users.test');
-        
+
         // User Management Routes
         Route::resource('admin/users', App\Http\Controllers\Admin\UserController::class, [
             'names' => [
@@ -123,9 +121,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
                 'edit' => 'admin.users.edit',
                 'update' => 'admin.users.update',
                 'destroy' => 'admin.users.destroy',
-            ]
+            ],
         ]);
-        
+
         // Additional user management routes
         Route::post('/admin/users/{user}/toggle-status', [App\Http\Controllers\Admin\UserController::class, 'toggleStatus'])->name('admin.users.toggle-status');
         Route::post('/admin/users/{user}/reset-password', [App\Http\Controllers\Admin\UserController::class, 'resetPassword'])->name('admin.users.reset-password');
@@ -168,20 +166,21 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/buyer/cart', function () {
             return Inertia::render('buyer/Cart');
         })->name('buyer.cart');
-        
+
         Route::get('/buyer/checkout', function () {
             $user = auth()->user();
+
             return Inertia::render('buyer/Checkout', [
-                'user' => $user
+                'user' => $user,
             ]);
         })->name('buyer.checkout');
 
         // Order Management Routes
         Route::resource('/buyer/orders', App\Http\Controllers\Buyer\OrderController::class, [
             'as' => 'buyer',
-            'only' => ['index', 'store', 'show', 'destroy']
+            'only' => ['index', 'store', 'show', 'destroy'],
         ]);
-        
+
         // Additional order routes
         Route::post('/buyer/orders/clear-all', [App\Http\Controllers\Buyer\OrderController::class, 'clearAllHistory'])->name('buyer.orders.clear-all');
 
@@ -233,20 +232,20 @@ Route::get('/api/placeholder/{width}/{height}', function ($width, $height) {
     $image = imagecreate($width, $height);
     $bgColor = imagecolorallocate($image, 240, 240, 240); // Light gray background
     $textColor = imagecolorallocate($image, 100, 100, 100); // Dark gray text
-    
+
     // Add text to show dimensions
     $text = "{$width}x{$height}";
     $fontSize = min($width, $height) / 10;
     $x = ($width - strlen($text) * $fontSize * 0.6) / 2;
     $y = ($height + $fontSize) / 2;
-    
+
     imagestring($image, 5, $x, $y - 10, $text, $textColor);
-    
+
     // Output the image
     header('Content-Type: image/png');
     header('Cache-Control: public, max-age=31536000'); // Cache for 1 year
     imagepng($image);
     imagedestroy($image);
-    
+
     return response('', 200);
 })->where(['width' => '[0-9]+', 'height' => '[0-9]+']);

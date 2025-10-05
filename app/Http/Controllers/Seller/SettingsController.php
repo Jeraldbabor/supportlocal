@@ -19,7 +19,7 @@ class SettingsController extends Controller
     public function index(): Response
     {
         $user = Auth::user();
-        
+
         return Inertia::render('seller/settings/index', [
             'user' => [
                 'name' => $user->name,
@@ -39,7 +39,7 @@ class SettingsController extends Controller
     public function security(): Response
     {
         $user = Auth::user();
-        
+
         return Inertia::render('seller/settings/security', [
             'user' => [
                 'name' => $user->name,
@@ -64,7 +64,7 @@ class SettingsController extends Controller
         $user = Auth::user();
 
         // Verify current password
-        if (!Hash::check($validated['current_password'], $user->password)) {
+        if (! Hash::check($validated['current_password'], $user->password)) {
             return redirect()->back()->withErrors([
                 'current_password' => 'The current password is incorrect.',
             ]);
@@ -74,7 +74,7 @@ class SettingsController extends Controller
             'password' => Hash::make($validated['password']),
         ]);
 
-        return redirect()->route('seller.settings.security')->with('success', 
+        return redirect()->route('seller.settings.security')->with('success',
             'Password updated successfully!');
     }
 
@@ -84,7 +84,7 @@ class SettingsController extends Controller
     public function notifications(): Response
     {
         $user = Auth::user();
-        
+
         return Inertia::render('seller/settings/notifications', [
             'user' => [
                 'name' => $user->name,
@@ -107,7 +107,7 @@ class SettingsController extends Controller
     {
         $user = Auth::user();
         $sellerApplication = $user->sellerApplication;
-        
+
         return Inertia::render('seller/settings/business', [
             'user' => [
                 'name' => $user->name,
@@ -141,7 +141,7 @@ class SettingsController extends Controller
     public function account(): Response
     {
         $user = Auth::user();
-        
+
         return Inertia::render('seller/settings/account', [
             'user' => [
                 'id' => $user->id,
@@ -168,7 +168,7 @@ class SettingsController extends Controller
         $user = Auth::user();
 
         // Verify password
-        if (!Hash::check($request->password, $user->password)) {
+        if (! Hash::check($request->password, $user->password)) {
             return redirect()->back()->withErrors([
                 'password' => 'The password is incorrect.',
             ]);
@@ -187,7 +187,7 @@ class SettingsController extends Controller
 
         Auth::logout();
 
-        return redirect()->route('login')->with('success', 
+        return redirect()->route('login')->with('success',
             'Your seller account has been deactivated successfully.');
     }
 
@@ -197,7 +197,7 @@ class SettingsController extends Controller
     public function analytics(): Response
     {
         $user = Auth::user();
-        
+
         return Inertia::render('seller/settings/analytics', [
             'user' => [
                 'name' => $user->name,
@@ -225,7 +225,7 @@ class SettingsController extends Controller
 
         $user->sendEmailVerificationNotification();
 
-        return redirect()->back()->with('success', 
+        return redirect()->back()->with('success',
             'Verification email sent! Please check your inbox.');
     }
 
@@ -235,16 +235,16 @@ class SettingsController extends Controller
     public function summary(): array
     {
         $user = Auth::user();
-        
+
         return [
-            'email_verified' => !empty($user->email_verified_at),
+            'email_verified' => ! empty($user->email_verified_at),
             'account_active' => $user->is_active,
             'profile_complete' => $user->profile_completeness >= 80,
             'business_setup' => $user->sellerApplication ? $user->sellerApplication->isApproved() : false,
             'needs_attention' => [
                 'email_verification' => empty($user->email_verified_at),
                 'incomplete_profile' => $user->profile_completeness < 80,
-                'missing_business_info' => !$user->sellerApplication,
+                'missing_business_info' => ! $user->sellerApplication,
             ],
         ];
     }

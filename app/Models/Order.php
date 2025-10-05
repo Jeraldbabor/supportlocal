@@ -15,22 +15,29 @@ class Order extends Model
      * Order status constants
      */
     const STATUS_PENDING = 'pending';
+
     const STATUS_CONFIRMED = 'confirmed';
+
     const STATUS_CANCELLED = 'cancelled';
+
     const STATUS_COMPLETED = 'completed';
 
     /**
      * Payment status constants
      */
     const PAYMENT_PENDING = 'pending';
+
     const PAYMENT_PAID = 'paid';
+
     const PAYMENT_FAILED = 'failed';
+
     const PAYMENT_REFUNDED = 'refunded';
 
     /**
      * Payment methods
      */
     const PAYMENT_COD = 'cod';
+
     const PAYMENT_GCASH = 'gcash';
 
     /**

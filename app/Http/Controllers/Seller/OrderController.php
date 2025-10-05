@@ -59,7 +59,7 @@ class OrderController extends Controller
         if ($order->status !== Order::STATUS_PENDING) {
             return response()->json([
                 'success' => false,
-                'message' => 'Order cannot be confirmed in its current status.'
+                'message' => 'Order cannot be confirmed in its current status.',
             ], 400);
         }
 
@@ -78,7 +78,7 @@ class OrderController extends Controller
             foreach ($order->orderItems as $orderItem) {
                 $product = $orderItem->product;
                 $product->decrement('quantity', $orderItem->quantity);
-                
+
                 // Update stock status if quantity reaches zero
                 if ($product->quantity <= 0) {
                     $product->update(['stock_status' => 'out_of_stock']);
@@ -104,10 +104,10 @@ class OrderController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
-            
+
             return response()->json([
                 'success' => false,
-                'message' => $e->getMessage()
+                'message' => $e->getMessage(),
             ], 400);
         }
     }
@@ -123,10 +123,10 @@ class OrderController extends Controller
         }
 
         // Check if order can be rejected
-        if (!in_array($order->status, [Order::STATUS_PENDING, Order::STATUS_CONFIRMED])) {
+        if (! in_array($order->status, [Order::STATUS_PENDING, Order::STATUS_CONFIRMED])) {
             return response()->json([
                 'success' => false,
-                'message' => 'Order cannot be rejected in its current status.'
+                'message' => 'Order cannot be rejected in its current status.',
             ], 400);
         }
 
@@ -140,7 +140,7 @@ class OrderController extends Controller
                 foreach ($order->orderItems as $orderItem) {
                     $product = $orderItem->product;
                     $product->increment('quantity', $orderItem->quantity);
-                    
+
                     // Update stock status if quantity is now available
                     if ($product->quantity > 0 && $product->stock_status === 'out_of_stock') {
                         $product->update(['stock_status' => 'in_stock']);
@@ -156,10 +156,10 @@ class OrderController extends Controller
             ]);
 
             // Notify buyer
-            $reason = $request->input('rejection_reason') ? 
+            $reason = $request->input('rejection_reason') ?
                 "Your order has been cancelled. Reason: {$request->input('rejection_reason')}" :
                 'Your order has been cancelled by the seller';
-            
+
             $order->buyer->notify(new OrderStatusUpdated($order, $reason));
 
             return response()->json([
@@ -171,7 +171,7 @@ class OrderController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => $e->getMessage()
+                'message' => $e->getMessage(),
             ], 400);
         }
     }
@@ -190,7 +190,7 @@ class OrderController extends Controller
         if ($order->status !== Order::STATUS_CONFIRMED) {
             return response()->json([
                 'success' => false,
-                'message' => 'Order must be confirmed before it can be completed.'
+                'message' => 'Order must be confirmed before it can be completed.',
             ], 400);
         }
 
@@ -213,7 +213,7 @@ class OrderController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => $e->getMessage()
+                'message' => $e->getMessage(),
             ], 400);
         }
     }

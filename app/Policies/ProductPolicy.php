@@ -4,7 +4,6 @@ namespace App\Policies;
 
 use App\Models\Product;
 use App\Models\User;
-use Illuminate\Auth\Access\Response;
 
 class ProductPolicy
 {
@@ -22,7 +21,7 @@ class ProductPolicy
     public function view(User $user, Product $product): bool
     {
         // Admins can view any product, sellers can only view their own
-        return $user->hasRole('administrator') || 
+        return $user->hasRole('administrator') ||
                ($user->hasRole('seller') && $product->seller_id === $user->id);
     }
 
@@ -40,7 +39,7 @@ class ProductPolicy
     public function update(User $user, Product $product): bool
     {
         // Admins can update any product, sellers can only update their own
-        return $user->hasRole('administrator') || 
+        return $user->hasRole('administrator') ||
                ($user->hasRole('seller') && $product->seller_id === $user->id);
     }
 
@@ -50,7 +49,7 @@ class ProductPolicy
     public function delete(User $user, Product $product): bool
     {
         // Admins can delete any product, sellers can only delete their own
-        return $user->hasRole('administrator') || 
+        return $user->hasRole('administrator') ||
                ($user->hasRole('seller') && $product->seller_id === $user->id);
     }
 
@@ -59,7 +58,7 @@ class ProductPolicy
      */
     public function restore(User $user, Product $product): bool
     {
-        return $user->hasRole('administrator') || 
+        return $user->hasRole('administrator') ||
                ($user->hasRole('seller') && $product->seller_id === $user->id);
     }
 
@@ -76,7 +75,7 @@ class ProductPolicy
      */
     public function publish(User $user, Product $product): bool
     {
-        return $user->hasRole('administrator') || 
+        return $user->hasRole('administrator') ||
                ($user->hasRole('seller') && $product->seller_id === $user->id);
     }
 

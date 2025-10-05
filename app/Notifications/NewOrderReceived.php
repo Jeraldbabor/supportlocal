@@ -3,7 +3,6 @@
 namespace App\Notifications;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
@@ -37,14 +36,14 @@ class NewOrderReceived extends Notification
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-                    ->subject('New Order Received - Order #' . $this->order->id)
-                    ->greeting('Hello ' . $notifiable->name . '!')
-                    ->line('You have received a new order!')
-                    ->line('Order ID: #' . $this->order->id)
-                    ->line('Total Amount: ₱' . number_format($this->order->total_amount, 2))
-                    ->line('Customer: ' . $this->order->buyer->name)
-                    ->action('View Order Details', url('/seller/orders/' . $this->order->id))
-                    ->line('Thank you for using our platform!');
+            ->subject('New Order Received - Order #'.$this->order->id)
+            ->greeting('Hello '.$notifiable->name.'!')
+            ->line('You have received a new order!')
+            ->line('Order ID: #'.$this->order->id)
+            ->line('Total Amount: ₱'.number_format($this->order->total_amount, 2))
+            ->line('Customer: '.$this->order->buyer->name)
+            ->action('View Order Details', url('/seller/orders/'.$this->order->id))
+            ->line('Thank you for using our platform!');
     }
 
     /**
@@ -56,11 +55,11 @@ class NewOrderReceived extends Notification
     {
         return [
             'title' => 'New Order Received',
-            'message' => 'You have received a new order #' . $this->order->id . ' from ' . $this->order->buyer->name . '. Total: ₱' . number_format($this->order->total_amount, 2),
+            'message' => 'You have received a new order #'.$this->order->id.' from '.$this->order->buyer->name.'. Total: ₱'.number_format($this->order->total_amount, 2),
             'order_id' => $this->order->id,
             'customer_name' => $this->order->buyer->name,
             'total_amount' => $this->order->total_amount,
-            'action_url' => '/seller/orders/' . $this->order->id,
+            'action_url' => '/seller/orders/'.$this->order->id,
         ];
     }
 }

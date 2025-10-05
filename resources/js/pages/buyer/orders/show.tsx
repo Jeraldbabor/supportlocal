@@ -1,8 +1,7 @@
-import { Head, router } from '@inertiajs/react';
-import { Package, Clock, CheckCircle, XCircle, ArrowLeft, User, MapPin, Phone, MessageSquare } from 'lucide-react';
-import React from 'react';
 import BuyerLayout from '@/layouts/BuyerLayout';
 import { formatPeso } from '@/utils/currency';
+import { Head, router } from '@inertiajs/react';
+import { ArrowLeft, CheckCircle, Clock, MapPin, MessageSquare, Package, User, XCircle } from 'lucide-react';
 
 interface OrderItem {
     id: number;
@@ -86,7 +85,7 @@ export default function OrderShow({ order }: OrderShowProps) {
     return (
         <BuyerLayout title={`Order #${order.order_number}`}>
             <Head title={`Order #${order.order_number}`} />
-            
+
             <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8">
                 {/* Back Button */}
                 <div className="mb-6">
@@ -110,26 +109,21 @@ export default function OrderShow({ order }: OrderShowProps) {
                                 </p>
                                 {order.updated_at !== order.created_at && (
                                     <p className="text-sm text-gray-600">
-                                        Last updated: {new Date(order.updated_at).toLocaleDateString()} at {new Date(order.updated_at).toLocaleTimeString()}
+                                        Last updated: {new Date(order.updated_at).toLocaleDateString()} at{' '}
+                                        {new Date(order.updated_at).toLocaleTimeString()}
                                     </p>
                                 )}
                             </div>
                             <div className={`rounded-lg border px-4 py-2 ${getStatusColor(order.status)}`}>
                                 <div className="flex items-center space-x-2">
                                     {getStatusIcon(order.status)}
-                                    <span className="text-lg font-semibold">
-                                        {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
-                                    </span>
+                                    <span className="text-lg font-semibold">{order.status.charAt(0).toUpperCase() + order.status.slice(1)}</span>
                                 </div>
                             </div>
                         </div>
                         <div className="text-right">
-                            <p className="text-2xl font-bold text-gray-900">
-                                {formatPeso(order.total_amount)}
-                            </p>
-                            <p className="text-sm text-gray-600">
-                                {order.payment_method.toUpperCase()}
-                            </p>
+                            <p className="text-2xl font-bold text-gray-900">{formatPeso(order.total_amount)}</p>
+                            <p className="text-sm text-gray-600">{order.payment_method.toUpperCase()}</p>
                         </div>
                     </div>
 
@@ -140,8 +134,8 @@ export default function OrderShow({ order }: OrderShowProps) {
 
                     {/* Rejection Reason */}
                     {order.status === 'cancelled' && order.rejection_reason && (
-                        <div className="mt-4 rounded-lg bg-red-50 p-4 border border-red-200">
-                            <h4 className="font-medium text-red-800 mb-2">Cancellation Reason:</h4>
+                        <div className="mt-4 rounded-lg border border-red-200 bg-red-50 p-4">
+                            <h4 className="mb-2 font-medium text-red-800">Cancellation Reason:</h4>
                             <p className="text-red-700">{order.rejection_reason}</p>
                         </div>
                     )}
@@ -221,9 +215,7 @@ export default function OrderShow({ order }: OrderShowProps) {
                     <div className="mt-6 border-t border-gray-200 pt-4">
                         <div className="flex justify-end">
                             <div className="text-right">
-                                <p className="text-lg font-semibold text-gray-900">
-                                    Total: {formatPeso(order.total_amount)}
-                                </p>
+                                <p className="text-lg font-semibold text-gray-900">Total: {formatPeso(order.total_amount)}</p>
                             </div>
                         </div>
                     </div>
@@ -233,7 +225,7 @@ export default function OrderShow({ order }: OrderShowProps) {
                 {order.status === 'pending' && (
                     <div className="mt-8 rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
                         <h2 className="mb-4 text-lg font-semibold text-gray-900">Need Help?</h2>
-                        <p className="text-gray-600 mb-4">
+                        <p className="mb-4 text-gray-600">
                             If you need to make changes to your order or have questions, please contact the seller directly.
                         </p>
                         <div className="flex space-x-3">

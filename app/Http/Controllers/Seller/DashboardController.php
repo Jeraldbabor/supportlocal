@@ -17,15 +17,15 @@ class DashboardController extends Controller
     {
         $user = Auth::user();
         $sellerApplication = $user->sellerApplication;
-        
+
         // Get profile summary
-        $profileController = new ProfileController();
+        $profileController = new ProfileController;
         $profileSummary = $profileController->summary();
-        
+
         // Get settings summary
-        $settingsController = new SettingsController();
+        $settingsController = new SettingsController;
         $settingsSummary = $settingsController->summary();
-        
+
         // Get product statistics
         $productStats = [
             'total' => Product::where('seller_id', $user->id)->count(),
@@ -36,28 +36,28 @@ class DashboardController extends Controller
             'total_views' => Product::where('seller_id', $user->id)->sum('view_count'),
             'total_orders' => Product::where('seller_id', $user->id)->sum('order_count'),
         ];
-        
+
         // Calculate dashboard statistics
         $dashboardStats = [
             'profile_completeness' => $user->profile_completeness,
             'account_health_score' => $this->calculateAccountHealthScore($user),
-            'days_as_seller' => $sellerApplication && $sellerApplication->reviewed_at 
+            'days_as_seller' => $sellerApplication && $sellerApplication->reviewed_at
                 ? $sellerApplication->reviewed_at->diffInDays(now())
                 : 0,
         ];
-        
+
         // Get recommendations for seller
         $recommendations = $this->getSellerRecommendations($user, $profileSummary, $settingsSummary, $productStats);
-        
+
         // Get recent activity
         $recentActivity = $this->getRecentActivity($user);
-        
+
         // Get recent products
         $recentProducts = Product::where('seller_id', $user->id)
             ->orderBy('created_at', 'desc')
             ->take(5)
             ->get();
-        
+
         return Inertia::render('seller/dashboard', [
             'user' => [
                 'name' => $user->name,
@@ -79,54 +79,54 @@ class DashboardController extends Controller
             ] : null,
         ]);
     }
-    
+
     /**
      * Calculate account health score based on profile completeness and settings.
      */
     private function calculateAccountHealthScore($user): int
     {
         $score = 0;
-        
+
         // Profile completeness (30%)
         $score += ($user->profile_completeness * 0.3);
-        
+
         // Email verification (15%)
         if ($user->email_verified_at) {
             $score += 15;
         }
-        
+
         // Profile picture (10%)
         if ($user->profile_picture) {
             $score += 10;
         }
-        
+
         // Business setup (15%)
         if ($user->sellerApplication && $user->sellerApplication->isApproved()) {
             $score += 15;
         }
-        
+
         // Product activity (20%)
         $productCount = Product::where('seller_id', $user->id)->count();
         $productScore = min($productCount * 5, 20); // Max 20 points for 4+ products
         $score += $productScore;
-        
+
         // Account activity (10%)
         if ($user->last_login_at && $user->last_login_at->greaterThan(now()->subDays(7))) {
             $score += 10;
         }
-        
+
         return min(100, round($score));
     }
-    
+
     /**
      * Get personalized recommendations for the seller.
      */
     private function getSellerRecommendations($user, $profileSummary, $settingsSummary, $productStats): array
     {
         $recommendations = [];
-        
+
         // Business setup has highest priority for sellers without approved applications
-        if (!$settingsSummary['business_setup']) {
+        if (! $settingsSummary['business_setup']) {
             $recommendations[] = [
                 'type' => 'business',
                 'title' => 'Set Up Business Information',
@@ -137,7 +137,7 @@ class DashboardController extends Controller
                 'icon' => 'settings',
             ];
         }
-        
+
         // Product recommendations (high priority)
         if ($productStats['total'] === 0) {
             $recommendations[] = [
@@ -160,7 +160,7 @@ class DashboardController extends Controller
                 'icon' => 'package',
             ];
         }
-        
+
         // Inventory alerts
         if ($productStats['out_of_stock'] > 0) {
             $recommendations[] = [
@@ -173,7 +173,7 @@ class DashboardController extends Controller
                 'icon' => 'alert-triangle',
             ];
         }
-        
+
         if ($productStats['low_stock'] > 0) {
             $recommendations[] = [
                 'type' => 'inventory',
@@ -185,7 +185,7 @@ class DashboardController extends Controller
                 'icon' => 'alert-circle',
             ];
         }
-        
+
         // Draft products
         if ($productStats['draft'] > 0) {
             $recommendations[] = [
@@ -198,7 +198,7 @@ class DashboardController extends Controller
                 'icon' => 'edit',
             ];
         }
-        
+
         // Profile recommendations
         if ($profileSummary['profile_completeness'] < 100) {
             $recommendations[] = [
@@ -211,8 +211,8 @@ class DashboardController extends Controller
                 'icon' => 'user',
             ];
         }
-        
-        if (!$profileSummary['has_avatar']) {
+
+        if (! $profileSummary['has_avatar']) {
             $recommendations[] = [
                 'type' => 'profile',
                 'title' => 'Add Profile Picture',
@@ -223,9 +223,9 @@ class DashboardController extends Controller
                 'icon' => 'user',
             ];
         }
-        
+
         // Settings recommendations
-        if (!$settingsSummary['email_verified']) {
+        if (! $settingsSummary['email_verified']) {
             $recommendations[] = [
                 'type' => 'security',
                 'title' => 'Verify Your Email',
@@ -236,31 +236,32 @@ class DashboardController extends Controller
                 'icon' => 'alert-triangle',
             ];
         }
-        
+
         // Note: Business setup recommendation moved to top of function for higher priority
-        
+
         // Sort by priority
         usort($recommendations, function ($a, $b) {
             $priorities = ['critical' => 4, 'high' => 3, 'medium' => 2, 'low' => 1];
+
             return $priorities[$b['priority']] - $priorities[$a['priority']];
         });
-        
+
         return array_slice($recommendations, 0, 6); // Return top 6 recommendations
     }
-    
+
     /**
      * Get recent activity for the seller.
      */
     private function getRecentActivity($user): array
     {
         $activities = [];
-        
+
         // Recent product activities
         $recentProducts = Product::where('seller_id', $user->id)
             ->orderBy('updated_at', 'desc')
             ->take(3)
             ->get();
-            
+
         foreach ($recentProducts as $product) {
             if ($product->created_at->eq($product->updated_at)) {
                 $activities[] = [
@@ -280,7 +281,7 @@ class DashboardController extends Controller
                 ];
             }
         }
-        
+
         // Profile updates
         if ($user->updated_at->greaterThan($user->created_at)) {
             $activities[] = [
@@ -291,7 +292,7 @@ class DashboardController extends Controller
                 'icon' => 'user',
             ];
         }
-        
+
         // Email verification
         if ($user->email_verified_at) {
             $activities[] = [
@@ -302,19 +303,19 @@ class DashboardController extends Controller
                 'icon' => 'check-circle',
             ];
         }
-        
+
         // Seller application
         if ($user->sellerApplication) {
             $app = $user->sellerApplication;
             $activities[] = [
                 'type' => 'seller_application',
-                'title' => 'Seller Application ' . ucfirst($app->status),
-                'description' => 'Your seller application was ' . $app->status,
+                'title' => 'Seller Application '.ucfirst($app->status),
+                'description' => 'Your seller application was '.$app->status,
                 'date' => $app->reviewed_at ? $app->reviewed_at->format('M d, Y g:i A') : $app->created_at->format('M d, Y g:i A'),
                 'icon' => $app->isApproved() ? 'check-circle' : ($app->isRejected() ? 'alert-triangle' : 'calendar'),
             ];
         }
-        
+
         // Last login activity
         if ($user->last_login_at) {
             $activities[] = [
@@ -325,12 +326,12 @@ class DashboardController extends Controller
                 'icon' => 'user',
             ];
         }
-        
+
         // Sort by date (newest first)
-        usort($activities, function($a, $b) {
+        usort($activities, function ($a, $b) {
             return strtotime($b['date']) - strtotime($a['date']);
         });
-        
+
         return array_slice($activities, 0, 6); // Return last 6 activities
     }
 }

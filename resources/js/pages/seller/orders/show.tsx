@@ -1,9 +1,9 @@
-import { Head, router } from '@inertiajs/react';
-import { Package, Clock, CheckCircle, XCircle, ArrowLeft, User, MapPin, Phone, MessageSquare } from 'lucide-react';
-import React, { useState } from 'react';
+import Toast from '@/components/Toast';
 import AppLayout from '@/layouts/app-layout';
 import { formatPeso } from '@/utils/currency';
-import Toast from '@/components/Toast';
+import { Head, router } from '@inertiajs/react';
+import { ArrowLeft, CheckCircle, Clock, MapPin, Package, User, XCircle } from 'lucide-react';
+import { useState } from 'react';
 
 interface OrderItem {
     id: number;
@@ -95,7 +95,7 @@ export default function OrderShow({ order }: OrderShowProps) {
                 setToastType('error');
                 setShowToast(true);
             }
-        } catch (error) {
+        } catch {
             setToastMessage('An error occurred while confirming the order.');
             setToastType('error');
             setShowToast(true);
@@ -104,7 +104,7 @@ export default function OrderShow({ order }: OrderShowProps) {
 
     const handleRejectOrder = async () => {
         const reason = prompt('Please provide a reason for rejection (optional):');
-        
+
         try {
             const response = await fetch(`/seller/orders/${order.id}/reject`, {
                 method: 'POST',
@@ -127,7 +127,7 @@ export default function OrderShow({ order }: OrderShowProps) {
                 setToastType('error');
                 setShowToast(true);
             }
-        } catch (error) {
+        } catch {
             setToastMessage('An error occurred while cancelling the order.');
             setToastType('error');
             setShowToast(true);
@@ -157,7 +157,7 @@ export default function OrderShow({ order }: OrderShowProps) {
                     setToastType('error');
                     setShowToast(true);
                 }
-            } catch (error) {
+            } catch {
                 setToastMessage('An error occurred while completing the order.');
                 setToastType('error');
                 setShowToast(true);
@@ -168,7 +168,7 @@ export default function OrderShow({ order }: OrderShowProps) {
     return (
         <AppLayout>
             <Head title={`Order #${order.id}`} />
-            
+
             <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8">
                 {/* Back Button */}
                 <div className="mb-6">
@@ -192,23 +192,20 @@ export default function OrderShow({ order }: OrderShowProps) {
                                 </p>
                                 {order.updated_at !== order.created_at && (
                                     <p className="text-sm text-gray-600">
-                                        Last updated: {new Date(order.updated_at).toLocaleDateString()} at {new Date(order.updated_at).toLocaleTimeString()}
+                                        Last updated: {new Date(order.updated_at).toLocaleDateString()} at{' '}
+                                        {new Date(order.updated_at).toLocaleTimeString()}
                                     </p>
                                 )}
                             </div>
                             <div className={`rounded-lg border px-4 py-2 ${getStatusColor(order.status)}`}>
                                 <div className="flex items-center space-x-2">
                                     {getStatusIcon(order.status)}
-                                    <span className="text-lg font-semibold">
-                                        {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
-                                    </span>
+                                    <span className="text-lg font-semibold">{order.status.charAt(0).toUpperCase() + order.status.slice(1)}</span>
                                 </div>
                             </div>
                         </div>
                         <div className="text-right">
-                            <p className="text-2xl font-bold text-gray-900">
-                                {formatPeso(order.total_amount)}
-                            </p>
+                            <p className="text-2xl font-bold text-gray-900">{formatPeso(order.total_amount)}</p>
                             <p className="text-sm text-gray-600">
                                 {order.payment_method.toUpperCase()} • {order.payment_status}
                             </p>
@@ -217,8 +214,8 @@ export default function OrderShow({ order }: OrderShowProps) {
 
                     {/* Rejection Reason */}
                     {order.status === 'cancelled' && order.rejection_reason && (
-                        <div className="mt-4 rounded-lg bg-red-50 p-4 border border-red-200">
-                            <h4 className="font-medium text-red-800 mb-2">Cancellation Reason:</h4>
+                        <div className="mt-4 rounded-lg border border-red-200 bg-red-50 p-4">
+                            <h4 className="mb-2 font-medium text-red-800">Cancellation Reason:</h4>
                             <p className="text-red-700">{order.rejection_reason}</p>
                         </div>
                     )}
@@ -302,9 +299,7 @@ export default function OrderShow({ order }: OrderShowProps) {
                     <div className="mt-6 border-t border-gray-200 pt-4">
                         <div className="flex justify-end">
                             <div className="text-right">
-                                <p className="text-lg font-semibold text-gray-900">
-                                    Total: {formatPeso(order.total_amount)}
-                                </p>
+                                <p className="text-lg font-semibold text-gray-900">Total: {formatPeso(order.total_amount)}</p>
                             </div>
                         </div>
                     </div>
@@ -332,7 +327,7 @@ export default function OrderShow({ order }: OrderShowProps) {
                                 </button>
                             </>
                         )}
-                        
+
                         {order.status === 'confirmed' && (
                             <>
                                 <button
@@ -369,13 +364,7 @@ export default function OrderShow({ order }: OrderShowProps) {
                 </div>
 
                 {/* Toast Notification */}
-                {showToast && (
-                    <Toast
-                        message={toastMessage}
-                        type={toastType}
-                        onClose={() => setShowToast(false)}
-                    />
-                )}
+                {showToast && <Toast message={toastMessage} type={toastType} onClose={() => setShowToast(false)} />}
             </div>
         </AppLayout>
     );

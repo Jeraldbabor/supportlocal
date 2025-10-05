@@ -1,10 +1,10 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { useCart } from '@/contexts/CartContext';
+import { NotificationsProvider, useNotifications } from '@/contexts/NotificationsContext';
 import { type SharedData } from '@/types';
 import { Link, router, usePage } from '@inertiajs/react';
 import { Bell, Briefcase, ChevronDown, Heart, House, LogOut, Menu, Package, ShoppingCart, User, X } from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react';
-import { useCart } from '@/contexts/CartContext';
-import { useNotifications, NotificationsProvider } from '@/contexts/NotificationsContext';
 
 interface BuyerLayoutProps {
     children: React.ReactNode;
@@ -89,7 +89,7 @@ function BuyerLayoutContent({ children, title }: BuyerLayoutProps) {
                                             href={item.href}
                                             className={`flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-all duration-200 ${
                                                 isActiveRoute(item.href)
-                                                    ? 'bg-primary/10 text-primary border border-primary/20'
+                                                    ? 'border border-primary/20 bg-primary/10 text-primary'
                                                     : 'text-gray-700 hover:bg-primary/5 hover:text-primary'
                                             } active:scale-95 active:bg-primary/10`}
                                         >
@@ -236,7 +236,7 @@ function BuyerLayoutContent({ children, title }: BuyerLayoutProps) {
                                             href={item.href}
                                             className={`flex items-center gap-3 rounded-md px-3 py-2 text-base font-medium transition-all duration-200 ${
                                                 isActiveRoute(item.href)
-                                                    ? 'bg-primary/10 text-primary border border-primary/20'
+                                                    ? 'border border-primary/20 bg-primary/10 text-primary'
                                                     : 'text-gray-700 hover:bg-primary/5 hover:text-primary'
                                             } active:bg-primary/10`}
                                             onClick={() => {
@@ -351,13 +351,8 @@ export default function BuyerLayout({ children, title }: BuyerLayoutProps) {
     const unreadNotificationsCount = props.unreadNotificationsCount || 0;
 
     return (
-        <NotificationsProvider 
-            initialUnreadCount={unreadNotificationsCount}
-            userRole="buyer"
-        >
-            <BuyerLayoutContent title={title}>
-                {children}
-            </BuyerLayoutContent>
+        <NotificationsProvider initialUnreadCount={unreadNotificationsCount} userRole="buyer">
+            <BuyerLayoutContent title={title}>{children}</BuyerLayoutContent>
         </NotificationsProvider>
     );
 }

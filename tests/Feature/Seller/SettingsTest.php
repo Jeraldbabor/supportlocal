@@ -18,7 +18,7 @@ class SettingsTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         $this->seller = User::factory()->create([
             'role' => User::ROLE_SELLER,
             'name' => 'Jane Seller',
@@ -40,10 +40,9 @@ class SettingsTest extends TestCase
         $response = $this->get(route('seller.settings.index'));
 
         $response->assertOk();
-        $response->assertInertia(fn ($page) => 
-            $page->component('seller/settings/index')
-                 ->has('user')
-                 ->where('user.name', 'Jane Seller')
+        $response->assertInertia(fn ($page) => $page->component('seller/settings/index')
+            ->has('user')
+            ->where('user.name', 'Jane Seller')
         );
     }
 
@@ -55,9 +54,8 @@ class SettingsTest extends TestCase
         $response = $this->get(route('seller.settings.security'));
 
         $response->assertOk();
-        $response->assertInertia(fn ($page) => 
-            $page->component('seller/settings/security')
-                 ->has('user')
+        $response->assertInertia(fn ($page) => $page->component('seller/settings/security')
+            ->has('user')
         );
     }
 
@@ -105,9 +103,8 @@ class SettingsTest extends TestCase
         $response = $this->get(route('seller.settings.notifications'));
 
         $response->assertOk();
-        $response->assertInertia(fn ($page) => 
-            $page->component('seller/settings/notifications')
-                 ->has('preferences')
+        $response->assertInertia(fn ($page) => $page->component('seller/settings/notifications')
+            ->has('preferences')
         );
     }
 
@@ -119,10 +116,9 @@ class SettingsTest extends TestCase
         $response = $this->get(route('seller.settings.business'));
 
         $response->assertOk();
-        $response->assertInertia(fn ($page) => 
-            $page->component('seller/settings/business')
-                 ->has('business')
-                 ->has('businessTypes')
+        $response->assertInertia(fn ($page) => $page->component('seller/settings/business')
+            ->has('business')
+            ->has('businessTypes')
         );
     }
 
@@ -134,10 +130,9 @@ class SettingsTest extends TestCase
         $response = $this->get(route('seller.settings.account'));
 
         $response->assertOk();
-        $response->assertInertia(fn ($page) => 
-            $page->component('seller/settings/account')
-                 ->has('user')
-                 ->where('user.name', 'Jane Seller')
+        $response->assertInertia(fn ($page) => $page->component('seller/settings/account')
+            ->has('user')
+            ->where('user.name', 'Jane Seller')
         );
     }
 
@@ -184,9 +179,8 @@ class SettingsTest extends TestCase
         $response = $this->get(route('seller.settings.analytics'));
 
         $response->assertOk();
-        $response->assertInertia(fn ($page) => 
-            $page->component('seller/settings/analytics')
-                 ->has('analyticsSettings')
+        $response->assertInertia(fn ($page) => $page->component('seller/settings/analytics')
+            ->has('analyticsSettings')
         );
     }
 
@@ -194,7 +188,7 @@ class SettingsTest extends TestCase
     public function seller_can_send_email_verification()
     {
         Notification::fake();
-        
+
         // Create seller with unverified email
         $unverifiedSeller = User::factory()->create([
             'role' => User::ROLE_SELLER,

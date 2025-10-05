@@ -38,19 +38,18 @@ class DashboardTest extends TestCase
         $response = $this->get(route('seller.dashboard'));
 
         $response->assertOk();
-        $response->assertInertia(fn ($page) => 
-            $page->component('seller/dashboard')
-                 ->has('user')
-                 ->has('profileSummary')
-                 ->has('settingsSummary')
-                 ->has('dashboardStats')
-                 ->has('recommendations')
-                 ->has('businessInfo')
-                 ->where('user.name', 'Complete Seller')
-                 ->where('profileSummary.profile_completeness', 100)
-                 ->where('settingsSummary.email_verified', true)
-                 ->where('settingsSummary.business_setup', true)
-                 ->where('businessInfo.type', 'Electronics')
+        $response->assertInertia(fn ($page) => $page->component('seller/dashboard')
+            ->has('user')
+            ->has('profileSummary')
+            ->has('settingsSummary')
+            ->has('dashboardStats')
+            ->has('recommendations')
+            ->has('businessInfo')
+            ->where('user.name', 'Complete Seller')
+            ->where('profileSummary.profile_completeness', 100)
+            ->where('settingsSummary.email_verified', true)
+            ->where('settingsSummary.business_setup', true)
+            ->where('businessInfo.type', 'Electronics')
         );
     }
 
@@ -72,16 +71,15 @@ class DashboardTest extends TestCase
         $response = $this->get(route('seller.dashboard'));
 
         $response->assertOk();
-        $response->assertInertia(fn ($page) => 
-            $page->component('seller/dashboard')
-                 ->has('profileSummary')
-                 ->has('settingsSummary')
-                 ->has('recommendations')
-                 ->where('profileSummary.profile_completeness', fn ($completeness) => $completeness < 100)
-                 ->where('profileSummary.has_avatar', false)
-                 ->where('settingsSummary.email_verified', false)
-                 ->where('settingsSummary.business_setup', false)
-                 ->has('recommendations.0')
+        $response->assertInertia(fn ($page) => $page->component('seller/dashboard')
+            ->has('profileSummary')
+            ->has('settingsSummary')
+            ->has('recommendations')
+            ->where('profileSummary.profile_completeness', fn ($completeness) => $completeness < 100)
+            ->where('profileSummary.has_avatar', false)
+            ->where('settingsSummary.email_verified', false)
+            ->where('settingsSummary.business_setup', false)
+            ->has('recommendations.0')
         );
     }
 
@@ -114,9 +112,8 @@ class DashboardTest extends TestCase
 
         $response = $this->get(route('seller.dashboard'));
 
-        $response->assertInertia(fn ($page) => 
-            $page->where('dashboardStats.account_health_score', fn ($score) => $score >= 90)
-                 ->where('dashboardStats.profile_completeness', 100)
+        $response->assertInertia(fn ($page) => $page->where('dashboardStats.account_health_score', fn ($score) => $score >= 90)
+            ->where('dashboardStats.profile_completeness', 100)
         );
 
         // Test low score seller
@@ -135,9 +132,8 @@ class DashboardTest extends TestCase
 
         $response = $this->get(route('seller.dashboard'));
 
-        $response->assertInertia(fn ($page) => 
-            $page->where('dashboardStats.account_health_score', fn ($score) => $score < 50)
-                 ->where('dashboardStats.profile_completeness', fn ($completeness) => $completeness < 100)
+        $response->assertInertia(fn ($page) => $page->where('dashboardStats.account_health_score', fn ($score) => $score < 50)
+            ->where('dashboardStats.profile_completeness', fn ($completeness) => $completeness < 100)
         );
     }
 
@@ -155,8 +151,7 @@ class DashboardTest extends TestCase
 
         $response = $this->get(route('seller.dashboard'));
 
-        $response->assertInertia(fn ($page) => 
-            $page->where('dashboardStats.days_as_seller', fn ($days) => abs($days - 30) < 1)
+        $response->assertInertia(fn ($page) => $page->where('dashboardStats.days_as_seller', fn ($days) => abs($days - 30) < 1)
         );
     }
 
@@ -177,17 +172,15 @@ class DashboardTest extends TestCase
 
         $response = $this->get(route('seller.dashboard'));
 
-        $response->assertInertia(fn ($page) => 
-            $page->has('recommendations')
-                 ->has('recommendations.0', fn ($recommendation) => 
-                     $recommendation->where('priority', 'critical')
-                         ->has('type')
-                         ->has('title')
-                         ->has('description')
-                         ->has('action')
-                         ->has('url')
-                         ->has('icon')
-                 )
+        $response->assertInertia(fn ($page) => $page->has('recommendations')
+            ->has('recommendations.0', fn ($recommendation) => $recommendation->where('priority', 'critical')
+                ->has('type')
+                ->has('title')
+                ->has('description')
+                ->has('action')
+                ->has('url')
+                ->has('icon')
+            )
         );
     }
 
@@ -208,9 +201,8 @@ class DashboardTest extends TestCase
 
         $response = $this->get(route('seller.dashboard'));
 
-        $response->assertInertia(fn ($page) => 
-            $page->has('recommendations')
-                 ->where('recommendations', fn ($recommendations) => count($recommendations) <= 5)
+        $response->assertInertia(fn ($page) => $page->has('recommendations')
+            ->where('recommendations', fn ($recommendations) => count($recommendations) <= 5)
         );
     }
 
@@ -234,11 +226,10 @@ class DashboardTest extends TestCase
 
         $response = $this->get(route('seller.dashboard'));
 
-        $response->assertInertia(fn ($page) => 
-            $page->where('settingsSummary.business_setup', false)
-                 ->where('businessInfo', null)
-                 ->has('recommendations')
-                 ->where('recommendations.0.type', 'business')
+        $response->assertInertia(fn ($page) => $page->where('settingsSummary.business_setup', false)
+            ->where('businessInfo', null)
+            ->has('recommendations')
+            ->where('recommendations.0.type', 'business')
         );
     }
 }

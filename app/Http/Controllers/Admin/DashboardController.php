@@ -3,12 +3,12 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
 use App\Models\SellerApplication;
+use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
-use Carbon\Carbon;
 
 class DashboardController extends Controller
 {
@@ -31,7 +31,7 @@ class DashboardController extends Controller
 
         // Recent users (last 30 days)
         $recentUsersCount = User::where('created_at', '>=', Carbon::now()->subDays(30))->count();
-        
+
         // Recent active users (last 7 days)
         $recentActiveUsersCount = User::where('last_login_at', '>=', Carbon::now()->subDays(7))->count();
 
@@ -59,10 +59,10 @@ class DashboardController extends Controller
         $growthMetrics = [
             'users_this_month' => User::where('created_at', '>=', Carbon::now()->startOfMonth())->count(),
             'users_last_month' => User::where('created_at', '>=', Carbon::now()->subMonth()->startOfMonth())
-                                      ->where('created_at', '<', Carbon::now()->startOfMonth())->count(),
+                ->where('created_at', '<', Carbon::now()->startOfMonth())->count(),
             'applications_this_week' => SellerApplication::where('created_at', '>=', Carbon::now()->startOfWeek())->count(),
             'applications_last_week' => SellerApplication::where('created_at', '>=', Carbon::now()->subWeek()->startOfWeek())
-                                                          ->where('created_at', '<', Carbon::now()->startOfWeek())->count(),
+                ->where('created_at', '<', Carbon::now()->startOfWeek())->count(),
         ];
 
         return Inertia::render('admin/dashboard', [
@@ -86,9 +86,10 @@ class DashboardController extends Controller
             if (file_exists($databaseName)) {
                 $sizeBytes = filesize($databaseName);
                 $sizeMB = round($sizeBytes / (1024 * 1024), 2);
+
                 return [
                     'size_mb' => $sizeMB,
-                    'size_formatted' => $sizeMB . ' MB'
+                    'size_formatted' => $sizeMB.' MB',
                 ];
             }
         } catch (\Exception $e) {
@@ -97,7 +98,7 @@ class DashboardController extends Controller
 
         return [
             'size_mb' => 0,
-            'size_formatted' => 'Unknown'
+            'size_formatted' => 'Unknown',
         ];
     }
 
@@ -108,6 +109,7 @@ class DashboardController extends Controller
     {
         try {
             $tables = \DB::select("SELECT name FROM sqlite_master WHERE type='table'");
+
             return count($tables);
         } catch (\Exception $e) {
             return 0;
@@ -150,7 +152,7 @@ class DashboardController extends Controller
                 'description' => "{$user->name} ({$user->role}) joined the platform",
                 'time' => $user->created_at,
                 'icon' => 'user-plus',
-                'color' => 'blue'
+                'color' => 'blue',
             ];
         }
 
@@ -164,7 +166,7 @@ class DashboardController extends Controller
                     'description' => "{$application->user->name} submitted a seller application", // @phpstan-ignore-line
                     'time' => $application->created_at,
                     'icon' => 'file-text',
-                    'color' => 'orange'
+                    'color' => 'orange',
                 ];
             }
         }

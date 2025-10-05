@@ -101,9 +101,9 @@ class SellerApplication extends Model
     public function approve(User $reviewer, ?string $notes = null): void
     {
         // Check if the buyer has sufficient profile information
-        if (!$this->user->hasCompleteProfileForSeller()) {
+        if (! $this->user->hasCompleteProfileForSeller()) {
             $missingFields = $this->user->getMissingSellerProfileFields();
-            throw new \Exception('Cannot approve application. User profile is incomplete. Missing: ' . implode(', ', $missingFields));
+            throw new \Exception('Cannot approve application. User profile is incomplete. Missing: '.implode(', ', $missingFields));
         }
 
         $this->update([
@@ -114,7 +114,7 @@ class SellerApplication extends Model
         ]);
 
         // Preserve buyer profile information and update role to seller
-        // Note: All profile fields (name, email, phone, address, avatar, etc.) 
+        // Note: All profile fields (name, email, phone, address, avatar, etc.)
         // are already stored in the same users table and will be preserved
         $this->user->update([
             'role' => User::ROLE_SELLER,

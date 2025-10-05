@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
 import { CheckCircle, X } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
 interface ToastProps {
     message: string;
@@ -32,16 +32,15 @@ export default function Toast({ message, type = 'success', duration = 3000, onCl
     }[type];
 
     return (
-        <div className={`fixed top-4 right-4 z-50 transition-all duration-300 ${
-            isVisible ? 'translate-x-0 opacity-100' : 'translate-x-full opacity-0'
-        }`}>
-            <div className={`${bgColor} text-white px-6 py-4 rounded-lg shadow-lg flex items-center gap-3 min-w-[300px]`}>
+        <div
+            className={`fixed top-4 right-4 z-50 transition-all duration-300 ${
+                isVisible ? 'translate-x-0 opacity-100' : 'translate-x-full opacity-0'
+            }`}
+        >
+            <div className={`${bgColor} flex min-w-[300px] items-center gap-3 rounded-lg px-6 py-4 text-white shadow-lg`}>
                 <CheckCircle className="h-5 w-5 flex-shrink-0" />
                 <span className="flex-1">{message}</span>
-                <button
-                    onClick={handleClose}
-                    className="text-white hover:text-gray-200 flex-shrink-0"
-                >
+                <button onClick={handleClose} className="flex-shrink-0 text-white hover:text-gray-200">
                     <X className="h-4 w-4" />
                 </button>
             </div>

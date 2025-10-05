@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\ProductCategory;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class ProductCategorySeeder extends Seeder
@@ -25,7 +24,7 @@ class ProductCategorySeeder extends Seeder
                     'Decorative Vases',
                     'Handmade Tiles',
                     'Ceramic Figurines',
-                ]
+                ],
             ],
             [
                 'name' => 'Woodworking & Carpentry',
@@ -38,7 +37,7 @@ class ProductCategorySeeder extends Seeder
                     'Kitchen Utensils',
                     'Decorative Boxes',
                     'Walking Sticks & Canes',
-                ]
+                ],
             ],
             [
                 'name' => 'Textiles & Weaving',
@@ -51,7 +50,7 @@ class ProductCategorySeeder extends Seeder
                     'Bags & Purses',
                     'Table Runners',
                     'Wall Hangings',
-                ]
+                ],
             ],
             [
                 'name' => 'Metalwork & Jewelry',
@@ -64,7 +63,7 @@ class ProductCategorySeeder extends Seeder
                     'Kitchen Tools',
                     'Decorative Hardware',
                     'Traditional Weapons',
-                ]
+                ],
             ],
             [
                 'name' => 'Basketry & Bamboo Crafts',
@@ -77,7 +76,7 @@ class ProductCategorySeeder extends Seeder
                     'Storage Containers',
                     'Decorative Weaving',
                     'Fishing Traps',
-                ]
+                ],
             ],
             [
                 'name' => 'Leather & Hide Work',
@@ -90,7 +89,7 @@ class ProductCategorySeeder extends Seeder
                     'Shoes & Sandals',
                     'Wallets & Pouches',
                     'Traditional Crafts',
-                ]
+                ],
             ],
             [
                 'name' => 'Stone & Marble Crafts',
@@ -103,7 +102,7 @@ class ProductCategorySeeder extends Seeder
                     'Garden Ornaments',
                     'Religious Carvings',
                     'Architectural Elements',
-                ]
+                ],
             ],
             [
                 'name' => 'Glass & Crystal Work',
@@ -116,7 +115,7 @@ class ProductCategorySeeder extends Seeder
                     'Window Panels',
                     'Drinking Glasses',
                     'Decorative Bottles',
-                ]
+                ],
             ],
             [
                 'name' => 'Paper & Book Arts',
@@ -129,7 +128,7 @@ class ProductCategorySeeder extends Seeder
                     'Paper Art',
                     'Greeting Cards',
                     'Origami Crafts',
-                ]
+                ],
             ],
             [
                 'name' => 'Traditional Instruments',
@@ -142,7 +141,7 @@ class ProductCategorySeeder extends Seeder
                     'Percussion Instruments',
                     'Traditional Drums',
                     'Folk Instruments',
-                ]
+                ],
             ],
         ];
 

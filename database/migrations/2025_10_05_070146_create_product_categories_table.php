@@ -25,7 +25,7 @@ return new class extends Migration
             $table->string('meta_title')->nullable();
             $table->text('meta_description')->nullable();
             $table->timestamps();
-            
+
             $table->index(['parent_id', 'is_active']);
             $table->index('sort_order');
         });

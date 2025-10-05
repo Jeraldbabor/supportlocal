@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Seller;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -22,10 +21,10 @@ class ProfileController extends Controller
     {
         $user = Auth::user();
         $sellerApplication = $user->sellerApplication;
-        
+
         // Calculate profile statistics
         $profileStats = $this->getProfileStatistics($user);
-        
+
         return Inertia::render('seller/profile/show', [
             'user' => [
                 'id' => $user->id,
@@ -69,7 +68,7 @@ class ProfileController extends Controller
     public function edit(): Response
     {
         $user = Auth::user();
-        
+
         return Inertia::render('seller/profile/edit', [
             'user' => [
                 'id' => $user->id,
@@ -122,12 +121,12 @@ class ProfileController extends Controller
         if ($emailChanged) {
             $user->email_verified_at = null;
             $user->save();
-            
-            return redirect()->route('seller.profile.show')->with('success', 
+
+            return redirect()->route('seller.profile.show')->with('success',
                 'Profile updated successfully! Please verify your new email address.');
         }
 
-        return redirect()->route('seller.profile.show')->with('success', 
+        return redirect()->route('seller.profile.show')->with('success',
             'Profile updated successfully! Your information has been saved.');
     }
 
@@ -157,7 +156,7 @@ class ProfileController extends Controller
 
         $user->update(['profile_picture' => $path]);
 
-        return redirect()->route('seller.profile.show')->with('success', 
+        return redirect()->route('seller.profile.show')->with('success',
             'Profile picture updated successfully!');
     }
 
@@ -173,7 +172,7 @@ class ProfileController extends Controller
             $user->update(['profile_picture' => null]);
         }
 
-        return redirect()->route('seller.profile.show')->with('success', 
+        return redirect()->route('seller.profile.show')->with('success',
             'Profile picture removed successfully!');
     }
 
@@ -213,9 +212,9 @@ class ProfileController extends Controller
         $user = Auth::user();
         $sellerApplication = $user->sellerApplication;
 
-        if (!$sellerApplication || !$sellerApplication->isApproved()) {
+        if (! $sellerApplication || ! $sellerApplication->isApproved()) {
             return redirect()->back()->withErrors([
-                'business' => 'You must have an approved seller application to update business information.'
+                'business' => 'You must have an approved seller application to update business information.',
             ]);
         }
 
@@ -226,7 +225,7 @@ class ProfileController extends Controller
 
         $sellerApplication->update($validated);
 
-        return redirect()->route('seller.profile.business')->with('success', 
+        return redirect()->route('seller.profile.business')->with('success',
             'Business information updated successfully!');
     }
 
@@ -236,12 +235,12 @@ class ProfileController extends Controller
     public function summary(): array
     {
         $user = Auth::user();
-        
+
         return [
             'profile_completeness' => $user->profile_completeness,
             'missing_fields' => $user->getMissingSellerProfileFields(),
-            'has_avatar' => !empty($user->profile_picture),
-            'email_verified' => !empty($user->email_verified_at),
+            'has_avatar' => ! empty($user->profile_picture),
+            'email_verified' => ! empty($user->email_verified_at),
             'business_setup' => $user->sellerApplication ? $user->sellerApplication->isApproved() : false,
         ];
     }
@@ -252,15 +251,15 @@ class ProfileController extends Controller
     private function getProfileStatistics($user): array
     {
         $sellerApplication = $user->sellerApplication;
-        
+
         return [
             'profile_score' => $user->profile_completeness,
             'fields_completed' => 6 - count($user->getMissingSellerProfileFields()),
             'total_fields' => 6,
-            'days_as_seller' => $sellerApplication && $sellerApplication->reviewed_at 
+            'days_as_seller' => $sellerApplication && $sellerApplication->reviewed_at
                 ? $sellerApplication->reviewed_at->diffInDays(now())
                 : 0,
-            'account_verified' => !empty($user->email_verified_at),
+            'account_verified' => ! empty($user->email_verified_at),
             'business_approved' => $sellerApplication ? $sellerApplication->isApproved() : false,
         ];
     }
@@ -271,7 +270,7 @@ class ProfileController extends Controller
     private function getRecentActivity($user): array
     {
         $activities = [];
-        
+
         // Profile updates
         if ($user->updated_at->greaterThan($user->created_at)) {
             $activities[] = [
@@ -282,7 +281,7 @@ class ProfileController extends Controller
                 'icon' => 'user',
             ];
         }
-        
+
         // Email verification
         if ($user->email_verified_at) {
             $activities[] = [
@@ -293,24 +292,24 @@ class ProfileController extends Controller
                 'icon' => 'mail-check',
             ];
         }
-        
+
         // Seller application
         if ($user->sellerApplication) {
             $app = $user->sellerApplication;
             $activities[] = [
                 'type' => 'seller_application',
-                'title' => 'Seller Application ' . ucfirst($app->status),
-                'description' => 'Your seller application was ' . $app->status,
+                'title' => 'Seller Application '.ucfirst($app->status),
+                'description' => 'Your seller application was '.$app->status,
                 'date' => $app->reviewed_at ? $app->reviewed_at->format('M d, Y g:i A') : $app->created_at->format('M d, Y g:i A'),
                 'icon' => $app->isApproved() ? 'check-circle' : ($app->isRejected() ? 'x-circle' : 'clock'),
             ];
         }
-        
+
         // Sort by date (newest first)
-        usort($activities, function($a, $b) {
+        usort($activities, function ($a, $b) {
             return strtotime($b['date']) - strtotime($a['date']);
         });
-        
+
         return array_slice($activities, 0, 5); // Return last 5 activities
     }
 

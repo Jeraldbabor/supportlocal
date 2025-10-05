@@ -1,8 +1,8 @@
+import { NotificationsProvider } from '@/contexts/NotificationsContext';
 import AppLayoutTemplate from '@/layouts/app/app-sidebar-layout';
 import { type BreadcrumbItem } from '@/types';
-import { type ReactNode } from 'react';
-import { NotificationsProvider } from '@/contexts/NotificationsContext';
 import { usePage } from '@inertiajs/react';
+import { type ReactNode } from 'react';
 
 interface AppLayoutProps {
     children: ReactNode;
@@ -23,10 +23,7 @@ export default function AppLayout({ children, breadcrumbs, ...props }: AppLayout
     const userRole = pageProps.auth?.user?.role || 'buyer';
 
     return (
-        <NotificationsProvider 
-            initialUnreadCount={unreadNotificationsCount}
-            userRole={userRole}
-        >
+        <NotificationsProvider initialUnreadCount={unreadNotificationsCount} userRole={userRole}>
             <AppLayoutContent breadcrumbs={breadcrumbs} {...props}>
                 {children}
             </AppLayoutContent>

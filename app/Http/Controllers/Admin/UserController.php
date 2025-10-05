@@ -112,7 +112,7 @@ class UserController extends Controller
     public function show(User $user): Response
     {
         $user->load('sellerApplication');
-        
+
         return Inertia::render('admin/users/show', [
             'user' => [
                 'id' => $user->id,
@@ -186,7 +186,7 @@ class UserController extends Controller
         ]);
 
         // Only update password if provided
-        if (!empty($validated['password'])) {
+        if (! empty($validated['password'])) {
             $validated['password'] = Hash::make($validated['password']);
         } else {
             unset($validated['password']);
@@ -229,11 +229,11 @@ class UserController extends Controller
             return back()->with('error', 'You cannot deactivate your own account.');
         }
 
-        $user->is_active = !$user->is_active;
+        $user->is_active = ! $user->is_active;
         $user->save();
 
         $status = $user->is_active ? 'activated' : 'deactivated';
-        
+
         return back()->with('message', "User {$status} successfully.");
     }
 
@@ -247,7 +247,7 @@ class UserController extends Controller
         ]);
 
         $user->update([
-            'password' => Hash::make($validated['password'])
+            'password' => Hash::make($validated['password']),
         ]);
 
         return back()->with('message', 'Password reset successfully.');
@@ -263,7 +263,7 @@ class UserController extends Controller
         }
 
         $user->update([
-            'email_verified_at' => now()
+            'email_verified_at' => now(),
         ]);
 
         return back()->with('message', 'Email verified successfully.');
@@ -281,7 +281,7 @@ class UserController extends Controller
         // In a real application, you would send an email here
         // For now, we'll just mark it as verified
         $user->update([
-            'email_verified_at' => now()
+            'email_verified_at' => now(),
         ]);
 
         return back()->with('message', 'Email verification sent successfully.');
@@ -302,9 +302,9 @@ class UserController extends Controller
         }
 
         $path = $request->file('avatar')->store('avatars', 'public');
-        
+
         $user->update([
-            'profile_picture' => $path
+            'profile_picture' => $path,
         ]);
 
         return back()->with('message', 'Profile picture updated successfully.');

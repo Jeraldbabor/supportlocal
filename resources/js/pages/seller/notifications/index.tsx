@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import { Head, router, usePage } from '@inertiajs/react';
-import AppLayout from '@/layouts/app-layout';
-import { Bell, Clock, Check, Trash2, X } from 'lucide-react';
 import { useNotifications } from '@/contexts/NotificationsContext';
+import AppLayout from '@/layouts/app-layout';
+import { Head, router } from '@inertiajs/react';
+import { Bell, Check, Clock, Trash2, X } from 'lucide-react';
+import { useState } from 'react';
 
 interface Notification {
     id: string;
@@ -32,7 +32,7 @@ interface NotificationsProps {
 
 // Component that uses the notifications context - must be inside AppLayout
 function NotificationsPageContent({ notifications }: NotificationsProps) {
-    const { markAsRead, markAllAsRead, refreshUnreadCount } = useNotifications();
+    const { markAsRead, markAllAsRead } = useNotifications();
     const [showClearAllConfirm, setShowClearAllConfirm] = useState(false);
     const [isClearing, setIsClearing] = useState(false);
     const [deletingId, setDeletingId] = useState<string | null>(null);
@@ -50,12 +50,16 @@ function NotificationsPageContent({ notifications }: NotificationsProps) {
 
     const handleClearAllHistory = () => {
         setIsClearing(true);
-        router.post('/seller/notifications/clear-all', {}, {
-            onFinish: () => {
-                setIsClearing(false);
-                setShowClearAllConfirm(false);
-            }
-        });
+        router.post(
+            '/seller/notifications/clear-all',
+            {},
+            {
+                onFinish: () => {
+                    setIsClearing(false);
+                    setShowClearAllConfirm(false);
+                },
+            },
+        );
     };
 
     const handleDeleteNotification = (notificationId: string) => {
@@ -64,7 +68,7 @@ function NotificationsPageContent({ notifications }: NotificationsProps) {
             onFinish: () => {
                 setDeletingId(null);
                 setShowDeleteConfirm(null);
-            }
+            },
         });
     };
 
@@ -74,7 +78,7 @@ function NotificationsPageContent({ notifications }: NotificationsProps) {
             month: 'short',
             day: 'numeric',
             hour: '2-digit',
-            minute: '2-digit'
+            minute: '2-digit',
         });
     };
 
@@ -88,26 +92,22 @@ function NotificationsPageContent({ notifications }: NotificationsProps) {
         }
     };
 
-    const unreadCount = notifications.data.filter(n => !n.read_at).length;
+    const unreadCount = notifications.data.filter((n) => !n.read_at).length;
 
     return (
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <div className="bg-white dark:bg-gray-800 shadow rounded-lg">
+        <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8">
+            <div className="rounded-lg bg-white shadow dark:bg-gray-800">
                 {/* Header */}
-                <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                <div className="border-b border-gray-200 px-6 py-4 dark:border-gray-700">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-3">
                             <Bell className="h-6 w-6 text-blue-600" />
-                            <h1 className="text-xl font-semibold text-gray-900 dark:text-white">
-                                Notifications
-                            </h1>
+                            <h1 className="text-xl font-semibold text-gray-900 dark:text-white">Notifications</h1>
                             {unreadCount > 0 && (
-                                <span className="bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
-                                    {unreadCount} unread
-                                </span>
+                                <span className="rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-medium text-red-800">{unreadCount} unread</span>
                             )}
                         </div>
-                        
+
                         <div className="flex items-center space-x-3">
                             {notifications.data.length > 0 && (
                                 <button
@@ -119,7 +119,7 @@ function NotificationsPageContent({ notifications }: NotificationsProps) {
                                     Clear All History
                                 </button>
                             )}
-                            
+
                             {unreadCount > 0 && (
                                 <button
                                     onClick={handleMarkAllAsRead}
@@ -138,9 +138,7 @@ function NotificationsPageContent({ notifications }: NotificationsProps) {
                     {notifications.data.length === 0 ? (
                         <div className="px-6 py-12 text-center">
                             <Bell className="mx-auto h-12 w-12 text-gray-400" />
-                            <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-white">
-                                No notifications
-                            </h3>
+                            <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-white">No notifications</h3>
                             <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
                                 You're all caught up! New order notifications will appear here.
                             </p>
@@ -154,30 +152,28 @@ function NotificationsPageContent({ notifications }: NotificationsProps) {
                                 }`}
                             >
                                 <div className="flex items-start space-x-3">
-                                    <div className="flex-shrink-0 mt-1">
-                                        {getNotificationIcon(notification.type)}
-                                    </div>
-                                    
-                                    <div className="flex-1 min-w-0">
+                                    <div className="mt-1 flex-shrink-0">{getNotificationIcon(notification.type)}</div>
+
+                                    <div className="min-w-0 flex-1">
                                         <div className="flex items-start justify-between">
                                             <div className="flex-1">
                                                 <p className="text-sm font-medium text-gray-900 dark:text-white">
                                                     {notification.data.title || 'Notification'}
                                                 </p>
-                                                <p className="text-sm text-gray-700 dark:text-gray-300 mt-1">
+                                                <p className="mt-1 text-sm text-gray-700 dark:text-gray-300">
                                                     {notification.data.message || 'No message'}
                                                 </p>
-                                                <div className="flex items-center mt-2 text-xs text-gray-500 dark:text-gray-400">
-                                                    <Clock className="h-3 w-3 mr-1" />
+                                                <div className="mt-2 flex items-center text-xs text-gray-500 dark:text-gray-400">
+                                                    <Clock className="mr-1 h-3 w-3" />
                                                     {formatDate(notification.created_at)}
                                                 </div>
                                             </div>
-                                            
+
                                             <div className="flex items-center space-x-2">
                                                 <button
                                                     onClick={() => setShowDeleteConfirm(notification.id)}
                                                     disabled={deletingId === notification.id}
-                                                    className="text-red-500 hover:text-red-700 p-1 rounded-full hover:bg-red-50 transition-colors disabled:opacity-50"
+                                                    className="rounded-full p-1 text-red-500 transition-colors hover:bg-red-50 hover:text-red-700 disabled:opacity-50"
                                                     title="Delete notification"
                                                 >
                                                     <X className="h-4 w-4" />
@@ -185,7 +181,7 @@ function NotificationsPageContent({ notifications }: NotificationsProps) {
                                                 {!notification.read_at && (
                                                     <button
                                                         onClick={() => handleMarkAsRead(notification.id)}
-                                                        className="text-blue-600 hover:text-blue-800 text-xs font-medium"
+                                                        className="text-xs font-medium text-blue-600 hover:text-blue-800"
                                                     >
                                                         Mark as read
                                                     </button>
@@ -201,18 +197,17 @@ function NotificationsPageContent({ notifications }: NotificationsProps) {
 
                 {/* Pagination */}
                 {notifications.total > notifications.per_page && (
-                    <div className="px-6 py-4 border-t border-gray-200 dark:border-gray-700">
+                    <div className="border-t border-gray-200 px-6 py-4 dark:border-gray-700">
                         <div className="flex items-center justify-between">
                             <p className="text-sm text-gray-700 dark:text-gray-300">
-                                Showing{' '}
-                                {Math.min(notifications.current_page * notifications.per_page, notifications.total)} of{' '}
-                                {notifications.total} notifications
+                                Showing {Math.min(notifications.current_page * notifications.per_page, notifications.total)} of {notifications.total}{' '}
+                                notifications
                             </p>
                             <div className="flex space-x-2">
                                 {notifications.current_page > 1 && (
                                     <button
                                         onClick={() => router.get(`/seller/notifications?page=${notifications.current_page - 1}`)}
-                                        className="px-3 py-1 text-sm border border-gray-300 rounded-md hover:bg-gray-50"
+                                        className="rounded-md border border-gray-300 px-3 py-1 text-sm hover:bg-gray-50"
                                     >
                                         Previous
                                     </button>
@@ -220,7 +215,7 @@ function NotificationsPageContent({ notifications }: NotificationsProps) {
                                 {notifications.current_page < notifications.last_page && (
                                     <button
                                         onClick={() => router.get(`/seller/notifications?page=${notifications.current_page + 1}`)}
-                                        className="px-3 py-1 text-sm border border-gray-300 rounded-md hover:bg-gray-50"
+                                        className="rounded-md border border-gray-300 px-3 py-1 text-sm hover:bg-gray-50"
                                     >
                                         Next
                                     </button>
@@ -233,25 +228,23 @@ function NotificationsPageContent({ notifications }: NotificationsProps) {
 
             {/* Clear All Confirmation Modal */}
             {showClearAllConfirm && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                    <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
-                        <h3 className="text-lg font-medium text-gray-900 mb-4">
-                            Clear All Notifications?
-                        </h3>
-                        <p className="text-sm text-gray-500 mb-6">
+                <div className="bg-opacity-50 fixed inset-0 z-50 flex items-center justify-center bg-black">
+                    <div className="mx-4 w-full max-w-md rounded-lg bg-white p-6">
+                        <h3 className="mb-4 text-lg font-medium text-gray-900">Clear All Notifications?</h3>
+                        <p className="mb-6 text-sm text-gray-500">
                             This will permanently delete all your notifications. This action cannot be undone.
                         </p>
                         <div className="flex justify-end space-x-3">
                             <button
                                 onClick={() => setShowClearAllConfirm(false)}
-                                className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200"
+                                className="rounded-md border border-gray-300 bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200"
                                 disabled={isClearing}
                             >
                                 Cancel
                             </button>
                             <button
                                 onClick={handleClearAllHistory}
-                                className="px-4 py-2 text-sm font-medium text-white bg-red-600 border border-transparent rounded-md hover:bg-red-700 disabled:opacity-50"
+                                className="rounded-md border border-transparent bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 disabled:opacity-50"
                                 disabled={isClearing}
                             >
                                 {isClearing ? 'Clearing...' : 'Clear All'}
@@ -263,25 +256,21 @@ function NotificationsPageContent({ notifications }: NotificationsProps) {
 
             {/* Delete Confirmation Modal */}
             {showDeleteConfirm && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                    <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
-                        <h3 className="text-lg font-medium text-gray-900 mb-4">
-                            Delete Notification?
-                        </h3>
-                        <p className="text-sm text-gray-500 mb-6">
-                            Are you sure you want to delete this notification? This action cannot be undone.
-                        </p>
+                <div className="bg-opacity-50 fixed inset-0 z-50 flex items-center justify-center bg-black">
+                    <div className="mx-4 w-full max-w-md rounded-lg bg-white p-6">
+                        <h3 className="mb-4 text-lg font-medium text-gray-900">Delete Notification?</h3>
+                        <p className="mb-6 text-sm text-gray-500">Are you sure you want to delete this notification? This action cannot be undone.</p>
                         <div className="flex justify-end space-x-3">
                             <button
                                 onClick={() => setShowDeleteConfirm(null)}
-                                className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200"
+                                className="rounded-md border border-gray-300 bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200"
                                 disabled={deletingId !== null}
                             >
                                 Cancel
                             </button>
                             <button
                                 onClick={() => handleDeleteNotification(showDeleteConfirm)}
-                                className="px-4 py-2 text-sm font-medium text-white bg-red-600 border border-transparent rounded-md hover:bg-red-700 disabled:opacity-50"
+                                className="rounded-md border border-transparent bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 disabled:opacity-50"
                                 disabled={deletingId !== null}
                             >
                                 {deletingId === showDeleteConfirm ? 'Deleting...' : 'Delete'}

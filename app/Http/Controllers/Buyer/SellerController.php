@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\Buyer;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
 use App\Models\Product;
 use App\Models\SellerApplication;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -33,8 +33,8 @@ class SellerController extends Controller
         if ($search) {
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('business_name', 'like', "%{$search}%")
-                  ->orWhere('bio', 'like', "%{$search}%");
+                    ->orWhere('business_name', 'like', "%{$search}%")
+                    ->orWhere('bio', 'like', "%{$search}%");
             });
         }
 
@@ -66,9 +66,9 @@ class SellerController extends Controller
 
         // Add is_verified computed property to each seller
         $sellers->getCollection()->transform(function ($seller) {
-            $seller->is_verified = $seller->sellerApplication && 
+            $seller->is_verified = $seller->sellerApplication &&
                                   $seller->sellerApplication->status === SellerApplication::STATUS_APPROVED;
-            
+
             // Add missing fields with default values
             $seller->average_rating = 0; // TODO: Calculate from product reviews
             $seller->total_sales = 0; // TODO: Calculate from orders
@@ -76,7 +76,7 @@ class SellerController extends Controller
             $seller->business_description = $seller->sellerApplication->business_description ?? null;
             $seller->business_name = $seller->sellerApplication->business_name ?? null;
             $seller->profile_image = $seller->profile_picture; // Map profile_picture to profile_image
-            
+
             return $seller;
         });
 
@@ -97,7 +97,7 @@ class SellerController extends Controller
     public function show(Request $request, User $seller): Response
     {
         // Only show active sellers to buyers
-        if ($seller->role !== User::ROLE_SELLER || !$seller->is_active) {
+        if ($seller->role !== User::ROLE_SELLER || ! $seller->is_active) {
             abort(404);
         }
 
@@ -120,8 +120,8 @@ class SellerController extends Controller
         if ($search) {
             $productsQuery->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('description', 'like', "%{$search}%")
-                  ->orWhere('short_description', 'like', "%{$search}%");
+                    ->orWhere('description', 'like', "%{$search}%")
+                    ->orWhere('short_description', 'like', "%{$search}%");
             });
         }
 
@@ -136,7 +136,7 @@ class SellerController extends Controller
         // Get categories for filter (only categories that have products from this seller)
         $categories = \App\Models\ProductCategory::whereHas('products', function ($q) use ($seller) {
             $q->where('seller_id', $seller->id)
-              ->where('status', Product::STATUS_ACTIVE);
+                ->where('status', Product::STATUS_ACTIVE);
         })->get();
 
         // Load seller profile data
@@ -145,9 +145,9 @@ class SellerController extends Controller
         }, 'sellerApplication']);
 
         // Add is_verified computed property
-        $seller->is_verified = $seller->sellerApplication && 
+        $seller->is_verified = $seller->sellerApplication &&
                               $seller->sellerApplication->status === SellerApplication::STATUS_APPROVED;
-        
+
         // Add missing fields with default values
         $seller->average_rating = 0; // TODO: Calculate from product reviews
         $seller->total_sales = 0; // TODO: Calculate from orders

@@ -1,5 +1,5 @@
 import { Head, Link, router } from '@inertiajs/react';
-import { Search, User, MapPin, Star, Eye, Filter } from 'lucide-react';
+import { Eye, Filter, MapPin, Search, Star, User } from 'lucide-react';
 import React, { useState } from 'react';
 import BuyerLayout from '../../../layouts/BuyerLayout';
 
@@ -22,7 +22,7 @@ interface Seller {
 interface SellersIndexProps {
     sellers: {
         data: Seller[];
-        links: any[];
+        links: { url: string | null; label: string; active: boolean }[];
         current_page: number;
         last_page: number;
         total: number;
@@ -52,21 +52,10 @@ export default function Index({ sellers, filters }: SellersIndexProps) {
         router.visit(`/buyer/seller/${sellerId}`);
     };
 
-    const getSortLabel = (sort: string) => {
-        switch (sort) {
-            case 'name': return 'Name';
-            case 'products_count': return 'Most Products';
-            case 'average_rating': return 'Highest Rated';
-            case 'total_sales': return 'Best Selling';
-            case 'created_at': return 'Newest';
-            default: return 'Name';
-        }
-    };
-
     return (
         <BuyerLayout title="Browse Sellers">
             <Head title="Browse Sellers" />
-            
+
             <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
                 <div className="mb-8">
                     <h1 className="mb-2 text-3xl font-bold text-gray-900">Browse Sellers & Artisans</h1>
@@ -78,13 +67,13 @@ export default function Index({ sellers, filters }: SellersIndexProps) {
                     <div className="grid grid-cols-1 gap-4 md:grid-cols-5">
                         <form onSubmit={handleSearch} className="col-span-1 md:col-span-2">
                             <div className="relative">
-                                <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                                <Search className="absolute top-3 left-3 h-4 w-4 text-gray-400" />
                                 <input
                                     type="text"
                                     placeholder="Search sellers..."
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
-                                    className="w-full rounded-lg border border-gray-300 pl-10 pr-4 py-2 focus:border-primary focus:ring-primary"
+                                    className="w-full rounded-lg border border-gray-300 py-2 pr-4 pl-10 focus:border-primary focus:ring-primary"
                                 />
                             </div>
                         </form>
@@ -144,9 +133,9 @@ export default function Index({ sellers, filters }: SellersIndexProps) {
                                                 )}
                                             </div>
 
-                                            <div className="flex-1 min-w-0">
+                                            <div className="min-w-0 flex-1">
                                                 <div className="flex items-center space-x-2">
-                                                    <h3 className="text-lg font-semibold text-gray-900 truncate">
+                                                    <h3 className="truncate text-lg font-semibold text-gray-900">
                                                         {seller.business_name || seller.name}
                                                     </h3>
                                                     {seller.is_verified && (
@@ -158,36 +147,30 @@ export default function Index({ sellers, filters }: SellersIndexProps) {
                                                     )}
                                                 </div>
 
-                                                <p className="text-sm text-gray-600 mt-1">
-                                                    by {seller.name}
-                                                </p>
+                                                <p className="mt-1 text-sm text-gray-600">by {seller.name}</p>
 
                                                 {seller.location && (
-                                                    <div className="flex items-center mt-2 text-sm text-gray-500">
+                                                    <div className="mt-2 flex items-center text-sm text-gray-500">
                                                         <MapPin className="mr-1 h-4 w-4" />
                                                         {seller.location}
                                                     </div>
                                                 )}
 
                                                 {seller.business_description && (
-                                                    <p className="mt-3 text-sm text-gray-600 line-clamp-2">
-                                                        {seller.business_description}
-                                                    </p>
+                                                    <p className="mt-3 line-clamp-2 text-sm text-gray-600">{seller.business_description}</p>
                                                 )}
                                             </div>
                                         </div>
 
                                         <div className="mt-6 grid grid-cols-3 gap-4 text-center">
                                             <div>
-                                                <div className="text-lg font-semibold text-gray-900">
-                                                    {seller.products_count}
-                                                </div>
+                                                <div className="text-lg font-semibold text-gray-900">{seller.products_count}</div>
                                                 <div className="text-xs text-gray-500">Products</div>
                                             </div>
-                                            
+
                                             <div>
                                                 <div className="flex items-center justify-center">
-                                                    <Star className="h-4 w-4 text-yellow-400 fill-current mr-1" />
+                                                    <Star className="mr-1 h-4 w-4 fill-current text-yellow-400" />
                                                     <span className="text-lg font-semibold text-gray-900">
                                                         {seller.average_rating ? seller.average_rating.toFixed(1) : '0.0'}
                                                     </span>
@@ -196,18 +179,14 @@ export default function Index({ sellers, filters }: SellersIndexProps) {
                                             </div>
 
                                             <div>
-                                                <div className="text-lg font-semibold text-gray-900">
-                                                    {seller.total_sales || 0}
-                                                </div>
+                                                <div className="text-lg font-semibold text-gray-900">{seller.total_sales || 0}</div>
                                                 <div className="text-xs text-gray-500">Sales</div>
                                             </div>
                                         </div>
 
-                                        <div className="mt-4 pt-4 border-t border-gray-100">
+                                        <div className="mt-4 border-t border-gray-100 pt-4">
                                             <div className="flex items-center justify-between text-sm text-gray-500">
-                                                <span>
-                                                    Member since {new Date(seller.created_at).getFullYear()}
-                                                </span>
+                                                <span>Member since {new Date(seller.created_at).getFullYear()}</span>
                                                 <div className="flex items-center">
                                                     <Eye className="mr-1 h-3 w-3" />
                                                     View Profile
@@ -227,11 +206,9 @@ export default function Index({ sellers, filters }: SellersIndexProps) {
                                         <Link
                                             key={index}
                                             href={link.url || '#'}
-                                            className={`px-3 py-2 rounded-md text-sm ${
-                                                link.active
-                                                    ? 'bg-primary text-white'
-                                                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                                            } ${!link.url ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                            className={`rounded-md px-3 py-2 text-sm ${
+                                                link.active ? 'bg-primary text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                            } ${!link.url ? 'cursor-not-allowed opacity-50' : ''}`}
                                             dangerouslySetInnerHTML={{ __html: link.label }}
                                         />
                                     ))}
@@ -240,16 +217,13 @@ export default function Index({ sellers, filters }: SellersIndexProps) {
                         )}
                     </>
                 ) : (
-                    <div className="text-center py-12">
-                        <div className="mx-auto h-12 w-12 text-gray-400 mb-4">
+                    <div className="py-12 text-center">
+                        <div className="mx-auto mb-4 h-12 w-12 text-gray-400">
                             <Filter className="h-full w-full" />
                         </div>
-                        <h3 className="text-lg font-medium text-gray-900 mb-2">No sellers found</h3>
+                        <h3 className="mb-2 text-lg font-medium text-gray-900">No sellers found</h3>
                         <p className="text-gray-600">Try adjusting your search or filter criteria.</p>
-                        <button
-                            onClick={() => router.get('/buyer/sellers')}
-                            className="mt-4 text-primary hover:text-primary-dark font-medium"
-                        >
+                        <button onClick={() => router.get('/buyer/sellers')} className="hover:text-primary-dark mt-4 font-medium text-primary">
                             Clear all filters
                         </button>
                     </div>

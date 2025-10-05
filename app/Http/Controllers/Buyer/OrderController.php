@@ -7,7 +7,6 @@ use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Product;
 use App\Models\User;
-use App\Notifications\OrderStatusUpdated;
 use App\Notifications\NewOrderReceived;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -62,7 +61,7 @@ class OrderController extends Controller
             // Validate products and calculate total
             foreach ($items as $item) {
                 $product = Product::findOrFail($item['product_id']);
-                
+
                 // Check stock availability
                 if ($product->quantity < $item['quantity']) {
                     throw new \Exception("Insufficient stock for product: {$product->name}");
@@ -89,7 +88,7 @@ class OrderController extends Controller
             $ordersBySeller = [];
             foreach ($orderItems as $item) {
                 $sellerId = $item['seller_id'];
-                if (!isset($ordersBySeller[$sellerId])) {
+                if (! isset($ordersBySeller[$sellerId])) {
                     $ordersBySeller[$sellerId] = [];
                 }
                 $ordersBySeller[$sellerId][] = $item;
@@ -100,11 +99,11 @@ class OrderController extends Controller
             // Create separate orders for each seller
             foreach ($ordersBySeller as $sellerId => $sellerItems) {
                 $sellerTotal = array_sum(array_column($sellerItems, 'total_price'));
-                
+
                 $order = Order::create([
                     'user_id' => auth()->id(), // This is the buyer
                     'seller_id' => $sellerId,
-                    'order_number' => 'ORD-' . strtoupper(uniqid()),
+                    'order_number' => 'ORD-'.strtoupper(uniqid()),
                     'shipping_name' => auth()->user()->name,
                     'shipping_email' => auth()->user()->email,
                     'shipping_phone' => $request->input('delivery_phone'),
@@ -142,7 +141,7 @@ class OrderController extends Controller
                 if ($seller) {
                     // Load the buyer relationship for the notification
                     $order->load('buyer');
-                    
+
                     $seller->notify(new NewOrderReceived($order));
                 }
             }
@@ -154,7 +153,7 @@ class OrderController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
-            
+
             return back()
                 ->withErrors(['error' => $e->getMessage()])
                 ->withInput();
@@ -189,24 +188,25 @@ class OrderController extends Controller
         }
 
         // Only allow deletion of cancelled or delivered orders
-        if (!in_array($order->status, ['cancelled', 'delivered'])) {
+        if (! in_array($order->status, ['cancelled', 'delivered'])) {
             return back()->with('error', 'Only cancelled or delivered orders can be deleted.');
         }
 
         try {
             DB::beginTransaction();
-            
+
             // Delete order items first
             $order->orderItems()->delete();
-            
+
             // Delete the order
             $order->delete();
-            
+
             DB::commit();
-            
+
             return back()->with('success', 'Order deleted successfully.');
         } catch (\Exception $e) {
             DB::rollback();
+
             return back()->with('error', 'Failed to delete order. Please try again.');
         }
     }
@@ -218,29 +218,30 @@ class OrderController extends Controller
     {
         try {
             DB::beginTransaction();
-            
+
             $orders = Order::where('user_id', auth()->id())
                 ->whereIn('status', ['cancelled', 'delivered'])
                 ->get();
-            
+
             if ($orders->isEmpty()) {
                 return back()->with('info', 'No orders available to clear.');
             }
-            
+
             // Delete all order items for these orders
             $orderIds = $orders->pluck('id');
             OrderItem::whereIn('order_id', $orderIds)->delete();
-            
+
             // Delete the orders
             Order::where('user_id', auth()->id())
                 ->whereIn('status', ['cancelled', 'delivered'])
                 ->delete();
-            
+
             DB::commit();
-            
+
             return back()->with('success', 'Order history cleared successfully.');
         } catch (\Exception $e) {
             DB::rollback();
+
             return back()->with('error', 'Failed to clear order history. Please try again.');
         }
     }

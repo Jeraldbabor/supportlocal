@@ -1,5 +1,5 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
 import { router } from '@inertiajs/react';
+import React, { createContext, useContext, useEffect, useState } from 'react';
 
 interface NotificationsContextType {
     unreadCount: number;
@@ -11,11 +11,11 @@ interface NotificationsContextType {
 
 const NotificationsContext = createContext<NotificationsContextType | undefined>(undefined);
 
-export function NotificationsProvider({ 
-    children, 
+export function NotificationsProvider({
+    children,
     initialUnreadCount = 0,
-    userRole = 'buyer' 
-}: { 
+    userRole = 'buyer',
+}: {
     children: React.ReactNode;
     initialUnreadCount?: number;
     userRole?: string;
@@ -46,11 +46,11 @@ export function NotificationsProvider({
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
                 },
             });
-            
+
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
-            
+
             // Refresh the count after marking as read
             refreshUnreadCount();
         } catch (error) {
@@ -68,7 +68,7 @@ export function NotificationsProvider({
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
                 },
             });
-            
+
             if (response.ok) {
                 // Update local state immediately, then refresh from server
                 setUnreadCount(0);
@@ -85,21 +85,23 @@ export function NotificationsProvider({
             // Count will be updated automatically through usePage props
             // No need for explicit refresh since we're using shared data
         };
-        
+
         // Listen to Inertia navigation events
         const removeListener = router.on('navigate', handleRouteChange);
-        
+
         return removeListener;
     }, []);
 
     return (
-        <NotificationsContext.Provider value={{
-            unreadCount,
-            refreshUnreadCount,
-            markAsRead,
-            markAllAsRead,
-            clearBadge
-        }}>
+        <NotificationsContext.Provider
+            value={{
+                unreadCount,
+                refreshUnreadCount,
+                markAsRead,
+                markAllAsRead,
+                clearBadge,
+            }}
+        >
             {children}
         </NotificationsContext.Provider>
     );

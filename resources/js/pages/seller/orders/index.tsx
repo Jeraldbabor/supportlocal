@@ -1,9 +1,9 @@
-import { Head, router } from '@inertiajs/react';
-import { Package, Clock, CheckCircle, XCircle, Eye, User, MessageSquare } from 'lucide-react';
-import React, { useState } from 'react';
+import Toast from '@/components/Toast';
 import AppLayout from '@/layouts/app-layout';
 import { formatPeso } from '@/utils/currency';
-import Toast from '@/components/Toast';
+import { Head, router } from '@inertiajs/react';
+import { CheckCircle, Clock, Eye, Package, User, XCircle } from 'lucide-react';
+import { useState } from 'react';
 
 interface OrderItem {
     id: number;
@@ -35,7 +35,7 @@ interface Order {
 interface OrdersProps {
     orders: {
         data: Order[];
-        links: any[];
+        links: { url: string | null; label: string; active: boolean }[];
         current_page: number;
         last_page: number;
         total: number;
@@ -100,7 +100,7 @@ export default function Orders({ orders }: OrdersProps) {
                 setToastType('error');
                 setShowToast(true);
             }
-        } catch (error) {
+        } catch {
             setToastMessage('An error occurred while confirming the order.');
             setToastType('error');
             setShowToast(true);
@@ -109,7 +109,7 @@ export default function Orders({ orders }: OrdersProps) {
 
     const handleRejectOrder = async (orderId: number) => {
         const reason = prompt('Please provide a reason for rejection (optional):');
-        
+
         try {
             const response = await fetch(`/seller/orders/${orderId}/reject`, {
                 method: 'POST',
@@ -133,7 +133,7 @@ export default function Orders({ orders }: OrdersProps) {
                 setToastType('error');
                 setShowToast(true);
             }
-        } catch (error) {
+        } catch {
             setToastMessage('An error occurred while cancelling the order.');
             setToastType('error');
             setShowToast(true);
@@ -164,7 +164,7 @@ export default function Orders({ orders }: OrdersProps) {
                     setToastType('error');
                     setShowToast(true);
                 }
-            } catch (error) {
+            } catch {
                 setToastMessage('An error occurred while completing the order.');
                 setToastType('error');
                 setShowToast(true);
@@ -175,7 +175,7 @@ export default function Orders({ orders }: OrdersProps) {
     return (
         <AppLayout>
             <Head title="Manage Orders" />
-            
+
             <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
                 <div className="mb-8">
                     <h1 className="text-3xl font-bold text-gray-900">Manage Orders</h1>
@@ -183,7 +183,7 @@ export default function Orders({ orders }: OrdersProps) {
                 </div>
 
                 {orders.data.length === 0 ? (
-                    <div className="text-center py-12">
+                    <div className="py-12 text-center">
                         <Package className="mx-auto h-16 w-16 text-gray-300" />
                         <h2 className="mt-4 text-2xl font-bold text-gray-900">No orders found</h2>
                         <p className="mt-2 text-gray-600">You haven't received any orders yet.</p>
@@ -196,12 +196,8 @@ export default function Orders({ orders }: OrdersProps) {
                                 <div className="flex items-center justify-between border-b border-gray-200 pb-4">
                                     <div className="flex items-center space-x-4">
                                         <div>
-                                            <h3 className="text-lg font-semibold text-gray-900">
-                                                Order #{order.id}
-                                            </h3>
-                                            <p className="text-sm text-gray-600">
-                                                Placed on {new Date(order.created_at).toLocaleDateString()}
-                                            </p>
+                                            <h3 className="text-lg font-semibold text-gray-900">Order #{order.id}</h3>
+                                            <p className="text-sm text-gray-600">Placed on {new Date(order.created_at).toLocaleDateString()}</p>
                                         </div>
                                         <div className="flex items-center space-x-2">
                                             {getStatusIcon(order.status)}
@@ -211,32 +207,38 @@ export default function Orders({ orders }: OrdersProps) {
                                         </div>
                                     </div>
                                     <div className="text-right">
-                                        <p className="text-lg font-semibold text-gray-900">
-                                            {formatPeso(order.total_amount)}
-                                        </p>
-                                        <p className="text-sm text-gray-600">
-                                            {order.payment_method.toUpperCase()}
-                                        </p>
+                                        <p className="text-lg font-semibold text-gray-900">{formatPeso(order.total_amount)}</p>
+                                        <p className="text-sm text-gray-600">{order.payment_method.toUpperCase()}</p>
                                     </div>
                                 </div>
 
                                 {/* Customer Info */}
                                 <div className="mt-4 border-b border-gray-200 pb-4">
-                                    <h4 className="mb-2 font-medium text-gray-900 flex items-center">
+                                    <h4 className="mb-2 flex items-center font-medium text-gray-900">
                                         <User className="mr-2 h-4 w-4" />
                                         Customer Information
                                     </h4>
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                                    <div className="grid grid-cols-1 gap-4 text-sm md:grid-cols-2">
                                         <div>
-                                            <p><span className="font-medium">Name:</span> {order.buyer.name}</p>
-                                            <p><span className="font-medium">Email:</span> {order.buyer.email}</p>
-                                            <p><span className="font-medium">Phone:</span> {order.delivery_phone}</p>
+                                            <p>
+                                                <span className="font-medium">Name:</span> {order.buyer.name}
+                                            </p>
+                                            <p>
+                                                <span className="font-medium">Email:</span> {order.buyer.email}
+                                            </p>
+                                            <p>
+                                                <span className="font-medium">Phone:</span> {order.delivery_phone}
+                                            </p>
                                         </div>
                                         <div>
-                                            <p><span className="font-medium">Delivery Address:</span></p>
+                                            <p>
+                                                <span className="font-medium">Delivery Address:</span>
+                                            </p>
                                             <p className="text-gray-600">{order.delivery_address}</p>
                                             {order.delivery_notes && (
-                                                <p className="mt-1"><span className="font-medium">Notes:</span> {order.delivery_notes}</p>
+                                                <p className="mt-1">
+                                                    <span className="font-medium">Notes:</span> {order.delivery_notes}
+                                                </p>
                                             )}
                                         </div>
                                     </div>
@@ -287,7 +289,7 @@ export default function Orders({ orders }: OrdersProps) {
                                                 </button>
                                             </>
                                         )}
-                                        
+
                                         {order.status === 'confirmed' && (
                                             <>
                                                 <button
@@ -307,7 +309,7 @@ export default function Orders({ orders }: OrdersProps) {
                                             </>
                                         )}
                                     </div>
-                                    
+
                                     <button
                                         onClick={() => router.visit(`/seller/orders/${order.id}`)}
                                         className="inline-flex items-center rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
@@ -326,13 +328,13 @@ export default function Orders({ orders }: OrdersProps) {
                                     {orders.links.map((link, index) => (
                                         <button
                                             key={index}
-                                            onClick={() => router.visit(link.url)}
+                                            onClick={() => link.url && router.visit(link.url)}
                                             disabled={!link.url}
-                                            className={`px-3 py-2 text-sm font-medium rounded-md ${
+                                            className={`rounded-md px-3 py-2 text-sm font-medium ${
                                                 link.active
                                                     ? 'bg-primary text-white'
-                                                    : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
-                                            } ${!link.url ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                                    : 'border border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
+                                            } ${!link.url ? 'cursor-not-allowed opacity-50' : ''}`}
                                             dangerouslySetInnerHTML={{ __html: link.label }}
                                         />
                                     ))}
@@ -343,13 +345,7 @@ export default function Orders({ orders }: OrdersProps) {
                 )}
 
                 {/* Toast Notification */}
-                {showToast && (
-                    <Toast
-                        message={toastMessage}
-                        type={toastType}
-                        onClose={() => setShowToast(false)}
-                    />
-                )}
+                {showToast && <Toast message={toastMessage} type={toastType} onClose={() => setShowToast(false)} />}
             </div>
         </AppLayout>
     );

@@ -191,13 +191,13 @@ class ProductController extends Controller
 
         // Handle image updates
         $currentImages = $product->images ?? [];
-        
+
         // Remove images marked for deletion
         if ($request->has('remove_images')) {
             foreach ($request->remove_images as $imageToRemove) {
                 if (in_array($imageToRemove, $currentImages)) {
                     Storage::disk('public')->delete($imageToRemove);
-                    $currentImages = array_filter($currentImages, fn($img) => $img !== $imageToRemove);
+                    $currentImages = array_filter($currentImages, fn ($img) => $img !== $imageToRemove);
                 }
             }
         }
@@ -214,7 +214,7 @@ class ProductController extends Controller
         $validated['featured_image'] = $validated['images'][0] ?? null;
 
         // Set or unset published_at based on status
-        if ($validated['status'] === Product::STATUS_ACTIVE && !$product->published_at) {
+        if ($validated['status'] === Product::STATUS_ACTIVE && ! $product->published_at) {
             $validated['published_at'] = now();
         } elseif ($validated['status'] !== Product::STATUS_ACTIVE) {
             $validated['published_at'] = null;
@@ -275,7 +275,7 @@ class ProductController extends Controller
         $this->authorize('view', $product);
 
         $newProduct = $product->replicate();
-        $newProduct->name = $product->name . ' (Copy)';
+        $newProduct->name = $product->name.' (Copy)';
         $newProduct->sku = null; // Will be auto-generated
         $newProduct->slug = null; // Will be auto-generated
         $newProduct->status = Product::STATUS_DRAFT;

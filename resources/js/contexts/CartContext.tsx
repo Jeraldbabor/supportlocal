@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { router } from '@inertiajs/react';
+import { Product } from '@/types';
 
 export interface CartItem {
     id: number;
@@ -21,7 +21,7 @@ interface CartContextType {
     cart: CartItem[]; // Alias for items
     totalItems: number;
     totalAmount: number;
-    addToCart: (product: any, quantity?: number) => void;
+    addToCart: (product: Product, quantity?: number) => void;
     removeFromCart: (productId: number) => void;
     updateQuantity: (productId: number, quantity: number) => void;
     clearCart: () => void;
@@ -44,7 +44,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
                 // Ensure prices are numbers when loading from localStorage
                 const normalizedCart = parsedCart.map((item: CartItem) => ({
                     ...item,
-                    price: parseFloat(item.price.toString()) || 0
+                    price: parseFloat(item.price.toString()) || 0,
                 }));
                 setItems(normalizedCart);
             } catch (error) {
@@ -59,28 +59,24 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         localStorage.setItem('cart', JSON.stringify(items));
     }, [items]);
 
-    const addToCart = (product: any, quantity: number = 1) => {
+    const addToCart = (product: Product, quantity: number = 1) => {
         setIsLoading(true);
-        
+
         try {
-            setItems(currentItems => {
-                const existingItem = currentItems.find(item => item.product_id === product.id);
-                
+            setItems((currentItems) => {
+                const existingItem = currentItems.find((item) => item.product_id === product.id);
+
                 if (existingItem) {
                     // Update quantity if item already exists
                     const newQuantity = Math.min(existingItem.quantity + quantity, product.quantity || 999);
-                    return currentItems.map(item =>
-                        item.product_id === product.id
-                            ? { ...item, quantity: newQuantity }
-                            : item
-                    );
+                    return currentItems.map((item) => (item.product_id === product.id ? { ...item, quantity: newQuantity } : item));
                 } else {
                     // Add new item to cart
                     const newItem: CartItem = {
                         id: Date.now(), // temporary ID
                         product_id: product.id,
                         name: product.name,
-                        price: parseFloat(product.price) || 0,
+                        price: typeof product.price === 'string' ? parseFloat(product.price) || 0 : product.price || 0,
                         quantity: Math.min(quantity, product.quantity || 999),
                         primary_image: product.primary_image,
                         seller: product.seller,
@@ -98,7 +94,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     };
 
     const removeFromCart = (productId: number) => {
-        setItems(currentItems => currentItems.filter(item => item.product_id !== productId));
+        setItems((currentItems) => currentItems.filter((item) => item.product_id !== productId));
     };
 
     const updateQuantity = (productId: number, quantity: number) => {
@@ -107,12 +103,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
             return;
         }
 
-        setItems(currentItems =>
-            currentItems.map(item =>
-                item.product_id === productId
-                    ? { ...item, quantity: Math.min(quantity, item.max_quantity) }
-                    : item
-            )
+        setItems((currentItems) =>
+            currentItems.map((item) => (item.product_id === productId ? { ...item, quantity: Math.min(quantity, item.max_quantity) } : item)),
         );
     };
 
@@ -121,7 +113,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     };
 
     const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
-    const totalAmount = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    const totalAmount = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
     const getCartTotal = () => totalAmount;
 
@@ -138,11 +130,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         isLoading,
     };
 
-    return (
-        <CartContext.Provider value={value}>
-            {children}
-        </CartContext.Provider>
-    );
+    return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 }
 
 export function useCart() {
