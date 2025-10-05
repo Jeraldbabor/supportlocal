@@ -380,8 +380,8 @@ export default function Edit({ product, categories, conditions }: EditProps) {
 
                                 <div>
                                     <Label htmlFor="status">Status</Label>
-                                    {}\n{' '}
-                                                                        { }\n                                    <Select value={data.status} onValueChange={(value: string) => setData('status', value as any)}>
+                                    {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                                    <Select value={data.status} onValueChange={(value: string) => setData('status', value as any)}>
                                         <SelectTrigger>
                                             <SelectValue />
                                         </SelectTrigger>
@@ -663,10 +663,12 @@ export default function Edit({ product, categories, conditions }: EditProps) {
                                 variant="outline"
                                 onClick={() => {
                                     setData('status', 'draft');
-                                    {
-                                        const syntheticEvent = { preventDefault: () => {}, currentTarget: null } as React.FormEvent;
-                                        handleSubmit(syntheticEvent);
-                                    }
+                                    // Create a simple synthetic event
+                                    const syntheticEvent = {
+                                        preventDefault: () => {},
+                                        currentTarget: null,
+                                    } as unknown as React.FormEvent;
+                                    handleSubmit(syntheticEvent);
                                 }}
                                 disabled={processing}
                             >

@@ -56,7 +56,7 @@ class ProductFactory extends Factory
             'meta_title' => $this->faker->sentence(6),
             'meta_description' => $this->faker->sentence(15),
             'tags' => $this->faker->words(rand(3, 8)),
-            'category' => ProductCategory::inRandomOrder()->first()?->slug,
+            'category_id' => ProductCategory::inRandomOrder()->first()?->id,
             'view_count' => $this->faker->numberBetween(0, 1000),
             'order_count' => $this->faker->numberBetween(0, 50),
             'average_rating' => $this->faker->boolean(70) ? $this->faker->randomFloat(1, 3.0, 5.0) : null,

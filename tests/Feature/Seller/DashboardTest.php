@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Seller;
 
+use App\Models\Product;
 use App\Models\SellerApplication;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -104,6 +105,11 @@ class DashboardTest extends TestCase
             'user_id' => $highScoreSeller->id,
         ]);
 
+        // Create products to boost account health score (product activity: 20%)
+        Product::factory()->count(4)->create([
+            'seller_id' => $highScoreSeller->id,
+        ]);
+
         $this->actingAs($highScoreSeller);
 
         $response = $this->get(route('seller.dashboard'));
@@ -174,7 +180,7 @@ class DashboardTest extends TestCase
         $response->assertInertia(fn ($page) => 
             $page->has('recommendations')
                  ->has('recommendations.0', fn ($recommendation) => 
-                     $recommendation->where('priority', 'high')
+                     $recommendation->where('priority', 'critical')
                          ->has('type')
                          ->has('title')
                          ->has('description')

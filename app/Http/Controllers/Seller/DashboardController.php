@@ -125,7 +125,20 @@ class DashboardController extends Controller
     {
         $recommendations = [];
         
-        // Product recommendations (highest priority)
+        // Business setup has highest priority for sellers without approved applications
+        if (!$settingsSummary['business_setup']) {
+            $recommendations[] = [
+                'type' => 'business',
+                'title' => 'Set Up Business Information',
+                'description' => 'Complete your business details to start selling',
+                'action' => 'Setup Business',
+                'url' => route('seller.profile.business'),
+                'priority' => 'critical',
+                'icon' => 'settings',
+            ];
+        }
+        
+        // Product recommendations (high priority)
         if ($productStats['total'] === 0) {
             $recommendations[] = [
                 'type' => 'product',
@@ -224,21 +237,11 @@ class DashboardController extends Controller
             ];
         }
         
-        if (!$settingsSummary['business_setup']) {
-            $recommendations[] = [
-                'type' => 'business',
-                'title' => 'Set Up Business Information',
-                'description' => 'Complete your business details to start selling',
-                'action' => 'Setup Business',
-                'url' => route('seller.profile.business'),
-                'priority' => 'high',
-                'icon' => 'settings',
-            ];
-        }
+        // Note: Business setup recommendation moved to top of function for higher priority
         
         // Sort by priority
         usort($recommendations, function ($a, $b) {
-            $priorities = ['high' => 3, 'medium' => 2, 'low' => 1];
+            $priorities = ['critical' => 4, 'high' => 3, 'medium' => 2, 'low' => 1];
             return $priorities[$b['priority']] - $priorities[$a['priority']];
         });
         
