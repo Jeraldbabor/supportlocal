@@ -130,6 +130,22 @@ class User extends Authenticatable
     }
 
     /**
+     * Get the seller's products
+     */
+    public function products()
+    {
+        return $this->hasMany(Product::class, 'seller_id');
+    }
+
+    /**
+     * Get the seller applications submitted by this user
+     */
+    public function sellerApplications()
+    {
+        return $this->hasMany(SellerApplication::class);
+    }
+
+    /**
      * Get the user's seller application.
      */
     public function sellerApplication()

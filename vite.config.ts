@@ -20,4 +20,13 @@ export default defineConfig({
     esbuild: {
         jsx: 'automatic',
     },
+    server: {
+        proxy: {
+            '/storage': {
+                target: 'http://localhost:8000',
+                changeOrigin: true,
+                secure: false,
+            },
+        },
+    },
 });

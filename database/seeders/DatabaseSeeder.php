@@ -13,9 +13,10 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // Seed the default users with roles
+        // Seed the default users with roles and product categories
         $this->call([
             UserRolesSeeder::class,
+            ProductCategorySeeder::class,
         ]);
 
         // User::factory(10)->create();
