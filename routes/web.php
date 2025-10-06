@@ -68,6 +68,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/seller/orders/{order}/reject', [App\Http\Controllers\Seller\OrderController::class, 'reject'])->name('seller.orders.reject');
         Route::post('/seller/orders/{order}/complete', [App\Http\Controllers\Seller\OrderController::class, 'complete'])->name('seller.orders.complete');
 
+        // Customer Management Routes
+        Route::get('/seller/customers', [App\Http\Controllers\Seller\CustomerController::class, 'index'])->name('seller.customers');
+        Route::get('/seller/customers/{customer}', [App\Http\Controllers\Seller\CustomerController::class, 'show'])->name('seller.customers.show');
+        Route::get('/seller/customers/{customer}/orders', [App\Http\Controllers\Seller\CustomerController::class, 'orders'])->name('seller.customers.orders');
+
         Route::get('/seller/analytics', function () {
             return Inertia::render('seller/analytics');
         })->name('seller.analytics');
