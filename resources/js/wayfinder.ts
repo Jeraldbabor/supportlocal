@@ -1,17 +1,17 @@
 // Wayfinder utility functions for route handling
 
-export type RouteQueryOptions = Record<string, string | number | boolean>;
+export type RouteQueryOptions = Record<string, any>;
 
 export type RouteDefinition<T = string> = {
     url: string;
-    method: T;
+    method?: T;
     methods?: readonly string[];
 };
 
 export type RouteFormDefinition<T = string> = {
     action: string;
     method: T;
-    form?: HTMLFormElement | FormData | Record<string, unknown>;
+    form?: any;
 };
 
 /**
@@ -31,4 +31,27 @@ export const queryParams = (options?: RouteQueryOptions): string => {
     
     const queryString = params.toString();
     return queryString ? `?${queryString}` : '';
+};
+
+/**
+ * Apply default URL parameters
+ */
+export const applyUrlDefaults = (args: any, defaults?: Record<string, unknown>): any => {
+    // If args is a string (URL), apply defaults to URL
+    if (typeof args === 'string') {
+        if (!defaults) return args;
+        
+        let finalUrl = args;
+        Object.entries(defaults).forEach(([key, value]) => {
+            const placeholder = `{${key}}`;
+            if (finalUrl.includes(placeholder)) {
+                finalUrl = finalUrl.replace(placeholder, String(value));
+            }
+        });
+        
+        return finalUrl;
+    }
+    
+    // If args is an object, return it as-is (for backward compatibility)
+    return args;
 };
