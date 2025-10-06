@@ -1,4 +1,3 @@
-import Toast from '@/components/Toast';
 import AppLayout from '@/layouts/app-layout';
 import { formatPeso } from '@/utils/currency';
 import { type BreadcrumbItem } from '@/types';
@@ -7,9 +6,7 @@ import {
     ArrowLeft, 
     Eye, 
     Filter, 
-    Search, 
     ShoppingBag,
-    User,
     Calendar,
     Package,
     DollarSign
@@ -70,9 +67,6 @@ interface CustomerOrdersProps {
 }
 
 export default function CustomerOrders({ customer, orders, filters, available_statuses }: CustomerOrdersProps) {
-    const [showToast, setShowToast] = useState(false);
-    const [toastMessage, setToastMessage] = useState('');
-    const [toastType, setToastType] = useState<'success' | 'error'>('success');
     const [statusFilter, setStatusFilter] = useState(filters.status || 'all');
     const [sortBy, setSortBy] = useState(filters.sort || 'created_at');
     const [sortOrder, setSortOrder] = useState(filters.order || 'desc');
@@ -147,16 +141,7 @@ export default function CustomerOrders({ customer, orders, filters, available_st
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title={`${customer.name} - Order History`} />
-            
-            {showToast && (
-                <Toast
-                    message={toastMessage}
-                    type={toastType}
-                    onClose={() => setShowToast(false)}
-                />
-            )}
-
-            <div className="py-6 space-y-6">
+                        <div className="py-6 space-y-6">
                 {/* Header */}
                 <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-4">

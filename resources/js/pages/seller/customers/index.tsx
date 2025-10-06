@@ -1,4 +1,3 @@
-import Toast from '@/components/Toast';
 import AppLayout from '@/layouts/app-layout';
 import { formatPeso } from '@/utils/currency';
 import { type BreadcrumbItem } from '@/types';
@@ -14,10 +13,8 @@ import {
     DollarSign,
     TrendingUp,
     Repeat,
-    Calendar,
     Mail,
     Phone,
-    Filter,
     ArrowUpDown
 } from 'lucide-react';
 import { useState } from 'react';
@@ -73,9 +70,6 @@ interface CustomersProps {
 }
 
 export default function CustomersIndex({ customers, statistics, filters }: CustomersProps) {
-    const [showToast, setShowToast] = useState(false);
-    const [toastMessage, setToastMessage] = useState('');
-    const [toastType, setToastType] = useState<'success' | 'error'>('success');
     const [searchTerm, setSearchTerm] = useState(filters.search || '');
     const [sortBy, setSortBy] = useState(filters.sort || 'total_orders');
     const [sortOrder, setSortOrder] = useState(filters.order || 'desc');
@@ -152,14 +146,6 @@ export default function CustomersIndex({ customers, statistics, filters }: Custo
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Customer Management" />
             
-            {showToast && (
-                <Toast
-                    message={toastMessage}
-                    type={toastType}
-                    onClose={() => setShowToast(false)}
-                />
-            )}
-
             <div className="py-6 space-y-6">
                 {/* Header */}
                 <div className="sm:flex sm:items-center sm:justify-between">

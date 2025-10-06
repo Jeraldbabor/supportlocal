@@ -16,11 +16,9 @@ import {
     Users,
     DollarSign,
     Eye,
-    Clock,
     ArrowUpRight,
     ArrowDownRight,
     RefreshCw,
-    Award,
     ShoppingCart,
     Activity
 } from 'lucide-react';
@@ -169,7 +167,7 @@ export default function SellerDashboard() {
     };
 
     // Enhanced stats with default values
-    const products = {
+    const products = useMemo(() => ({
         total: 0,
         active: 0,
         draft: 0,
@@ -183,9 +181,9 @@ export default function SellerDashboard() {
         trending: {},
         best_sellers: {},
         ...productStats,
-    };
+    }), [productStats]);
 
-    const orders = {
+    const orders = useMemo(() => ({
         total: 0,
         pending: 0,
         confirmed: 0,
@@ -196,9 +194,9 @@ export default function SellerDashboard() {
         today: 0,
         average_items_per_order: 0,
         ...orderStats,
-    };
+    }), [orderStats]);
 
-    const revenue = {
+    const revenue = useMemo(() => ({
         total: 0,
         this_month: 0,
         this_week: 0,
@@ -208,7 +206,7 @@ export default function SellerDashboard() {
         average_order_value: 0,
         month_growth_percentage: 0,
         ...revenueStats,
-    };
+    }), [revenueStats]);
 
     const customers = {
         total_unique: 0,

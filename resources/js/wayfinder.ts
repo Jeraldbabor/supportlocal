@@ -1,6 +1,6 @@
 // Wayfinder utility functions for route handling
 
-export type RouteQueryOptions = Record<string, any>;
+export type RouteQueryOptions = Record<string, string | number | boolean>;
 
 export type RouteDefinition<T = string> = {
     url: string;
@@ -11,7 +11,7 @@ export type RouteDefinition<T = string> = {
 export type RouteFormDefinition<T = string> = {
     action: string;
     method: T;
-    form?: any;
+    form?: HTMLFormElement | FormData | Record<string, unknown>;
 };
 
 /**

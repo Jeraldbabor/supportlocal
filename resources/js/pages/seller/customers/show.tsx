@@ -1,4 +1,3 @@
-import Toast from '@/components/Toast';
 import AppLayout from '@/layouts/app-layout';
 import { formatPeso } from '@/utils/currency';
 import { type BreadcrumbItem } from '@/types';
@@ -10,15 +9,10 @@ import {
     Mail, 
     Phone, 
     ShoppingBag, 
-    User, 
     MapPin,
-    Award,
     TrendingUp,
-    Package,
-    Eye,
-    Star
+    Eye
 } from 'lucide-react';
-import { useState } from 'react';
 
 interface OrderItem {
     id: number;
@@ -86,9 +80,6 @@ interface CustomerShowProps {
 }
 
 export default function CustomerShow({ customer, orders, statistics, favorite_products }: CustomerShowProps) {
-    const [showToast, setShowToast] = useState(false);
-    const [toastMessage, setToastMessage] = useState('');
-    const [toastType, setToastType] = useState<'success' | 'error'>('success');
 
     const breadcrumbs: BreadcrumbItem[] = [
         {
@@ -144,14 +135,6 @@ export default function CustomerShow({ customer, orders, statistics, favorite_pr
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title={`Customer: ${customer.name}`} />
             
-            {showToast && (
-                <Toast
-                    message={toastMessage}
-                    type={toastType}
-                    onClose={() => setShowToast(false)}
-                />
-            )}
-
             <div className="py-6 space-y-6">
                 {/* Header */}
                 <div className="flex items-center justify-between">
