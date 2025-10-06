@@ -42,6 +42,11 @@ function getRoleNavItems(userRole?: string): NavItem[] {
                     icon: ShoppingBag,
                 },
                 {
+                    title: 'Customers',
+                    href: '/seller/customers',
+                    icon: Users,
+                },
+                {
                     title: 'Analytics',
                     href: '/seller/analytics',
                     icon: BarChart3,

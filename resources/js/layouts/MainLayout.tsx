@@ -34,7 +34,12 @@ export default function MainLayout({ children, title, cartItems = 0 }: MainLayou
                     <div className="flex h-16 items-center justify-between">
                         {/* Logo */}
                         <div className="flex-shrink-0">
-                            <Link href="/" className="text-2xl font-bold text-primary">
+                            <Link href="/" className="flex items-center gap-2 text-2xl font-bold text-primary">
+                                <img 
+                                    src="/artisanicon.png" 
+                                    alt="Artisan Icon" 
+                                    className="h-8 w-8"
+                                />
                                 Support Local
                             </Link>
                         </div>

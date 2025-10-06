@@ -72,8 +72,13 @@ function BuyerLayoutContent({ children, title }: BuyerLayoutProps) {
                         <div className="flex-shrink-0">
                             <Link
                                 href="/buyer/dashboard"
-                                className="rounded-lg px-2 py-1 text-2xl font-bold text-primary transition-all duration-200 hover:bg-primary/5 hover:text-primary/80 active:scale-95 active:bg-primary/10"
+                                className="flex items-center gap-2 rounded-lg px-2 py-1 text-2xl font-bold text-primary transition-all duration-200 hover:bg-primary/5 hover:text-primary/80 active:scale-95 active:bg-primary/10"
                             >
+                                <img 
+                                    src="/artisanicon.png" 
+                                    alt="Artisan Icon" 
+                                    className="h-8 w-8"
+                                />
                                 Support Local
                             </Link>
                         </div>

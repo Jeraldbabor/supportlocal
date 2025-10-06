@@ -20,7 +20,26 @@ class RegisteredUserController extends Controller
      */
     public function create(): Response
     {
-        return Inertia::render('auth/register');
+        $sellerCount = User::where('role', User::ROLE_SELLER)->count();
+        
+        // Get 4 featured artisans for the showcase
+        $featuredArtisans = User::where('role', User::ROLE_SELLER)
+            ->select(['id', 'name', 'profile_picture'])
+            ->latest()
+            ->take(4)
+            ->get()
+            ->map(function ($user) {
+                return [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'avatar_url' => $user->avatar_url,
+                ];
+            });
+        
+        return Inertia::render('auth/register', [
+            'sellerCount' => $sellerCount,
+            'featuredArtisans' => $featuredArtisans,
+        ]);
     }
 
     /**

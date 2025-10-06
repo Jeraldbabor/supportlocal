@@ -4,7 +4,12 @@ namespace App\Http\Controllers\Seller;
 
 use App\Http\Controllers\Controller;
 use App\Models\Product;
+use App\Models\Order;
+use App\Models\OrderItem;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -26,16 +31,8 @@ class DashboardController extends Controller
         $settingsController = new SettingsController;
         $settingsSummary = $settingsController->summary();
 
-        // Get product statistics
-        $productStats = [
-            'total' => Product::where('seller_id', $user->id)->count(),
-            'active' => Product::where('seller_id', $user->id)->where('status', Product::STATUS_ACTIVE)->count(),
-            'draft' => Product::where('seller_id', $user->id)->where('status', Product::STATUS_DRAFT)->count(),
-            'low_stock' => Product::where('seller_id', $user->id)->where('stock_status', Product::STOCK_LOW_STOCK)->count(),
-            'out_of_stock' => Product::where('seller_id', $user->id)->where('stock_status', Product::STOCK_OUT_OF_STOCK)->count(),
-            'total_views' => Product::where('seller_id', $user->id)->sum('view_count'),
-            'total_orders' => Product::where('seller_id', $user->id)->sum('order_count'),
-        ];
+        // Get comprehensive statistics
+        $this->getComprehensiveStats($user, $productStats, $orderStats, $revenueStats, $customerStats);
 
         // Calculate dashboard statistics
         $dashboardStats = [
@@ -69,6 +66,9 @@ class DashboardController extends Controller
             'settingsSummary' => $settingsSummary,
             'dashboardStats' => $dashboardStats,
             'productStats' => $productStats,
+            'orderStats' => $orderStats,
+            'revenueStats' => $revenueStats,
+            'customerStats' => $customerStats,
             'recommendations' => $recommendations,
             'recentActivity' => $recentActivity,
             'recentProducts' => $recentProducts,
@@ -333,5 +333,140 @@ class DashboardController extends Controller
         });
 
         return array_slice($activities, 0, 6); // Return last 6 activities
+    }
+
+    /**
+     * Get comprehensive statistics for the seller dashboard.
+     */
+    private function getComprehensiveStats($user, &$productStats, &$orderStats, &$revenueStats, &$customerStats): void
+    {
+        $userId = $user->id;
+        $now = Carbon::now();
+        $lastMonth = $now->copy()->subMonth();
+        $lastWeek = $now->copy()->subWeek();
+
+        // Enhanced Product Statistics
+        $productStats = [
+            'total' => Product::where('seller_id', $userId)->count(),
+            'active' => Product::where('seller_id', $userId)->where('status', Product::STATUS_ACTIVE)->count(),
+            'draft' => Product::where('seller_id', $userId)->where('status', Product::STATUS_DRAFT)->count(),
+            'low_stock' => Product::where('seller_id', $userId)->where('stock_status', Product::STOCK_LOW_STOCK)->count(),
+            'out_of_stock' => Product::where('seller_id', $userId)->where('stock_status', Product::STOCK_OUT_OF_STOCK)->count(),
+            'total_views' => Product::where('seller_id', $userId)->sum('view_count') ?? 0,
+            'total_orders' => Product::where('seller_id', $userId)->sum('order_count') ?? 0,
+            'average_rating' => Product::where('seller_id', $userId)->avg('average_rating') ?? 0,
+            'created_this_month' => Product::where('seller_id', $userId)->where('created_at', '>=', $lastMonth)->count(),
+            'created_this_week' => Product::where('seller_id', $userId)->where('created_at', '>=', $lastWeek)->count(),
+        ];
+
+        // Order Statistics
+        $orderQuery = Order::where('seller_id', $userId);
+        $orderStats = [
+            'total' => $orderQuery->count(),
+            'pending' => Order::where('seller_id', $userId)->where('status', Order::STATUS_PENDING)->count(),
+            'confirmed' => Order::where('seller_id', $userId)->where('status', Order::STATUS_CONFIRMED)->count(),
+            'completed' => Order::where('seller_id', $userId)->where('status', Order::STATUS_COMPLETED)->count(),
+            'cancelled' => Order::where('seller_id', $userId)->where('status', Order::STATUS_CANCELLED)->count(),
+            'this_month' => Order::where('seller_id', $userId)->where('created_at', '>=', $lastMonth)->count(),
+            'this_week' => Order::where('seller_id', $userId)->where('created_at', '>=', $lastWeek)->count(),
+            'today' => Order::where('seller_id', $userId)->whereDate('created_at', $now->toDateString())->count(),
+            'average_items_per_order' => $this->calculateAverageItemsPerOrder($userId),
+        ];
+
+        // Revenue Statistics
+        $completedOrdersQuery = Order::where('seller_id', $userId)->where('status', Order::STATUS_COMPLETED);
+        $revenueStats = [
+            'total' => $completedOrdersQuery->sum('total_amount') ?? 0,
+            'this_month' => Order::where('seller_id', $userId)
+                ->where('status', Order::STATUS_COMPLETED)
+                ->where('created_at', '>=', $lastMonth)
+                ->sum('total_amount') ?? 0,
+            'this_week' => Order::where('seller_id', $userId)
+                ->where('status', Order::STATUS_COMPLETED)
+                ->where('created_at', '>=', $lastWeek)
+                ->sum('total_amount') ?? 0,
+            'today' => Order::where('seller_id', $userId)
+                ->where('status', Order::STATUS_COMPLETED)
+                ->whereDate('created_at', $now->toDateString())
+                ->sum('total_amount') ?? 0,
+            'pending_amount' => Order::where('seller_id', $userId)
+                ->whereIn('status', [Order::STATUS_PENDING, Order::STATUS_CONFIRMED])
+                ->sum('total_amount') ?? 0,
+            'average_order_value' => Order::where('seller_id', $userId)
+                ->where('status', Order::STATUS_COMPLETED)
+                ->avg('total_amount') ?? 0,
+        ];
+
+        // Calculate previous month for growth comparison
+        $previousMonth = $lastMonth->copy()->subMonth();
+        $revenueStats['last_month'] = Order::where('seller_id', $userId)
+            ->where('status', Order::STATUS_COMPLETED)
+            ->whereBetween('created_at', [$previousMonth, $lastMonth])
+            ->sum('total_amount') ?? 0;
+        
+        // Calculate growth percentage
+        if ($revenueStats['last_month'] > 0) {
+            $revenueStats['month_growth_percentage'] = round(
+                (($revenueStats['this_month'] - $revenueStats['last_month']) / $revenueStats['last_month']) * 100, 
+                2
+            );
+        } else {
+            $revenueStats['month_growth_percentage'] = $revenueStats['this_month'] > 0 ? 100 : 0;
+        }
+
+        // Customer Statistics
+        $uniqueCustomers = Order::where('seller_id', $userId)
+            ->distinct('user_id')
+            ->count('user_id');
+        
+        $returningCustomers = Order::where('seller_id', $userId)
+            ->select('user_id')
+            ->groupBy('user_id')
+            ->havingRaw('COUNT(*) > 1')
+            ->count();
+
+        $customerStats = [
+            'total_unique' => $uniqueCustomers,
+            'returning' => $returningCustomers,
+            'new_this_month' => Order::where('seller_id', $userId)
+                ->where('created_at', '>=', $lastMonth)
+                ->distinct('user_id')
+                ->count('user_id'),
+            'retention_rate' => $uniqueCustomers > 0 ? round(($returningCustomers / $uniqueCustomers) * 100, 2) : 0,
+        ];
+
+        // Add trending products
+        $productStats['trending'] = Product::where('seller_id', $userId)
+            ->where('view_count', '>', 0)
+            ->orderByDesc('view_count')
+            ->take(5)
+            ->pluck('name', 'id')
+            ->toArray();
+
+        // Add best sellers
+        $productStats['best_sellers'] = Product::where('seller_id', $userId)
+            ->where('order_count', '>', 0)
+            ->orderByDesc('order_count')
+            ->take(5)
+            ->pluck('name', 'id')
+            ->toArray();
+    }
+
+    /**
+     * Calculate average items per order for the seller.
+     */
+    private function calculateAverageItemsPerOrder($sellerId): float
+    {
+        $totalOrders = Order::where('seller_id', $sellerId)->count();
+        
+        if ($totalOrders === 0) {
+            return 0;
+        }
+
+        $totalItems = OrderItem::whereHas('order', function ($query) use ($sellerId) {
+            $query->where('seller_id', $sellerId);
+        })->sum('quantity');
+
+        return round($totalItems / $totalOrders, 2);
     }
 }

@@ -19,9 +19,27 @@ class AuthenticatedSessionController extends Controller
      */
     public function create(Request $request): Response
     {
+        $sellerCount = User::where('role', User::ROLE_SELLER)->count();
+        
+        // Get 4 featured artisans for the showcase
+        $featuredArtisans = User::where('role', User::ROLE_SELLER)
+            ->select(['id', 'name', 'profile_picture'])
+            ->latest()
+            ->take(4)
+            ->get()
+            ->map(function ($user) {
+                return [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'avatar_url' => $user->avatar_url,
+                ];
+            });
+        
         return Inertia::render('auth/login', [
             'canResetPassword' => Route::has('password.request'),
             'status' => $request->session()->get('status'),
+            'sellerCount' => $sellerCount,
+            'featuredArtisans' => $featuredArtisans,
         ]);
     }
 

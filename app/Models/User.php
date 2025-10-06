@@ -138,6 +138,22 @@ class User extends Authenticatable
     }
 
     /**
+     * Get orders where user is the buyer
+     */
+    public function orders()
+    {
+        return $this->hasMany(Order::class, 'user_id');
+    }
+
+    /**
+     * Get orders where user is the seller
+     */
+    public function sellerOrders()
+    {
+        return $this->hasMany(Order::class, 'seller_id');
+    }
+
+    /**
      * Get the seller applications submitted by this user
      */
     public function sellerApplications()

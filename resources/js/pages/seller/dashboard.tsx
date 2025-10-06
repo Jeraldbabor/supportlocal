@@ -1,7 +1,30 @@
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem, type SharedData } from '@/types';
 import { Head, Link, usePage } from '@inertiajs/react';
-import { AlertTriangle, BarChart3, Calendar, CheckCircle, Package, Settings, ShoppingBag, Star, Target, TrendingUp, User, Users } from 'lucide-react';
+import { 
+    AlertTriangle, 
+    BarChart3, 
+    Calendar, 
+    CheckCircle, 
+    Package, 
+    Settings, 
+    ShoppingBag, 
+    Star, 
+    Target, 
+    TrendingUp, 
+    User, 
+    Users,
+    DollarSign,
+    Eye,
+    Clock,
+    ArrowUpRight,
+    ArrowDownRight,
+    RefreshCw,
+    Award,
+    ShoppingCart,
+    Activity
+} from 'lucide-react';
+import { useMemo, useState, useCallback, useEffect } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -31,6 +54,51 @@ interface DashboardStats {
     days_as_seller: number;
 }
 
+interface ProductStats {
+    total: number;
+    active: number;
+    draft: number;
+    low_stock: number;
+    out_of_stock: number;
+    total_views: number;
+    total_orders: number;
+    average_rating: number;
+    created_this_month: number;
+    created_this_week: number;
+    trending: Record<string, string>;
+    best_sellers: Record<string, string>;
+}
+
+interface OrderStats {
+    total: number;
+    pending: number;
+    confirmed: number;
+    completed: number;
+    cancelled: number;
+    this_month: number;
+    this_week: number;
+    today: number;
+    average_items_per_order: number;
+}
+
+interface RevenueStats {
+    total: number;
+    this_month: number;
+    this_week: number;
+    today: number;
+    last_month: number;
+    pending_amount: number;
+    average_order_value: number;
+    month_growth_percentage: number;
+}
+
+interface CustomerStats {
+    total_unique: number;
+    returning: number;
+    new_this_month: number;
+    retention_rate: number;
+}
+
 interface Recommendation {
     type: string;
     title: string;
@@ -44,6 +112,10 @@ interface SellerDashboardProps extends SharedData {
     profileSummary?: ProfileSummary;
     settingsSummary?: SettingsSummary;
     dashboardStats?: DashboardStats;
+    productStats?: ProductStats;
+    orderStats?: OrderStats;
+    revenueStats?: RevenueStats;
+    customerStats?: CustomerStats;
     recommendations?: Recommendation[];
     recentActivity?: Array<{
         type: string;
@@ -60,10 +132,16 @@ export default function SellerDashboard() {
         profileSummary = {},
         settingsSummary = {},
         dashboardStats = {},
+        productStats = {},
+        orderStats = {},
+        revenueStats = {},
+        customerStats = {},
         recommendations = [],
         recentActivity = [],
     } = usePage<SellerDashboardProps>().props;
     const user = auth.user;
+
+    const [isRefreshing, setIsRefreshing] = useState(false);
 
     // Provide default values
     const profile = {
@@ -90,6 +168,56 @@ export default function SellerDashboard() {
         ...dashboardStats,
     };
 
+    // Enhanced stats with default values
+    const products = {
+        total: 0,
+        active: 0,
+        draft: 0,
+        low_stock: 0,
+        out_of_stock: 0,
+        total_views: 0,
+        total_orders: 0,
+        average_rating: 0,
+        created_this_month: 0,
+        created_this_week: 0,
+        trending: {},
+        best_sellers: {},
+        ...productStats,
+    };
+
+    const orders = {
+        total: 0,
+        pending: 0,
+        confirmed: 0,
+        completed: 0,
+        cancelled: 0,
+        this_month: 0,
+        this_week: 0,
+        today: 0,
+        average_items_per_order: 0,
+        ...orderStats,
+    };
+
+    const revenue = {
+        total: 0,
+        this_month: 0,
+        this_week: 0,
+        today: 0,
+        last_month: 0,
+        pending_amount: 0,
+        average_order_value: 0,
+        month_growth_percentage: 0,
+        ...revenueStats,
+    };
+
+    const customers = {
+        total_unique: 0,
+        returning: 0,
+        new_this_month: 0,
+        retention_rate: 0,
+        ...customerStats,
+    };
+
     const getHealthScoreColor = (score: number) => {
         if (score >= 80) return 'text-green-600 dark:text-green-400';
         if (score >= 60) return 'text-yellow-600 dark:text-yellow-400';
@@ -101,6 +229,103 @@ export default function SellerDashboard() {
         if (score >= 60) return 'bg-yellow-100 dark:bg-yellow-900';
         return 'bg-red-100 dark:bg-red-900';
     };
+
+    // Memoized utility functions
+    const formatCurrency = useCallback((amount: number) => {
+        return new Intl.NumberFormat('en-PH', {
+            style: 'currency',
+            currency: 'PHP',
+        }).format(amount);
+    }, []);
+
+    const formatPercentage = useCallback((value: number) => {
+        return `${value > 0 ? '+' : ''}${value.toFixed(1)}%`;
+    }, []);
+
+    const getGrowthColor = useCallback((percentage: number) => {
+        if (percentage > 0) return 'text-green-600 dark:text-green-400';
+        if (percentage < 0) return 'text-red-600 dark:text-red-400';
+        return 'text-gray-600 dark:text-gray-400';
+    }, []);
+
+    const getGrowthIcon = useCallback((percentage: number) => {
+        if (percentage > 0) return ArrowUpRight;
+        if (percentage < 0) return ArrowDownRight;
+        return Activity;
+    }, []);
+
+    // Memoized performance calculations
+    const performanceMetrics = useMemo(() => ({
+        conversionRate: products.total_views > 0 
+            ? ((products.total_orders / products.total_views) * 100).toFixed(1)
+            : 'N/A',
+        successRate: orders.total > 0 
+            ? ((orders.completed / orders.total) * 100).toFixed(1)
+            : 'N/A',
+        averageRating: products.average_rating > 0 
+            ? products.average_rating.toFixed(1) 
+            : 'N/A',
+        averageItemsPerOrder: orders.average_items_per_order.toFixed(1),
+    }), [products, orders]);
+
+    // Memoized refresh handler
+    const handleRefresh = useCallback(() => {
+        setIsRefreshing(true);
+        // In a real app, you might want to refetch data instead of reloading
+        setTimeout(() => {
+            window.location.reload();
+        }, 500);
+    }, []);
+
+    // Keyboard shortcuts
+    useEffect(() => {
+        const handleKeyDown = (event: KeyboardEvent) => {
+            // Ctrl/Cmd + R for refresh
+            if ((event.ctrlKey || event.metaKey) && event.key === 'r') {
+                event.preventDefault();
+                handleRefresh();
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [handleRefresh]);
+
+    // Auto-refresh indicator
+    const [lastUpdated, setLastUpdated] = useState(new Date());
+    
+    useEffect(() => {
+        setLastUpdated(new Date());
+    }, []);
+
+    // Format last updated time
+    const formatLastUpdated = useCallback((date: Date) => {
+        return date.toLocaleTimeString('en-US', { 
+            hour: '2-digit', 
+            minute: '2-digit',
+            hour12: true 
+        });
+    }, []);
+
+    // Chart data calculations
+    const orderStatusData = useMemo(() => {
+        const total = orders.total;
+        if (total === 0) return [];
+        
+        return [
+            { name: 'Completed', value: orders.completed, percentage: (orders.completed / total) * 100, color: 'bg-green-500' },
+            { name: 'Pending', value: orders.pending, percentage: (orders.pending / total) * 100, color: 'bg-yellow-500' },
+            { name: 'Confirmed', value: orders.confirmed, percentage: (orders.confirmed / total) * 100, color: 'bg-blue-500' },
+            { name: 'Cancelled', value: orders.cancelled, percentage: (orders.cancelled / total) * 100, color: 'bg-red-500' },
+        ].filter(item => item.value > 0);
+    }, [orders]);
+
+    const revenueData = useMemo(() => [
+        { period: 'Today', amount: revenue.today, color: 'bg-blue-500' },
+        { period: 'This Week', amount: revenue.this_week, color: 'bg-indigo-500' },
+        { period: 'This Month', amount: revenue.this_month, color: 'bg-purple-500' },
+        { period: 'Total', amount: revenue.total, color: 'bg-green-500' },
+    ], [revenue]);
 
     const getPriorityColor = (priority: string) => {
         switch (priority) {
@@ -150,29 +375,48 @@ export default function SellerDashboard() {
                             </div>
                         </div>
 
-                        {/* Account Health Score */}
-                        <div className="text-right">
-                            <div className="flex items-center gap-2">
-                                <span className="text-sm font-medium text-gray-600 dark:text-gray-300">Account Health</span>
-                                <div
-                                    className={`flex h-8 w-8 items-center justify-center rounded-full ${getHealthScoreBg(stats.account_health_score)}`}
-                                >
-                                    <span className={`text-sm font-bold ${getHealthScoreColor(stats.account_health_score)}`}>
-                                        {stats.account_health_score}%
-                                    </span>
-                                </div>
+                        <div className="flex items-center gap-4">
+                            {/* Last Updated */}
+                            <div className="text-right text-xs text-gray-500 dark:text-gray-400">
+                                <p>Last updated</p>
+                                <p className="font-medium">{formatLastUpdated(lastUpdated)}</p>
                             </div>
-                            <div className="mt-1 h-2 w-24 rounded-full bg-gray-200 dark:bg-gray-700">
-                                <div
-                                    className={`h-2 rounded-full transition-all duration-500 ${
-                                        stats.account_health_score >= 80
-                                            ? 'bg-green-500'
-                                            : stats.account_health_score >= 60
-                                              ? 'bg-yellow-500'
-                                              : 'bg-red-500'
-                                    }`}
-                                    style={{ width: `${stats.account_health_score}%` }}
-                                ></div>
+                            
+                            {/* Refresh Button */}
+                            <button
+                                onClick={handleRefresh}
+                                disabled={isRefreshing}
+                                className="flex items-center gap-2 rounded-lg bg-white px-3 py-2 text-sm font-medium text-gray-700 shadow-sm ring-1 ring-gray-300 hover:bg-gray-50 disabled:opacity-50 dark:bg-gray-800 dark:text-gray-300 dark:ring-gray-600 dark:hover:bg-gray-700"
+                                title="Refresh dashboard (Ctrl+R)"
+                            >
+                                <RefreshCw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+                                {isRefreshing ? 'Refreshing...' : 'Refresh'}
+                            </button>
+
+                            {/* Account Health Score */}
+                            <div className="text-right">
+                                <div className="flex items-center gap-2">
+                                    <span className="text-sm font-medium text-gray-600 dark:text-gray-300">Account Health</span>
+                                    <div
+                                        className={`flex h-8 w-8 items-center justify-center rounded-full ${getHealthScoreBg(stats.account_health_score)}`}
+                                    >
+                                        <span className={`text-sm font-bold ${getHealthScoreColor(stats.account_health_score)}`}>
+                                            {stats.account_health_score}%
+                                        </span>
+                                    </div>
+                                </div>
+                                <div className="mt-1 h-2 w-24 rounded-full bg-gray-200 dark:bg-gray-700">
+                                    <div
+                                        className={`h-2 rounded-full transition-all duration-500 ${
+                                            stats.account_health_score >= 80
+                                                ? 'bg-green-500'
+                                                : stats.account_health_score >= 60
+                                                  ? 'bg-yellow-500'
+                                                  : 'bg-red-500'
+                                        }`}
+                                        style={{ width: `${stats.account_health_score}%` }}
+                                    ></div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -277,45 +521,292 @@ export default function SellerDashboard() {
                     </div>
                 </div>
 
-                {/* Quick Stats */}
-                <div className="grid auto-rows-min gap-4 md:grid-cols-4">
-                    <div className="flex items-center gap-4 rounded-xl border bg-white p-4 shadow-sm dark:bg-gray-800">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-green-100 dark:bg-green-900">
-                            <Package className="h-5 w-5 text-green-600 dark:text-green-400" />
+                {/* Enhanced Quick Stats */}
+                <div className="grid auto-rows-min gap-4 md:grid-cols-2 lg:grid-cols-4">
+                    {/* Products Card */}
+                    <div className="group rounded-xl border bg-white p-6 shadow-sm transition-all hover:shadow-md dark:bg-gray-800">
+                        <div className="flex items-center justify-between">
+                            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900">
+                                <Package className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+                            </div>
+                            <div className="text-right">
+                                <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{products.total}</p>
+                                <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Products</p>
+                            </div>
                         </div>
-                        <div>
-                            <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Products</p>
-                            <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">0</p>
+                        <div className="mt-4 flex items-center justify-between text-sm">
+                            <span className="text-green-600 dark:text-green-400" title="Active products visible to customers">
+                                {products.active} Active
+                            </span>
+                            <span className="text-yellow-600 dark:text-yellow-400" title="Draft products not yet published">
+                                {products.draft} Draft
+                            </span>
+                        </div>
+                        {products.created_this_week > 0 && (
+                            <div className="mt-2 text-xs text-gray-500 dark:text-gray-400">
+                                +{products.created_this_week} this week
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Orders Card */}
+                    <div className="group rounded-xl border bg-white p-6 shadow-sm transition-all hover:shadow-md dark:bg-gray-800">
+                        <div className="flex items-center justify-between">
+                            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-orange-100 dark:bg-orange-900">
+                                <ShoppingBag className="h-6 w-6 text-orange-600 dark:text-orange-400" />
+                            </div>
+                            <div className="text-right">
+                                <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{orders.total}</p>
+                                <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Orders</p>
+                            </div>
+                        </div>
+                        <div className="mt-4 flex items-center justify-between text-sm">
+                            <span className="text-blue-600 dark:text-blue-400" title="Orders awaiting confirmation">
+                                {orders.pending} Pending
+                            </span>
+                            <span className="text-green-600 dark:text-green-400" title="Successfully completed orders">
+                                {orders.completed} Completed
+                            </span>
+                        </div>
+                        {orders.today > 0 && (
+                            <div className="mt-2 text-xs text-gray-500 dark:text-gray-400">
+                                +{orders.today} today
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Revenue Card */}
+                    <div className="group rounded-xl border bg-white p-6 shadow-sm transition-all hover:shadow-md dark:bg-gray-800">
+                        <div className="flex items-center justify-between">
+                            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-green-100 dark:bg-green-900">
+                                <DollarSign className="h-6 w-6 text-green-600 dark:text-green-400" />
+                            </div>
+                            <div className="text-right">
+                                <p className="text-2xl font-bold text-gray-900 dark:text-gray-100" title={`Total revenue: ${formatCurrency(revenue.total)}`}>
+                                    {formatCurrency(revenue.total)}
+                                </p>
+                                <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Revenue</p>
+                            </div>
+                        </div>
+                        <div className="mt-4 flex items-center justify-between text-sm">
+                            <span className="text-blue-600 dark:text-blue-400" title="Revenue this month">
+                                {formatCurrency(revenue.this_month)} MTD
+                            </span>
+                            {revenue.month_growth_percentage !== 0 && (
+                                <div className={`flex items-center gap-1 ${getGrowthColor(revenue.month_growth_percentage)}`} title="Month-over-month growth">
+                                    {(() => {
+                                        const GrowthIcon = getGrowthIcon(revenue.month_growth_percentage);
+                                        return <GrowthIcon className="h-4 w-4" />;
+                                    })()}
+                                    <span className="text-xs font-medium">
+                                        {formatPercentage(revenue.month_growth_percentage)}
+                                    </span>
+                                </div>
+                            )}
+                        </div>
+                        {revenue.pending_amount > 0 && (
+                            <div className="mt-2 text-xs text-yellow-600 dark:text-yellow-400" title="Revenue from pending orders">
+                                {formatCurrency(revenue.pending_amount)} pending
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Customers Card */}
+                    <div className="group rounded-xl border bg-white p-6 shadow-sm transition-all hover:shadow-md dark:bg-gray-800">
+                        <div className="flex items-center justify-between">
+                            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-purple-100 dark:bg-purple-900">
+                                <Users className="h-6 w-6 text-purple-600 dark:text-purple-400" />
+                            </div>
+                            <div className="text-right">
+                                <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{customers.total_unique}</p>
+                                <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Customers</p>
+                            </div>
+                        </div>
+                        <div className="mt-4 flex items-center justify-between text-sm">
+                            <span className="text-green-600 dark:text-green-400" title="Customers who made multiple purchases">
+                                {customers.returning} Returning
+                            </span>
+                            <span className="text-blue-600 dark:text-blue-400" title="Customer retention rate">
+                                {customers.retention_rate}% Retention
+                            </span>
+                        </div>
+                        {customers.new_this_month > 0 && (
+                            <div className="mt-2 text-xs text-gray-500 dark:text-gray-400">
+                                +{customers.new_this_month} this month
+                            </div>
+                        )}
+                    </div>
+                </div>
+
+                {/* Performance Overview */}
+                <div className="grid gap-4 md:grid-cols-3">
+                    {/* Product Performance */}
+                    <div className="rounded-xl border bg-white p-6 shadow-sm dark:bg-gray-800">
+                        <h3 className="mb-4 flex items-center gap-2 text-lg font-semibold text-gray-900 dark:text-gray-100">
+                            <BarChart3 className="h-5 w-5" />
+                            Product Performance
+                        </h3>
+                        <div className="space-y-4">
+                            <div className="flex items-center justify-between">
+                                <span className="text-sm text-gray-600 dark:text-gray-300">Total Views</span>
+                                <div className="flex items-center gap-2">
+                                    <Eye className="h-4 w-4 text-blue-500" />
+                                    <span className="font-semibold text-gray-900 dark:text-gray-100">
+                                        {products.total_views.toLocaleString()}
+                                    </span>
+                                </div>
+                            </div>
+                            <div className="flex items-center justify-between">
+                                <span className="text-sm text-gray-600 dark:text-gray-300">Average Rating</span>
+                                <div className="flex items-center gap-2">
+                                    <Star className="h-4 w-4 text-yellow-500" />
+                                    <span className="font-semibold text-gray-900 dark:text-gray-100">
+                                        {performanceMetrics.averageRating}
+                                    </span>
+                                </div>
+                            </div>
+                            <div className="flex items-center justify-between">
+                                <span className="text-sm text-gray-600 dark:text-gray-300">Conversion Rate</span>
+                                <div className="flex items-center gap-2">
+                                    <TrendingUp className="h-4 w-4 text-green-500" />
+                                    <span className="font-semibold text-gray-900 dark:text-gray-100">
+                                        {performanceMetrics.conversionRate !== 'N/A' ? performanceMetrics.conversionRate + '%' : 'N/A'}
+                                    </span>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    <div className="flex items-center gap-4 rounded-xl border bg-white p-4 shadow-sm dark:bg-gray-800">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-orange-100 dark:bg-orange-900">
-                            <ShoppingBag className="h-5 w-5 text-orange-600 dark:text-orange-400" />
-                        </div>
-                        <div>
-                            <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Orders</p>
-                            <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">0</p>
+                    {/* Order Overview */}
+                    <div className="rounded-xl border bg-white p-6 shadow-sm dark:bg-gray-800">
+                        <h3 className="mb-4 flex items-center gap-2 text-lg font-semibold text-gray-900 dark:text-gray-100">
+                            <ShoppingCart className="h-5 w-5" />
+                            Order Overview
+                        </h3>
+                        <div className="space-y-4">
+                            <div className="flex items-center justify-between">
+                                <span className="text-sm text-gray-600 dark:text-gray-300">This Week</span>
+                                <span className="font-semibold text-blue-600 dark:text-blue-400">
+                                    {orders.this_week}
+                                </span>
+                            </div>
+                            <div className="flex items-center justify-between">
+                                <span className="text-sm text-gray-600 dark:text-gray-300">Avg. Items/Order</span>
+                                <span className="font-semibold text-gray-900 dark:text-gray-100">
+                                    {performanceMetrics.averageItemsPerOrder}
+                                </span>
+                            </div>
+                            <div className="flex items-center justify-between">
+                                <span className="text-sm text-gray-600 dark:text-gray-300">Success Rate</span>
+                                <span className="font-semibold text-green-600 dark:text-green-400">
+                                    {performanceMetrics.successRate !== 'N/A' ? performanceMetrics.successRate + '%' : 'N/A'}
+                                </span>
+                            </div>
                         </div>
                     </div>
 
-                    <div className="flex items-center gap-4 rounded-xl border bg-white p-4 shadow-sm dark:bg-gray-800">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-purple-100 dark:bg-purple-900">
-                            <TrendingUp className="h-5 w-5 text-purple-600 dark:text-purple-400" />
-                        </div>
-                        <div>
-                            <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Revenue</p>
-                            <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">$0</p>
+                    {/* Revenue Insights */}
+                    <div className="rounded-xl border bg-white p-6 shadow-sm dark:bg-gray-800">
+                        <h3 className="mb-4 flex items-center gap-2 text-lg font-semibold text-gray-900 dark:text-gray-100">
+                            <DollarSign className="h-5 w-5" />
+                            Revenue Insights
+                        </h3>
+                        <div className="space-y-4">
+                            <div className="flex items-center justify-between">
+                                <span className="text-sm text-gray-600 dark:text-gray-300">Avg. Order Value</span>
+                                <span className="font-semibold text-gray-900 dark:text-gray-100">
+                                    {formatCurrency(revenue.average_order_value)}
+                                </span>
+                            </div>
+                            <div className="flex items-center justify-between">
+                                <span className="text-sm text-gray-600 dark:text-gray-300">This Week</span>
+                                <span className="font-semibold text-blue-600 dark:text-blue-400">
+                                    {formatCurrency(revenue.this_week)}
+                                </span>
+                            </div>
+                            <div className="flex items-center justify-between">
+                                <span className="text-sm text-gray-600 dark:text-gray-300">Growth (MTD)</span>
+                                <div className={`flex items-center gap-1 ${getGrowthColor(revenue.month_growth_percentage)}`}>
+                                    {(() => {
+                                        const GrowthIcon = getGrowthIcon(revenue.month_growth_percentage);
+                                        return <GrowthIcon className="h-4 w-4" />;
+                                    })()}
+                                    <span className="font-semibold">
+                                        {formatPercentage(revenue.month_growth_percentage)}
+                                    </span>
+                                </div>
+                            </div>
                         </div>
                     </div>
+                </div>
 
-                    <div className="flex items-center gap-4 rounded-xl border bg-white p-4 shadow-sm dark:bg-gray-800">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900">
-                            <Users className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-                        </div>
-                        <div>
-                            <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Customers</p>
-                            <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">0</p>
+                {/* Charts Section */}
+                <div className="grid gap-6 lg:grid-cols-2">
+                    {/* Order Status Chart */}
+                    <div className="rounded-xl border bg-white p-6 shadow-sm dark:bg-gray-800">
+                        <h3 className="mb-4 flex items-center gap-2 text-lg font-semibold text-gray-900 dark:text-gray-100">
+                            <BarChart3 className="h-5 w-5" />
+                            Order Status Distribution
+                        </h3>
+                        {orderStatusData.length > 0 ? (
+                            <div className="space-y-4">
+                                {orderStatusData.map((item) => (
+                                    <div key={item.name} className="space-y-2">
+                                        <div className="flex items-center justify-between">
+                                            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                                {item.name}
+                                            </span>
+                                            <span className="text-sm text-gray-600 dark:text-gray-400">
+                                                {item.value} ({item.percentage.toFixed(1)}%)
+                                            </span>
+                                        </div>
+                                        <div className="h-2 w-full rounded-full bg-gray-200 dark:bg-gray-700">
+                                            <div
+                                                className={`h-2 rounded-full ${item.color} transition-all duration-500`}
+                                                style={{ width: `${item.percentage}%` }}
+                                            ></div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="py-8 text-center">
+                                <BarChart3 className="mx-auto mb-4 h-12 w-12 text-gray-400" />
+                                <p className="text-gray-500 dark:text-gray-400">No orders yet</p>
+                                <p className="text-sm text-gray-400 dark:text-gray-500">Start selling to see order distribution</p>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Revenue Chart */}
+                    <div className="rounded-xl border bg-white p-6 shadow-sm dark:bg-gray-800">
+                        <h3 className="mb-4 flex items-center gap-2 text-lg font-semibold text-gray-900 dark:text-gray-100">
+                            <TrendingUp className="h-5 w-5" />
+                            Revenue Overview
+                        </h3>
+                        <div className="space-y-4">
+                            {revenueData.map((item) => {
+                                const maxAmount = Math.max(...revenueData.map(d => d.amount));
+                                const percentage = maxAmount > 0 ? (item.amount / maxAmount) * 100 : 0;
+                                return (
+                                    <div key={item.period} className="space-y-2">
+                                        <div className="flex items-center justify-between">
+                                            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                                {item.period}
+                                            </span>
+                                            <span className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                                                {formatCurrency(item.amount)}
+                                            </span>
+                                        </div>
+                                        <div className="h-3 w-full rounded-full bg-gray-200 dark:bg-gray-700">
+                                            <div
+                                                className={`h-3 rounded-full ${item.color} transition-all duration-500`}
+                                                style={{ width: `${percentage}%` }}
+                                            ></div>
+                                        </div>
+                                    </div>
+                                );
+                            })}
                         </div>
                     </div>
                 </div>
@@ -471,6 +962,65 @@ export default function SellerDashboard() {
                                 </div>
                             )}
                         </div>
+
+                        {/* Inventory Alerts */}
+                        {(products.low_stock > 0 || products.out_of_stock > 0) && (
+                            <div className="rounded-xl border border-red-200 bg-red-50 p-6 shadow-sm dark:border-red-800 dark:bg-red-950/20">
+                                <h3 className="mb-4 flex items-center gap-2 text-lg font-semibold text-red-800 dark:text-red-300">
+                                    <AlertTriangle className="h-5 w-5" />
+                                    Inventory Alerts
+                                </h3>
+                                <div className="space-y-2">
+                                    {products.out_of_stock > 0 && (
+                                        <div className="flex items-center justify-between rounded-lg bg-red-100 p-3 dark:bg-red-900/30">
+                                            <span className="text-sm font-medium text-red-800 dark:text-red-300">
+                                                Out of Stock Products
+                                            </span>
+                                            <span className="rounded-full bg-red-200 px-2 py-1 text-xs font-bold text-red-800 dark:bg-red-800 dark:text-red-200">
+                                                {products.out_of_stock}
+                                            </span>
+                                        </div>
+                                    )}
+                                    {products.low_stock > 0 && (
+                                        <div className="flex items-center justify-between rounded-lg bg-yellow-100 p-3 dark:bg-yellow-900/30">
+                                            <span className="text-sm font-medium text-yellow-800 dark:text-yellow-300">
+                                                Low Stock Products
+                                            </span>
+                                            <span className="rounded-full bg-yellow-200 px-2 py-1 text-xs font-bold text-yellow-800 dark:bg-yellow-800 dark:text-yellow-200">
+                                                {products.low_stock}
+                                            </span>
+                                        </div>
+                                    )}
+                                </div>
+                                <Link
+                                    href="/seller/products"
+                                    className="mt-4 inline-flex items-center gap-2 rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 dark:bg-red-700 dark:hover:bg-red-600"
+                                >
+                                    <Package className="h-4 w-4" />
+                                    Manage Inventory
+                                </Link>
+                            </div>
+                        )}
+
+                        {/* Trending Products */}
+                        {Object.keys(products.trending).length > 0 && (
+                            <div className="rounded-xl border bg-white p-6 shadow-sm dark:bg-gray-800">
+                                <h3 className="mb-4 flex items-center gap-2 text-lg font-semibold text-gray-900 dark:text-gray-100">
+                                    <TrendingUp className="h-5 w-5" />
+                                    Trending Products
+                                </h3>
+                                <div className="space-y-3">
+                                    {Object.entries(products.trending).map(([id, name]) => (
+                                        <div key={id} className="flex items-center gap-3">
+                                            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-green-100 dark:bg-green-900">
+                                                <TrendingUp className="h-4 w-4 text-green-600 dark:text-green-400" />
+                                            </div>
+                                            <span className="text-sm font-medium text-gray-900 dark:text-gray-100">{String(name)}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
 
                         {/* Quick Actions */}
                         <div className="rounded-xl border bg-white p-6 shadow-sm dark:bg-gray-800">
