@@ -1,6 +1,6 @@
 // Wayfinder utility functions for route handling
 
-export type RouteQueryOptions = Record<string, any>;
+export type RouteQueryOptions = Record<string, string | number | boolean | undefined>;
 
 export type RouteDefinition<T = string> = {
     url: string;
@@ -11,7 +11,7 @@ export type RouteDefinition<T = string> = {
 export type RouteFormDefinition<T = string> = {
     action: string;
     method: T;
-    form?: any;
+    form?: HTMLFormElement | FormData | Record<string, unknown>;
 };
 
 /**
@@ -36,6 +36,7 @@ export const queryParams = (options?: RouteQueryOptions): string => {
 /**
  * Apply default URL parameters
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const applyUrlDefaults = (args: any, defaults?: Record<string, unknown>): any => {
     // If args is a string (URL), apply defaults to URL
     if (typeof args === 'string') {
