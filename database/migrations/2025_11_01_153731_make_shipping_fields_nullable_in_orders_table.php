@@ -12,6 +12,11 @@ return new class extends Migration
      */
     public function up(): void
     {
+        // Skip for SQLite - it doesn't support ALTER COLUMN
+        if (DB::getDriverName() === 'sqlite') {
+            return;
+        }
+
         Schema::table('orders', function (Blueprint $table) {
             // Make shipping fields nullable for cart orders (before checkout)
             $table->string('shipping_name')->nullable()->change();
@@ -30,6 +35,11 @@ return new class extends Migration
      */
     public function down(): void
     {
+        // Skip for SQLite - it doesn't support ALTER COLUMN
+        if (DB::getDriverName() === 'sqlite') {
+            return;
+        }
+
         Schema::table('orders', function (Blueprint $table) {
             // Revert shipping fields to NOT NULL
             $table->string('shipping_name')->nullable(false)->change();
