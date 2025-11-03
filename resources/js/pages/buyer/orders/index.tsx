@@ -70,17 +70,18 @@ export default function Orders({ orders }: OrdersIndexProps) {
     };
 
     const canDelete = (status: string) => {
-        return ['cancelled', 'delivered'].includes(status);
+        return ['cancelled', 'delivered', 'completed'].includes(status);
     };
     const getStatusIcon = (status: string) => {
         switch (status) {
             case 'pending':
                 return <Clock className="h-5 w-5 text-yellow-500" />;
             case 'confirmed':
-                return <CheckCircle className="h-5 w-5 text-blue-500" />;
+                return <CheckCircle className="h-5 w-5 text-amber-600" />;
             case 'shipped':
-                return <Package className="h-5 w-5 text-purple-500" />;
+                return <Package className="h-5 w-5 text-orange-600" />;
             case 'delivered':
+            case 'completed':
                 return <CheckCircle className="h-5 w-5 text-green-500" />;
             case 'cancelled':
                 return <XCircle className="h-5 w-5 text-red-500" />;
@@ -99,6 +100,8 @@ export default function Orders({ orders }: OrdersIndexProps) {
                 return 'Shipped';
             case 'delivered':
                 return 'Delivered';
+            case 'completed':
+                return 'Completed';
             case 'cancelled':
                 return 'Cancelled';
             default:
@@ -111,10 +114,11 @@ export default function Orders({ orders }: OrdersIndexProps) {
             case 'pending':
                 return 'bg-yellow-100 text-yellow-800';
             case 'confirmed':
-                return 'bg-blue-100 text-blue-800';
+                return 'bg-gradient-to-r from-amber-100 to-orange-100 text-amber-900 border border-amber-300';
             case 'shipped':
-                return 'bg-purple-100 text-purple-800';
+                return 'bg-orange-100 text-orange-800 border border-orange-300';
             case 'delivered':
+            case 'completed':
                 return 'bg-green-100 text-green-800';
             case 'cancelled':
                 return 'bg-red-100 text-red-800';
@@ -265,7 +269,7 @@ export default function Orders({ orders }: OrdersIndexProps) {
                                             View Details
                                         </Link>
 
-                                        {order.status === 'delivered' && (
+                                        {(order.status === 'delivered' || order.status === 'completed') && (
                                             <button className="hover:bg-primary-dark inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white transition-colors">
                                                 <MessageSquare className="h-4 w-4" />
                                                 Leave Review
@@ -310,8 +314,8 @@ export default function Orders({ orders }: OrdersIndexProps) {
                             </div>
                             <div className="mb-4">
                                 <p className="text-sm text-gray-600">
-                                    Are you sure you want to clear all your order history? This will permanently delete all cancelled and delivered
-                                    orders. This action cannot be undone.
+                                    Are you sure you want to clear all your order history? This will permanently delete all cancelled, delivered, and
+                                    completed orders. This action cannot be undone.
                                 </p>
                             </div>
                             <div className="flex justify-end gap-3">

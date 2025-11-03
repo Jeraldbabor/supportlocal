@@ -140,7 +140,7 @@ export default function Index({ sellers, filters }: SellersIndexProps) {
                                                     </h3>
                                                     {seller.is_verified && (
                                                         <div className="flex-shrink-0">
-                                                            <span className="inline-flex items-center rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-800">
+                                                            <span className="inline-flex items-center rounded-full border border-amber-300 bg-gradient-to-r from-amber-100 to-orange-100 px-2.5 py-0.5 text-xs font-medium text-amber-900">
                                                                 Verified
                                                             </span>
                                                         </div>

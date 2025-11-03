@@ -1,3 +1,4 @@
+import { Link } from '@inertiajs/react';
 import { Award, Heart, MapPin, Users } from 'lucide-react';
 import MainLayout from '../layouts/MainLayout';
 
@@ -182,12 +183,18 @@ export default function About({ artisans = [] }: AboutProps) {
                         part of our community.
                     </p>
                     <div className="flex flex-col justify-center gap-4 sm:flex-row">
-                        <button className="rounded-lg bg-primary px-8 py-3 font-semibold text-white transition-colors duration-200 hover:bg-primary/90">
+                        <Link
+                            href="/login"
+                            className="rounded-lg bg-primary px-8 py-3 text-center font-semibold text-white transition-colors duration-200 hover:bg-primary/90"
+                        >
                             Become an Artisan
-                        </button>
-                        <button className="rounded-lg border-2 border-primary px-8 py-3 font-semibold text-primary transition-colors duration-200 hover:bg-primary hover:text-white">
+                        </Link>
+                        <Link
+                            href="/products"
+                            className="rounded-lg border-2 border-primary px-8 py-3 text-center font-semibold text-primary transition-colors duration-200 hover:bg-primary hover:text-white"
+                        >
                             Shop with Us
-                        </button>
+                        </Link>
                     </div>
                 </div>
             </section>

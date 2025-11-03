@@ -1,9 +1,16 @@
 import AuthLayoutTemplate from '@/layouts/auth/auth-simple-layout';
 
-export default function AuthLayout({ children, title, description, sellerCount, featuredArtisans, ...props }: { 
-    children: React.ReactNode; 
-    title: string; 
-    description: string; 
+export default function AuthLayout({
+    children,
+    title,
+    description,
+    sellerCount,
+    featuredArtisans,
+    ...props
+}: {
+    children: React.ReactNode;
+    title: string;
+    description: string;
     sellerCount?: number;
     featuredArtisans?: Array<{
         id: number;

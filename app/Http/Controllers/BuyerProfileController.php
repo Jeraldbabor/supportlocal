@@ -78,7 +78,10 @@ class BuyerProfileController extends Controller
 
         $user->update($updateData);
 
-        return redirect()->back()->with('success', 'Profile updated successfully!');
+        // Update profile completion tracking
+        $user->updateProfileCompletionTracking();
+
+        return redirect()->route('buyer.profile')->with('success', 'Profile updated successfully.');
     }
 
     /**

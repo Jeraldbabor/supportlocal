@@ -42,7 +42,7 @@ export default function OrderShow({ order }: OrderShowProps) {
             case 'pending':
                 return <Clock className="h-6 w-6 text-yellow-500" />;
             case 'confirmed':
-                return <CheckCircle className="h-6 w-6 text-blue-500" />;
+                return <CheckCircle className="h-6 w-6 text-amber-600" />;
             case 'completed':
                 return <CheckCircle className="h-6 w-6 text-green-500" />;
             case 'cancelled':
@@ -57,7 +57,7 @@ export default function OrderShow({ order }: OrderShowProps) {
             case 'pending':
                 return 'bg-yellow-100 text-yellow-800 border-yellow-200';
             case 'confirmed':
-                return 'bg-blue-100 text-blue-800 border-blue-200';
+                return 'bg-gradient-to-r from-amber-100 to-orange-100 text-amber-900 border-amber-300';
             case 'completed':
                 return 'bg-green-100 text-green-800 border-green-200';
             case 'cancelled':
@@ -194,11 +194,17 @@ export default function OrderShow({ order }: OrderShowProps) {
                     <div className="space-y-4">
                         {order.order_items.map((item) => (
                             <div key={item.id} className="flex items-center space-x-6 border-b border-gray-100 pb-4 last:border-b-0 last:pb-0">
-                                <img
-                                    src={item.product_image ? `/storage/${item.product_image}` : '/placeholder.jpg'}
-                                    alt={item.product_name}
-                                    className="h-20 w-20 rounded-lg object-cover"
-                                />
+                                {item.product_image ? (
+                                    <img
+                                        src={`/storage/${item.product_image}`}
+                                        alt={item.product_name}
+                                        className="h-20 w-20 rounded-lg object-cover"
+                                    />
+                                ) : (
+                                    <div className="flex h-20 w-20 items-center justify-center rounded-lg bg-gray-100">
+                                        <Package className="h-10 w-10 text-gray-400" />
+                                    </div>
+                                )}
                                 <div className="flex-1">
                                     <h3 className="font-semibold text-gray-900">{item.product_name}</h3>
                                     <p className="text-sm text-gray-600">Quantity: {item.quantity}</p>

@@ -89,7 +89,7 @@ function NotificationsContent({ notifications }: NotificationsProps) {
     const getNotificationIcon = (type: string) => {
         switch (type) {
             case 'App\\Notifications\\OrderStatusUpdated':
-                return <Bell className="h-5 w-5 text-blue-600" />;
+                return <Bell className="h-5 w-5 text-amber-700" />;
             default:
                 return <Bell className="h-5 w-5 text-gray-600" />;
         }
@@ -107,7 +107,7 @@ function NotificationsContent({ notifications }: NotificationsProps) {
                     <div className="border-b border-gray-200 px-6 py-4 dark:border-gray-700">
                         <div className="flex items-center justify-between">
                             <div className="flex items-center space-x-3">
-                                <Bell className="h-6 w-6 text-blue-600" />
+                                <Bell className="h-6 w-6 text-amber-700" />
                                 <h1 className="text-xl font-semibold text-gray-900 dark:text-white">Notifications</h1>
                                 {unreadCount > 0 && (
                                     <span className="rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-medium text-red-800">
@@ -128,7 +128,7 @@ function NotificationsContent({ notifications }: NotificationsProps) {
                                     </button>
                                 )}
                                 {unreadCount > 0 && (
-                                    <button onClick={handleMarkAllAsRead} className="text-sm font-medium text-blue-600 hover:text-blue-800">
+                                    <button onClick={handleMarkAllAsRead} className="text-sm font-medium text-amber-700 hover:text-amber-900">
                                         Mark all as read
                                     </button>
                                 )}
@@ -151,7 +151,9 @@ function NotificationsContent({ notifications }: NotificationsProps) {
                                 <div
                                     key={notification.id}
                                     className={`px-6 py-4 hover:bg-gray-50 dark:hover:bg-gray-700 ${
-                                        !notification.read_at ? 'bg-blue-50 dark:bg-blue-900/20' : ''
+                                        !notification.read_at
+                                            ? 'border-l-4 border-amber-400 bg-gradient-to-r from-amber-50 to-orange-50 dark:bg-amber-900/20'
+                                            : ''
                                     }`}
                                 >
                                     <div className="flex items-start space-x-3">
@@ -184,7 +186,7 @@ function NotificationsContent({ notifications }: NotificationsProps) {
                                                     {!notification.read_at && (
                                                         <button
                                                             onClick={() => handleMarkAsRead(notification.id)}
-                                                            className="text-xs font-medium text-blue-600 hover:text-blue-800"
+                                                            className="text-xs font-medium text-amber-700 hover:text-amber-900"
                                                         >
                                                             Mark as read
                                                         </button>

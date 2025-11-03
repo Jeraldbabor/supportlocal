@@ -1,24 +1,55 @@
-import { Head, Link, router } from '@inertiajs/react';
+import { Head, Link, router, usePage } from '@inertiajs/react';
 import { ArrowLeft, Minus, Plus, ShoppingBag, ShoppingCart, Trash2 } from 'lucide-react';
-import { useCart } from '../../contexts/CartContext';
 import BuyerLayout from '../../layouts/BuyerLayout';
 import { formatPeso } from '../../utils/currency';
 
+interface CartItem {
+    id: number;
+    product_id: number;
+    name: string;
+    price: number;
+    quantity: number;
+    primary_image: string;
+    seller: {
+        id: number;
+        name: string;
+    };
+    max_quantity: number;
+    stock_quantity: number;
+}
+
+interface CartProps {
+    cartItems: CartItem[];
+    cartTotal: number;
+    [key: string]: unknown;
+}
+
 export default function Cart() {
-    const { cart, updateQuantity, removeFromCart, getCartTotal, clearCart } = useCart();
+    const { cartItems, cartTotal } = usePage<CartProps>().props;
 
-    const handleQuantityChange = (productId: number, newQuantity: number) => {
-        console.log('Changing quantity for product:', productId, 'to:', newQuantity);
-
+    const handleQuantityChange = (itemId: number, newQuantity: number) => {
         if (newQuantity <= 0) {
-            removeFromCart(productId);
+            handleRemove(itemId);
         } else {
-            updateQuantity(productId, newQuantity);
+            router.put('/buyer/cart/update', { item_id: itemId, quantity: newQuantity }, { preserveScroll: true });
+        }
+    };
+
+    const handleRemove = (itemId: number) => {
+        router.delete('/buyer/cart/remove', {
+            data: { item_id: itemId },
+            preserveScroll: true,
+        });
+    };
+
+    const handleClearCart = () => {
+        if (confirm('Are you sure you want to clear your cart?')) {
+            router.delete('/buyer/cart/clear');
         }
     };
 
     const handleCheckout = () => {
-        if (cart.length === 0) return;
+        if (cartItems.length === 0) return;
         router.visit('/buyer/checkout');
     };
 
@@ -26,7 +57,7 @@ export default function Cart() {
         router.visit('/buyer/products');
     };
 
-    if (cart.length === 0) {
+    if (cartItems.length === 0) {
         return (
             <BuyerLayout title="Shopping Cart">
                 <Head title="Shopping Cart" />
@@ -40,7 +71,7 @@ export default function Cart() {
                         <p className="mb-8 text-gray-600">Start shopping to add items to your cart.</p>
                         <button
                             onClick={handleContinueShopping}
-                            className="inline-flex transform items-center gap-2 rounded-lg bg-blue-500 px-6 py-3 font-semibold text-white shadow-md transition-all duration-200 hover:-translate-y-0.5 hover:bg-blue-600 hover:shadow-lg"
+                            className="inline-flex transform items-center gap-2 rounded-lg bg-gradient-to-r from-amber-600 to-orange-600 px-6 py-3 font-semibold text-white shadow-md transition-all duration-200 hover:-translate-y-0.5 hover:from-amber-700 hover:to-orange-700 hover:shadow-lg active:scale-[0.98]"
                         >
                             <ShoppingBag className="h-5 w-5" />
                             Continue Shopping
@@ -63,7 +94,7 @@ export default function Cart() {
                     </Link>
                     <h1 className="text-3xl font-bold text-gray-900">Shopping Cart</h1>
                     <p className="mt-2 text-gray-600">
-                        {cart.length} item{cart.length !== 1 ? 's' : ''} in your cart
+                        {cartItems.length} item{cartItems.length !== 1 ? 's' : ''} in your cart
                     </p>
                 </div>
 
@@ -71,8 +102,8 @@ export default function Cart() {
                     {/* Cart Items */}
                     <div className="lg:col-span-2">
                         <div className="space-y-4">
-                            {cart.map((item) => (
-                                <div key={item.product_id} className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+                            {cartItems.map((item) => (
+                                <div key={item.id} className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
                                     <div className="flex items-start space-x-4">
                                         {/* Product Image */}
                                         <div className="flex-shrink-0">
@@ -111,10 +142,7 @@ export default function Cart() {
 
                                                 {/* Remove Button */}
                                                 <button
-                                                    onClick={() => {
-                                                        console.log('Removing item:', item.product_id);
-                                                        removeFromCart(item.product_id);
-                                                    }}
+                                                    onClick={() => handleRemove(item.id)}
                                                     className="rounded-full p-2 text-gray-400 transition-colors hover:bg-red-50 hover:text-red-500"
                                                     title="Remove from cart"
                                                 >
@@ -126,10 +154,7 @@ export default function Cart() {
                                             <div className="mt-4 flex items-center justify-between">
                                                 <div className="flex items-center rounded-lg border">
                                                     <button
-                                                        onClick={() => {
-                                                            console.log('Decreasing quantity for:', item.product_id, 'current:', item.quantity);
-                                                            handleQuantityChange(item.product_id, item.quantity - 1);
-                                                        }}
+                                                        onClick={() => handleQuantityChange(item.id, item.quantity - 1)}
                                                         className="p-2 transition-colors hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50"
                                                         disabled={item.quantity <= 1}
                                                     >
@@ -137,23 +162,13 @@ export default function Cart() {
                                                     </button>
                                                     <span className="min-w-[3rem] px-4 py-2 text-center font-medium">{item.quantity}</span>
                                                     <button
-                                                        onClick={() => {
-                                                            console.log(
-                                                                'Increasing quantity for:',
-                                                                item.product_id,
-                                                                'current:',
-                                                                item.quantity,
-                                                                'max:',
-                                                                item.stock_quantity,
-                                                            );
-                                                            handleQuantityChange(item.product_id, item.quantity + 1);
-                                                        }}
+                                                        onClick={() => handleQuantityChange(item.id, item.quantity + 1)}
                                                         className="p-2 transition-colors hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50"
                                                         disabled={item.quantity >= item.stock_quantity}
                                                     >
                                                         <Plus className="h-4 w-4" />
                                                     </button>
-                                                </div>{' '}
+                                                </div>
                                                 <div className="text-right">
                                                     <div className="text-lg font-bold text-gray-900">{formatPeso(item.price * item.quantity)}</div>
                                                     <div className="text-sm text-gray-500">{formatPeso(item.price)} each</div>
@@ -172,14 +187,7 @@ export default function Cart() {
 
                         {/* Clear Cart Button */}
                         <div className="mt-6 border-t border-gray-200 pt-6">
-                            <button
-                                onClick={() => {
-                                    if (confirm('Are you sure you want to clear your cart?')) {
-                                        clearCart();
-                                    }
-                                }}
-                                className="text-sm font-medium text-red-600 hover:text-red-700"
-                            >
+                            <button onClick={handleClearCart} className="text-sm font-medium text-red-600 hover:text-red-700">
                                 Clear Cart
                             </button>
                         </div>
@@ -191,8 +199,8 @@ export default function Cart() {
                             <h2 className="mb-4 text-lg font-semibold text-gray-900">Order Summary</h2>
 
                             <div className="space-y-3">
-                                {cart.map((item) => (
-                                    <div key={item.product_id} className="flex justify-between text-sm">
+                                {cartItems.map((item) => (
+                                    <div key={item.id} className="flex justify-between text-sm">
                                         <span className="line-clamp-1 text-gray-600">
                                             {item.name} × {item.quantity}
                                         </span>
@@ -204,7 +212,7 @@ export default function Cart() {
                             <div className="mt-4 border-t border-gray-200 pt-4">
                                 <div className="flex justify-between">
                                     <span className="text-base font-medium text-gray-900">Subtotal</span>
-                                    <span className="text-base font-medium text-gray-900">{formatPeso(getCartTotal())}</span>
+                                    <span className="text-base font-medium text-gray-900">{formatPeso(cartTotal)}</span>
                                 </div>
                                 <div className="mt-2 flex justify-between">
                                     <span className="text-sm text-gray-600">Shipping</span>
@@ -215,20 +223,20 @@ export default function Cart() {
                             <div className="mt-4 border-t border-gray-200 pt-4">
                                 <div className="flex justify-between">
                                     <span className="text-lg font-semibold text-gray-900">Total</span>
-                                    <span className="text-lg font-semibold text-gray-900">{formatPeso(getCartTotal())}</span>
+                                    <span className="text-lg font-semibold text-gray-900">{formatPeso(cartTotal)}</span>
                                 </div>
                             </div>
 
                             <button
                                 onClick={handleCheckout}
-                                className="mt-6 w-full transform rounded-lg bg-green-500 px-6 py-3 font-semibold text-white shadow-md transition-all duration-200 hover:-translate-y-0.5 hover:bg-green-600 hover:shadow-lg focus:ring-2 focus:ring-green-200 focus:outline-none"
+                                className="mt-6 w-full transform rounded-lg bg-gradient-to-r from-amber-600 to-orange-600 px-6 py-3 font-semibold text-white shadow-md transition-all duration-200 hover:-translate-y-0.5 hover:from-amber-700 hover:to-orange-700 hover:shadow-lg focus:ring-2 focus:ring-amber-200 focus:outline-none active:scale-[0.98]"
                             >
                                 Proceed to Checkout
                             </button>
 
                             <button
                                 onClick={handleContinueShopping}
-                                className="mt-3 w-full rounded-lg border-2 border-gray-200 bg-white px-6 py-3 font-medium text-gray-700 shadow-sm transition-all duration-200 hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700 hover:shadow-md focus:ring-2 focus:ring-blue-200 focus:outline-none"
+                                className="mt-3 w-full rounded-lg border-2 border-amber-200 bg-white px-6 py-3 font-medium text-amber-700 shadow-sm transition-all duration-200 hover:border-amber-300 hover:bg-gradient-to-r hover:from-amber-50 hover:to-orange-50 hover:shadow-md focus:ring-2 focus:ring-amber-200 focus:outline-none"
                             >
                                 Continue Shopping
                             </button>

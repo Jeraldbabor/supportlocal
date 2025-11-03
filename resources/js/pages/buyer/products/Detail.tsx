@@ -160,7 +160,7 @@ export default function Detail({ product, productId }: ProductDetailProps) {
                             </span>
                         </div>
 
-                        <div className="mb-6 text-3xl font-bold text-primary">${displayProduct.price.toFixed(2)}</div>
+                        <div className="mb-6 text-3xl font-bold text-primary">₱{displayProduct.price.toFixed(2)}</div>
 
                         <div className="mb-6">
                             <p className="leading-relaxed text-gray-700">{displayProduct.description}</p>
@@ -246,7 +246,7 @@ export default function Detail({ product, productId }: ProductDetailProps) {
                             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                                 <div className="flex items-center">
                                     <Truck className="mr-3 h-5 w-5 flex-shrink-0 text-primary" />
-                                    <span className="text-sm text-gray-600">Free shipping on orders over $75</span>
+                                    <span className="text-sm text-gray-600">Free shipping on orders over ₱75</span>
                                 </div>
                                 <div className="flex items-center">
                                     <Shield className="mr-3 h-5 w-5 flex-shrink-0 text-primary" />

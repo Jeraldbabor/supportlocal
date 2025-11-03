@@ -20,8 +20,8 @@ export default function SellerApplicationConfirmation({ user }: SellerApplicatio
             <div className="mx-auto max-w-4xl px-4 py-8">
                 <div className="mb-8 text-center">
                     <div className="mb-4 flex justify-center">
-                        <div className="rounded-full bg-blue-100 p-3">
-                            <Store className="h-8 w-8 text-blue-600" />
+                        <div className="rounded-full border-2 border-amber-300 bg-gradient-to-r from-amber-100 to-orange-100 p-3 shadow-md">
+                            <Store className="h-8 w-8 text-amber-700" />
                         </div>
                     </div>
                     <h1 className="mb-2 text-3xl font-bold text-gray-900">Ready to Become a Seller?</h1>
@@ -31,7 +31,7 @@ export default function SellerApplicationConfirmation({ user }: SellerApplicatio
                 <Card className="mb-6">
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2">
-                            <Info className="h-5 w-5 text-blue-600" />
+                            <Info className="h-5 w-5 text-amber-700" />
                             Important Information
                         </CardTitle>
                         <CardDescription>Please read this carefully before proceeding with your seller application.</CardDescription>
@@ -56,9 +56,9 @@ export default function SellerApplicationConfirmation({ user }: SellerApplicatio
                                 </ul>
                             </div>
 
-                            <div className="rounded-lg border border-blue-200 bg-blue-50 p-4">
-                                <h3 className="mb-2 font-semibold text-blue-800">What happens next:</h3>
-                                <ul className="space-y-1 text-sm text-blue-700">
+                            <div className="rounded-lg border border-amber-200 bg-gradient-to-r from-amber-50 to-orange-50 p-4">
+                                <h3 className="mb-2 font-semibold text-amber-900">What happens next:</h3>
+                                <ul className="space-y-1 text-sm text-amber-800">
                                     <li>• Submit your application</li>
                                     <li>• Admin team reviews your details</li>
                                     <li>• You'll receive email notification</li>

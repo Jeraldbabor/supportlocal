@@ -219,7 +219,7 @@ export default function SellerApplicationForm({ idTypes, hasExistingApplication 
                                     <label htmlFor="id_document" className="flex cursor-pointer flex-col items-center gap-2">
                                         <Upload className="h-8 w-8 text-gray-400" />
                                         <div>
-                                            <span className="text-sm font-medium text-blue-600 hover:text-blue-500">Click to upload</span>
+                                            <span className="text-sm font-medium text-amber-700 hover:text-amber-800">Click to upload</span>
                                             <p className="text-xs text-gray-500">PNG, JPG, or PDF up to 10MB</p>
                                         </div>
                                     </label>
@@ -248,7 +248,7 @@ export default function SellerApplicationForm({ idTypes, hasExistingApplication 
                                     <label htmlFor="additional_documents" className="flex cursor-pointer flex-col items-center gap-2">
                                         <Upload className="h-8 w-8 text-gray-400" />
                                         <div>
-                                            <span className="text-sm font-medium text-blue-600 hover:text-blue-500">Click to upload</span>
+                                            <span className="text-sm font-medium text-amber-700 hover:text-amber-800">Click to upload</span>
                                             <p className="text-xs text-gray-500">Business certificates, portfolio samples, etc.</p>
                                         </div>
                                     </label>

@@ -1,0 +1,7 @@
+<!-- This is a simple SVG placeholder that will work as a fallback image -->
+<svg width="300" height="300" xmlns="http://www.w3.org/2000/svg">
+  <rect width="300" height="300" fill="#f3f4f6"/>
+  <text x="150" y="140" font-family="Arial, sans-serif" font-size="16" text-anchor="middle" fill="#9ca3af">No Image</text>
+  <text x="150" y="165" font-family="Arial, sans-serif" font-size="16" text-anchor="middle" fill="#9ca3af">Available</text>
+  <rect x="125" y="120" width="50" height="50" fill="none" stroke="#9ca3af" stroke-width="2" rx="5"/>
+</svg>

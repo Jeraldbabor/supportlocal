@@ -1,6 +1,9 @@
 // Wayfinder utility functions for route handling
 
-export type RouteQueryOptions = Record<string, string | number | boolean | undefined>;
+export type RouteQueryOptions = {
+    query?: Record<string, string | number | boolean | undefined>;
+    mergeQuery?: Record<string, string | number | boolean | undefined>;
+} & Record<string, string | number | boolean | undefined>;
 
 export type RouteDefinition<T = string> = {
     url: string;
@@ -21,14 +24,14 @@ export const queryParams = (options?: RouteQueryOptions): string => {
     if (!options || Object.keys(options).length === 0) {
         return '';
     }
-    
+
     const params = new URLSearchParams();
     Object.entries(options).forEach(([key, value]) => {
         if (value !== undefined && value !== null && typeof value !== 'object') {
             params.append(key, String(value));
         }
     });
-    
+
     const queryString = params.toString();
     return queryString ? `?${queryString}` : '';
 };
@@ -41,7 +44,7 @@ export const applyUrlDefaults = (args: any, defaults?: Record<string, unknown>):
     // If args is a string (URL), apply defaults to URL
     if (typeof args === 'string') {
         if (!defaults) return args;
-        
+
         let finalUrl = args;
         Object.entries(defaults).forEach(([key, value]) => {
             const placeholder = `{${key}}`;
@@ -49,10 +52,10 @@ export const applyUrlDefaults = (args: any, defaults?: Record<string, unknown>):
                 finalUrl = finalUrl.replace(placeholder, String(value));
             }
         });
-        
+
         return finalUrl;
     }
-    
+
     // If args is an object, return it as-is (for backward compatibility)
     return args;
 };

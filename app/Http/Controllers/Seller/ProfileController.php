@@ -117,6 +117,9 @@ class ProfileController extends Controller
 
         $user->update($validated);
 
+        // Update profile completion tracking
+        $user->updateProfileCompletionTracking();
+
         // Reset email verification if email changed
         if ($emailChanged) {
             $user->email_verified_at = null;

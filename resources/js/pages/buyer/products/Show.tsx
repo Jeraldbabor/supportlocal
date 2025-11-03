@@ -284,7 +284,7 @@ export default function Show({ product, relatedProducts }: ProductShowProps) {
                                         className={`flex flex-1 transform items-center justify-center gap-2 rounded-lg px-6 py-4 text-lg font-semibold transition-all duration-200 ${
                                             product.stock_status === 'out_of_stock' || isLoading
                                                 ? 'cursor-not-allowed bg-gray-100 text-gray-400'
-                                                : 'bg-blue-500 text-white shadow-lg hover:-translate-y-0.5 hover:bg-blue-600 hover:shadow-xl focus:ring-2 focus:ring-blue-200 active:transform-none'
+                                                : 'bg-gradient-to-r from-amber-600 to-orange-600 text-white shadow-lg hover:-translate-y-0.5 hover:from-amber-700 hover:to-orange-700 hover:shadow-xl focus:ring-2 focus:ring-amber-200 active:transform-none'
                                         }`}
                                     >
                                         <ShoppingCart className="h-5 w-5" />
@@ -297,7 +297,7 @@ export default function Show({ product, relatedProducts }: ProductShowProps) {
                                         className={`flex flex-1 transform items-center justify-center gap-2 rounded-lg px-6 py-4 text-lg font-semibold transition-all duration-200 ${
                                             product.stock_status === 'out_of_stock' || isLoading
                                                 ? 'cursor-not-allowed bg-gray-100 text-gray-400'
-                                                : 'bg-green-500 text-white shadow-lg hover:-translate-y-0.5 hover:bg-green-600 hover:shadow-xl focus:ring-2 focus:ring-green-200 active:transform-none'
+                                                : 'border-2 border-amber-300 bg-white text-amber-700 shadow-md hover:-translate-y-0.5 hover:border-amber-400 hover:bg-gradient-to-r hover:from-amber-50 hover:to-orange-50 hover:shadow-lg focus:ring-2 focus:ring-amber-200 active:transform-none'
                                         }`}
                                     >
                                         <ShoppingCart className="h-5 w-5" />

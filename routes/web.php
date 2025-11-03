@@ -1,38 +1,53 @@
 <?php
 
+use App\Http\Controllers\CartController;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\PublicController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-// E-commerce routes
-Route::get('/', function () {
-    return Inertia::render('Home');
-})->name('home');
+// Public/Guest E-commerce routes
+Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/about', [HomeController::class, 'about'])->name('about');
+Route::get('/contact', [HomeController::class, 'contact'])->name('contact');
+Route::post('/contact', [HomeController::class, 'sendContactMessage'])->name('contact.send');
 
-Route::get('/products', function () {
-    return Inertia::render('Products');
-})->name('products');
+// Product browsing routes
+Route::get('/products', [PublicController::class, 'products'])->name('products');
+Route::get('/product/{product}', [PublicController::class, 'productDetail'])->name('product.detail');
 
-Route::get('/about', function () {
-    return Inertia::render('About');
-})->name('about');
+// Public artisan browsing routes
+Route::get('/artisans', [PublicController::class, 'artisans'])->name('artisans');
+Route::get('/artisan/{artisan}', [PublicController::class, 'artisanProfile'])->name('artisan.profile');
 
-Route::get('/contact', function () {
-    return Inertia::render('Contact');
-})->name('contact');
+// Shopping cart routes (using session for guests)
+Route::get('/cart', [CartController::class, 'index'])->name('cart');
+Route::post('/cart/add', [CartController::class, 'addToCart'])->name('cart.add');
+Route::put('/cart/update', [CartController::class, 'updateQuantity'])->name('cart.update');
+Route::delete('/cart/remove', [CartController::class, 'removeFromCart'])->name('cart.remove');
+Route::delete('/cart/clear', [CartController::class, 'clearCart'])->name('cart.clear');
+Route::get('/cart/count', [CartController::class, 'getCartCount'])->name('cart.count');
 
-Route::get('/cart', function () {
-    return Inertia::render('Cart');
-})->name('cart');
+// Guest checkout route - prompts to login or continue
+Route::get('/checkout', function () {
+    return Inertia::render('GuestCheckout');
+})->name('checkout');
 
-Route::get('/product/{id}', function ($id) {
-    return Inertia::render('ProductDetail', [
-        'productId' => $id,
-    ]);
-})->name('product.detail');
+// API route for transferring guest cart to authenticated user
+Route::post('/api/cart/transfer', [App\Http\Controllers\Api\CartTransferController::class, 'transfer'])
+    ->middleware('auth')
+    ->name('api.cart.transfer');
 
-// Public artisans/sellers browsing (no authentication required)
-Route::get('/artisans', [App\Http\Controllers\Buyer\SellerController::class, 'index'])->name('public.artisans');
-Route::get('/artisan/{seller}', [App\Http\Controllers\Buyer\SellerController::class, 'show'])->name('public.artisan.show');
+// API routes for buyer cart (returns JSON)
+Route::middleware('auth')->prefix('api/buyer')->group(function () {
+    Route::get('/cart', [App\Http\Controllers\Buyer\CartController::class, 'getCartJson'])->name('api.buyer.cart');
+    Route::post('/cart/add', [App\Http\Controllers\Buyer\CartController::class, 'addToCartJson'])->name('api.buyer.cart.add');
+    Route::put('/cart/update', [App\Http\Controllers\Buyer\CartController::class, 'updateQuantityJson'])->name('api.buyer.cart.update');
+    Route::delete('/cart/remove', [App\Http\Controllers\Buyer\CartController::class, 'removeFromCartJson'])->name('api.buyer.cart.remove');
+    Route::delete('/cart/clear', [App\Http\Controllers\Buyer\CartController::class, 'clearCartJson'])->name('api.buyer.cart.clear');
+});
+
+// Note: Public artisan routes moved above to PublicController
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', function () {
@@ -159,6 +174,17 @@ Route::middleware(['auth', 'verified'])->group(function () {
             return Inertia::render('buyer/dashboard');
         })->name('buyer.dashboard');
 
+        // About and Contact pages
+        Route::get('/buyer/about', function () {
+            return Inertia::render('buyer/About');
+        })->name('buyer.about');
+
+        Route::get('/buyer/contact', function () {
+            return Inertia::render('buyer/Contact');
+        })->name('buyer.contact');
+
+        Route::post('/buyer/contact', [HomeController::class, 'sendContactMessage'])->name('buyer.contact.send');
+
         // Product browsing routes
         Route::get('/buyer/products', [App\Http\Controllers\Buyer\ProductController::class, 'index'])->name('buyer.products');
         Route::get('/buyer/product/{product}', [App\Http\Controllers\Buyer\ProductController::class, 'show'])->name('buyer.product.show');
@@ -168,15 +194,54 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/buyer/seller/{seller}', [App\Http\Controllers\Buyer\SellerController::class, 'show'])->name('buyer.seller.show');
 
         // Cart and checkout routes
-        Route::get('/buyer/cart', function () {
-            return Inertia::render('buyer/Cart');
-        })->name('buyer.cart');
+        Route::get('/buyer/cart', [App\Http\Controllers\Buyer\CartController::class, 'index'])->name('buyer.cart');
+        Route::post('/buyer/cart/add', [App\Http\Controllers\Buyer\CartController::class, 'addToCart'])->name('buyer.cart.add');
+        Route::put('/buyer/cart/update', [App\Http\Controllers\Buyer\CartController::class, 'updateQuantity'])->name('buyer.cart.update');
+        Route::delete('/buyer/cart/remove', [App\Http\Controllers\Buyer\CartController::class, 'removeFromCart'])->name('buyer.cart.remove');
+        Route::delete('/buyer/cart/clear', [App\Http\Controllers\Buyer\CartController::class, 'clearCart'])->name('buyer.cart.clear');
+        Route::get('/buyer/cart/count', [App\Http\Controllers\Buyer\CartController::class, 'getCartCount'])->name('buyer.cart.count');
 
         Route::get('/buyer/checkout', function () {
             $user = auth()->user();
 
+            // Check if profile is complete before allowing checkout
+            $profileStatus = $user->getProfileCompletionStatus();
+            if (! $profileStatus['is_complete']) {
+                return redirect()
+                    ->route('buyer.profile')
+                    ->with('error', 'Please complete your profile information before checking out. We need your phone number and delivery address to process your order.');
+            }
+
+            $buyNow = request()->query('buy_now');
+            $productId = request()->query('product_id');
+            $quantity = request()->query('quantity', 1);
+
+            $buyNowItem = null;
+
+            // If buy_now is set, fetch the specific product
+            if ($buyNow === 'true' && $productId) {
+                $product = \App\Models\Product::with('seller')->find($productId);
+                if ($product) {
+                    $buyNowItem = [
+                        'id' => $product->id,
+                        'product_id' => $product->id,
+                        'name' => $product->name,
+                        'price' => (float) $product->price,
+                        'quantity' => (int) $quantity,
+                        'primary_image' => $product->featured_image ?? $product->primary_image,
+                        'seller' => [
+                            'id' => $product->seller->id,
+                            'name' => $product->seller->business_name ?? $product->seller->name,
+                        ],
+                        'max_quantity' => $product->quantity,
+                        'stock_quantity' => $product->quantity,
+                    ];
+                }
+            }
+
             return Inertia::render('buyer/Checkout', [
                 'user' => $user,
+                'buyNowItem' => $buyNowItem,
             ]);
         })->name('buyer.checkout');
 
@@ -226,10 +291,26 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile/avatar', [App\Http\Controllers\ProfileController::class, 'deleteAvatar'])->name('user.profile.avatar.delete');
     Route::post('/profile/send-verification', [App\Http\Controllers\ProfileController::class, 'sendVerification'])->name('user.profile.send-verification');
     Route::delete('/profile', [App\Http\Controllers\ProfileController::class, 'destroy'])->name('user.profile.destroy');
+
+    // Profile completion tracking routes
+    Route::post('/profile/dismiss-completion-reminder', [App\Http\Controllers\ProfileController::class, 'dismissProfileCompletionReminder'])->name('user.profile.dismiss-completion-reminder');
+    Route::get('/profile/completion-status', [App\Http\Controllers\ProfileController::class, 'getProfileCompletionStatus'])->name('user.profile.completion-status');
 });
 
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';
+
+// Image serving route for when storage symlink doesn't work
+Route::get('/images/{path}', function ($path) {
+    $fullPath = storage_path('app/public/'.$path);
+
+    if (file_exists($fullPath)) {
+        return response()->file($fullPath);
+    }
+
+    // Return placeholder if file doesn't exist
+    abort(404);
+})->where('path', '.*');
 
 // API placeholder image route
 Route::get('/api/placeholder/{width}/{height}', function ($width, $height) {

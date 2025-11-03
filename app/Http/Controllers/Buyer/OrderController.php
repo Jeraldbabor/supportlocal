@@ -187,9 +187,9 @@ class OrderController extends Controller
             abort(403);
         }
 
-        // Only allow deletion of cancelled or delivered orders
-        if (! in_array($order->status, ['cancelled', 'delivered'])) {
-            return back()->with('error', 'Only cancelled or delivered orders can be deleted.');
+        // Only allow deletion of cancelled, delivered, or completed orders
+        if (! in_array($order->status, ['cancelled', 'delivered', 'completed'])) {
+            return back()->with('error', 'Only cancelled, delivered, or completed orders can be deleted.');
         }
 
         try {
@@ -220,7 +220,7 @@ class OrderController extends Controller
             DB::beginTransaction();
 
             $orders = Order::where('user_id', auth()->id())
-                ->whereIn('status', ['cancelled', 'delivered'])
+                ->whereIn('status', ['cancelled', 'delivered', 'completed'])
                 ->get();
 
             if ($orders->isEmpty()) {
@@ -233,7 +233,7 @@ class OrderController extends Controller
 
             // Delete the orders
             Order::where('user_id', auth()->id())
-                ->whereIn('status', ['cancelled', 'delivered'])
+                ->whereIn('status', ['cancelled', 'delivered', 'completed'])
                 ->delete();
 
             DB::commit();

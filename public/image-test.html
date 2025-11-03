@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Image Test</title>
+</head>
+<body>
+    <h1>Testing Product Images</h1>
+    
+    <h2>Direct File Access Test:</h2>
+    <p>Testing if image files exist:</p>
+    <img src="/storage/products/handmade-pottery.jpg" alt="Direct Storage" style="width: 200px; height: 200px; border: 1px solid red;">
+    <img src="/placeholder.jpg" alt="Placeholder" style="width: 200px; height: 200px; border: 1px solid blue;">
+    
+    <h2>Storage Symlink Test:</h2>
+    <p>Full path test:</p>
+    <img src="http://localhost:8000/storage/products/handmade-pottery.jpg" alt="Full URL" style="width: 200px; height: 200px; border: 1px solid green;">
+    
+    <script>
+        // Test if images load successfully
+        const images = document.querySelectorAll('img');
+        images.forEach((img, index) => {
+            img.onload = function() {
+                console.log(`Image ${index + 1} loaded successfully: ${img.src}`);
+            };
+            img.onerror = function() {
+                console.error(`Image ${index + 1} failed to load: ${img.src}`);
+            };
+        });
+    </script>
+</body>
+</html>
