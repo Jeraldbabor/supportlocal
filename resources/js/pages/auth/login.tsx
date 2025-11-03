@@ -44,8 +44,8 @@ export default function Login({ status, canResetPassword, sellerCount, featuredA
             )}
 
             <Form
-                action={AuthenticatedSessionController.store.form().action}
-                method={AuthenticatedSessionController.store.form().method}
+                action={AuthenticatedSessionController.store().url}
+                method={AuthenticatedSessionController.store().method}
                 resetOnSuccess={['password']}
                 className="space-y-4"
             >

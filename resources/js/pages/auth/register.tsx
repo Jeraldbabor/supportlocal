@@ -28,9 +28,8 @@ export default function Register({ sellerCount, featuredArtisans }: RegisterProp
     const guestCart = typeof window !== 'undefined' ? localStorage.getItem('guest_cart') : null;
 
     // Get form props from the controller action
-    const { form, ...formProps } = RegisteredUserController.store.form();
-    // Prevent unused variable warning by using form
-    void form;
+    const route = RegisteredUserController.store();
+    const formProps = { action: route.url, method: route.method };
 
     return (
         <AuthLayout
