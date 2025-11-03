@@ -17,11 +17,7 @@ export default function AuthCardLayout({
             <div className="flex w-full max-w-md flex-col gap-6">
                 <Link href={home()} className="flex items-center gap-2 self-center font-medium">
                     <div className="flex items-center justify-center">
-                        <img 
-                            src="/artisanicon.png" 
-                            alt="Artisan Icon" 
-                            className="size-16 drop-shadow-lg"
-                        />
+                        <img src="/artisanicon.png" alt="Artisan Icon" className="size-16 drop-shadow-lg" />
                     </div>
                 </Link>
 

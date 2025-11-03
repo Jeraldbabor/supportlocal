@@ -1,13 +1,13 @@
 import { Head, Link, router, usePage } from '@inertiajs/react';
-import { ArrowLeft, ShoppingBag, User, LogIn, UserPlus } from 'lucide-react';
-import React, { useEffect } from 'react';
-import MainLayout from '../layouts/MainLayout';
+import { ArrowLeft, LogIn, ShoppingBag, User, UserPlus } from 'lucide-react';
+import { useEffect } from 'react';
 import { useCart } from '../contexts/CartContext';
+import MainLayout from '../layouts/MainLayout';
 
 export default function GuestCheckout() {
     const { items, totalAmount } = useCart();
-    const { props } = usePage();
-    const isAuthenticated = !!(props as any)?.auth?.user;
+    const { props } = usePage<{ auth?: { user?: unknown } }>();
+    const isAuthenticated = !!props?.auth?.user;
 
     // Redirect authenticated users to buyer checkout
     useEffect(() => {
@@ -52,10 +52,7 @@ export default function GuestCheckout() {
             <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8">
                 {/* Header */}
                 <div className="mb-8">
-                    <Link
-                        href="/cart"
-                        className="mb-4 inline-flex items-center text-primary hover:text-primary/80"
-                    >
+                    <Link href="/cart" className="mb-4 inline-flex items-center text-primary hover:text-primary/80">
                         <ArrowLeft className="mr-2 h-4 w-4" />
                         Back to Cart
                     </Link>
@@ -66,7 +63,7 @@ export default function GuestCheckout() {
                     {/* Main Content */}
                     <div className="lg:col-span-2">
                         {/* Sign In or Continue Section */}
-                        <div className="overflow-hidden rounded-xl bg-gradient-to-br from-amber-50 via-orange-50 to-amber-100 shadow-md border-2 border-amber-200/50">
+                        <div className="overflow-hidden rounded-xl border-2 border-amber-200/50 bg-gradient-to-br from-amber-50 via-orange-50 to-amber-100 shadow-md">
                             <div className="p-8">
                                 <div className="mb-6 flex items-center">
                                     <div className="mr-4 rounded-full bg-gradient-to-r from-amber-600 to-orange-600 p-3 shadow-md">
@@ -79,14 +76,15 @@ export default function GuestCheckout() {
                                 </div>
 
                                 <p className="mb-6 text-gray-800">
-                                    To complete your order and enjoy faster checkout in the future, please sign in to your account or create a new one.
+                                    To complete your order and enjoy faster checkout in the future, please sign in to your account or create a new
+                                    one.
                                 </p>
 
                                 <div className="space-y-4">
                                     {/* Sign In Button */}
                                     <Link
                                         href="/login"
-                                        className="flex w-full items-center justify-center gap-3 rounded-lg bg-gradient-to-r from-amber-600 via-amber-700 to-orange-600 px-6 py-4 font-semibold text-white shadow-lg transition-all hover:from-amber-700 hover:via-amber-800 hover:to-orange-700 hover:shadow-xl hover:scale-[1.02] active:scale-[0.98]"
+                                        className="flex w-full items-center justify-center gap-3 rounded-lg bg-gradient-to-r from-amber-600 via-amber-700 to-orange-600 px-6 py-4 font-semibold text-white shadow-lg transition-all hover:scale-[1.02] hover:from-amber-700 hover:via-amber-800 hover:to-orange-700 hover:shadow-xl active:scale-[0.98]"
                                     >
                                         <LogIn className="h-5 w-5" />
                                         Sign In to Your Account
@@ -95,30 +93,30 @@ export default function GuestCheckout() {
                                     {/* Register Button */}
                                     <Link
                                         href="/register"
-                                        className="flex w-full items-center justify-center gap-3 rounded-lg border-2 border-amber-300 bg-white px-6 py-4 font-semibold text-amber-700 shadow-md transition-all hover:bg-gradient-to-r hover:from-amber-50 hover:to-orange-50 hover:border-amber-400 hover:shadow-lg hover:scale-[1.02] active:scale-[0.98]"
+                                        className="flex w-full items-center justify-center gap-3 rounded-lg border-2 border-amber-300 bg-white px-6 py-4 font-semibold text-amber-700 shadow-md transition-all hover:scale-[1.02] hover:border-amber-400 hover:bg-gradient-to-r hover:from-amber-50 hover:to-orange-50 hover:shadow-lg active:scale-[0.98]"
                                     >
                                         <UserPlus className="h-5 w-5" />
                                         Create New Account
                                     </Link>
                                 </div>
 
-                                <div className="mt-6 rounded-lg bg-white/80 backdrop-blur-sm border border-amber-200/50 p-4 shadow-sm">
+                                <div className="mt-6 rounded-lg border border-amber-200/50 bg-white/80 p-4 shadow-sm backdrop-blur-sm">
                                     <h3 className="mb-2 font-semibold text-amber-900">Why create an account?</h3>
                                     <ul className="space-y-2 text-sm text-gray-700">
                                         <li className="flex items-start">
-                                            <span className="mr-2 text-amber-600 font-bold">✓</span>
+                                            <span className="mr-2 font-bold text-amber-600">✓</span>
                                             Track your orders in real-time
                                         </li>
                                         <li className="flex items-start">
-                                            <span className="mr-2 text-amber-600 font-bold">✓</span>
+                                            <span className="mr-2 font-bold text-amber-600">✓</span>
                                             Save addresses for faster checkout
                                         </li>
                                         <li className="flex items-start">
-                                            <span className="mr-2 text-amber-600 font-bold">✓</span>
+                                            <span className="mr-2 font-bold text-amber-600">✓</span>
                                             View order history and reorder easily
                                         </li>
                                         <li className="flex items-start">
-                                            <span className="mr-2 text-amber-600 font-bold">✓</span>
+                                            <span className="mr-2 font-bold text-amber-600">✓</span>
                                             Get exclusive deals and updates from local artisans
                                         </li>
                                     </ul>
@@ -134,11 +132,7 @@ export default function GuestCheckout() {
                                     <div key={item.id} className="flex items-center gap-4">
                                         <div className="h-16 w-16 overflow-hidden rounded-lg bg-gray-100">
                                             {item.primary_image ? (
-                                                <img
-                                                    src={`/storage/${item.primary_image}`}
-                                                    alt={item.name}
-                                                    className="h-full w-full object-cover"
-                                                />
+                                                <img src={`/storage/${item.primary_image}`} alt={item.name} className="h-full w-full object-cover" />
                                             ) : (
                                                 <div className="flex h-full w-full items-center justify-center">
                                                     <ShoppingBag className="h-6 w-6 text-gray-400" />
@@ -149,9 +143,7 @@ export default function GuestCheckout() {
                                             <h4 className="font-medium text-gray-900">{item.name}</h4>
                                             <p className="text-sm text-gray-600">Quantity: {item.quantity}</p>
                                         </div>
-                                        <p className="font-semibold text-gray-900">
-                                            ₱{(item.price * item.quantity).toFixed(2)}
-                                        </p>
+                                        <p className="font-semibold text-gray-900">₱{(item.price * item.quantity).toFixed(2)}</p>
                                     </div>
                                 ))}
                             </div>
@@ -165,7 +157,9 @@ export default function GuestCheckout() {
 
                             <div className="space-y-3 border-b border-gray-200 pb-4">
                                 <div className="flex justify-between text-gray-600">
-                                    <span>Subtotal ({items.length} {items.length === 1 ? 'item' : 'items'})</span>
+                                    <span>
+                                        Subtotal ({items.length} {items.length === 1 ? 'item' : 'items'})
+                                    </span>
                                     <span>₱{totalAmount.toFixed(2)}</span>
                                 </div>
                                 <div className="flex justify-between text-gray-600">
@@ -184,17 +178,13 @@ export default function GuestCheckout() {
                             </div>
 
                             {shipping > 0 && (
-                                <div className="mt-4 rounded-lg bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 p-3">
-                                    <p className="text-sm text-amber-900 font-medium">
-                                        Add ₱{(75 - totalAmount).toFixed(2)} more for free shipping!
-                                    </p>
+                                <div className="mt-4 rounded-lg border border-amber-200 bg-gradient-to-r from-amber-50 to-orange-50 p-3">
+                                    <p className="text-sm font-medium text-amber-900">Add ₱{(75 - totalAmount).toFixed(2)} more for free shipping!</p>
                                 </div>
                             )}
 
                             <div className="mt-6">
-                                <p className="text-center text-xs text-gray-500">
-                                    Secure checkout with SSL encryption
-                                </p>
+                                <p className="text-center text-xs text-gray-500">Secure checkout with SSL encryption</p>
                             </div>
                         </div>
                     </div>

@@ -2,7 +2,7 @@
 
 /**
  * Manual Test Script for Profile Completion Feature
- * 
+ *
  * Run this in php artisan tinker to test the profile completion feature
  */
 
@@ -81,9 +81,9 @@ print_r($recommendation);
 
 // Test dismissal
 echo "\n=== Test Dismissal ===\n";
-echo "Before: " . ($buyer->hasProfileCompletionReminderDismissed() ? 'Dismissed' : 'Not Dismissed') . "\n";
+echo 'Before: '.($buyer->hasProfileCompletionReminderDismissed() ? 'Dismissed' : 'Not Dismissed')."\n";
 $buyer->dismissProfileCompletionReminder();
-echo "After: " . ($buyer->fresh()->hasProfileCompletionReminderDismissed() ? 'Dismissed' : 'Not Dismissed') . "\n";
+echo 'After: '.($buyer->fresh()->hasProfileCompletionReminderDismissed() ? 'Dismissed' : 'Not Dismissed')."\n";
 
 echo "\n=== Test Complete! ===\n";
 echo "All profile completion methods are working correctly.\n";

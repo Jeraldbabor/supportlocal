@@ -15,7 +15,7 @@ class CartController extends Controller
     {
         if ($request->user()) {
             // For authenticated users, use user-specific cart
-            return 'cart_user_' . $request->user()->id;
+            return 'cart_user_'.$request->user()->id;
         } else {
             // For guests, use guest cart
             return 'cart_guest';
@@ -32,7 +32,7 @@ class CartController extends Controller
         $cartItems = [];
         $total = 0;
 
-        if (!empty($cart)) {
+        if (! empty($cart)) {
             $productIds = array_keys($cart);
             $products = Product::with(['seller', 'category'])
                 ->whereIn('id', $productIds)
@@ -48,7 +48,7 @@ class CartController extends Controller
                     'id' => $product->id,
                     'name' => $product->name,
                     'price' => (float) $product->price,
-                    'image' => $product->primary_image ? '/images/' . $product->primary_image : '/placeholder.jpg',
+                    'image' => $product->primary_image ? '/images/'.$product->primary_image : '/placeholder.jpg',
                     'artisan' => $product->seller->name ?? 'Unknown Artisan',
                     'artisan_image' => $product->seller->avatar_url ?? null,
                     'quantity' => $quantity,

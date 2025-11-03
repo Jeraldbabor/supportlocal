@@ -314,8 +314,8 @@ export default function Orders({ orders }: OrdersIndexProps) {
                             </div>
                             <div className="mb-4">
                                 <p className="text-sm text-gray-600">
-                                    Are you sure you want to clear all your order history? This will permanently delete all cancelled, delivered, and completed
-                                    orders. This action cannot be undone.
+                                    Are you sure you want to clear all your order history? This will permanently delete all cancelled, delivered, and
+                                    completed orders. This action cannot be undone.
                                 </p>
                             </div>
                             <div className="flex justify-end gap-3">

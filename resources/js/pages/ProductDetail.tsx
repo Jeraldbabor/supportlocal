@@ -1,5 +1,5 @@
 import { Link } from '@inertiajs/react';
-import { ArrowLeft, Heart, Minus, Plus, Shield, Star, Truck, ShoppingCart } from 'lucide-react';
+import { ArrowLeft, Heart, Minus, Plus, Shield, ShoppingCart, Star, Truck } from 'lucide-react';
 import { useState } from 'react';
 import MainLayout from '../layouts/MainLayout';
 
@@ -41,6 +41,10 @@ interface ProductDetailProps {
 }
 
 export default function ProductDetail({ product, relatedProducts = [] }: ProductDetailProps) {
+    const [selectedImage, setSelectedImage] = useState(0);
+    const [quantity, setQuantity] = useState(1);
+    const [isFavorited, setIsFavorited] = useState(false);
+
     if (!product) {
         return (
             <MainLayout>
@@ -56,14 +60,11 @@ export default function ProductDetail({ product, relatedProducts = [] }: Product
             </MainLayout>
         );
     }
-    const [selectedImage, setSelectedImage] = useState(0);
-    const [quantity, setQuantity] = useState(1);
-    const [isFavorited, setIsFavorited] = useState(false);
 
     const addToCart = async (productId?: number, qty?: number) => {
         const targetProductId = productId || product.id;
         const targetQuantity = qty || quantity;
-        
+
         try {
             const response = await fetch('/cart/add', {
                 method: 'POST',
@@ -78,7 +79,7 @@ export default function ProductDetail({ product, relatedProducts = [] }: Product
             });
 
             if (response.ok) {
-                const result = await response.json();
+                await response.json();
                 if (productId) {
                     alert('Product added to cart!');
                 } else {
@@ -109,11 +110,7 @@ export default function ProductDetail({ product, relatedProducts = [] }: Product
                     {/* Product Images */}
                     <div>
                         <div className="mb-4 aspect-square">
-                            <img
-                                src={product.images[selectedImage]}
-                                alt={product.name}
-                                className="h-full w-full rounded-lg object-cover"
-                            />
+                            <img src={product.images[selectedImage]} alt={product.name} className="h-full w-full rounded-lg object-cover" />
                         </div>
                         {product.images.length > 1 && (
                             <div className="flex space-x-2">
@@ -142,13 +139,11 @@ export default function ProductDetail({ product, relatedProducts = [] }: Product
 
                         <div className="mb-4 flex items-center gap-2 text-gray-600">
                             {product.artisan_image && (
-                                <img 
-                                    src={product.artisan_image} 
-                                    alt={product.artisan}
-                                    className="h-6 w-6 rounded-full object-cover"
-                                />
+                                <img src={product.artisan_image} alt={product.artisan} className="h-6 w-6 rounded-full object-cover" />
                             )}
-                            <span>by <span className="font-medium">{product.artisan}</span></span>
+                            <span>
+                                by <span className="font-medium">{product.artisan}</span>
+                            </span>
                         </div>
 
                         <div className="mb-4 flex items-center">
@@ -156,9 +151,7 @@ export default function ProductDetail({ product, relatedProducts = [] }: Product
                                 {[...Array(5)].map((_, i) => (
                                     <Star
                                         key={i}
-                                        className={`h-5 w-5 ${
-                                            i < Math.floor(product.rating) ? 'fill-current text-yellow-400' : 'text-gray-300'
-                                        }`}
+                                        className={`h-5 w-5 ${i < Math.floor(product.rating) ? 'fill-current text-yellow-400' : 'text-gray-300'}`}
                                     />
                                 ))}
                             </div>
@@ -201,7 +194,7 @@ export default function ProductDetail({ product, relatedProducts = [] }: Product
                                 <button
                                     onClick={() => addToCart()}
                                     disabled={!product.inStock}
-                                    className="flex-1 rounded-lg bg-gradient-to-r from-amber-600 to-orange-600 px-6 py-3 font-semibold text-white shadow-md transition-all duration-200 hover:from-amber-700 hover:to-orange-700 hover:shadow-lg hover:scale-105 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:scale-100 flex items-center justify-center gap-2"
+                                    className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-amber-600 to-orange-600 px-6 py-3 font-semibold text-white shadow-md transition-all duration-200 hover:scale-105 hover:from-amber-700 hover:to-orange-700 hover:shadow-lg active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:scale-100"
                                 >
                                     <ShoppingCart className="h-5 w-5" />
                                     {product.inStock ? 'Add to Cart' : 'Out of Stock'}
@@ -211,7 +204,7 @@ export default function ProductDetail({ product, relatedProducts = [] }: Product
                                     className={`rounded-lg border-2 p-3 transition-all duration-200 ${
                                         isFavorited
                                             ? 'border-amber-500 bg-amber-50 text-amber-600 hover:scale-110'
-                                            : 'border-gray-300 text-gray-600 hover:border-amber-500 hover:text-amber-600 hover:scale-110'
+                                            : 'border-gray-300 text-gray-600 hover:scale-110 hover:border-amber-500 hover:text-amber-600'
                                     }`}
                                 >
                                     <Heart className={`h-6 w-6 ${isFavorited ? 'fill-current' : ''}`} />
@@ -271,22 +264,22 @@ export default function ProductDetail({ product, relatedProducts = [] }: Product
                                     className="overflow-hidden rounded-lg bg-white shadow-sm transition-shadow duration-200 hover:shadow-md"
                                 >
                                     <Link href={`/product/${relatedProduct.id}`}>
-                                        <img 
-                                            src={relatedProduct.image} 
-                                            alt={relatedProduct.name} 
-                                            className="h-48 w-full object-cover cursor-pointer" 
+                                        <img
+                                            src={relatedProduct.image}
+                                            alt={relatedProduct.name}
+                                            className="h-48 w-full cursor-pointer object-cover"
                                         />
                                     </Link>
                                     <div className="p-4">
                                         <Link href={`/product/${relatedProduct.id}`}>
-                                            <h3 className="mb-1 text-lg font-semibold text-gray-900 hover:text-primary cursor-pointer">
+                                            <h3 className="mb-1 cursor-pointer text-lg font-semibold text-gray-900 hover:text-primary">
                                                 {relatedProduct.name}
                                             </h3>
                                         </Link>
                                         <div className="mb-2 flex items-center gap-2">
                                             {relatedProduct.artisan_image && (
-                                                <img 
-                                                    src={relatedProduct.artisan_image} 
+                                                <img
+                                                    src={relatedProduct.artisan_image}
                                                     alt={relatedProduct.artisan}
                                                     className="h-5 w-5 rounded-full object-cover"
                                                 />
@@ -299,9 +292,7 @@ export default function ProductDetail({ product, relatedProducts = [] }: Product
                                                     <Star
                                                         key={i}
                                                         className={`h-4 w-4 ${
-                                                            i < Math.floor(relatedProduct.rating) 
-                                                                ? 'fill-current text-yellow-400' 
-                                                                : 'text-gray-300'
+                                                            i < Math.floor(relatedProduct.rating) ? 'fill-current text-yellow-400' : 'text-gray-300'
                                                         }`}
                                                     />
                                                 ))}
@@ -309,12 +300,10 @@ export default function ProductDetail({ product, relatedProducts = [] }: Product
                                             <span className="ml-1 text-sm text-gray-600">({relatedProduct.rating})</span>
                                         </div>
                                         <div className="flex items-center justify-between">
-                                            <span className="text-lg font-semibold text-primary">
-                                                ₱{relatedProduct.price.toFixed(2)}
-                                            </span>
-                                            <button 
+                                            <span className="text-lg font-semibold text-primary">₱{relatedProduct.price.toFixed(2)}</span>
+                                            <button
                                                 onClick={() => addToCart(relatedProduct.id, 1)}
-                                                className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-white transition-colors duration-200 hover:bg-primary/90 flex items-center gap-1"
+                                                className="flex items-center gap-1 rounded-md bg-primary px-4 py-2 text-sm font-medium text-white transition-colors duration-200 hover:bg-primary/90"
                                             >
                                                 <ShoppingCart className="h-4 w-4" />
                                                 Add

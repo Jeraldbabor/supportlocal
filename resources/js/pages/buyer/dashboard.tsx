@@ -12,7 +12,7 @@ export default function BuyerDashboard() {
             <Head title="Buyer Dashboard" />
             <div className="min-h-screen bg-gray-50">
                 {/* Hero Section */}
-                <section className="relative mx-4 mt-6 overflow-hidden rounded-2xl bg-gradient-to-r from-amber-50 via-orange-50 to-amber-100 py-16 border-2 border-amber-200/50 shadow-lg">
+                <section className="relative mx-4 mt-6 overflow-hidden rounded-2xl border-2 border-amber-200/50 bg-gradient-to-r from-amber-50 via-orange-50 to-amber-100 py-16 shadow-lg">
                     <div className="absolute inset-0 bg-white/20 backdrop-blur-sm"></div>
                     <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                         <div className="text-center">
@@ -23,7 +23,9 @@ export default function BuyerDashboard() {
                             </div>
                             <h1 className="mb-4 text-4xl font-bold text-gray-900 md:text-5xl">
                                 {new Date().getHours() < 12 ? 'Good Morning' : new Date().getHours() < 18 ? 'Good Afternoon' : 'Good Evening'},
-                                <span className="mt-2 block bg-gradient-to-r from-amber-700 to-orange-700 bg-clip-text text-transparent">{user?.name}!</span>
+                                <span className="mt-2 block bg-gradient-to-r from-amber-700 to-orange-700 bg-clip-text text-transparent">
+                                    {user?.name}!
+                                </span>
                             </h1>
                             <p className="mx-auto mb-8 max-w-3xl text-xl leading-relaxed text-gray-800">
                                 Ready to discover something amazing? Explore unique, handcrafted treasures from talented local artisans in your
@@ -39,7 +41,7 @@ export default function BuyerDashboard() {
                                 </Link>
                                 <Link
                                     href="/seller/apply"
-                                    className="inline-flex transform items-center rounded-xl border-2 border-amber-300 bg-white px-8 py-4 font-semibold text-amber-700 shadow-md transition-all duration-200 hover:scale-105 hover:bg-gradient-to-r hover:from-amber-50 hover:to-orange-50 hover:border-amber-400 hover:shadow-lg active:scale-[0.98]"
+                                    className="inline-flex transform items-center rounded-xl border-2 border-amber-300 bg-white px-8 py-4 font-semibold text-amber-700 shadow-md transition-all duration-200 hover:scale-105 hover:border-amber-400 hover:bg-gradient-to-r hover:from-amber-50 hover:to-orange-50 hover:shadow-lg active:scale-[0.98]"
                                 >
                                     <User className="mr-2 h-5 w-5" />
                                     Become a Seller

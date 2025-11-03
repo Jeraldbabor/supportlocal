@@ -32,13 +32,13 @@ class PublicController extends Controller
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('description', 'like', "%{$search}%")
-                  ->orWhereHas('seller', function ($userQuery) use ($search) {
-                      $userQuery->where('name', 'like', "%{$search}%");
-                  })
-                  ->orWhereHas('category', function ($catQuery) use ($search) {
-                      $catQuery->where('name', 'like', "%{$search}%");
-                  });
+                    ->orWhere('description', 'like', "%{$search}%")
+                    ->orWhereHas('seller', function ($userQuery) use ($search) {
+                        $userQuery->where('name', 'like', "%{$search}%");
+                    })
+                    ->orWhereHas('category', function ($catQuery) use ($search) {
+                        $catQuery->where('name', 'like', "%{$search}%");
+                    });
             });
         }
 
@@ -77,7 +77,7 @@ class PublicController extends Controller
                 'name' => $product->name,
                 'price' => (float) $product->price,
                 'primary_image' => $product->featured_image,
-                'image' => $product->featured_image ? '/storage/' . $product->featured_image : '/placeholder.jpg',
+                'image' => $product->featured_image ? '/storage/'.$product->featured_image : '/placeholder.jpg',
                 'artisan' => $product->seller->name ?? 'Unknown Artisan',
                 'artisan_image' => $product->seller->avatar_url ?? null,
                 'rating' => $product->average_rating ?? 4.5,
@@ -117,8 +117,8 @@ class PublicController extends Controller
             'id' => $product->id,
             'name' => $product->name,
             'price' => (float) $product->price,
-            'images' => $product->images ? array_map(function($img) { 
-                return '/images/' . $img; 
+            'images' => $product->images ? array_map(function ($img) {
+                return '/images/'.$img;
             }, $product->images) : ['/placeholder.jpg', '/placeholder.jpg', '/placeholder.jpg'],
             'artisan' => $product->seller->name ?? 'Unknown Artisan',
             'artisan_id' => $product->seller_id,
@@ -150,7 +150,7 @@ class PublicController extends Controller
                     'id' => $relatedProduct->id,
                     'name' => $relatedProduct->name,
                     'price' => (float) $relatedProduct->price,
-                    'image' => $relatedProduct->primary_image ? '/images/' . $relatedProduct->primary_image : '/placeholder.jpg',
+                    'image' => $relatedProduct->primary_image ? '/images/'.$relatedProduct->primary_image : '/placeholder.jpg',
                     'artisan' => $relatedProduct->seller->name ?? 'Unknown Artisan',
                     'artisan_image' => $relatedProduct->seller->avatar_url,
                     'rating' => $relatedProduct->average_rating ?? 4.5,
@@ -179,8 +179,8 @@ class PublicController extends Controller
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('email', 'like', "%{$search}%")
-                  ->orWhere('address', 'like', "%{$search}%");
+                    ->orWhere('email', 'like', "%{$search}%")
+                    ->orWhere('address', 'like', "%{$search}%");
             });
         }
 
@@ -195,7 +195,7 @@ class PublicController extends Controller
         // Sorting
         $sortBy = $request->get('sort', 'name');
         $direction = $request->get('direction', 'asc');
-        
+
         switch ($sortBy) {
             case 'products_count':
                 $query->orderBy('products_count', 'desc');
@@ -222,9 +222,9 @@ class PublicController extends Controller
 
         $artisans = $query->paginate(12)->through(function ($artisan) {
             $profileImage = $artisan->profile_picture ?? null;
-            $imageUrl = $profileImage ? '/storage/' . $profileImage : null;
-            if (!$imageUrl) {
-                $imageUrl = 'https://ui-avatars.com/api/?name=' . urlencode($artisan->name) . '&color=7F9CF5&background=EBF4FF';
+            $imageUrl = $profileImage ? '/storage/'.$profileImage : null;
+            if (! $imageUrl) {
+                $imageUrl = 'https://ui-avatars.com/api/?name='.urlencode($artisan->name).'&color=7F9CF5&background=EBF4FF';
             }
 
             // Extract city from address if exists
@@ -270,14 +270,14 @@ class PublicController extends Controller
      */
     public function artisanProfile(Request $request, User $artisan)
     {
-        if ($artisan->role !== User::ROLE_SELLER || !$artisan->is_active) {
+        if ($artisan->role !== User::ROLE_SELLER || ! $artisan->is_active) {
             abort(404, 'Artisan not found');
         }
 
         $profileImage = $artisan->profile_picture ?? null;
-        $imageUrl = $profileImage ? '/storage/' . $profileImage : null;
-        if (!$imageUrl) {
-            $imageUrl = 'https://ui-avatars.com/api/?name=' . urlencode($artisan->name) . '&color=7F9CF5&background=EBF4FF';
+        $imageUrl = $profileImage ? '/storage/'.$profileImage : null;
+        if (! $imageUrl) {
+            $imageUrl = 'https://ui-avatars.com/api/?name='.urlencode($artisan->name).'&color=7F9CF5&background=EBF4FF';
         }
 
         // Extract city from address if exists
@@ -318,14 +318,14 @@ class PublicController extends Controller
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('description', 'like', "%{$search}%")
-                  ->orWhere('short_description', 'like', "%{$search}%");
+                    ->orWhere('description', 'like', "%{$search}%")
+                    ->orWhere('short_description', 'like', "%{$search}%");
             });
         }
 
         // Sorting
         $sortBy = $request->get('sort', 'name');
-        
+
         switch ($sortBy) {
             case 'price':
                 $query->orderBy('price', 'asc');

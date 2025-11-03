@@ -119,7 +119,7 @@ export default function Orders({ orders }: OrdersProps) {
         if (!showCancelModal) return;
 
         setIsCancelling(true);
-        
+
         try {
             const response = await fetch(`/seller/orders/${showCancelModal}/reject`, {
                 method: 'POST',
@@ -369,42 +369,42 @@ export default function Orders({ orders }: OrdersProps) {
 
                 {/* Cancel Order Modal */}
                 {showCancelModal && (
-                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                        <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
-                            <div className="flex items-center gap-3 mb-4">
-                                <div className="p-2 bg-red-100 rounded-full">
+                    <div className="bg-opacity-50 fixed inset-0 z-50 flex items-center justify-center bg-black">
+                        <div className="mx-4 w-full max-w-md rounded-lg bg-white p-6">
+                            <div className="mb-4 flex items-center gap-3">
+                                <div className="rounded-full bg-red-100 p-2">
                                     <AlertTriangle className="h-5 w-5 text-red-600" />
                                 </div>
                                 <h3 className="text-lg font-semibold text-gray-900">Cancel Order</h3>
                             </div>
-                            
-                            <p className="text-gray-600 mb-4">
+
+                            <p className="mb-4 text-gray-600">
                                 Are you sure you want to cancel this order? This action cannot be undone and the customer will be notified.
                             </p>
-                            
+
                             <div className="mb-4">
-                                <label htmlFor="cancelReason" className="block text-sm font-medium text-gray-700 mb-2">
+                                <label htmlFor="cancelReason" className="mb-2 block text-sm font-medium text-gray-700">
                                     Reason for cancellation (optional)
                                 </label>
                                 <textarea
                                     id="cancelReason"
                                     value={cancelReason}
                                     onChange={(e) => setCancelReason(e.target.value)}
-                                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                    className="w-full rounded-lg border border-gray-300 p-3 focus:border-blue-500 focus:ring-2 focus:ring-blue-500"
                                     placeholder="Please provide a reason for cancelling this order..."
                                     rows={3}
                                     disabled={isCancelling}
                                 />
                             </div>
-                            
-                            <div className="flex gap-3 justify-end">
+
+                            <div className="flex justify-end gap-3">
                                 <button
                                     type="button"
                                     onClick={() => {
                                         setShowCancelModal(null);
                                         setCancelReason('');
                                     }}
-                                    className="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg font-medium"
+                                    className="rounded-lg bg-gray-100 px-4 py-2 font-medium text-gray-700 hover:bg-gray-200"
                                     disabled={isCancelling}
                                 >
                                     Keep Order
@@ -412,10 +412,10 @@ export default function Orders({ orders }: OrdersProps) {
                                 <button
                                     type="button"
                                     onClick={handleConfirmCancel}
-                                    className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium disabled:opacity-50 flex items-center gap-2"
+                                    className="flex items-center gap-2 rounded-lg bg-red-600 px-4 py-2 font-medium text-white hover:bg-red-700 disabled:opacity-50"
                                     disabled={isCancelling}
                                 >
-                                    {isCancelling && <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full" />}
+                                    {isCancelling && <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />}
                                     Cancel Order
                                 </button>
                             </div>

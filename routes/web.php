@@ -1,9 +1,9 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\CartController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PublicController;
-use App\Http\Controllers\CartController;
+use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 // Public/Guest E-commerce routes
@@ -178,11 +178,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/buyer/about', function () {
             return Inertia::render('buyer/About');
         })->name('buyer.about');
-        
+
         Route::get('/buyer/contact', function () {
             return Inertia::render('buyer/Contact');
         })->name('buyer.contact');
-        
+
         Route::post('/buyer/contact', [HomeController::class, 'sendContactMessage'])->name('buyer.contact.send');
 
         // Product browsing routes
@@ -203,15 +203,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         Route::get('/buyer/checkout', function () {
             $user = auth()->user();
-            
+
             // Check if profile is complete before allowing checkout
             $profileStatus = $user->getProfileCompletionStatus();
-            if (!$profileStatus['is_complete']) {
+            if (! $profileStatus['is_complete']) {
                 return redirect()
                     ->route('buyer.profile')
                     ->with('error', 'Please complete your profile information before checking out. We need your phone number and delivery address to process your order.');
             }
-            
+
             $buyNow = request()->query('buy_now');
             $productId = request()->query('product_id');
             $quantity = request()->query('quantity', 1);
@@ -291,7 +291,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile/avatar', [App\Http\Controllers\ProfileController::class, 'deleteAvatar'])->name('user.profile.avatar.delete');
     Route::post('/profile/send-verification', [App\Http\Controllers\ProfileController::class, 'sendVerification'])->name('user.profile.send-verification');
     Route::delete('/profile', [App\Http\Controllers\ProfileController::class, 'destroy'])->name('user.profile.destroy');
-    
+
     // Profile completion tracking routes
     Route::post('/profile/dismiss-completion-reminder', [App\Http\Controllers\ProfileController::class, 'dismissProfileCompletionReminder'])->name('user.profile.dismiss-completion-reminder');
     Route::get('/profile/completion-status', [App\Http\Controllers\ProfileController::class, 'getProfileCompletionStatus'])->name('user.profile.completion-status');
@@ -302,12 +302,12 @@ require __DIR__.'/auth.php';
 
 // Image serving route for when storage symlink doesn't work
 Route::get('/images/{path}', function ($path) {
-    $fullPath = storage_path('app/public/' . $path);
-    
+    $fullPath = storage_path('app/public/'.$path);
+
     if (file_exists($fullPath)) {
         return response()->file($fullPath);
     }
-    
+
     // Return placeholder if file doesn't exist
     abort(404);
 })->where('path', '.*');

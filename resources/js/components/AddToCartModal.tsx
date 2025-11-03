@@ -1,5 +1,5 @@
-import { X, Minus, Plus, ShoppingCart, Package, Star, Truck, Shield, CheckCircle, User, Heart } from 'lucide-react';
-import React, { useState, useEffect } from 'react';
+import { CheckCircle, Heart, Minus, Package, Plus, Shield, ShoppingCart, Star, Truck, User, X } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
 
 interface Product {
     id: number;
@@ -96,27 +96,24 @@ export default function AddToCartModal({ isOpen, onClose, product, onAddToCart, 
     };
 
     return (
-        <div
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm"
-            onClick={handleBackdropClick}
-        >
-            <div className="relative w-full max-w-4xl max-h-[90vh] transform overflow-hidden rounded-2xl bg-white shadow-2xl transition-all animate-in fade-in zoom-in duration-200">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm" onClick={handleBackdropClick}>
+            <div className="relative max-h-[90vh] w-full max-w-4xl transform overflow-hidden rounded-2xl bg-white shadow-2xl transition-all duration-200 animate-in fade-in zoom-in">
                 {/* Close Button */}
                 <button
                     onClick={onClose}
-                    className="absolute right-4 top-4 z-10 rounded-full bg-white p-2 text-gray-500 shadow-lg transition-all hover:bg-gray-100 hover:text-gray-700 hover:shadow-xl"
+                    className="absolute top-4 right-4 z-10 rounded-full bg-white p-2 text-gray-500 shadow-lg transition-all hover:bg-gray-100 hover:text-gray-700 hover:shadow-xl"
                     aria-label="Close modal"
                 >
                     <X className="h-5 w-5" />
                 </button>
 
                 {/* Scrollable Content */}
-                <div className="overflow-y-auto max-h-[90vh]">
-                    <div className="grid md:grid-cols-2 gap-6 p-6 md:p-8">
+                <div className="max-h-[90vh] overflow-y-auto">
+                    <div className="grid gap-6 p-6 md:grid-cols-2 md:p-8">
                         {/* Left Column - Product Image */}
                         <div className="space-y-4">
-                            <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-gray-100 to-gray-50 aspect-square shadow-inner">
-                                {(product.primary_image || product.image) ? (
+                            <div className="relative aspect-square overflow-hidden rounded-2xl bg-gradient-to-br from-gray-100 to-gray-50 shadow-inner">
+                                {product.primary_image || product.image ? (
                                     <img
                                         src={product.primary_image ? `/storage/${product.primary_image}` : product.image}
                                         alt={product.name}
@@ -144,11 +141,11 @@ export default function AddToCartModal({ isOpen, onClose, product, onAddToCart, 
 
                                 {/* Stock Badge */}
                                 <div className="absolute top-4 left-4">
-                                    <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold shadow-lg backdrop-blur-sm ${
-                                        maxQuantity < 999 && maxQuantity <= 10 
-                                            ? 'bg-yellow-500/90 text-white' 
-                                            : 'bg-green-500/90 text-white'
-                                    }`}>
+                                    <span
+                                        className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold shadow-lg backdrop-blur-sm ${
+                                            maxQuantity < 999 && maxQuantity <= 10 ? 'bg-yellow-500/90 text-white' : 'bg-green-500/90 text-white'
+                                        }`}
+                                    >
                                         <CheckCircle className="h-3.5 w-3.5" />
                                         {maxQuantity < 999 ? `Only ${maxQuantity} left` : 'In Stock'}
                                     </span>
@@ -166,18 +163,18 @@ export default function AddToCartModal({ isOpen, onClose, product, onAddToCart, 
 
                             {/* Trust Badges */}
                             <div className="grid grid-cols-3 gap-3">
-                                <div className="flex flex-col items-center rounded-lg bg-amber-50 p-3 text-center border border-amber-100">
-                                    <Truck className="h-5 w-5 text-amber-600 mb-1" />
+                                <div className="flex flex-col items-center rounded-lg border border-amber-100 bg-amber-50 p-3 text-center">
+                                    <Truck className="mb-1 h-5 w-5 text-amber-600" />
                                     <p className="text-xs font-medium text-amber-900">Free Shipping</p>
                                     <p className="text-xs text-amber-700">Orders over ₱75</p>
                                 </div>
-                                <div className="flex flex-col items-center rounded-lg bg-green-50 p-3 text-center border border-green-100">
-                                    <Shield className="h-5 w-5 text-green-600 mb-1" />
+                                <div className="flex flex-col items-center rounded-lg border border-green-100 bg-green-50 p-3 text-center">
+                                    <Shield className="mb-1 h-5 w-5 text-green-600" />
                                     <p className="text-xs font-medium text-green-900">Secure Payment</p>
                                     <p className="text-xs text-green-700">100% Protected</p>
                                 </div>
-                                <div className="flex flex-col items-center rounded-lg bg-orange-50 p-3 text-center border border-orange-100">
-                                    <CheckCircle className="h-5 w-5 text-orange-600 mb-1" />
+                                <div className="flex flex-col items-center rounded-lg border border-orange-100 bg-orange-50 p-3 text-center">
+                                    <CheckCircle className="mb-1 h-5 w-5 text-orange-600" />
                                     <p className="text-xs font-medium text-orange-900">Quality</p>
                                     <p className="text-xs text-orange-700">Handcrafted</p>
                                 </div>
@@ -196,17 +193,13 @@ export default function AddToCartModal({ isOpen, onClose, product, onAddToCart, 
                             )}
 
                             {/* Product Name */}
-                            <h2 className="mb-2 text-2xl font-bold text-gray-900 leading-tight">
-                                {product.name}
-                            </h2>
+                            <h2 className="mb-2 text-2xl leading-tight font-bold text-gray-900">{product.name}</h2>
 
                             {/* Seller Info */}
                             <div className="mb-3 flex items-center gap-2 text-sm">
                                 <User className="h-4 w-4 text-gray-400" />
                                 <span className="text-gray-600">by</span>
-                                <span className="font-semibold text-primary">
-                                    {product.seller?.name || product.artisan || 'Local Artisan'}
-                                </span>
+                                <span className="font-semibold text-primary">{product.seller?.name || product.artisan || 'Local Artisan'}</span>
                             </div>
 
                             {/* Rating */}
@@ -216,17 +209,11 @@ export default function AddToCartModal({ isOpen, onClose, product, onAddToCart, 
                                         {[...Array(5)].map((_, i) => (
                                             <Star
                                                 key={i}
-                                                className={`h-4 w-4 ${
-                                                    i < Math.floor(rating)
-                                                        ? 'fill-yellow-400 text-yellow-400'
-                                                        : 'text-gray-300'
-                                                }`}
+                                                className={`h-4 w-4 ${i < Math.floor(rating) ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`}
                                             />
                                         ))}
                                     </div>
-                                    <span className="text-sm font-medium text-gray-700">
-                                        {rating.toFixed(1)} / 5.0
-                                    </span>
+                                    <span className="text-sm font-medium text-gray-700">{rating.toFixed(1)} / 5.0</span>
                                 </div>
                             )}
 
@@ -244,7 +231,7 @@ export default function AddToCartModal({ isOpen, onClose, product, onAddToCart, 
                             {(product.short_description || product.description) && (
                                 <div className="mb-6">
                                     <h3 className="mb-2 text-sm font-semibold text-gray-900">Description</h3>
-                                    <p className="text-sm leading-relaxed text-gray-600 line-clamp-3">
+                                    <p className="line-clamp-3 text-sm leading-relaxed text-gray-600">
                                         {product.short_description || product.description}
                                     </p>
                                 </div>
@@ -259,9 +246,7 @@ export default function AddToCartModal({ isOpen, onClose, product, onAddToCart, 
 
                             {/* Quantity Selector */}
                             <div className="mb-6">
-                                <label className="mb-3 block text-sm font-semibold text-gray-900">
-                                    Select Quantity
-                                </label>
+                                <label className="mb-3 block text-sm font-semibold text-gray-900">Select Quantity</label>
                                 <div className="flex items-center gap-4">
                                     <div className="flex items-center rounded-xl border-2 border-gray-300 bg-white shadow-sm">
                                         <button
@@ -278,7 +263,7 @@ export default function AddToCartModal({ isOpen, onClose, product, onAddToCart, 
                                             onChange={(e) => handleQuantityChange(parseInt(e.target.value) || 1)}
                                             min="1"
                                             max={maxQuantity}
-                                            className="w-20 border-x-2 border-gray-300 py-3 text-center text-lg font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary"
+                                            className="w-20 border-x-2 border-gray-300 py-3 text-center text-lg font-bold text-gray-900 focus:ring-2 focus:ring-primary focus:outline-none"
                                         />
                                         <button
                                             onClick={() => handleQuantityChange(quantity + 1)}
@@ -290,16 +275,14 @@ export default function AddToCartModal({ isOpen, onClose, product, onAddToCart, 
                                         </button>
                                     </div>
                                     <div className="flex-1">
-                                        <p className="text-xs text-gray-500 mb-1">Total Price</p>
+                                        <p className="mb-1 text-xs text-gray-500">Total Price</p>
                                         <p className="text-2xl font-bold text-primary">
                                             ₱{totalPrice.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                                         </p>
                                     </div>
                                 </div>
                                 {maxQuantity < 999 && quantity >= maxQuantity && (
-                                    <p className="mt-2 text-xs text-yellow-600 font-medium">
-                                        Maximum available quantity reached
-                                    </p>
+                                    <p className="mt-2 text-xs font-medium text-yellow-600">Maximum available quantity reached</p>
                                 )}
                             </div>
 
@@ -308,17 +291,17 @@ export default function AddToCartModal({ isOpen, onClose, product, onAddToCart, 
                                 <button
                                     onClick={handleAddToCart}
                                     disabled={isLoading}
-                                    className="flex w-full items-center justify-center gap-3 rounded-xl bg-gradient-to-r from-amber-600 to-orange-600 px-6 py-4 text-base font-semibold text-white shadow-lg transition-all hover:from-amber-700 hover:to-orange-700 hover:shadow-xl hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:bg-gray-300 disabled:shadow-none disabled:translate-y-0 active:scale-[0.98]"
+                                    className="flex w-full items-center justify-center gap-3 rounded-xl bg-gradient-to-r from-amber-600 to-orange-600 px-6 py-4 text-base font-semibold text-white shadow-lg transition-all hover:-translate-y-0.5 hover:from-amber-700 hover:to-orange-700 hover:shadow-xl active:scale-[0.98] disabled:translate-y-0 disabled:cursor-not-allowed disabled:bg-gray-300 disabled:shadow-none"
                                 >
                                     <ShoppingCart className="h-5 w-5" />
                                     {isLoading ? 'Adding to Cart...' : 'Add to Cart'}
                                 </button>
-                                
+
                                 {onBuyNow && (
                                     <button
                                         onClick={handleBuyNow}
                                         disabled={isLoading}
-                                        className="flex w-full items-center justify-center gap-3 rounded-xl border-2 border-amber-300 bg-white px-6 py-4 text-base font-semibold text-amber-700 shadow-md transition-all hover:bg-gradient-to-r hover:from-amber-50 hover:to-orange-50 hover:border-amber-400 hover:shadow-lg hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:bg-gray-300 disabled:shadow-none disabled:translate-y-0 active:scale-[0.98]"
+                                        className="flex w-full items-center justify-center gap-3 rounded-xl border-2 border-amber-300 bg-white px-6 py-4 text-base font-semibold text-amber-700 shadow-md transition-all hover:-translate-y-0.5 hover:border-amber-400 hover:bg-gradient-to-r hover:from-amber-50 hover:to-orange-50 hover:shadow-lg active:scale-[0.98] disabled:translate-y-0 disabled:cursor-not-allowed disabled:bg-gray-300 disabled:shadow-none"
                                     >
                                         {isLoading ? 'Processing...' : 'Buy Now'}
                                     </button>
@@ -328,15 +311,15 @@ export default function AddToCartModal({ isOpen, onClose, product, onAddToCart, 
                             {/* Additional Info */}
                             <div className="mt-6 space-y-2 rounded-xl bg-gray-50 p-4">
                                 <div className="flex items-start gap-2 text-sm">
-                                    <CheckCircle className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
+                                    <CheckCircle className="mt-0.5 h-4 w-4 flex-shrink-0 text-green-500" />
                                     <span className="text-gray-700">Authentic handcrafted product from local artisans</span>
                                 </div>
                                 <div className="flex items-start gap-2 text-sm">
-                                    <Truck className="h-4 w-4 text-blue-500 mt-0.5 flex-shrink-0" />
+                                    <Truck className="mt-0.5 h-4 w-4 flex-shrink-0 text-blue-500" />
                                     <span className="text-gray-700">Free shipping on orders over ₱75</span>
                                 </div>
                                 <div className="flex items-start gap-2 text-sm">
-                                    <Shield className="h-4 w-4 text-purple-500 mt-0.5 flex-shrink-0" />
+                                    <Shield className="mt-0.5 h-4 w-4 flex-shrink-0 text-purple-500" />
                                     <span className="text-gray-700">Secure payment with buyer protection</span>
                                 </div>
                             </div>

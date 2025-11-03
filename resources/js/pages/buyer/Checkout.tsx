@@ -44,9 +44,7 @@ export default function Checkout({ user, buyNowItem }: CheckoutProps) {
 
     // Use buyNowItem if available, otherwise use cart
     const checkoutItems = buyNowItem ? [buyNowItem] : cart;
-    const checkoutTotal = buyNowItem 
-        ? buyNowItem.price * buyNowItem.quantity 
-        : getCartTotal();
+    const checkoutTotal = buyNowItem ? buyNowItem.price * buyNowItem.quantity : getCartTotal();
 
     const { data, setData, processing, errors } = useForm({
         delivery_address: user.delivery_address || user.address || '',
@@ -151,9 +149,7 @@ export default function Checkout({ user, buyNowItem }: CheckoutProps) {
                         Back to Cart
                     </button>
                     <h1 className="text-3xl font-bold text-gray-900">Checkout</h1>
-                    <p className="mt-2 text-gray-600">
-                        {buyNowItem ? 'Complete your order for the selected item' : 'Complete your order'}
-                    </p>
+                    <p className="mt-2 text-gray-600">{buyNowItem ? 'Complete your order for the selected item' : 'Complete your order'}</p>
                     {buyNowItem && (
                         <div className="mt-3 inline-flex items-center rounded-full bg-green-100 px-3 py-1 text-sm font-medium text-green-800">
                             <CheckCircle className="mr-1.5 h-4 w-4" />

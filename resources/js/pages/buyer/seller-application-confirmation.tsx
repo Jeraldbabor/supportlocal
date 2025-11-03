@@ -20,7 +20,7 @@ export default function SellerApplicationConfirmation({ user }: SellerApplicatio
             <div className="mx-auto max-w-4xl px-4 py-8">
                 <div className="mb-8 text-center">
                     <div className="mb-4 flex justify-center">
-                        <div className="rounded-full bg-gradient-to-r from-amber-100 to-orange-100 border-2 border-amber-300 p-3 shadow-md">
+                        <div className="rounded-full border-2 border-amber-300 bg-gradient-to-r from-amber-100 to-orange-100 p-3 shadow-md">
                             <Store className="h-8 w-8 text-amber-700" />
                         </div>
                     </div>

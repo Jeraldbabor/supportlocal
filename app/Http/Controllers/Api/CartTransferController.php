@@ -23,8 +23,9 @@ class CartTransferController extends Controller
         ]);
 
         // Ensure user is authenticated
-        if (!Auth::check()) {
+        if (! Auth::check()) {
             Log::warning('Cart transfer failed: User not authenticated');
+
             return response()->json([
                 'success' => false,
                 'message' => 'User must be authenticated to transfer cart',
@@ -32,7 +33,7 @@ class CartTransferController extends Controller
         }
 
         $user = Auth::user();
-        
+
         Log::info('Validating cart transfer data', [
             'user_id' => $user->id,
             'items_count' => count($request->input('items', [])),
@@ -57,7 +58,7 @@ class CartTransferController extends Controller
                     'status' => 'cart', // Cart status means it's not checked out yet
                 ],
                 [
-                    'order_number' => 'CART-' . $user->id . '-' . time(),
+                    'order_number' => 'CART-'.$user->id.'-'.time(),
                     'total_amount' => 0,
                 ]
             );
@@ -87,7 +88,7 @@ class CartTransferController extends Controller
                     $existingItem->quantity += $item['quantity'];
                     $existingItem->total = $existingItem->quantity * $existingItem->price;
                     $existingItem->save();
-                    
+
                     Log::info('Updated existing cart item', [
                         'item_id' => $existingItem->id,
                         'old_quantity' => $oldQuantity,
@@ -97,7 +98,7 @@ class CartTransferController extends Controller
                 } else {
                     // Create new cart item
                     $product = \App\Models\Product::with('seller')->find($item['product_id']);
-                    
+
                     if ($product) {
                         $newItem = OrderItem::create([
                             'order_id' => $cart->id,
@@ -109,7 +110,7 @@ class CartTransferController extends Controller
                             'price' => $product->price,
                             'total' => $product->price * $item['quantity'],
                         ]);
-                        
+
                         Log::info('Created new cart item', [
                             'item_id' => $newItem->id,
                             'product_id' => $product->id,

@@ -151,7 +151,9 @@ function NotificationsContent({ notifications }: NotificationsProps) {
                                 <div
                                     key={notification.id}
                                     className={`px-6 py-4 hover:bg-gray-50 dark:hover:bg-gray-700 ${
-                                        !notification.read_at ? 'bg-gradient-to-r from-amber-50 to-orange-50 dark:bg-amber-900/20 border-l-4 border-amber-400' : ''
+                                        !notification.read_at
+                                            ? 'border-l-4 border-amber-400 bg-gradient-to-r from-amber-50 to-orange-50 dark:bg-amber-900/20'
+                                            : ''
                                     }`}
                                 >
                                     <div className="flex items-start space-x-3">

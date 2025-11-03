@@ -1,5 +1,5 @@
-import { Award, Heart, MapPin, Users } from 'lucide-react';
 import { Link } from '@inertiajs/react';
+import { Award, Heart, MapPin, Users } from 'lucide-react';
 import MainLayout from '../layouts/MainLayout';
 
 interface Artisan {
@@ -185,13 +185,13 @@ export default function About({ artisans = [] }: AboutProps) {
                     <div className="flex flex-col justify-center gap-4 sm:flex-row">
                         <Link
                             href="/login"
-                            className="rounded-lg bg-primary px-8 py-3 font-semibold text-white transition-colors duration-200 hover:bg-primary/90 text-center"
+                            className="rounded-lg bg-primary px-8 py-3 text-center font-semibold text-white transition-colors duration-200 hover:bg-primary/90"
                         >
                             Become an Artisan
                         </Link>
                         <Link
                             href="/products"
-                            className="rounded-lg border-2 border-primary px-8 py-3 font-semibold text-primary transition-colors duration-200 hover:bg-primary hover:text-white text-center"
+                            className="rounded-lg border-2 border-primary px-8 py-3 text-center font-semibold text-primary transition-colors duration-200 hover:bg-primary hover:text-white"
                         >
                             Shop with Us
                         </Link>

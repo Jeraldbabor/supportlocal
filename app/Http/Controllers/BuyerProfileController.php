@@ -76,7 +76,7 @@ class BuyerProfileController extends Controller
             $updateData['profile_picture'] = $path;
         }
 
-                $user->update($updateData);
+        $user->update($updateData);
 
         // Update profile completion tracking
         $user->updateProfileCompletionTracking();

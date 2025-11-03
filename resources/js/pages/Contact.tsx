@@ -1,6 +1,6 @@
+import { router } from '@inertiajs/react';
 import { Clock, Mail, MapPin, Phone, Send } from 'lucide-react';
 import React, { useState } from 'react';
-import { router, usePage } from '@inertiajs/react';
 import MainLayout from '../layouts/MainLayout';
 
 interface ContactProps {
@@ -11,7 +11,6 @@ interface ContactProps {
 }
 
 export default function Contact({ flash }: ContactProps = {}) {
-    const { props } = usePage();
     const [formData, setFormData] = useState({
         name: '',
         email: '',
@@ -40,13 +39,13 @@ export default function Contact({ flash }: ContactProps = {}) {
                 setFormData({ name: '', email: '', subject: '', message: '' });
                 setIsSubmitting(false);
             },
-            onError: (errors: any) => {
+            onError: (errors: Record<string, string>) => {
                 setErrors(errors);
                 setIsSubmitting(false);
             },
             onFinish: () => {
                 setIsSubmitting(false);
-            }
+            },
         });
     };
 

@@ -2,8 +2,8 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
@@ -20,7 +20,7 @@ return new class extends Migration
             $table->text('shipping_address')->nullable()->change();
             $table->decimal('subtotal', 10, 2)->nullable()->change();
         });
-        
+
         // Handle payment_method separately with raw SQL
         DB::statement('ALTER TABLE orders ALTER COLUMN payment_method DROP NOT NULL');
     }
@@ -38,7 +38,7 @@ return new class extends Migration
             $table->text('shipping_address')->nullable(false)->change();
             $table->decimal('subtotal', 10, 2)->nullable(false)->change();
         });
-        
+
         DB::statement('ALTER TABLE orders ALTER COLUMN payment_method SET NOT NULL');
     }
 };

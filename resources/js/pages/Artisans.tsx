@@ -1,6 +1,6 @@
-import { Search, Star, MapPin, Award, Eye, User, Filter } from 'lucide-react';
-import React, { useState } from 'react';
 import { Link, router } from '@inertiajs/react';
+import { Eye, Filter, MapPin, Search, Star, User } from 'lucide-react';
+import React, { useState } from 'react';
 import MainLayout from '../layouts/MainLayout';
 
 interface Artisan {
@@ -124,7 +124,7 @@ export default function Artisans({ artisans, filters = {} }: ArtisansProps) {
                                     <div className="p-6">
                                         <div className="flex items-start space-x-4">
                                             <div className="flex-shrink-0">
-                                                {(artisan.profile_image || artisan.image) ? (
+                                                {artisan.profile_image || artisan.image ? (
                                                     <img
                                                         src={artisan.profile_image ? `/storage/${artisan.profile_image}` : artisan.image}
                                                         alt={artisan.name}
@@ -144,7 +144,7 @@ export default function Artisans({ artisans, filters = {} }: ArtisansProps) {
                                                     </h3>
                                                     {artisan.is_verified && (
                                                         <div className="flex-shrink-0">
-                                                            <span className="inline-flex items-center rounded-full bg-gradient-to-r from-amber-100 to-orange-100 border border-amber-300 px-2.5 py-0.5 text-xs font-medium text-amber-900">
+                                                            <span className="inline-flex items-center rounded-full border border-amber-300 bg-gradient-to-r from-amber-100 to-orange-100 px-2.5 py-0.5 text-xs font-medium text-amber-900">
                                                                 Verified
                                                             </span>
                                                         </div>
@@ -160,9 +160,7 @@ export default function Artisans({ artisans, filters = {} }: ArtisansProps) {
                                                     </div>
                                                 )}
 
-                                                {artisan.bio && (
-                                                    <p className="mt-3 line-clamp-2 text-sm text-gray-600">{artisan.bio}</p>
-                                                )}
+                                                {artisan.bio && <p className="mt-3 line-clamp-2 text-sm text-gray-600">{artisan.bio}</p>}
                                             </div>
                                         </div>
 
@@ -194,7 +192,9 @@ export default function Artisans({ artisans, filters = {} }: ArtisansProps) {
                                                 <div className="flex items-center justify-center">
                                                     <Star className="mr-1 h-4 w-4 fill-current text-yellow-400" />
                                                     <span className="text-lg font-semibold text-gray-900">
-                                                        {(artisan.average_rating || artisan.rating) ? (artisan.average_rating || artisan.rating).toFixed(1) : '0.0'}
+                                                        {artisan.average_rating || artisan.rating
+                                                            ? (artisan.average_rating || artisan.rating).toFixed(1)
+                                                            : '0.0'}
                                                     </span>
                                                 </div>
                                                 <div className="text-xs text-gray-500">Rating</div>

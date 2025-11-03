@@ -3,10 +3,10 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Product;
+use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -25,7 +25,7 @@ class RegisteredUserController extends Controller
     public function create(): Response
     {
         $sellerCount = User::where('role', User::ROLE_SELLER)->count();
-        
+
         // Get 4 featured artisans for the showcase
         $featuredArtisans = User::where('role', User::ROLE_SELLER)
             ->select(['id', 'name', 'profile_picture'])
@@ -39,7 +39,7 @@ class RegisteredUserController extends Controller
                     'avatar_url' => $user->avatar_url,
                 ];
             });
-        
+
         return Inertia::render('auth/register', [
             'sellerCount' => $sellerCount,
             'featuredArtisans' => $featuredArtisans,
@@ -86,16 +86,18 @@ class RegisteredUserController extends Controller
         try {
             // Get guest cart from request (sent from frontend)
             $guestCartJson = $request->input('guest_cart');
-            
-            if (!$guestCartJson) {
+
+            if (! $guestCartJson) {
                 Log::info('No guest cart to transfer during registration');
+
                 return;
             }
 
             $guestCart = json_decode($guestCartJson, true);
-            
-            if (!is_array($guestCart) || empty($guestCart)) {
+
+            if (! is_array($guestCart) || empty($guestCart)) {
                 Log::info('Guest cart is empty or invalid');
+
                 return;
             }
 
@@ -107,7 +109,7 @@ class RegisteredUserController extends Controller
             // Create cart order for the user
             $cart = Order::create([
                 'user_id' => $user->id,
-                'order_number' => 'CART-' . $user->id . '-' . time(),
+                'order_number' => 'CART-'.$user->id.'-'.time(),
                 'status' => 'cart',
                 'total_amount' => 0,
             ]);
@@ -120,14 +122,15 @@ class RegisteredUserController extends Controller
             $totalAmount = 0;
 
             foreach ($guestCart as $item) {
-                if (!isset($item['product_id']) || !isset($item['quantity'])) {
+                if (! isset($item['product_id']) || ! isset($item['quantity'])) {
                     continue;
                 }
 
                 $product = Product::with('seller')->find($item['product_id']);
-                
-                if (!$product) {
+
+                if (! $product) {
                     Log::warning('[Registration] Product not found', ['product_id' => $item['product_id']]);
+
                     continue;
                 }
 

@@ -320,13 +320,13 @@ class User extends Authenticatable
     public function hasCompleteProfile(): bool
     {
         $requiredFields = $this->getRequiredFieldsForRole();
-        
+
         foreach ($requiredFields as $field => $label) {
             if (empty($this->$field)) {
                 return false;
             }
         }
-        
+
         return true;
     }
 
@@ -446,9 +446,9 @@ class User extends Authenticatable
         $missingCount = count($status['missing_fields']);
         $missingList = array_slice(array_column($status['missing_fields'], 'label'), 0, 3);
         $missingText = implode(', ', $missingList);
-        
+
         if ($missingCount > 3) {
-            $missingText .= ' and ' . ($missingCount - 3) . ' more';
+            $missingText .= ' and '.($missingCount - 3).' more';
         }
 
         return [
@@ -498,7 +498,7 @@ class User extends Authenticatable
     public function updateProfileCompletionTracking(): bool
     {
         $status = $this->getProfileCompletionStatus();
-        
+
         $data = [
             'profile_completion_percentage' => $status['percentage'],
         ];

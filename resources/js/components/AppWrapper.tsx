@@ -8,13 +8,13 @@ interface AppWrapperProps {
 
 // Inner component that can use usePage
 function CartProviderWrapper({ children }: { children: React.ReactNode }) {
-    const { props } = usePage();
+    const { props } = usePage<{ auth?: { user?: unknown } }>();
     const [isAuthenticated, setIsAuthenticated] = useState(false);
 
     useEffect(() => {
-        const authStatus = !!(props as any)?.auth?.user;
+        const authStatus = !!props?.auth?.user;
         setIsAuthenticated(authStatus);
-        
+
         // Clear guest cart when user authenticates
         if (authStatus) {
             const guestCart = localStorage.getItem('guest_cart');
@@ -25,19 +25,11 @@ function CartProviderWrapper({ children }: { children: React.ReactNode }) {
                 localStorage.removeItem('last_seen_cart_count');
             }
         }
-    }, [(props as any)?.auth?.user]);
+    }, [props?.auth?.user]);
 
-    return (
-        <CartProvider isAuthenticated={isAuthenticated}>
-            {children}
-        </CartProvider>
-    );
+    return <CartProvider isAuthenticated={isAuthenticated}>{children}</CartProvider>;
 }
 
 export default function AppWrapper({ children }: AppWrapperProps) {
-    return (
-        <CartProviderWrapper>
-            {children}
-        </CartProviderWrapper>
-    );
+    return <CartProviderWrapper>{children}</CartProviderWrapper>;
 }

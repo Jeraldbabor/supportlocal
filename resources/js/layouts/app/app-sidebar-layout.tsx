@@ -10,8 +10,23 @@ import { type PropsWithChildren } from 'react';
 export default function AppSidebarLayout({ children, breadcrumbs = [] }: PropsWithChildren<{ breadcrumbs?: BreadcrumbItem[] }>) {
     const { props: pageProps } = usePage<{
         profileCompletion?: {
-            status: any;
-            recommendation: any;
+            status: {
+                is_complete: boolean;
+                percentage: number;
+                completed_fields: number;
+                total_fields: number;
+                missing_fields: Array<{ field: string; label: string }>;
+                has_email_verified: boolean;
+                has_profile_picture: boolean;
+            };
+            recommendation: {
+                title: string;
+                description: string;
+                action: string;
+                url: string;
+                priority: 'critical' | 'high' | 'medium' | 'low';
+                missing_fields?: Array<{ field: string; label: string }>;
+            } | null;
         };
     }>();
 
@@ -20,9 +35,8 @@ export default function AppSidebarLayout({ children, breadcrumbs = [] }: PropsWi
     // Show banner if we have profile completion data and either:
     // 1. Profile is incomplete, OR
     // 2. There's a recommendation (even if profile is technically complete)
-    const shouldShowBanner = profileCompletion && 
-                            profileCompletion.status && 
-                            (!profileCompletion.status.is_complete || profileCompletion.recommendation);
+    const shouldShowBanner =
+        profileCompletion && profileCompletion.status && (!profileCompletion.status.is_complete || profileCompletion.recommendation);
 
     return (
         <AppShell variant="sidebar">

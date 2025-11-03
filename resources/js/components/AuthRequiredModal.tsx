@@ -1,6 +1,5 @@
 import { router } from '@inertiajs/react';
 import { LogIn, UserPlus, X } from 'lucide-react';
-import React from 'react';
 
 interface AuthRequiredModalProps {
     isOpen: boolean;
@@ -25,10 +24,7 @@ export default function AuthRequiredModal({ isOpen, onClose, action, productName
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
             {/* Backdrop */}
-            <div 
-                className="absolute inset-0 bg-black/50 backdrop-blur-sm transition-opacity"
-                onClick={onClose}
-            />
+            <div className="absolute inset-0 bg-black/50 backdrop-blur-sm transition-opacity" onClick={onClose} />
 
             {/* Modal */}
             <div className="relative z-10 w-full max-w-md transform rounded-2xl bg-white p-6 shadow-2xl transition-all">
@@ -49,16 +45,10 @@ export default function AuthRequiredModal({ isOpen, onClose, action, productName
 
                 {/* Content */}
                 <div className="text-center">
-                    <h3 className="mb-2 text-2xl font-bold text-gray-900">
-                        Authentication Required
-                    </h3>
+                    <h3 className="mb-2 text-2xl font-bold text-gray-900">Authentication Required</h3>
                     <p className="mb-6 text-gray-600">
                         Please log in or create an account to {actionText}
-                        {productName && (
-                            <span className="block mt-2 font-medium text-gray-800">
-                                "{productName}"
-                            </span>
-                        )}
+                        {productName && <span className="mt-2 block font-medium text-gray-800">"{productName}"</span>}
                     </p>
 
                     {/* Action Buttons */}
@@ -100,9 +90,7 @@ export default function AuthRequiredModal({ isOpen, onClose, action, productName
 
                 {/* Benefits Section */}
                 <div className="mt-6 rounded-lg bg-gray-50 p-4">
-                    <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-700">
-                        Why Create an Account?
-                    </p>
+                    <p className="mb-2 text-xs font-semibold tracking-wide text-gray-700 uppercase">Why Create an Account?</p>
                     <ul className="space-y-1 text-sm text-gray-600">
                         <li className="flex items-start">
                             <span className="mr-2 text-primary">✓</span>

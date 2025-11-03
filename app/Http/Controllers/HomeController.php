@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
-use App\Models\ProductCategory;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -27,7 +26,7 @@ class HomeController extends Controller
                     'id' => $product->id,
                     'name' => $product->name,
                     'price' => (float) $product->price,
-                    'image' => $product->primary_image ? '/images/' . $product->primary_image : '/placeholder.jpg',
+                    'image' => $product->primary_image ? '/images/'.$product->primary_image : '/placeholder.jpg',
                     'artisan' => $product->seller->name ?? 'Unknown Artisan',
                     'artisan_image' => $product->seller->avatar_url,
                     'rating' => $product->average_rating ?? 4.5,
@@ -94,7 +93,7 @@ class HomeController extends Controller
 
         // Here you would typically send an email or store the message
         // For now, we'll just return a success response
-        
+
         // TODO: Implement email functionality
         // Mail::to(config('app.contact_email'))->send(new ContactMessage($request->all()));
 

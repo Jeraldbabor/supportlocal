@@ -297,7 +297,7 @@ export default function Show({ product, relatedProducts }: ProductShowProps) {
                                         className={`flex flex-1 transform items-center justify-center gap-2 rounded-lg px-6 py-4 text-lg font-semibold transition-all duration-200 ${
                                             product.stock_status === 'out_of_stock' || isLoading
                                                 ? 'cursor-not-allowed bg-gray-100 text-gray-400'
-                                                : 'border-2 border-amber-300 bg-white text-amber-700 shadow-md hover:-translate-y-0.5 hover:bg-gradient-to-r hover:from-amber-50 hover:to-orange-50 hover:border-amber-400 hover:shadow-lg focus:ring-2 focus:ring-amber-200 active:transform-none'
+                                                : 'border-2 border-amber-300 bg-white text-amber-700 shadow-md hover:-translate-y-0.5 hover:border-amber-400 hover:bg-gradient-to-r hover:from-amber-50 hover:to-orange-50 hover:shadow-lg focus:ring-2 focus:ring-amber-200 active:transform-none'
                                         }`}
                                     >
                                         <ShoppingCart className="h-5 w-5" />

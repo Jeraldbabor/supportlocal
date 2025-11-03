@@ -1,5 +1,5 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
 import { Product } from '@/types';
+import React, { createContext, useContext, useEffect, useState } from 'react';
 
 export interface CartItem {
     id: number;
@@ -48,11 +48,11 @@ export function CartProvider({ children, isAuthenticated: authProp }: CartProvid
     useEffect(() => {
         const wasAuthenticated = isAuthenticated;
         const nowAuthenticated = authProp || false;
-        
+
         console.log('[CartContext] Auth state change:', { wasAuthenticated, nowAuthenticated, hasTransferredCart });
-        
+
         setIsAuthenticated(nowAuthenticated);
-        
+
         // If user just logged in, transfer guest cart and clear profile dismissal
         if (!wasAuthenticated && nowAuthenticated && !hasTransferredCart) {
             console.log('[CartContext] User just logged in, initiating cart transfer...');
@@ -73,7 +73,7 @@ export function CartProvider({ children, isAuthenticated: authProp }: CartProvid
     // Transfer guest cart to backend when user logs in
     const transferGuestCartToBackend = async () => {
         const guestCart = localStorage.getItem('guest_cart');
-        
+
         if (!guestCart) {
             console.log('[CartContext] No guest cart to transfer');
             setHasTransferredCart(true);
@@ -82,7 +82,7 @@ export function CartProvider({ children, isAuthenticated: authProp }: CartProvid
 
         try {
             const cartItems = JSON.parse(guestCart);
-            
+
             if (cartItems.length === 0) {
                 console.log('[CartContext] Guest cart is empty');
                 localStorage.removeItem('guest_cart');
@@ -102,12 +102,12 @@ export function CartProvider({ children, isAuthenticated: authProp }: CartProvid
             });
 
             const result = await response.json();
-            
+
             if (response.ok) {
                 console.log('[CartContext] Cart transfer successful!');
                 localStorage.removeItem('guest_cart');
                 setHasTransferredCart(true);
-                
+
                 // Reload page to show transferred cart
                 window.location.reload();
             } else {
@@ -133,7 +133,7 @@ export function CartProvider({ children, isAuthenticated: authProp }: CartProvid
     const loadAuthenticatedCart = async () => {
         try {
             const response = await fetch('/api/buyer/cart', {
-                headers: { 'Accept': 'application/json' },
+                headers: { Accept: 'application/json' },
             });
 
             if (response.ok) {
@@ -171,8 +171,8 @@ export function CartProvider({ children, isAuthenticated: authProp }: CartProvid
     };
 
     // Update cart badge count
-    const updateCartBadge = (cartItems: CartItem[] | any[]) => {
-        const count = cartItems.reduce((sum: number, item: any) => sum + item.quantity, 0);
+    const updateCartBadge = (cartItems: CartItem[]) => {
+        const count = cartItems.reduce((sum: number, item: CartItem) => sum + item.quantity, 0);
         localStorage.setItem('cart_item_count', count.toString());
         window.dispatchEvent(new CustomEvent('cart-updated', { detail: { count } }));
     };
@@ -226,13 +226,8 @@ export function CartProvider({ children, isAuthenticated: authProp }: CartProvid
         let updatedCart: CartItem[];
 
         if (existingItem) {
-            const newQuantity = Math.min(
-                existingItem.quantity + quantity,
-                product.quantity || 999
-            );
-            updatedCart = items.map((item) =>
-                item.product_id === product.id ? { ...item, quantity: newQuantity } : item
-            );
+            const newQuantity = Math.min(existingItem.quantity + quantity, product.quantity || 999);
+            updatedCart = items.map((item) => (item.product_id === product.id ? { ...item, quantity: newQuantity } : item));
         } else {
             const newItem: CartItem = {
                 id: Date.now(),
@@ -330,9 +325,7 @@ export function CartProvider({ children, isAuthenticated: authProp }: CartProvid
     // Update quantity for guest users
     const updateQuantityGuest = (productId: number, quantity: number) => {
         const updatedCart = items.map((item) =>
-            item.product_id === productId
-                ? { ...item, quantity: Math.min(quantity, item.max_quantity) }
-                : item
+            item.product_id === productId ? { ...item, quantity: Math.min(quantity, item.max_quantity) } : item,
         );
         setItems(updatedCart);
         saveGuestCart(updatedCart);

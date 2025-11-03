@@ -1,28 +1,28 @@
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem, type SharedData } from '@/types';
 import { Head, Link, usePage } from '@inertiajs/react';
-import { 
-    AlertTriangle, 
-    BarChart3, 
-    Calendar, 
-    CheckCircle, 
-    Package, 
-    Settings, 
-    ShoppingBag, 
-    Star, 
-    Target, 
-    TrendingUp, 
-    User, 
-    Users,
+import {
+    Activity,
+    AlertTriangle,
+    ArrowDownRight,
+    ArrowUpRight,
+    BarChart3,
+    Calendar,
+    CheckCircle,
     DollarSign,
     Eye,
-    ArrowUpRight,
-    ArrowDownRight,
+    Package,
     RefreshCw,
+    Settings,
+    ShoppingBag,
     ShoppingCart,
-    Activity
+    Star,
+    Target,
+    TrendingUp,
+    User,
+    Users,
 } from 'lucide-react';
-import { useMemo, useState, useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -167,46 +167,55 @@ export default function SellerDashboard() {
     };
 
     // Enhanced stats with default values
-    const products = useMemo(() => ({
-        total: 0,
-        active: 0,
-        draft: 0,
-        low_stock: 0,
-        out_of_stock: 0,
-        total_views: 0,
-        total_orders: 0,
-        average_rating: 0,
-        created_this_month: 0,
-        created_this_week: 0,
-        trending: {},
-        best_sellers: {},
-        ...productStats,
-    }), [productStats]);
+    const products = useMemo(
+        () => ({
+            total: 0,
+            active: 0,
+            draft: 0,
+            low_stock: 0,
+            out_of_stock: 0,
+            total_views: 0,
+            total_orders: 0,
+            average_rating: 0,
+            created_this_month: 0,
+            created_this_week: 0,
+            trending: {},
+            best_sellers: {},
+            ...productStats,
+        }),
+        [productStats],
+    );
 
-    const orders = useMemo(() => ({
-        total: 0,
-        pending: 0,
-        confirmed: 0,
-        completed: 0,
-        cancelled: 0,
-        this_month: 0,
-        this_week: 0,
-        today: 0,
-        average_items_per_order: 0,
-        ...orderStats,
-    }), [orderStats]);
+    const orders = useMemo(
+        () => ({
+            total: 0,
+            pending: 0,
+            confirmed: 0,
+            completed: 0,
+            cancelled: 0,
+            this_month: 0,
+            this_week: 0,
+            today: 0,
+            average_items_per_order: 0,
+            ...orderStats,
+        }),
+        [orderStats],
+    );
 
-    const revenue = useMemo(() => ({
-        total: 0,
-        this_month: 0,
-        this_week: 0,
-        today: 0,
-        last_month: 0,
-        pending_amount: 0,
-        average_order_value: 0,
-        month_growth_percentage: 0,
-        ...revenueStats,
-    }), [revenueStats]);
+    const revenue = useMemo(
+        () => ({
+            total: 0,
+            this_month: 0,
+            this_week: 0,
+            today: 0,
+            last_month: 0,
+            pending_amount: 0,
+            average_order_value: 0,
+            month_growth_percentage: 0,
+            ...revenueStats,
+        }),
+        [revenueStats],
+    );
 
     const customers = {
         total_unique: 0,
@@ -253,18 +262,15 @@ export default function SellerDashboard() {
     }, []);
 
     // Memoized performance calculations
-    const performanceMetrics = useMemo(() => ({
-        conversionRate: products.total_views > 0 
-            ? ((products.total_orders / products.total_views) * 100).toFixed(1)
-            : 'N/A',
-        successRate: orders.total > 0 
-            ? ((orders.completed / orders.total) * 100).toFixed(1)
-            : 'N/A',
-        averageRating: products.average_rating > 0 
-            ? products.average_rating.toFixed(1) 
-            : 'N/A',
-        averageItemsPerOrder: orders.average_items_per_order.toFixed(1),
-    }), [products, orders]);
+    const performanceMetrics = useMemo(
+        () => ({
+            conversionRate: products.total_views > 0 ? ((products.total_orders / products.total_views) * 100).toFixed(1) : 'N/A',
+            successRate: orders.total > 0 ? ((orders.completed / orders.total) * 100).toFixed(1) : 'N/A',
+            averageRating: products.average_rating > 0 ? products.average_rating.toFixed(1) : 'N/A',
+            averageItemsPerOrder: orders.average_items_per_order.toFixed(1),
+        }),
+        [products, orders],
+    );
 
     // Memoized refresh handler
     const handleRefresh = useCallback(() => {
@@ -291,17 +297,17 @@ export default function SellerDashboard() {
 
     // Auto-refresh indicator
     const [lastUpdated, setLastUpdated] = useState(new Date());
-    
+
     useEffect(() => {
         setLastUpdated(new Date());
     }, []);
 
     // Format last updated time
     const formatLastUpdated = useCallback((date: Date) => {
-        return date.toLocaleTimeString('en-US', { 
-            hour: '2-digit', 
+        return date.toLocaleTimeString('en-US', {
+            hour: '2-digit',
             minute: '2-digit',
-            hour12: true 
+            hour12: true,
         });
     }, []);
 
@@ -309,21 +315,24 @@ export default function SellerDashboard() {
     const orderStatusData = useMemo(() => {
         const total = orders.total;
         if (total === 0) return [];
-        
+
         return [
             { name: 'Completed', value: orders.completed, percentage: (orders.completed / total) * 100, color: 'bg-green-500' },
             { name: 'Pending', value: orders.pending, percentage: (orders.pending / total) * 100, color: 'bg-yellow-500' },
             { name: 'Confirmed', value: orders.confirmed, percentage: (orders.confirmed / total) * 100, color: 'bg-blue-500' },
             { name: 'Cancelled', value: orders.cancelled, percentage: (orders.cancelled / total) * 100, color: 'bg-red-500' },
-        ].filter(item => item.value > 0);
+        ].filter((item) => item.value > 0);
     }, [orders]);
 
-    const revenueData = useMemo(() => [
-        { period: 'Today', amount: revenue.today, color: 'bg-blue-500' },
-        { period: 'This Week', amount: revenue.this_week, color: 'bg-indigo-500' },
-        { period: 'This Month', amount: revenue.this_month, color: 'bg-purple-500' },
-        { period: 'Total', amount: revenue.total, color: 'bg-green-500' },
-    ], [revenue]);
+    const revenueData = useMemo(
+        () => [
+            { period: 'Today', amount: revenue.today, color: 'bg-blue-500' },
+            { period: 'This Week', amount: revenue.this_week, color: 'bg-indigo-500' },
+            { period: 'This Month', amount: revenue.this_month, color: 'bg-purple-500' },
+            { period: 'Total', amount: revenue.total, color: 'bg-green-500' },
+        ],
+        [revenue],
+    );
 
     const getPriorityColor = (priority: string) => {
         switch (priority) {
@@ -379,7 +388,7 @@ export default function SellerDashboard() {
                                 <p>Last updated</p>
                                 <p className="font-medium">{formatLastUpdated(lastUpdated)}</p>
                             </div>
-                            
+
                             {/* Refresh Button */}
                             <button
                                 onClick={handleRefresh}
@@ -541,9 +550,7 @@ export default function SellerDashboard() {
                             </span>
                         </div>
                         {products.created_this_week > 0 && (
-                            <div className="mt-2 text-xs text-gray-500 dark:text-gray-400">
-                                +{products.created_this_week} this week
-                            </div>
+                            <div className="mt-2 text-xs text-gray-500 dark:text-gray-400">+{products.created_this_week} this week</div>
                         )}
                     </div>
 
@@ -566,11 +573,7 @@ export default function SellerDashboard() {
                                 {orders.completed} Completed
                             </span>
                         </div>
-                        {orders.today > 0 && (
-                            <div className="mt-2 text-xs text-gray-500 dark:text-gray-400">
-                                +{orders.today} today
-                            </div>
-                        )}
+                        {orders.today > 0 && <div className="mt-2 text-xs text-gray-500 dark:text-gray-400">+{orders.today} today</div>}
                     </div>
 
                     {/* Revenue Card */}
@@ -580,7 +583,10 @@ export default function SellerDashboard() {
                                 <DollarSign className="h-6 w-6 text-green-600 dark:text-green-400" />
                             </div>
                             <div className="text-right">
-                                <p className="text-2xl font-bold text-gray-900 dark:text-gray-100" title={`Total revenue: ${formatCurrency(revenue.total)}`}>
+                                <p
+                                    className="text-2xl font-bold text-gray-900 dark:text-gray-100"
+                                    title={`Total revenue: ${formatCurrency(revenue.total)}`}
+                                >
                                     {formatCurrency(revenue.total)}
                                 </p>
                                 <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Revenue</p>
@@ -591,14 +597,15 @@ export default function SellerDashboard() {
                                 {formatCurrency(revenue.this_month)} MTD
                             </span>
                             {revenue.month_growth_percentage !== 0 && (
-                                <div className={`flex items-center gap-1 ${getGrowthColor(revenue.month_growth_percentage)}`} title="Month-over-month growth">
+                                <div
+                                    className={`flex items-center gap-1 ${getGrowthColor(revenue.month_growth_percentage)}`}
+                                    title="Month-over-month growth"
+                                >
                                     {(() => {
                                         const GrowthIcon = getGrowthIcon(revenue.month_growth_percentage);
                                         return <GrowthIcon className="h-4 w-4" />;
                                     })()}
-                                    <span className="text-xs font-medium">
-                                        {formatPercentage(revenue.month_growth_percentage)}
-                                    </span>
+                                    <span className="text-xs font-medium">{formatPercentage(revenue.month_growth_percentage)}</span>
                                 </div>
                             )}
                         </div>
@@ -629,9 +636,7 @@ export default function SellerDashboard() {
                             </span>
                         </div>
                         {customers.new_this_month > 0 && (
-                            <div className="mt-2 text-xs text-gray-500 dark:text-gray-400">
-                                +{customers.new_this_month} this month
-                            </div>
+                            <div className="mt-2 text-xs text-gray-500 dark:text-gray-400">+{customers.new_this_month} this month</div>
                         )}
                     </div>
                 </div>
@@ -649,18 +654,14 @@ export default function SellerDashboard() {
                                 <span className="text-sm text-gray-600 dark:text-gray-300">Total Views</span>
                                 <div className="flex items-center gap-2">
                                     <Eye className="h-4 w-4 text-blue-500" />
-                                    <span className="font-semibold text-gray-900 dark:text-gray-100">
-                                        {products.total_views.toLocaleString()}
-                                    </span>
+                                    <span className="font-semibold text-gray-900 dark:text-gray-100">{products.total_views.toLocaleString()}</span>
                                 </div>
                             </div>
                             <div className="flex items-center justify-between">
                                 <span className="text-sm text-gray-600 dark:text-gray-300">Average Rating</span>
                                 <div className="flex items-center gap-2">
                                     <Star className="h-4 w-4 text-yellow-500" />
-                                    <span className="font-semibold text-gray-900 dark:text-gray-100">
-                                        {performanceMetrics.averageRating}
-                                    </span>
+                                    <span className="font-semibold text-gray-900 dark:text-gray-100">{performanceMetrics.averageRating}</span>
                                 </div>
                             </div>
                             <div className="flex items-center justify-between">
@@ -684,15 +685,11 @@ export default function SellerDashboard() {
                         <div className="space-y-4">
                             <div className="flex items-center justify-between">
                                 <span className="text-sm text-gray-600 dark:text-gray-300">This Week</span>
-                                <span className="font-semibold text-blue-600 dark:text-blue-400">
-                                    {orders.this_week}
-                                </span>
+                                <span className="font-semibold text-blue-600 dark:text-blue-400">{orders.this_week}</span>
                             </div>
                             <div className="flex items-center justify-between">
                                 <span className="text-sm text-gray-600 dark:text-gray-300">Avg. Items/Order</span>
-                                <span className="font-semibold text-gray-900 dark:text-gray-100">
-                                    {performanceMetrics.averageItemsPerOrder}
-                                </span>
+                                <span className="font-semibold text-gray-900 dark:text-gray-100">{performanceMetrics.averageItemsPerOrder}</span>
                             </div>
                             <div className="flex items-center justify-between">
                                 <span className="text-sm text-gray-600 dark:text-gray-300">Success Rate</span>
@@ -712,15 +709,11 @@ export default function SellerDashboard() {
                         <div className="space-y-4">
                             <div className="flex items-center justify-between">
                                 <span className="text-sm text-gray-600 dark:text-gray-300">Avg. Order Value</span>
-                                <span className="font-semibold text-gray-900 dark:text-gray-100">
-                                    {formatCurrency(revenue.average_order_value)}
-                                </span>
+                                <span className="font-semibold text-gray-900 dark:text-gray-100">{formatCurrency(revenue.average_order_value)}</span>
                             </div>
                             <div className="flex items-center justify-between">
                                 <span className="text-sm text-gray-600 dark:text-gray-300">This Week</span>
-                                <span className="font-semibold text-blue-600 dark:text-blue-400">
-                                    {formatCurrency(revenue.this_week)}
-                                </span>
+                                <span className="font-semibold text-blue-600 dark:text-blue-400">{formatCurrency(revenue.this_week)}</span>
                             </div>
                             <div className="flex items-center justify-between">
                                 <span className="text-sm text-gray-600 dark:text-gray-300">Growth (MTD)</span>
@@ -729,9 +722,7 @@ export default function SellerDashboard() {
                                         const GrowthIcon = getGrowthIcon(revenue.month_growth_percentage);
                                         return <GrowthIcon className="h-4 w-4" />;
                                     })()}
-                                    <span className="font-semibold">
-                                        {formatPercentage(revenue.month_growth_percentage)}
-                                    </span>
+                                    <span className="font-semibold">{formatPercentage(revenue.month_growth_percentage)}</span>
                                 </div>
                             </div>
                         </div>
@@ -751,9 +742,7 @@ export default function SellerDashboard() {
                                 {orderStatusData.map((item) => (
                                     <div key={item.name} className="space-y-2">
                                         <div className="flex items-center justify-between">
-                                            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                                {item.name}
-                                            </span>
+                                            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{item.name}</span>
                                             <span className="text-sm text-gray-600 dark:text-gray-400">
                                                 {item.value} ({item.percentage.toFixed(1)}%)
                                             </span>
@@ -784,14 +773,12 @@ export default function SellerDashboard() {
                         </h3>
                         <div className="space-y-4">
                             {revenueData.map((item) => {
-                                const maxAmount = Math.max(...revenueData.map(d => d.amount));
+                                const maxAmount = Math.max(...revenueData.map((d) => d.amount));
                                 const percentage = maxAmount > 0 ? (item.amount / maxAmount) * 100 : 0;
                                 return (
                                     <div key={item.period} className="space-y-2">
                                         <div className="flex items-center justify-between">
-                                            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                                {item.period}
-                                            </span>
+                                            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{item.period}</span>
                                             <span className="text-sm font-semibold text-gray-900 dark:text-gray-100">
                                                 {formatCurrency(item.amount)}
                                             </span>
@@ -971,9 +958,7 @@ export default function SellerDashboard() {
                                 <div className="space-y-2">
                                     {products.out_of_stock > 0 && (
                                         <div className="flex items-center justify-between rounded-lg bg-red-100 p-3 dark:bg-red-900/30">
-                                            <span className="text-sm font-medium text-red-800 dark:text-red-300">
-                                                Out of Stock Products
-                                            </span>
+                                            <span className="text-sm font-medium text-red-800 dark:text-red-300">Out of Stock Products</span>
                                             <span className="rounded-full bg-red-200 px-2 py-1 text-xs font-bold text-red-800 dark:bg-red-800 dark:text-red-200">
                                                 {products.out_of_stock}
                                             </span>
@@ -981,9 +966,7 @@ export default function SellerDashboard() {
                                     )}
                                     {products.low_stock > 0 && (
                                         <div className="flex items-center justify-between rounded-lg bg-yellow-100 p-3 dark:bg-yellow-900/30">
-                                            <span className="text-sm font-medium text-yellow-800 dark:text-yellow-300">
-                                                Low Stock Products
-                                            </span>
+                                            <span className="text-sm font-medium text-yellow-800 dark:text-yellow-300">Low Stock Products</span>
                                             <span className="rounded-full bg-yellow-200 px-2 py-1 text-xs font-bold text-yellow-800 dark:bg-yellow-800 dark:text-yellow-200">
                                                 {products.low_stock}
                                             </span>

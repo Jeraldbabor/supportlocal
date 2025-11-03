@@ -1,6 +1,6 @@
+import { Head, router } from '@inertiajs/react';
 import { Clock, Mail, MapPin, Phone, Send } from 'lucide-react';
 import React, { useState } from 'react';
-import { Head, router, usePage } from '@inertiajs/react';
 import BuyerLayout from '../../layouts/BuyerLayout';
 
 interface ContactProps {
@@ -11,7 +11,6 @@ interface ContactProps {
 }
 
 export default function Contact({ flash }: ContactProps = {}) {
-    const { props } = usePage();
     const [formData, setFormData] = useState({
         name: '',
         email: '',
@@ -40,20 +39,20 @@ export default function Contact({ flash }: ContactProps = {}) {
                 setFormData({ name: '', email: '', subject: '', message: '' });
                 setIsSubmitting(false);
             },
-            onError: (errors: any) => {
+            onError: (errors: Record<string, string>) => {
                 setErrors(errors);
                 setIsSubmitting(false);
             },
             onFinish: () => {
                 setIsSubmitting(false);
-            }
+            },
         });
     };
 
     return (
         <BuyerLayout title="Contact Us">
             <Head title="Contact Us" />
-            
+
             <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
                 <div className="grid grid-cols-1 gap-12 lg:grid-cols-2">
                     {/* Contact Information */}
@@ -125,15 +124,15 @@ export default function Contact({ flash }: ContactProps = {}) {
                                 <div>
                                     <h4 className="mb-2 font-semibold text-gray-900">How can I track my order?</h4>
                                     <p className="text-gray-600">
-                                        You can track your orders by visiting the "My Orders" page in your dashboard. You'll receive email notifications
-                                        for any status updates on your purchases.
+                                        You can track your orders by visiting the "My Orders" page in your dashboard. You'll receive email
+                                        notifications for any status updates on your purchases.
                                     </p>
                                 </div>
                                 <div>
                                     <h4 className="mb-2 font-semibold text-gray-900">What is your return policy?</h4>
                                     <p className="text-gray-600">
-                                        We offer a 30-day return policy for most items. Since our products are handmade, please contact the seller directly
-                                        if you have any concerns about your purchase.
+                                        We offer a 30-day return policy for most items. Since our products are handmade, please contact the seller
+                                        directly if you have any concerns about your purchase.
                                     </p>
                                 </div>
                                 <div>

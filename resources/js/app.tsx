@@ -2,17 +2,17 @@ import '../css/app.css';
 
 import { createInertiaApp } from '@inertiajs/react';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
-import { createRoot } from 'react-dom/client';
 import React from 'react';
+import { createRoot } from 'react-dom/client';
 import { CartProvider } from './contexts/CartContext';
 import { initializeTheme } from './hooks/use-appearance';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
 // Wrapper component that provides CartContext to all pages
-function AppShell({ Component, props }: { Component: React.ComponentType<any>; props: any }) {
-    const isAuthenticated = !!(props?.auth?.user);
-    
+function AppShell({ Component, props }: { Component: React.ComponentType<Record<string, unknown>>; props: Record<string, unknown> }) {
+    const isAuthenticated = !!props?.auth?.['user' as keyof typeof props.auth];
+
     return (
         <CartProvider isAuthenticated={isAuthenticated}>
             <Component {...props} />
@@ -29,10 +29,10 @@ createInertiaApp({
         // Wrap App with our shell that includes CartProvider
         root.render(
             <App {...props}>
-                {({ Component, props: pageProps }: { Component: React.ComponentType<any>; props: any }) => (
+                {({ Component, props: pageProps }: { Component: React.ComponentType<Record<string, unknown>>; props: Record<string, unknown> }) => (
                     <AppShell Component={Component} props={pageProps} />
                 )}
-            </App>
+            </App>,
         );
     },
     progress: {

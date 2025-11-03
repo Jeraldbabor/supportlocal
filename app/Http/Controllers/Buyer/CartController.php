@@ -18,7 +18,7 @@ class CartController extends Controller
     public function index()
     {
         $user = Auth::user();
-        
+
         // Find the user's cart (order with status='cart')
         $cart = Order::with(['items.product.seller'])
             ->where('user_id', $user->id)
@@ -26,7 +26,7 @@ class CartController extends Controller
             ->first();
 
         $cartItems = [];
-        
+
         if ($cart) {
             $cartItems = $cart->items->map(function ($item) {
                 return [
@@ -77,7 +77,7 @@ class CartController extends Controller
                 'status' => 'cart',
             ],
             [
-                'order_number' => 'CART-' . $user->id . '-' . time(),
+                'order_number' => 'CART-'.$user->id.'-'.time(),
                 'total_amount' => 0,
             ]
         );
@@ -128,7 +128,7 @@ class CartController extends Controller
         ]);
 
         $user = Auth::user();
-        
+
         // Find the cart item
         $cartItem = OrderItem::whereHas('order', function ($query) use ($user) {
             $query->where('user_id', $user->id)->where('status', 'cart');
@@ -163,7 +163,7 @@ class CartController extends Controller
         ]);
 
         $user = Auth::user();
-        
+
         // Find and delete the cart item
         $cartItem = OrderItem::whereHas('order', function ($query) use ($user) {
             $query->where('user_id', $user->id)->where('status', 'cart');
@@ -185,7 +185,7 @@ class CartController extends Controller
     public function clearCart()
     {
         $user = Auth::user();
-        
+
         $cart = Order::where('user_id', $user->id)
             ->where('status', 'cart')
             ->first();
@@ -205,7 +205,7 @@ class CartController extends Controller
     public function getCartCount()
     {
         $user = Auth::user();
-        
+
         $cart = Order::where('user_id', $user->id)
             ->where('status', 'cart')
             ->first();
@@ -221,14 +221,14 @@ class CartController extends Controller
     public function getCartJson()
     {
         $user = Auth::user();
-        
+
         $cart = Order::with(['items.product.seller'])
             ->where('user_id', $user->id)
             ->where('status', 'cart')
             ->first();
 
         $cartItems = [];
-        
+
         if ($cart) {
             $cartItems = $cart->items->map(function ($item) {
                 return [
@@ -289,7 +289,7 @@ class CartController extends Controller
                 'status' => 'cart',
             ],
             [
-                'order_number' => 'CART-' . $user->id . '-' . time(),
+                'order_number' => 'CART-'.$user->id.'-'.time(),
                 'total_amount' => 0,
             ]
         );
@@ -348,13 +348,13 @@ class CartController extends Controller
         ]);
 
         $user = Auth::user();
-        
+
         // Find the cart item by product_id
         $cartItem = OrderItem::whereHas('order', function ($query) use ($user) {
             $query->where('user_id', $user->id)->where('status', 'cart');
         })->where('product_id', $validated['product_id'])->first();
 
-        if (!$cartItem) {
+        if (! $cartItem) {
             return response()->json([
                 'success' => false,
                 'message' => 'Item not found in cart',
@@ -398,13 +398,13 @@ class CartController extends Controller
         ]);
 
         $user = Auth::user();
-        
+
         // Find and delete the cart item by product_id
         $cartItem = OrderItem::whereHas('order', function ($query) use ($user) {
             $query->where('user_id', $user->id)->where('status', 'cart');
         })->where('product_id', $validated['product_id'])->first();
 
-        if (!$cartItem) {
+        if (! $cartItem) {
             return response()->json([
                 'success' => false,
                 'message' => 'Item not found in cart',
@@ -432,7 +432,7 @@ class CartController extends Controller
     public function clearCartJson()
     {
         $user = Auth::user();
-        
+
         $cart = Order::where('user_id', $user->id)
             ->where('status', 'cart')
             ->first();

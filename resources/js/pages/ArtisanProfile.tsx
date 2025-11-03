@@ -1,11 +1,11 @@
-import { Link, router } from '@inertiajs/react';
-import { ArrowLeft, Star, MapPin, Globe, Award, ShoppingCart, Package, Eye, Mail, Phone, Calendar, User } from 'lucide-react';
-import React, { useState } from 'react';
-import MainLayout from '../layouts/MainLayout';
-import Toast from '../components/Toast';
-import AddToCartModal from '../components/AddToCartModal';
-import { useCart } from '../contexts/CartContext';
 import { Product as GlobalProduct } from '@/types';
+import { Link, router } from '@inertiajs/react';
+import { ArrowLeft, Award, Calendar, Eye, Globe, Mail, MapPin, Package, Phone, ShoppingCart, Star, User } from 'lucide-react';
+import React, { useState } from 'react';
+import AddToCartModal from '../components/AddToCartModal';
+import Toast from '../components/Toast';
+import { useCart } from '../contexts/CartContext';
+import MainLayout from '../layouts/MainLayout';
 
 interface Artisan {
     id: number;
@@ -20,7 +20,7 @@ interface Artisan {
     rating: number;
     years_of_experience?: number;
     website?: string;
-    social_links?: any;
+    social_links?: Record<string, string>;
     products_count: number;
     total_sales?: number;
     created_at?: string;
@@ -84,7 +84,7 @@ export default function ArtisanProfile({ artisan, products, filters }: ArtisanPr
     const handleAddToCart = (e: React.MouseEvent, product: Product) => {
         e.stopPropagation();
         if (product.stock_status === 'out_of_stock') return;
-        
+
         // Open modal for quantity selection
         setModalProduct(product);
         setModalMode('cart');
@@ -94,7 +94,7 @@ export default function ArtisanProfile({ artisan, products, filters }: ArtisanPr
     const handleBuyNow = (e: React.MouseEvent, product: Product) => {
         e.stopPropagation();
         if (product.stock_status === 'out_of_stock') return;
-        
+
         // Open modal for quantity selection
         setModalProduct(product);
         setModalMode('buy');
@@ -103,9 +103,9 @@ export default function ArtisanProfile({ artisan, products, filters }: ArtisanPr
 
     const handleModalAddToCart = async (quantity: number) => {
         if (!modalProduct) return;
-        
+
         console.log('[ArtisanProfile] Adding to cart:', { product: modalProduct.name, quantity });
-        
+
         const productWithSeller: GlobalProduct = {
             id: modalProduct.id,
             name: modalProduct.name,
@@ -114,10 +114,10 @@ export default function ArtisanProfile({ artisan, products, filters }: ArtisanPr
             primary_image: modalProduct.primary_image,
             seller: {
                 id: artisan.id,
-                name: artisan.name
-            }
+                name: artisan.name,
+            },
         };
-        
+
         try {
             await addToCart(productWithSeller, quantity);
             console.log('[ArtisanProfile] Successfully added to cart');
@@ -141,9 +141,9 @@ export default function ArtisanProfile({ artisan, products, filters }: ArtisanPr
 
     const handleModalBuyNow = async (quantity: number) => {
         if (!modalProduct) return;
-        
+
         console.log('[ArtisanProfile] Buy Now clicked:', { product: modalProduct.name, quantity });
-        
+
         const productWithSeller: GlobalProduct = {
             id: modalProduct.id,
             name: modalProduct.name,
@@ -152,10 +152,10 @@ export default function ArtisanProfile({ artisan, products, filters }: ArtisanPr
             primary_image: modalProduct.primary_image,
             seller: {
                 id: artisan.id,
-                name: artisan.name
-            }
+                name: artisan.name,
+            },
         };
-        
+
         try {
             await addToCart(productWithSeller, quantity);
             setIsModalOpen(false);
@@ -203,7 +203,7 @@ export default function ArtisanProfile({ artisan, products, filters }: ArtisanPr
                                     <div className="flex items-center space-x-3">
                                         <h1 className="text-2xl font-bold text-gray-900">{artisan.business_name || artisan.name}</h1>
                                         {artisan.is_verified && (
-                                            <span className="inline-flex items-center rounded-full bg-gradient-to-r from-amber-100 to-orange-100 border border-amber-300 px-3 py-1 text-sm font-medium text-amber-900 shadow-sm">
+                                            <span className="inline-flex items-center rounded-full border border-amber-300 bg-gradient-to-r from-amber-100 to-orange-100 px-3 py-1 text-sm font-medium text-amber-900 shadow-sm">
                                                 Verified Artisan
                                             </span>
                                         )}
@@ -268,9 +268,9 @@ export default function ArtisanProfile({ artisan, products, filters }: ArtisanPr
                                     </div>
                                 )}
                                 {artisan.website && (
-                                    <a 
-                                        href={artisan.website} 
-                                        target="_blank" 
+                                    <a
+                                        href={artisan.website}
+                                        target="_blank"
                                         rel="noopener noreferrer"
                                         className="flex items-center text-primary hover:text-primary/80"
                                     >
@@ -417,7 +417,7 @@ export default function ArtisanProfile({ artisan, products, filters }: ArtisanPr
                                                         className={`flex transform items-center justify-center rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200 ${
                                                             product.stock_status === 'out_of_stock' || isLoading
                                                                 ? 'cursor-not-allowed bg-gray-100 text-gray-400'
-                                                                : 'border-2 border-amber-300 bg-white text-amber-700 shadow-sm hover:-translate-y-0.5 hover:bg-gradient-to-r hover:from-amber-50 hover:to-orange-50 hover:border-amber-400 hover:shadow-md focus:ring-2 focus:ring-amber-200 active:transform-none'
+                                                                : 'border-2 border-amber-300 bg-white text-amber-700 shadow-sm hover:-translate-y-0.5 hover:border-amber-400 hover:bg-gradient-to-r hover:from-amber-50 hover:to-orange-50 hover:shadow-md focus:ring-2 focus:ring-amber-200 active:transform-none'
                                                         }`}
                                                         title="Buy Now"
                                                     >
@@ -464,7 +464,7 @@ export default function ArtisanProfile({ artisan, products, filters }: ArtisanPr
 
             {/* Toast Notification */}
             {showToast && <Toast message={toastMessage} type="success" onClose={() => setShowToast(false)} />}
-            
+
             {/* Add to Cart Modal */}
             <AddToCartModal
                 isOpen={isModalOpen}

@@ -1,11 +1,11 @@
+import { Product as GlobalProduct } from '@/types';
 import { Head, Link, router } from '@inertiajs/react';
 import { Eye, Filter, Grid, Info, List, Package, Search, ShoppingCart, Star, User } from 'lucide-react';
 import React, { useState } from 'react';
-import Toast from '../../../components/Toast';
 import AddToCartModal from '../../../components/AddToCartModal';
+import Toast from '../../../components/Toast';
 import { useCart } from '../../../contexts/CartContext';
 import BuyerLayout from '../../../layouts/BuyerLayout';
-import { Product as GlobalProduct } from '@/types';
 
 interface Product {
     id: number;
@@ -88,7 +88,7 @@ export default function Index({ products, categories, filters }: ProductsIndexPr
     const handleAddToCart = (e: React.MouseEvent, product: Product) => {
         e.stopPropagation();
         if (product.stock_status === 'out_of_stock') return;
-        
+
         // Open modal for quantity selection
         setModalProduct(product);
         setModalMode('cart');
@@ -98,7 +98,7 @@ export default function Index({ products, categories, filters }: ProductsIndexPr
     const handleBuyNow = (e: React.MouseEvent, product: Product) => {
         e.stopPropagation();
         if (product.stock_status === 'out_of_stock') return;
-        
+
         // Open modal for quantity selection
         setModalProduct(product);
         setModalMode('buy');
@@ -107,18 +107,18 @@ export default function Index({ products, categories, filters }: ProductsIndexPr
 
     const handleModalAddToCart = async (quantity: number) => {
         if (!modalProduct) return;
-        
+
         console.log('[BuyerProducts] Adding to cart:', { product: modalProduct.name, quantity });
-        
+
         const cartProduct: GlobalProduct = {
             id: modalProduct.id,
             name: modalProduct.name,
             price: modalProduct.price,
             quantity: modalProduct.quantity,
             primary_image: modalProduct.primary_image,
-            seller: modalProduct.seller
+            seller: modalProduct.seller,
         };
-        
+
         try {
             await addToCart(cartProduct, quantity);
             console.log('[BuyerProducts] Successfully added to cart');
@@ -142,19 +142,19 @@ export default function Index({ products, categories, filters }: ProductsIndexPr
 
     const handleModalBuyNow = async (quantity: number) => {
         if (!modalProduct) return;
-        
+
         console.log('[BuyerProducts] Buy Now clicked:', { product: modalProduct.name, quantity });
-        
+
         setIsModalOpen(false);
-        
+
         // Redirect to checkout with buy_now parameter containing product info
         // This tells checkout to only process this specific item
         router.visit('/buyer/checkout', {
             data: {
                 buy_now: 'true',
                 product_id: modalProduct.id,
-                quantity: quantity
-            }
+                quantity: quantity,
+            },
         });
     };
 
@@ -351,7 +351,7 @@ export default function Index({ products, categories, filters }: ProductsIndexPr
                                                     className={`flex transform items-center justify-center rounded-lg px-4 py-2.5 text-sm font-medium transition-all duration-200 ${
                                                         product.stock_status === 'out_of_stock' || isLoading
                                                             ? 'cursor-not-allowed bg-gray-100 text-gray-400'
-                                                            : 'border-2 border-amber-300 bg-white text-amber-700 shadow-sm hover:-translate-y-0.5 hover:bg-gradient-to-r hover:from-amber-50 hover:to-orange-50 hover:border-amber-400 hover:shadow-md focus:ring-2 focus:ring-amber-200 active:transform-none'
+                                                            : 'border-2 border-amber-300 bg-white text-amber-700 shadow-sm hover:-translate-y-0.5 hover:border-amber-400 hover:bg-gradient-to-r hover:from-amber-50 hover:to-orange-50 hover:shadow-md focus:ring-2 focus:ring-amber-200 active:transform-none'
                                                     }`}
                                                     title="Buy Now"
                                                 >
@@ -395,7 +395,7 @@ export default function Index({ products, categories, filters }: ProductsIndexPr
 
             {/* Toast Notification */}
             {showToast && <Toast message={toastMessage} type="success" onClose={() => setShowToast(false)} />}
-            
+
             {/* Add to Cart Modal */}
             <AddToCartModal
                 isOpen={isModalOpen}

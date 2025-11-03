@@ -1,12 +1,12 @@
+import { Product as GlobalProduct } from '@/types';
 import { Head, Link, router, usePage } from '@inertiajs/react';
 import { Eye, Filter, Grid, Info, List, Package, Search, ShoppingCart, Star, User } from 'lucide-react';
 import React, { useState } from 'react';
-import Toast from '../components/Toast';
 import AddToCartModal from '../components/AddToCartModal';
 import AuthRequiredModal from '../components/AuthRequiredModal';
+import Toast from '../components/Toast';
 import { useCart } from '../contexts/CartContext';
 import MainLayout from '../layouts/MainLayout';
-import { Product as GlobalProduct } from '@/types';
 
 interface Product {
     id: number;
@@ -47,7 +47,7 @@ interface ProductsProps {
         current_page: number;
         last_page: number;
         total: number;
-        meta?: any;
+        meta?: Record<string, unknown>;
     };
     categories?: Category[];
     filters?: {
@@ -72,8 +72,8 @@ export default function Products({ products, categories = [], filters = {} }: Pr
     const [showAuthModal, setShowAuthModal] = useState(false);
     const [authModalAction, setAuthModalAction] = useState<'cart' | 'buy'>('cart');
     const [authModalProduct, setAuthModalProduct] = useState<string>('');
-    const { props } = usePage();
-    const isAuthenticated = !!(props as any)?.auth?.user;
+    const { props } = usePage<{ auth?: { user?: unknown } }>();
+    const isAuthenticated = !!props?.auth?.user;
 
     const productList = products?.data || [];
 
@@ -97,7 +97,7 @@ export default function Products({ products, categories = [], filters = {} }: Pr
     const handleAddToCart = (e: React.MouseEvent, product: Product) => {
         e.stopPropagation();
         if (product.stock_status === 'out_of_stock' || product.stock_quantity === 0) return;
-        
+
         // Redirect authenticated users to buyer products page
         if (isAuthenticated) {
             setToastMessage('⚠️ Please use the buyer cart from your dashboard.');
@@ -107,7 +107,7 @@ export default function Products({ products, categories = [], filters = {} }: Pr
             }, 1500);
             return;
         }
-        
+
         // Open modal for quantity selection for guests
         setModalProduct(product);
         setModalMode('cart');
@@ -117,7 +117,7 @@ export default function Products({ products, categories = [], filters = {} }: Pr
     const handleBuyNow = (e: React.MouseEvent, product: Product) => {
         e.stopPropagation();
         if (product.stock_status === 'out_of_stock' || product.stock_quantity === 0) return;
-        
+
         // Show auth modal for guests
         if (!isAuthenticated) {
             setAuthModalAction('buy');
@@ -125,7 +125,7 @@ export default function Products({ products, categories = [], filters = {} }: Pr
             setShowAuthModal(true);
             return;
         }
-        
+
         // Redirect authenticated users to buyer products page
         setToastMessage('⚠️ Please use the buyer cart from your dashboard.');
         setShowToast(true);
@@ -136,7 +136,7 @@ export default function Products({ products, categories = [], filters = {} }: Pr
 
     const handleModalAddToCart = (quantity: number) => {
         if (!modalProduct) return;
-        
+
         const cartProduct: GlobalProduct = {
             id: modalProduct.id,
             name: modalProduct.name,
@@ -145,10 +145,10 @@ export default function Products({ products, categories = [], filters = {} }: Pr
             primary_image: modalProduct.primary_image || modalProduct.image || '',
             seller: modalProduct.seller || {
                 id: 0,
-                name: modalProduct.artisan || 'Unknown Seller'
-            }
+                name: modalProduct.artisan || 'Unknown Seller',
+            },
         };
-        
+
         try {
             addToCart(cartProduct, quantity);
             // Close modal first
@@ -167,7 +167,7 @@ export default function Products({ products, categories = [], filters = {} }: Pr
 
     const handleModalBuyNow = (quantity: number) => {
         if (!modalProduct) return;
-        
+
         const cartProduct: GlobalProduct = {
             id: modalProduct.id,
             name: modalProduct.name,
@@ -176,10 +176,10 @@ export default function Products({ products, categories = [], filters = {} }: Pr
             primary_image: modalProduct.primary_image || modalProduct.image || '',
             seller: modalProduct.seller || {
                 id: 0,
-                name: modalProduct.artisan || 'Unknown Seller'
-            }
+                name: modalProduct.artisan || 'Unknown Seller',
+            },
         };
-        
+
         try {
             addToCart(cartProduct, quantity);
             // Small delay before redirect to ensure cart is updated
@@ -277,7 +277,7 @@ export default function Products({ products, categories = [], filters = {} }: Pr
                                 >
                                     {/* Product Image with Wishlist Button */}
                                     <div className="relative aspect-square overflow-hidden rounded-t-xl bg-gray-100">
-                                        {(product.primary_image || product.image) ? (
+                                        {product.primary_image || product.image ? (
                                             <img
                                                 src={product.primary_image ? `/storage/${product.primary_image}` : product.image}
                                                 alt={product.name}
@@ -301,7 +301,7 @@ export default function Products({ products, categories = [], filters = {} }: Pr
                                             />
                                         ) : (
                                             <div
-                                                className="flex h-full w-full items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200 cursor-pointer"
+                                                className="flex h-full w-full cursor-pointer items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200"
                                                 onClick={() => handleProductClick(product.id)}
                                             >
                                                 <Package className="h-16 w-16 text-gray-400" />
@@ -361,10 +361,10 @@ export default function Products({ products, categories = [], filters = {} }: Pr
                                             ) : (
                                                 <div className="flex items-center text-gray-600">
                                                     {product.artisan_image && (
-                                                        <img 
-                                                            src={product.artisan_image} 
+                                                        <img
+                                                            src={product.artisan_image}
                                                             alt={product.artisan}
-                                                            className="h-5 w-5 rounded-full object-cover mr-1.5"
+                                                            className="mr-1.5 h-5 w-5 rounded-full object-cover"
                                                         />
                                                     )}
                                                     <User className="mr-1.5 h-3.5 w-3.5" />
@@ -447,7 +447,7 @@ export default function Products({ products, categories = [], filters = {} }: Pr
                                                     className={`flex transform items-center justify-center rounded-lg px-4 py-2.5 text-sm font-medium transition-all duration-200 ${
                                                         isOutOfStock(product) || isLoading
                                                             ? 'cursor-not-allowed bg-gray-100 text-gray-400'
-                                                            : 'border-2 border-amber-300 bg-white text-amber-700 shadow-sm hover:-translate-y-0.5 hover:bg-gradient-to-r hover:from-amber-50 hover:to-orange-50 hover:border-amber-400 hover:shadow-md focus:ring-2 focus:ring-amber-200 active:transform-none'
+                                                            : 'border-2 border-amber-300 bg-white text-amber-700 shadow-sm hover:-translate-y-0.5 hover:border-amber-400 hover:bg-gradient-to-r hover:from-amber-50 hover:to-orange-50 hover:shadow-md focus:ring-2 focus:ring-amber-200 active:transform-none'
                                                     }`}
                                                     title="Buy Now"
                                                 >
@@ -491,7 +491,7 @@ export default function Products({ products, categories = [], filters = {} }: Pr
 
             {/* Toast Notification */}
             {showToast && <Toast message={toastMessage} type="success" onClose={() => setShowToast(false)} />}
-            
+
             {/* Add to Cart Modal */}
             <AddToCartModal
                 isOpen={isModalOpen}
@@ -500,7 +500,7 @@ export default function Products({ products, categories = [], filters = {} }: Pr
                 onAddToCart={handleModalAddToCart}
                 onBuyNow={modalMode === 'buy' ? handleModalBuyNow : undefined}
             />
-            
+
             {/* Auth Required Modal */}
             <AuthRequiredModal
                 isOpen={showAuthModal}

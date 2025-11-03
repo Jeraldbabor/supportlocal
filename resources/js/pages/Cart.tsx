@@ -1,21 +1,21 @@
 import { Link, router, usePage } from '@inertiajs/react';
 import { ArrowLeft, Minus, Plus, ShoppingBag, Trash2 } from 'lucide-react';
-import { useState, useEffect } from 'react';
-import MainLayout from '../layouts/MainLayout';
+import { useEffect } from 'react';
 import { useCart } from '../contexts/CartContext';
+import MainLayout from '../layouts/MainLayout';
 
 export default function Cart() {
-    const { items: cartItems, totalAmount, totalItems, updateQuantity, removeFromCart, clearCart } = useCart();
-    const { props } = usePage();
-    const isAuthenticated = !!(props as any)?.auth?.user;
-    
+    const { items: cartItems, totalAmount, updateQuantity, removeFromCart, clearCart } = useCart();
+    const { props } = usePage<{ auth?: { user?: unknown } }>();
+    const isAuthenticated = !!props?.auth?.user;
+
     // Redirect authenticated users to buyer cart
     useEffect(() => {
         if (isAuthenticated) {
             router.visit('/buyer/cart');
         }
     }, [isAuthenticated]);
-    
+
     // Calculate totals for guest cart
     const subtotal = totalAmount;
     const shipping = subtotal > 75 ? 0 : 8.99;
@@ -63,19 +63,19 @@ export default function Cart() {
                                 {cartItems.map((item) => (
                                     <div key={item.id} className="p-6">
                                         <div className="flex items-center space-x-4">
-                                            <div className="h-20 w-20 rounded-md bg-gray-100 overflow-hidden">
+                                            <div className="h-20 w-20 overflow-hidden rounded-md bg-gray-100">
                                                 {item.primary_image ? (
-                                                    <img 
+                                                    <img
                                                         src={`/storage/${item.primary_image}`}
-                                                        alt={item.name} 
-                                                        className="h-full w-full object-cover" 
+                                                        alt={item.name}
+                                                        className="h-full w-full object-cover"
                                                         onError={(e) => {
                                                             const target = e.target as HTMLImageElement;
                                                             target.src = '/placeholder.jpg';
                                                         }}
                                                     />
                                                 ) : (
-                                                    <div className="h-full w-full flex items-center justify-center bg-gray-200">
+                                                    <div className="flex h-full w-full items-center justify-center bg-gray-200">
                                                         <ShoppingBag className="h-8 w-8 text-gray-400" />
                                                     </div>
                                                 )}
@@ -118,9 +118,7 @@ export default function Cart() {
                                         </div>
                                         <div className="mt-4 flex items-center justify-between">
                                             <span className="text-sm text-gray-600">₱{item.price.toFixed(2)} each</span>
-                                            <span className="font-semibold text-gray-900">
-                                                Subtotal: ₱{(item.price * item.quantity).toFixed(2)}
-                                            </span>
+                                            <span className="font-semibold text-gray-900">Subtotal: ₱{(item.price * item.quantity).toFixed(2)}</span>
                                         </div>
                                     </div>
                                 ))}
@@ -132,10 +130,7 @@ export default function Cart() {
                                         <ArrowLeft className="mr-2 h-4 w-4" />
                                         Continue Shopping
                                     </Link>
-                                    <button 
-                                        onClick={clearCart}
-                                        className="text-red-600 hover:text-red-800 font-medium"
-                                    >
+                                    <button onClick={clearCart} className="font-medium text-red-600 hover:text-red-800">
                                         Clear Cart
                                     </button>
                                 </div>
@@ -172,14 +167,14 @@ export default function Cart() {
                             </div>
 
                             {shipping > 0 && (
-                                <div className="mt-4 rounded-md bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 p-3">
-                                    <p className="text-sm text-amber-900 font-medium">Add ₱{(75 - subtotal).toFixed(2)} more to get free shipping!</p>
+                                <div className="mt-4 rounded-md border border-amber-200 bg-gradient-to-r from-amber-50 to-orange-50 p-3">
+                                    <p className="text-sm font-medium text-amber-900">Add ₱{(75 - subtotal).toFixed(2)} more to get free shipping!</p>
                                 </div>
                             )}
 
-                            <Link 
+                            <Link
                                 href="/checkout"
-                                className="mt-6 flex w-full items-center justify-center rounded-lg bg-gradient-to-r from-amber-600 to-orange-600 px-6 py-3 font-semibold text-white shadow-lg transition-all duration-200 hover:from-amber-700 hover:to-orange-700 hover:shadow-xl hover:scale-[1.02] active:scale-[0.98]"
+                                className="mt-6 flex w-full items-center justify-center rounded-lg bg-gradient-to-r from-amber-600 to-orange-600 px-6 py-3 font-semibold text-white shadow-lg transition-all duration-200 hover:scale-[1.02] hover:from-amber-700 hover:to-orange-700 hover:shadow-xl active:scale-[0.98]"
                             >
                                 Proceed to Checkout
                             </Link>

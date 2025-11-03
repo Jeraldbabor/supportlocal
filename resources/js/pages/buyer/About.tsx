@@ -1,5 +1,5 @@
-import { Award, Heart, MapPin, Users } from 'lucide-react';
 import { Head, Link } from '@inertiajs/react';
+import { Award, Heart, MapPin, Users } from 'lucide-react';
 import BuyerLayout from '../../layouts/BuyerLayout';
 
 interface Artisan {
@@ -65,7 +65,7 @@ export default function About({ artisans = [] }: AboutProps) {
     return (
         <BuyerLayout title="About Us">
             <Head title="About Us" />
-            
+
             {/* Mission Statement */}
             <section className="bg-white py-16">
                 <div className="mx-auto max-w-4xl px-4 text-center sm:px-6 lg:px-8">
@@ -187,13 +187,13 @@ export default function About({ artisans = [] }: AboutProps) {
                     <div className="flex flex-col justify-center gap-4 sm:flex-row">
                         <Link
                             href="/seller/apply"
-                            className="rounded-lg bg-primary px-8 py-3 font-semibold text-white transition-colors duration-200 hover:bg-primary/90 text-center"
+                            className="rounded-lg bg-primary px-8 py-3 text-center font-semibold text-white transition-colors duration-200 hover:bg-primary/90"
                         >
                             Become a Seller
                         </Link>
                         <Link
                             href="/buyer/products"
-                            className="rounded-lg border-2 border-primary px-8 py-3 font-semibold text-primary transition-colors duration-200 hover:bg-primary hover:text-white text-center"
+                            className="rounded-lg border-2 border-primary px-8 py-3 text-center font-semibold text-primary transition-colors duration-200 hover:bg-primary hover:text-white"
                         >
                             Shop with Us
                         </Link>

@@ -1,6 +1,5 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
 import { Product } from '@/types';
-import { router } from '@inertiajs/react';
+import React, { createContext, useContext, useEffect, useState } from 'react';
 
 export interface CartItem {
     id: number;
@@ -48,11 +47,11 @@ export function CartProvider({ children, isAuthenticated: authProp }: CartProvid
     useEffect(() => {
         const wasAuthenticated = isAuthenticated;
         const nowAuthenticated = authProp || false;
-        
+
         console.log('Auth state change:', { wasAuthenticated, nowAuthenticated, hasTransferredCart });
-        
+
         setIsAuthenticated(nowAuthenticated);
-        
+
         // If user just logged in (transitioned from false to true)
         if (!wasAuthenticated && nowAuthenticated && !hasTransferredCart) {
             console.log('User just logged in, initiating cart transfer...');
@@ -63,10 +62,10 @@ export function CartProvider({ children, isAuthenticated: authProp }: CartProvid
     // Transfer guest cart to authenticated user's cart
     const transferGuestCartToBackend = async () => {
         const guestCart = localStorage.getItem('guest_cart');
-        
+
         console.log('=== TRANSFER FUNCTION CALLED ===');
         console.log('Guest cart from localStorage:', guestCart);
-        
+
         if (!guestCart) {
             console.log('No guest cart to transfer');
             setHasTransferredCart(true);
@@ -75,10 +74,10 @@ export function CartProvider({ children, isAuthenticated: authProp }: CartProvid
 
         try {
             const cartItems = JSON.parse(guestCart);
-            
+
             console.log('Parsed cart items:', cartItems);
             console.log('Cart items count:', cartItems.length);
-            
+
             if (cartItems.length === 0) {
                 console.log('Guest cart is empty, clearing localStorage');
                 // Clear empty cart
@@ -106,27 +105,26 @@ export function CartProvider({ children, isAuthenticated: authProp }: CartProvid
             console.log('Response ok?:', response.ok);
 
             const result = await response.json();
-            
+
             console.log('Response data:', result);
-            
+
             if (response.ok) {
                 console.log('Cart transfer successful:', result);
-                
+
                 // Clear guest cart after successful transfer
                 localStorage.removeItem('guest_cart');
                 localStorage.removeItem('cart_item_count');
                 localStorage.removeItem('last_seen_cart_count');
-                
+
                 console.log('Guest cart successfully transferred to authenticated user');
                 setHasTransferredCart(true);
-                
+
                 // Reload the page to show the transferred items
                 window.location.reload();
             } else {
                 console.error('Cart transfer failed:', result);
                 setHasTransferredCart(true); // Mark as attempted even on failure
             }
-            
         } catch (error) {
             console.error('Error transferring guest cart:', error);
             // Even if transfer fails, mark as attempted to prevent infinite loops
@@ -181,9 +179,7 @@ export function CartProvider({ children, isAuthenticated: authProp }: CartProvid
 
                 if (existingItem) {
                     const newQuantity = Math.min(existingItem.quantity + quantity, product.quantity || 999);
-                    return currentItems.map((item) => 
-                        item.product_id === product.id ? { ...item, quantity: newQuantity } : item
-                    );
+                    return currentItems.map((item) => (item.product_id === product.id ? { ...item, quantity: newQuantity } : item));
                 } else {
                     const newItem: CartItem = {
                         id: Date.now(),
@@ -226,9 +222,7 @@ export function CartProvider({ children, isAuthenticated: authProp }: CartProvid
         }
 
         setItems((currentItems) =>
-            currentItems.map((item) => 
-                item.product_id === productId ? { ...item, quantity: Math.min(quantity, item.max_quantity) } : item
-            )
+            currentItems.map((item) => (item.product_id === productId ? { ...item, quantity: Math.min(quantity, item.max_quantity) } : item)),
         );
     };
 

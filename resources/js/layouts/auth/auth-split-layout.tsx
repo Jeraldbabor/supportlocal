@@ -16,11 +16,7 @@ export default function AuthSplitLayout({ children, title, description }: PropsW
             <div className="relative hidden h-full flex-col bg-muted p-10 text-white lg:flex dark:border-r">
                 <div className="absolute inset-0 bg-zinc-900" />
                 <Link href={home()} className="relative z-20 flex items-center text-lg font-medium">
-                    <img 
-                        src="/artisanicon.png" 
-                        alt="Artisan Icon" 
-                        className="mr-2 size-12 drop-shadow-lg"
-                    />
+                    <img src="/artisanicon.png" alt="Artisan Icon" className="mr-2 size-12 drop-shadow-lg" />
                     {name}
                 </Link>
                 {quote && (
@@ -35,11 +31,7 @@ export default function AuthSplitLayout({ children, title, description }: PropsW
             <div className="w-full lg:p-8">
                 <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
                     <Link href={home()} className="relative z-20 flex items-center justify-center lg:hidden">
-                        <img 
-                            src="/artisanicon.png" 
-                            alt="Artisan Icon" 
-                            className="h-16 sm:h-20 drop-shadow-lg"
-                        />
+                        <img src="/artisanicon.png" alt="Artisan Icon" className="h-16 drop-shadow-lg sm:h-20" />
                     </Link>
                     <div className="flex flex-col items-start gap-2 text-left sm:items-center sm:text-center">
                         <h1 className="text-xl font-medium">{title}</h1>

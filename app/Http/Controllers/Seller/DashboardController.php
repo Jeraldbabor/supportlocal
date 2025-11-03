@@ -3,13 +3,11 @@
 namespace App\Http\Controllers\Seller;
 
 use App\Http\Controllers\Controller;
-use App\Models\Product;
 use App\Models\Order;
 use App\Models\OrderItem;
-use App\Models\User;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
+use App\Models\Product;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -403,11 +401,11 @@ class DashboardController extends Controller
             ->where('status', Order::STATUS_COMPLETED)
             ->whereBetween('created_at', [$previousMonth, $lastMonth])
             ->sum('total_amount') ?? 0;
-        
+
         // Calculate growth percentage
         if ($revenueStats['last_month'] > 0) {
             $revenueStats['month_growth_percentage'] = round(
-                (($revenueStats['this_month'] - $revenueStats['last_month']) / $revenueStats['last_month']) * 100, 
+                (($revenueStats['this_month'] - $revenueStats['last_month']) / $revenueStats['last_month']) * 100,
                 2
             );
         } else {
@@ -418,7 +416,7 @@ class DashboardController extends Controller
         $uniqueCustomers = Order::where('seller_id', $userId)
             ->distinct('user_id')
             ->count('user_id');
-        
+
         $returningCustomers = Order::where('seller_id', $userId)
             ->select('user_id')
             ->groupBy('user_id')
@@ -458,7 +456,7 @@ class DashboardController extends Controller
     private function calculateAverageItemsPerOrder($sellerId): float
     {
         $totalOrders = Order::where('seller_id', $sellerId)->count();
-        
+
         if ($totalOrders === 0) {
             return 0;
         }

@@ -51,7 +51,7 @@ class HandleInertiaRequests extends Middleware
         // Add unread notifications count for authenticated users
         if ($request->user()) {
             $sharedData['unreadNotificationsCount'] = $request->user()->unreadNotifications()->count();
-            
+
             // Add profile completion status and recommendation
             $sharedData['profileCompletion'] = [
                 'status' => $request->user()->getProfileCompletionStatus(),

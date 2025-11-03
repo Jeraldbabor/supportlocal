@@ -31,10 +31,7 @@ export default function Cart() {
         if (newQuantity <= 0) {
             handleRemove(itemId);
         } else {
-            router.put('/buyer/cart/update', 
-                { item_id: itemId, quantity: newQuantity },
-                { preserveScroll: true }
-            );
+            router.put('/buyer/cart/update', { item_id: itemId, quantity: newQuantity }, { preserveScroll: true });
         }
     };
 
@@ -190,10 +187,7 @@ export default function Cart() {
 
                         {/* Clear Cart Button */}
                         <div className="mt-6 border-t border-gray-200 pt-6">
-                            <button
-                                onClick={handleClearCart}
-                                className="text-sm font-medium text-red-600 hover:text-red-700"
-                            >
+                            <button onClick={handleClearCart} className="text-sm font-medium text-red-600 hover:text-red-700">
                                 Clear Cart
                             </button>
                         </div>
