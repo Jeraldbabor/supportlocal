@@ -1,6 +1,9 @@
 // Wayfinder utility functions for route handling
 
-export type RouteQueryOptions = Record<string, string | number | boolean | undefined>;
+export type RouteQueryOptions = {
+    query?: Record<string, string | number | boolean | undefined>;
+    mergeQuery?: Record<string, string | number | boolean | undefined>;
+} & Record<string, string | number | boolean | undefined>;
 
 export type RouteDefinition<T = string> = {
     url: string;
