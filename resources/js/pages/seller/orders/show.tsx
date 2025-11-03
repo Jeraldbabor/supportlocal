@@ -277,12 +277,18 @@ export default function OrderShow({ order }: OrderShowProps) {
                     </h2>
                     <div className="space-y-4">
                         {order.order_items.map((item) => (
-                            <div key={item.id} className="flex items-center space-x-6 border-b border-gray-100 pb-4 last:border-b-0 last:pb-0">
-                                <img
-                                    src={item.product_image ? `/storage/${item.product_image}` : '/placeholder.jpg'}
-                                    alt={item.product_name}
-                                    className="h-20 w-20 rounded-lg object-cover"
-                                />
+                            <div key={item.id} className="flex items-center space-x-6 border-b border-gray-200 pb-4 last:border-b-0 last:pb-0">
+                                {item.product_image ? (
+                                    <img
+                                        src={`/storage/${item.product_image}`}
+                                        alt={item.product_name}
+                                        className="h-20 w-20 rounded-lg object-cover"
+                                    />
+                                ) : (
+                                    <div className="flex h-20 w-20 items-center justify-center rounded-lg bg-gray-100">
+                                        <Package className="h-10 w-10 text-gray-400" />
+                                    </div>
+                                )}
                                 <div className="flex-1">
                                     <h3 className="font-semibold text-gray-900">{item.product_name}</h3>
                                     <p className="text-sm text-gray-600">Quantity: {item.quantity}</p>

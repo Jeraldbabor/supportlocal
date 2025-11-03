@@ -2,7 +2,7 @@ import Toast from '@/components/Toast';
 import AppLayout from '@/layouts/app-layout';
 import { formatPeso } from '@/utils/currency';
 import { Head, router } from '@inertiajs/react';
-import { CheckCircle, Clock, Eye, Package, User, XCircle } from 'lucide-react';
+import { AlertTriangle, CheckCircle, Clock, Eye, Package, User, XCircle } from 'lucide-react';
 import { useState } from 'react';
 
 interface OrderItem {
@@ -46,6 +46,9 @@ export default function Orders({ orders }: OrdersProps) {
     const [showToast, setShowToast] = useState(false);
     const [toastMessage, setToastMessage] = useState('');
     const [toastType, setToastType] = useState<'success' | 'error'>('success');
+    const [showCancelModal, setShowCancelModal] = useState<number | null>(null);
+    const [cancelReason, setCancelReason] = useState('');
+    const [isCancelling, setIsCancelling] = useState(false);
 
     const getStatusIcon = (status: string) => {
         switch (status) {
@@ -107,25 +110,34 @@ export default function Orders({ orders }: OrdersProps) {
         }
     };
 
-    const handleRejectOrder = async (orderId: number) => {
-        const reason = prompt('Please provide a reason for rejection (optional):');
+    const handleRejectOrder = (orderId: number) => {
+        setShowCancelModal(orderId);
+        setCancelReason('');
+    };
 
+    const handleConfirmCancel = async () => {
+        if (!showCancelModal) return;
+
+        setIsCancelling(true);
+        
         try {
-            const response = await fetch(`/seller/orders/${orderId}/reject`, {
+            const response = await fetch(`/seller/orders/${showCancelModal}/reject`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
                 },
-                body: JSON.stringify({ rejection_reason: reason }),
+                body: JSON.stringify({ rejection_reason: cancelReason }),
             });
 
             const data = await response.json();
 
             if (data.success) {
-                setToastMessage('Order cancelled successfully! Customer has been notified.');
-                setToastType('success');
+                setToastMessage('Order has been cancelled. Customer has been notified.');
+                setToastType('error'); // Use error type for cancellation to indicate negative action
                 setShowToast(true);
+                setShowCancelModal(null);
+                setCancelReason('');
                 // Refresh the page to update order status
                 router.reload();
             } else {
@@ -137,6 +149,8 @@ export default function Orders({ orders }: OrdersProps) {
             setToastMessage('An error occurred while cancelling the order.');
             setToastType('error');
             setShowToast(true);
+        } finally {
+            setIsCancelling(false);
         }
     };
 
@@ -250,11 +264,17 @@ export default function Orders({ orders }: OrdersProps) {
                                     <div className="space-y-3">
                                         {order.order_items.map((item) => (
                                             <div key={item.id} className="flex items-center space-x-4">
-                                                <img
-                                                    src={item.product_image ? `/storage/${item.product_image}` : '/placeholder.jpg'}
-                                                    alt={item.product_name}
-                                                    className="h-16 w-16 rounded-lg object-cover"
-                                                />
+                                                {item.product_image ? (
+                                                    <img
+                                                        src={`/storage/${item.product_image}`}
+                                                        alt={item.product_name}
+                                                        className="h-16 w-16 rounded-lg object-cover"
+                                                    />
+                                                ) : (
+                                                    <div className="flex h-16 w-16 items-center justify-center rounded-lg bg-gray-100">
+                                                        <Package className="h-8 w-8 text-gray-400" />
+                                                    </div>
+                                                )}
                                                 <div className="flex-1">
                                                     <h5 className="font-medium text-gray-900">{item.product_name}</h5>
                                                     <p className="text-sm text-gray-500">Quantity: {item.quantity}</p>
@@ -346,6 +366,62 @@ export default function Orders({ orders }: OrdersProps) {
 
                 {/* Toast Notification */}
                 {showToast && <Toast message={toastMessage} type={toastType} onClose={() => setShowToast(false)} />}
+
+                {/* Cancel Order Modal */}
+                {showCancelModal && (
+                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                        <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
+                            <div className="flex items-center gap-3 mb-4">
+                                <div className="p-2 bg-red-100 rounded-full">
+                                    <AlertTriangle className="h-5 w-5 text-red-600" />
+                                </div>
+                                <h3 className="text-lg font-semibold text-gray-900">Cancel Order</h3>
+                            </div>
+                            
+                            <p className="text-gray-600 mb-4">
+                                Are you sure you want to cancel this order? This action cannot be undone and the customer will be notified.
+                            </p>
+                            
+                            <div className="mb-4">
+                                <label htmlFor="cancelReason" className="block text-sm font-medium text-gray-700 mb-2">
+                                    Reason for cancellation (optional)
+                                </label>
+                                <textarea
+                                    id="cancelReason"
+                                    value={cancelReason}
+                                    onChange={(e) => setCancelReason(e.target.value)}
+                                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                    placeholder="Please provide a reason for cancelling this order..."
+                                    rows={3}
+                                    disabled={isCancelling}
+                                />
+                            </div>
+                            
+                            <div className="flex gap-3 justify-end">
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        setShowCancelModal(null);
+                                        setCancelReason('');
+                                    }}
+                                    className="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg font-medium"
+                                    disabled={isCancelling}
+                                >
+                                    Keep Order
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={handleConfirmCancel}
+                                    className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium disabled:opacity-50 flex items-center gap-2"
+                                    disabled={isCancelling}
+                                >
+                                    {isCancelling && <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full" />}
+                                    Cancel Order
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
         </AppLayout>
     );

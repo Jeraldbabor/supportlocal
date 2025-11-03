@@ -63,6 +63,9 @@ class ProfileController extends Controller
 
         $user->update($validated);
 
+        // Update profile completion tracking
+        $user->updateProfileCompletionTracking();
+
         return back()->with('message', 'Profile updated successfully.');
     }
 
@@ -172,5 +175,32 @@ class ProfileController extends Controller
         $user->delete();
 
         return redirect('/')->with('message', 'Your account has been deleted successfully.');
+    }
+
+    /**
+     * Dismiss profile completion reminder.
+     */
+    public function dismissProfileCompletionReminder(Request $request)
+    {
+        $user = $request->user();
+        $user->dismissProfileCompletionReminder();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Profile completion reminder dismissed.',
+        ]);
+    }
+
+    /**
+     * Get profile completion status.
+     */
+    public function getProfileCompletionStatus(Request $request)
+    {
+        $user = $request->user();
+
+        return response()->json([
+            'status' => $user->getProfileCompletionStatus(),
+            'recommendation' => $user->getProfileCompletionRecommendation(),
+        ]);
     }
 }

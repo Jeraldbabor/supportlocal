@@ -52,6 +52,9 @@ class User extends Authenticatable
         'is_active',
         'email_verified_at',
         'last_login_at',
+        'profile_completion_reminder_dismissed_at',
+        'profile_completed_at',
+        'profile_completion_percentage',
     ];
 
     /**
@@ -86,6 +89,8 @@ class User extends Authenticatable
             'date_of_birth' => 'date',
             'last_login_at' => 'datetime',
             'is_active' => 'boolean',
+            'profile_completion_reminder_dismissed_at' => 'datetime',
+            'profile_completed_at' => 'datetime',
         ];
     }
 
@@ -307,5 +312,202 @@ class User extends Authenticatable
         }
 
         return $missing;
+    }
+
+    /**
+     * Check if user has completed essential profile information
+     */
+    public function hasCompleteProfile(): bool
+    {
+        $requiredFields = $this->getRequiredFieldsForRole();
+        
+        foreach ($requiredFields as $field => $label) {
+            if (empty($this->$field)) {
+                return false;
+            }
+        }
+        
+        return true;
+    }
+
+    /**
+     * Get required fields based on user role
+     */
+    public function getRequiredFieldsForRole(): array
+    {
+        $baseFields = [
+            'name' => 'Full Name',
+            'email' => 'Email Address',
+        ];
+
+        $roleSpecificFields = [
+            self::ROLE_SELLER => [
+                'phone_number' => 'Phone Number',
+                'address' => 'Business Address',
+            ],
+            self::ROLE_BUYER => [
+                'phone_number' => 'Phone Number',
+                'delivery_address' => 'Delivery Address',
+            ],
+            self::ROLE_ADMINISTRATOR => [
+                'phone_number' => 'Phone Number',
+            ],
+        ];
+
+        return array_merge(
+            $baseFields,
+            $roleSpecificFields[$this->role] ?? []
+        );
+    }
+
+    /**
+     * Get missing profile fields for current user
+     */
+    public function getMissingProfileFields(): array
+    {
+        $requiredFields = $this->getRequiredFieldsForRole();
+        $missing = [];
+
+        foreach ($requiredFields as $field => $label) {
+            if (empty($this->$field)) {
+                $missing[] = [
+                    'field' => $field,
+                    'label' => $label,
+                ];
+            }
+        }
+
+        return $missing;
+    }
+
+    /**
+     * Get profile completion status with details
+     */
+    public function getProfileCompletionStatus(): array
+    {
+        $requiredFields = $this->getRequiredFieldsForRole();
+        $totalFields = count($requiredFields);
+        $completedFields = 0;
+
+        foreach ($requiredFields as $field => $label) {
+            if (! empty($this->$field)) {
+                $completedFields++;
+            }
+        }
+
+        $percentage = $totalFields > 0 ? round(($completedFields / $totalFields) * 100) : 100;
+        $isComplete = $completedFields === $totalFields;
+        $missingFields = $this->getMissingProfileFields();
+
+        return [
+            'is_complete' => $isComplete,
+            'percentage' => $percentage,
+            'completed_fields' => $completedFields,
+            'total_fields' => $totalFields,
+            'missing_fields' => $missingFields,
+            'has_email_verified' => ! empty($this->email_verified_at),
+            'has_profile_picture' => ! empty($this->profile_picture),
+        ];
+    }
+
+    /**
+     * Get recommended next action for profile completion
+     */
+    public function getProfileCompletionRecommendation(): ?array
+    {
+        $status = $this->getProfileCompletionStatus();
+
+        if ($status['is_complete']) {
+            // Check optional fields
+            if (! $status['has_email_verified']) {
+                return [
+                    'title' => 'Verify Your Email',
+                    'description' => 'Verify your email address to secure your account and receive important notifications.',
+                    'action' => 'Verify Email',
+                    'url' => $this->getProfileEditUrl(),
+                    'priority' => 'high',
+                ];
+            }
+
+            if (! $status['has_profile_picture']) {
+                return [
+                    'title' => 'Add Profile Picture',
+                    'description' => 'Upload a profile picture to personalize your account.',
+                    'action' => 'Upload Picture',
+                    'url' => $this->getProfileEditUrl(),
+                    'priority' => 'medium',
+                ];
+            }
+
+            return null;
+        }
+
+        // Profile is incomplete
+        $missingCount = count($status['missing_fields']);
+        $missingList = array_slice(array_column($status['missing_fields'], 'label'), 0, 3);
+        $missingText = implode(', ', $missingList);
+        
+        if ($missingCount > 3) {
+            $missingText .= ' and ' . ($missingCount - 3) . ' more';
+        }
+
+        return [
+            'title' => 'Complete Your Profile',
+            'description' => "To use all features of the system, please complete your profile. Missing: {$missingText}",
+            'action' => 'Complete Profile',
+            'url' => $this->getProfileEditUrl(),
+            'priority' => 'critical',
+            'missing_fields' => $status['missing_fields'],
+        ];
+    }
+
+    /**
+     * Get profile edit URL based on user role
+     */
+    public function getProfileEditUrl(): string
+    {
+        return match ($this->role) {
+            self::ROLE_SELLER => route('seller.profile.edit'),
+            self::ROLE_BUYER => route('buyer.profile'),
+            self::ROLE_ADMINISTRATOR => route('user.profile.edit'),
+            default => route('user.profile.edit'),
+        };
+    }
+
+    /**
+     * Dismiss the profile completion reminder
+     */
+    public function dismissProfileCompletionReminder(): bool
+    {
+        return $this->update([
+            'profile_completion_reminder_dismissed_at' => now(),
+        ]);
+    }
+
+    /**
+     * Check if user has dismissed the profile completion reminder
+     */
+    public function hasProfileCompletionReminderDismissed(): bool
+    {
+        return ! empty($this->profile_completion_reminder_dismissed_at);
+    }
+
+    /**
+     * Update profile completion tracking
+     */
+    public function updateProfileCompletionTracking(): bool
+    {
+        $status = $this->getProfileCompletionStatus();
+        
+        $data = [
+            'profile_completion_percentage' => $status['percentage'],
+        ];
+
+        // Mark as completed if 100%
+        if ($status['is_complete'] && empty($this->profile_completed_at)) {
+            $data['profile_completed_at'] = now();
+        }
+
+        return $this->update($data);
     }
 }

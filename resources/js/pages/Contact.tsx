@@ -1,8 +1,17 @@
 import { Clock, Mail, MapPin, Phone, Send } from 'lucide-react';
 import React, { useState } from 'react';
+import { router, usePage } from '@inertiajs/react';
 import MainLayout from '../layouts/MainLayout';
 
-export default function Contact() {
+interface ContactProps {
+    flash?: {
+        success?: string;
+        error?: string;
+    };
+}
+
+export default function Contact({ flash }: ContactProps = {}) {
+    const { props } = usePage();
     const [formData, setFormData] = useState({
         name: '',
         email: '',
@@ -11,7 +20,7 @@ export default function Contact() {
     });
 
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [submitMessage, setSubmitMessage] = useState('');
+    const [errors, setErrors] = useState<Record<string, string>>({});
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
@@ -24,13 +33,21 @@ export default function Contact() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsSubmitting(true);
+        setErrors({});
 
-        // Simulate form submission
-        setTimeout(() => {
-            setSubmitMessage("Thank you for your message! We'll get back to you within 24 hours.");
-            setFormData({ name: '', email: '', subject: '', message: '' });
-            setIsSubmitting(false);
-        }, 1000);
+        router.post('/contact', formData, {
+            onSuccess: () => {
+                setFormData({ name: '', email: '', subject: '', message: '' });
+                setIsSubmitting(false);
+            },
+            onError: (errors: any) => {
+                setErrors(errors);
+                setIsSubmitting(false);
+            },
+            onFinish: () => {
+                setIsSubmitting(false);
+            }
+        });
     };
 
     return (
@@ -133,9 +150,15 @@ export default function Contact() {
                         <div className="rounded-lg bg-white p-8 shadow-lg">
                             <h2 className="mb-6 text-2xl font-bold text-gray-900">Send us a Message</h2>
 
-                            {submitMessage && (
+                            {flash?.success && (
                                 <div className="mb-6 rounded-md border border-green-200 bg-green-50 p-4">
-                                    <p className="text-green-800">{submitMessage}</p>
+                                    <p className="text-green-800">{flash.success}</p>
+                                </div>
+                            )}
+
+                            {flash?.error && (
+                                <div className="mb-6 rounded-md border border-red-200 bg-red-50 p-4">
+                                    <p className="text-red-800">{flash.error}</p>
                                 </div>
                             )}
 
@@ -151,9 +174,12 @@ export default function Contact() {
                                         value={formData.name}
                                         onChange={handleInputChange}
                                         required
-                                        className="w-full rounded-md border border-gray-300 px-4 py-3 focus:border-primary focus:ring-2 focus:ring-primary"
+                                        className={`w-full rounded-md border px-4 py-3 focus:ring-2 focus:ring-primary ${
+                                            errors.name ? 'border-red-300 focus:border-red-500' : 'border-gray-300 focus:border-primary'
+                                        }`}
                                         placeholder="Enter your full name"
                                     />
+                                    {errors.name && <p className="mt-1 text-sm text-red-600">{errors.name}</p>}
                                 </div>
 
                                 <div>

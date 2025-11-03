@@ -20,13 +20,33 @@ interface CheckoutProps {
         gcash_number?: string;
         gcash_name?: string;
     };
+    buyNowItem?: {
+        id: number;
+        product_id: number;
+        name: string;
+        price: number;
+        quantity: number;
+        primary_image: string;
+        seller: {
+            id: number;
+            name: string;
+        };
+        max_quantity: number;
+        stock_quantity: number;
+    } | null;
 }
 
-export default function Checkout({ user }: CheckoutProps) {
+export default function Checkout({ user, buyNowItem }: CheckoutProps) {
     const { cart, getCartTotal, clearCart } = useCart();
     const [showToast, setShowToast] = useState(false);
     const [toastMessage, setToastMessage] = useState('');
     const [toastType, setToastType] = useState<'success' | 'error'>('success');
+
+    // Use buyNowItem if available, otherwise use cart
+    const checkoutItems = buyNowItem ? [buyNowItem] : cart;
+    const checkoutTotal = buyNowItem 
+        ? buyNowItem.price * buyNowItem.quantity 
+        : getCartTotal();
 
     const { data, setData, processing, errors } = useForm({
         delivery_address: user.delivery_address || user.address || '',
@@ -40,7 +60,7 @@ export default function Checkout({ user }: CheckoutProps) {
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
-        if (cart.length === 0) {
+        if (checkoutItems.length === 0) {
             setToastMessage('Your cart is empty!');
             setToastType('error');
             setShowToast(true);
@@ -54,7 +74,7 @@ export default function Checkout({ user }: CheckoutProps) {
             delivery_notes: data.delivery_notes,
             payment_method: data.payment_method,
             gcash_reference: data.gcash_reference,
-            items: cart.map((item) => ({
+            items: checkoutItems.map((item) => ({
                 product_id: item.product_id,
                 quantity: item.quantity,
             })),
@@ -63,7 +83,10 @@ export default function Checkout({ user }: CheckoutProps) {
         // Submit using Inertia router instead of form post
         router.post('/buyer/orders', orderData, {
             onSuccess: () => {
-                clearCart();
+                // Only clear cart if not using buy now (buy now doesn't add to cart)
+                if (!buyNowItem) {
+                    clearCart();
+                }
                 setToastMessage('Order placed successfully!');
                 setToastType('success');
                 setShowToast(true);
@@ -92,7 +115,7 @@ export default function Checkout({ user }: CheckoutProps) {
         router.visit('/buyer/cart');
     };
 
-    if (cart.length === 0) {
+    if (checkoutItems.length === 0) {
         return (
             <BuyerLayout title="Checkout">
                 <Head title="Checkout" />
@@ -128,7 +151,15 @@ export default function Checkout({ user }: CheckoutProps) {
                         Back to Cart
                     </button>
                     <h1 className="text-3xl font-bold text-gray-900">Checkout</h1>
-                    <p className="mt-2 text-gray-600">Complete your order</p>
+                    <p className="mt-2 text-gray-600">
+                        {buyNowItem ? 'Complete your order for the selected item' : 'Complete your order'}
+                    </p>
+                    {buyNowItem && (
+                        <div className="mt-3 inline-flex items-center rounded-full bg-green-100 px-3 py-1 text-sm font-medium text-green-800">
+                            <CheckCircle className="mr-1.5 h-4 w-4" />
+                            Buy Now - Express Checkout
+                        </div>
+                    )}
                 </div>
 
                 <form onSubmit={handleSubmit}>
@@ -243,7 +274,7 @@ export default function Checkout({ user }: CheckoutProps) {
                                                     className="mr-3"
                                                 />
                                                 <div className="flex items-center">
-                                                    <div className="mr-3 flex h-8 w-8 items-center justify-center rounded bg-blue-600">
+                                                    <div className="mr-3 flex h-8 w-8 items-center justify-center rounded bg-gradient-to-r from-amber-600 to-orange-600 shadow-sm">
                                                         <span className="text-xs font-bold text-white">G</span>
                                                     </div>
                                                     <div>
@@ -290,7 +321,7 @@ export default function Checkout({ user }: CheckoutProps) {
                                             <div className="mt-3 rounded border border-yellow-200 bg-yellow-50 p-3">
                                                 <p className="text-xs text-yellow-800">
                                                     <strong>Note:</strong> Payment will be collected upon delivery. Please have the exact amount ready
-                                                    ({formatPeso(getCartTotal())}).
+                                                    ({formatPeso(checkoutTotal)}).
                                                 </p>
                                             </div>
                                         </div>
@@ -341,7 +372,7 @@ export default function Checkout({ user }: CheckoutProps) {
                                 <h2 className="mb-4 text-lg font-semibold text-gray-900">Order Summary</h2>
 
                                 <div className="mb-6 space-y-4">
-                                    {cart.map((item) => (
+                                    {checkoutItems.map((item) => (
                                         <div key={item.id} className="flex items-center space-x-3">
                                             <div className="flex-shrink-0">
                                                 {item.primary_image ? (
@@ -370,7 +401,7 @@ export default function Checkout({ user }: CheckoutProps) {
                                 <div className="space-y-2 border-t border-gray-200 pt-4">
                                     <div className="flex justify-between text-sm">
                                         <span className="text-gray-600">Subtotal</span>
-                                        <span className="font-medium">{formatPeso(getCartTotal())}</span>
+                                        <span className="font-medium">{formatPeso(checkoutTotal)}</span>
                                     </div>
                                     <div className="flex justify-between text-sm">
                                         <span className="text-gray-600">Shipping</span>
@@ -385,7 +416,7 @@ export default function Checkout({ user }: CheckoutProps) {
                                 <div className="mt-4 border-t border-gray-200 pt-4">
                                     <div className="flex justify-between">
                                         <span className="text-lg font-semibold text-gray-900">Total</span>
-                                        <span className="text-lg font-semibold text-gray-900">{formatPeso(getCartTotal())}</span>
+                                        <span className="text-lg font-semibold text-gray-900">{formatPeso(checkoutTotal)}</span>
                                     </div>
                                 </div>
 
@@ -404,7 +435,7 @@ export default function Checkout({ user }: CheckoutProps) {
                                     ) : (
                                         <div className="flex items-center justify-center">
                                             <CheckCircle className="mr-2 h-5 w-5" />
-                                            Place Order - {formatPeso(getCartTotal())}
+                                            Place Order - {formatPeso(checkoutTotal)}
                                         </div>
                                     )}
                                 </button>

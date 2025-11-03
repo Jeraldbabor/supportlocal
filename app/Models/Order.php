@@ -18,6 +18,10 @@ class Order extends Model
 
     const STATUS_CONFIRMED = 'confirmed';
 
+    const STATUS_SHIPPED = 'shipped';
+
+    const STATUS_DELIVERED = 'delivered';
+
     const STATUS_CANCELLED = 'cancelled';
 
     const STATUS_COMPLETED = 'completed';
@@ -65,6 +69,7 @@ class Order extends Model
         'seller_confirmed_at',
         'shipped_at',
         'delivered_at',
+        'completed_at',
     ];
 
     /**
@@ -76,6 +81,7 @@ class Order extends Model
         'seller_confirmed_at' => 'datetime',
         'shipped_at' => 'datetime',
         'delivered_at' => 'datetime',
+        'completed_at' => 'datetime',
     ];
 
     /**
@@ -103,6 +109,14 @@ class Order extends Model
     }
 
     /**
+     * Alias for orderItems - used for cart functionality
+     */
+    public function items(): HasMany
+    {
+        return $this->hasMany(OrderItem::class);
+    }
+
+    /**
      * Get the status badge color.
      */
     public function getStatusColorAttribute(): string
@@ -110,6 +124,8 @@ class Order extends Model
         return match ($this->status) {
             self::STATUS_PENDING => 'yellow',
             self::STATUS_CONFIRMED => 'blue',
+            self::STATUS_SHIPPED => 'purple',
+            self::STATUS_DELIVERED => 'green',
             self::STATUS_COMPLETED => 'green',
             self::STATUS_CANCELLED => 'red',
             default => 'gray',
@@ -124,6 +140,8 @@ class Order extends Model
         return match ($this->status) {
             self::STATUS_PENDING => 'Pending',
             self::STATUS_CONFIRMED => 'Confirmed',
+            self::STATUS_SHIPPED => 'Shipped',
+            self::STATUS_DELIVERED => 'Delivered',
             self::STATUS_COMPLETED => 'Completed',
             self::STATUS_CANCELLED => 'Cancelled',
             default => 'Unknown',

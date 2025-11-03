@@ -2,8 +2,10 @@ import { Head, Link, router } from '@inertiajs/react';
 import { ArrowLeft, Calendar, Eye, Mail, MapPin, Package, Phone, ShoppingCart, Star, User } from 'lucide-react';
 import React, { useState } from 'react';
 import Toast from '../../../components/Toast';
+import AddToCartModal from '../../../components/AddToCartModal';
 import { useCart } from '../../../contexts/CartContext';
 import BuyerLayout from '../../../layouts/BuyerLayout';
+import { Product as GlobalProduct } from '@/types';
 
 interface Product {
     id: number;
@@ -58,6 +60,9 @@ export default function Show({ seller, products, filters }: SellerShowProps) {
     const [showToast, setShowToast] = useState(false);
     const [toastMessage, setToastMessage] = useState('');
     const { addToCart, isLoading } = useCart();
+    const [modalProduct, setModalProduct] = useState<Product | null>(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [modalMode, setModalMode] = useState<'cart' | 'buy'>('cart');
 
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
@@ -76,33 +81,90 @@ export default function Show({ seller, products, filters }: SellerShowProps) {
         e.stopPropagation();
         if (product.stock_status === 'out_of_stock') return;
         
-        const productWithSeller = {
-            ...product,
-            seller: {
-                id: seller.id,
-                name: seller.name
-            }
-        };
-        
-        addToCart(productWithSeller, 1);
-        setToastMessage(`${product.name} added to cart!`);
-        setShowToast(true);
+        // Open modal for quantity selection
+        setModalProduct(product);
+        setModalMode('cart');
+        setIsModalOpen(true);
     };
 
     const handleBuyNow = (e: React.MouseEvent, product: Product) => {
         e.stopPropagation();
         if (product.stock_status === 'out_of_stock') return;
         
-        const productWithSeller = {
-            ...product,
+        // Open modal for quantity selection
+        setModalProduct(product);
+        setModalMode('buy');
+        setIsModalOpen(true);
+    };
+
+    const handleModalAddToCart = async (quantity: number) => {
+        if (!modalProduct) return;
+        
+        console.log('[SellerShow] Adding to cart:', { product: modalProduct.name, quantity });
+        
+        const productWithSeller: GlobalProduct = {
+            id: modalProduct.id,
+            name: modalProduct.name,
+            price: modalProduct.price,
+            quantity: modalProduct.quantity,
+            primary_image: modalProduct.primary_image,
             seller: {
                 id: seller.id,
                 name: seller.name
             }
         };
         
-        addToCart(productWithSeller, 1);
-        router.visit('/buyer/checkout');
+        try {
+            await addToCart(productWithSeller, quantity);
+            console.log('[SellerShow] Successfully added to cart');
+            // Close modal first
+            setIsModalOpen(false);
+            // Then show success message
+            setTimeout(() => {
+                setToastMessage(`✅ ${quantity} × ${modalProduct.name} added to cart successfully!`);
+                setShowToast(true);
+                console.log('[SellerShow] Toast notification shown');
+            }, 100);
+        } catch (error) {
+            console.error('[SellerShow] Error adding to cart:', error);
+            setIsModalOpen(false);
+            setTimeout(() => {
+                setToastMessage('❌ Failed to add item to cart. Please try again.');
+                setShowToast(true);
+            }, 100);
+        }
+    };
+
+    const handleModalBuyNow = async (quantity: number) => {
+        if (!modalProduct) return;
+        
+        console.log('[SellerShow] Buy Now clicked:', { product: modalProduct.name, quantity });
+        
+        const productWithSeller: GlobalProduct = {
+            id: modalProduct.id,
+            name: modalProduct.name,
+            price: modalProduct.price,
+            quantity: modalProduct.quantity,
+            primary_image: modalProduct.primary_image,
+            seller: {
+                id: seller.id,
+                name: seller.name
+            }
+        };
+        
+        try {
+            await addToCart(productWithSeller, quantity);
+            setIsModalOpen(false);
+            // Redirect to checkout
+            router.visit('/buyer/checkout');
+        } catch (error) {
+            console.error('[SellerShow] Error with Buy Now:', error);
+            setIsModalOpen(false);
+            setTimeout(() => {
+                setToastMessage('❌ Failed to process order. Please try again.');
+                setShowToast(true);
+            }, 100);
+        }
     };
 
     return (
@@ -136,7 +198,7 @@ export default function Show({ seller, products, filters }: SellerShowProps) {
                                     <div className="flex items-center space-x-3">
                                         <h1 className="text-2xl font-bold text-gray-900">{seller.business_name || seller.name}</h1>
                                         {seller.is_verified && (
-                                            <span className="inline-flex items-center rounded-full bg-blue-100 px-3 py-1 text-sm font-medium text-blue-800">
+                                            <span className="inline-flex items-center rounded-full bg-gradient-to-r from-amber-100 to-orange-100 border border-amber-300 px-3 py-1 text-sm font-medium text-amber-900 shadow-sm">
                                                 Verified Seller
                                             </span>
                                         )}
@@ -303,7 +365,7 @@ export default function Show({ seller, products, filters }: SellerShowProps) {
                                                         className={`flex flex-1 transform items-center justify-center gap-1 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200 ${
                                                             product.stock_status === 'out_of_stock' || isLoading
                                                                 ? 'cursor-not-allowed bg-gray-100 text-gray-400'
-                                                                : 'bg-blue-500 text-white shadow-md hover:-translate-y-0.5 hover:bg-blue-600 hover:shadow-lg focus:ring-2 focus:ring-blue-200 active:transform-none'
+                                                                : 'bg-gradient-to-r from-amber-600 to-orange-600 text-white shadow-md hover:-translate-y-0.5 hover:from-amber-700 hover:to-orange-700 hover:shadow-lg focus:ring-2 focus:ring-amber-200 active:transform-none'
                                                         }`}
                                                     >
                                                         <ShoppingCart className="h-4 w-4" />
@@ -315,7 +377,7 @@ export default function Show({ seller, products, filters }: SellerShowProps) {
                                                         className={`flex transform items-center justify-center rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200 ${
                                                             product.stock_status === 'out_of_stock' || isLoading
                                                                 ? 'cursor-not-allowed bg-gray-100 text-gray-400'
-                                                                : 'bg-green-500 text-white shadow-md hover:-translate-y-0.5 hover:bg-green-600 hover:shadow-lg focus:ring-2 focus:ring-green-200 active:transform-none'
+                                                                : 'border-2 border-amber-300 bg-white text-amber-700 shadow-sm hover:-translate-y-0.5 hover:bg-gradient-to-r hover:from-amber-50 hover:to-orange-50 hover:border-amber-400 hover:shadow-md focus:ring-2 focus:ring-amber-200 active:transform-none'
                                                         }`}
                                                         title="Buy Now"
                                                     >
@@ -362,6 +424,15 @@ export default function Show({ seller, products, filters }: SellerShowProps) {
 
             {/* Toast Notification */}
             {showToast && <Toast message={toastMessage} type="success" onClose={() => setShowToast(false)} />}
+            
+            {/* Add to Cart Modal */}
+            <AddToCartModal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                product={modalProduct}
+                onAddToCart={handleModalAddToCart}
+                onBuyNow={modalMode === 'buy' ? handleModalBuyNow : undefined}
+            />
         </BuyerLayout>
     );
 }
