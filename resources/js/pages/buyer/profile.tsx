@@ -20,6 +20,7 @@ interface User {
     address?: string;
     date_of_birth?: string;
     profile_picture?: string;
+    avatar?: string;
     delivery_address?: string;
     delivery_phone?: string;
     delivery_notes?: string;
@@ -141,6 +142,7 @@ export default function BuyerProfile({ user }: BuyerProfileProps) {
     const getProfilePictureUrl = () => {
         if (previewUrl) return previewUrl;
         if (user.profile_picture) return `/storage/${user.profile_picture}`;
+        if (user.avatar) return user.avatar;
         return null;
     };
 
@@ -202,10 +204,10 @@ export default function BuyerProfile({ user }: BuyerProfileProps) {
                                                 className="flex cursor-pointer items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2 text-white transition-colors hover:bg-primary/90"
                                             >
                                                 <Upload className="h-4 w-4" />
-                                                {user.profile_picture ? 'Change Picture' : 'Upload Picture'}
+                                                {user.profile_picture || user.avatar ? 'Change Picture' : 'Upload Picture'}
                                             </label>
 
-                                            {(user.profile_picture || previewUrl) && (
+                                            {(user.profile_picture || user.avatar || previewUrl) && (
                                                 <Button
                                                     type="button"
                                                     variant="outline"

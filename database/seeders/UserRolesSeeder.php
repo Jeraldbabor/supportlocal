@@ -17,7 +17,7 @@ class UserRolesSeeder extends Seeder
         User::create([
             'name' => 'Administrator',
             'email' => 'admin@gmail.com',
-            'password' => Hash::make('admin123'),
+            'password' => Hash::make('Rald@11'),
             'role' => User::ROLE_ADMINISTRATOR,
             'email_verified_at' => now(),
         ]);

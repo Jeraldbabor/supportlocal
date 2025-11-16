@@ -197,7 +197,7 @@ function BuyerLayoutContent({ children, title }: BuyerLayoutProps) {
                                 >
                                     <Avatar className="h-9 w-9 ring-2 ring-gray-100 transition-all duration-300 hover:ring-primary/30">
                                         <AvatarImage
-                                            src={user?.profile_picture ? `/storage/${user.profile_picture}` : undefined}
+                                            src={user?.profile_picture ? `/storage/${user.profile_picture}` : user?.avatar || undefined}
                                             alt={user?.name || 'User'}
                                         />
                                         <AvatarFallback className="bg-gradient-to-br from-primary/20 to-primary/10 text-sm font-semibold text-primary">
@@ -343,7 +343,7 @@ function BuyerLayoutContent({ children, title }: BuyerLayoutProps) {
                                 <div className="flex items-center gap-4 rounded-xl bg-gray-50 px-4 py-3">
                                     <Avatar className="h-10 w-10">
                                         <AvatarImage
-                                            src={user?.profile_picture ? `/storage/${user.profile_picture}` : undefined}
+                                            src={user?.profile_picture ? `/storage/${user.profile_picture}` : user?.avatar || undefined}
                                             alt={user?.name || 'User'}
                                         />
                                         <AvatarFallback className="bg-primary/10 font-semibold text-primary">

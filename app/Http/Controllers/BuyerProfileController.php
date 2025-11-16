@@ -95,6 +95,11 @@ class BuyerProfileController extends Controller
             Storage::disk('public')->delete($user->profile_picture);
             $user->update(['profile_picture' => null]);
         }
+        
+        // Also clear avatar field for social login users
+        if ($user->avatar) {
+            $user->update(['avatar' => null]);
+        }
 
         return redirect()->back()->with('success', 'Profile picture deleted successfully!');
     }
