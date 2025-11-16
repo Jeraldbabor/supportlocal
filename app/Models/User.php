@@ -55,6 +55,10 @@ class User extends Authenticatable
         'profile_completion_reminder_dismissed_at',
         'profile_completed_at',
         'profile_completion_percentage',
+        'provider',
+        'provider_id',
+        'provider_token',
+        'avatar',
     ];
 
     /**
@@ -211,8 +215,14 @@ class User extends Authenticatable
      */
     public function getAvatarUrlAttribute(): string
     {
+        // First, check for uploaded profile picture
         if ($this->profile_picture) {
             return asset('storage/'.$this->profile_picture);
+        }
+
+        // Second, check for social media avatar
+        if ($this->avatar) {
+            return $this->avatar;
         }
 
         // Default avatar using initials
