@@ -1,5 +1,5 @@
 import { Head, Link, router } from '@inertiajs/react';
-import { ArrowLeft, Eye, Minus, Package, Plus, Share2, ShoppingCart, Star, User } from 'lucide-react';
+import { ArrowLeft, Edit2, Eye, Minus, Package, Plus, Send, Share2, ShoppingCart, Star, Trash2, User } from 'lucide-react';
 import { useState } from 'react';
 import Toast from '../../../components/Toast';
 import { useCart } from '../../../contexts/CartContext';
@@ -24,11 +24,30 @@ interface Product {
     };
     average_rating: number;
     rating_count: number;
+    review_count: number;
     stock_status: string;
     quantity: number;
     view_count: number;
     specifications: { [key: string]: string };
     created_at: string;
+}
+
+interface Rating {
+    id: number;
+    rating: number;
+    review: string | null;
+    created_at: string;
+    user: {
+        id: number;
+        name: string;
+        profile_picture: string | null;
+    };
+}
+
+interface UserRating {
+    id: number;
+    rating: number;
+    review: string | null;
 }
 
 interface RelatedProduct {
@@ -46,14 +65,26 @@ interface RelatedProduct {
 interface ProductShowProps {
     product: Product;
     relatedProducts: RelatedProduct[];
+    ratings: Rating[];
+    userRating: UserRating | null;
 }
 
-export default function Show({ product, relatedProducts }: ProductShowProps) {
+export default function Show({ product, relatedProducts, ratings: initialRatings, userRating: initialUserRating }: ProductShowProps) {
     const [selectedImage, setSelectedImage] = useState(product.primary_image);
     const [quantity, setQuantity] = useState(1);
     const [showToast, setShowToast] = useState(false);
     const [toastMessage, setToastMessage] = useState('');
+    const [toastType, setToastType] = useState<'success' | 'error'>('success');
     const { addToCart, isLoading } = useCart();
+
+    // Rating state
+    const [ratings, setRatings] = useState<Rating[]>(initialRatings || []);
+    const [userRating, setUserRating] = useState<UserRating | null>(initialUserRating);
+    const [isEditingRating, setIsEditingRating] = useState(false);
+    const [selectedRating, setSelectedRating] = useState(initialUserRating?.rating || 0);
+    const [hoverRating, setHoverRating] = useState(0);
+    const [reviewText, setReviewText] = useState(initialUserRating?.review || '');
+    const [isSubmittingRating, setIsSubmittingRating] = useState(false);
 
     const handleAddToCart = () => {
         if (product.stock_status === 'out_of_stock') return;
@@ -86,6 +117,153 @@ export default function Show({ product, relatedProducts }: ProductShowProps) {
         if (quantity > 1) {
             setQuantity(quantity - 1);
         }
+    };
+
+    const handleSubmitRating = async () => {
+        if (selectedRating === 0) {
+            setToastMessage('Please select a rating');
+            setToastType('error');
+            setShowToast(true);
+            return;
+        }
+
+        setIsSubmittingRating(true);
+
+        try {
+            const response = await fetch(`/buyer/product/${product.id}/ratings`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
+                },
+                body: JSON.stringify({
+                    rating: selectedRating,
+                    review: reviewText || null,
+                }),
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                setUserRating(data.rating);
+                setRatings([data.rating, ...ratings]);
+                setToastMessage('Rating submitted successfully!');
+                setToastType('success');
+                setShowToast(true);
+                setIsEditingRating(false);
+                // Update product rating display
+                product.average_rating = data.product.average_rating;
+                product.review_count = data.product.review_count;
+            } else {
+                setToastMessage(data.message || 'Failed to submit rating');
+                setToastType('error');
+                setShowToast(true);
+            }
+        } catch (error) {
+            setToastMessage('An error occurred while submitting your rating');
+            setToastType('error');
+            setShowToast(true);
+        } finally {
+            setIsSubmittingRating(false);
+        }
+    };
+
+    const handleUpdateRating = async () => {
+        if (!userRating) return;
+
+        setIsSubmittingRating(true);
+
+        try {
+            const response = await fetch(`/buyer/product/${product.id}/ratings/${userRating.id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
+                },
+                body: JSON.stringify({
+                    rating: selectedRating,
+                    review: reviewText || null,
+                }),
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                setUserRating(data.rating);
+                // Update the rating in the list
+                setRatings(ratings.map((r) => (r.id === data.rating.id ? data.rating : r)));
+                setToastMessage('Rating updated successfully!');
+                setToastType('success');
+                setShowToast(true);
+                setIsEditingRating(false);
+                // Update product rating display
+                product.average_rating = data.product.average_rating;
+                product.review_count = data.product.review_count;
+            } else {
+                setToastMessage(data.message || 'Failed to update rating');
+                setToastType('error');
+                setShowToast(true);
+            }
+        } catch (error) {
+            setToastMessage('An error occurred while updating your rating');
+            setToastType('error');
+            setShowToast(true);
+        } finally {
+            setIsSubmittingRating(false);
+        }
+    };
+
+    const handleDeleteRating = async () => {
+        if (!userRating || !confirm('Are you sure you want to delete your rating?')) return;
+
+        try {
+            const response = await fetch(`/buyer/product/${product.id}/ratings/${userRating.id}`, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
+                },
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                setUserRating(null);
+                setSelectedRating(0);
+                setReviewText('');
+                setRatings(ratings.filter((r) => r.id !== userRating.id));
+                setToastMessage('Rating deleted successfully!');
+                setToastType('success');
+                setShowToast(true);
+                // Update product rating display
+                product.average_rating = data.product.average_rating;
+                product.review_count = data.product.review_count;
+            } else {
+                setToastMessage(data.message || 'Failed to delete rating');
+                setToastType('error');
+                setShowToast(true);
+            }
+        } catch (error) {
+            setToastMessage('An error occurred while deleting your rating');
+            setToastType('error');
+            setShowToast(true);
+        }
+    };
+
+    const startEditRating = () => {
+        if (userRating) {
+            setSelectedRating(userRating.rating);
+            setReviewText(userRating.review || '');
+        } else {
+            setSelectedRating(0);
+            setReviewText('');
+        }
+        setIsEditingRating(true);
+    };
+
+    const cancelEditRating = () => {
+        setIsEditingRating(false);
+        setSelectedRating(userRating?.rating || 0);
+        setReviewText(userRating?.review || '');
     };
 
     return (
@@ -154,13 +332,13 @@ export default function Show({ product, relatedProducts }: ProductShowProps) {
                                             <Star
                                                 key={i}
                                                 className={`h-5 w-5 ${
-                                                    i < Math.floor(product.average_rating) ? 'fill-current text-yellow-400' : 'text-gray-300'
+                                                    i < Math.floor(Number(product.average_rating) || 0) ? 'fill-current text-yellow-400' : 'text-gray-300'
                                                 }`}
                                             />
                                         ))}
                                     </div>
                                     <span className="ml-2 text-sm text-gray-600">
-                                        {product.average_rating} ({product.rating_count} reviews)
+                                        {product.average_rating ? Number(product.average_rating).toFixed(1) : '0.0'} ({product.review_count || 0} reviews)
                                     </span>
                                 </div>
 
@@ -316,6 +494,171 @@ export default function Show({ product, relatedProducts }: ProductShowProps) {
                     </div>
                 </div>
 
+                {/* Ratings & Reviews Section */}
+                <div className="mt-16 rounded-xl border border-gray-200 bg-white p-8 shadow-sm">
+                    <h2 className="mb-6 text-2xl font-bold text-gray-900">Ratings & Reviews</h2>
+
+                    {/* Rating Summary */}
+                    <div className="mb-8 grid grid-cols-1 gap-8 md:grid-cols-2">
+                        <div className="text-center">
+                            <div className="text-5xl font-bold text-gray-900">{product.average_rating ? Number(product.average_rating).toFixed(1) : '0.0'}</div>
+                            <div className="mt-2 flex justify-center">
+                                {[...Array(5)].map((_, i) => (
+                                    <Star
+                                        key={i}
+                                        className={`h-6 w-6 ${
+                                            i < Math.floor(Number(product.average_rating) || 0) ? 'fill-current text-yellow-400' : 'text-gray-300'
+                                        }`}
+                                    />
+                                ))}
+                            </div>
+                            <div className="mt-2 text-sm text-gray-600">
+                                Based on {product.review_count || 0} {product.review_count === 1 ? 'review' : 'reviews'}
+                            </div>
+                        </div>
+
+                        {/* User Rating Form */}
+                        <div className="rounded-lg border border-gray-200 bg-gray-50 p-6">
+                            {userRating && !isEditingRating ? (
+                                <div>
+                                    <h3 className="mb-3 font-semibold text-gray-900">Your Rating</h3>
+                                    <div className="mb-3 flex items-center">
+                                        {[...Array(5)].map((_, i) => (
+                                            <Star
+                                                key={i}
+                                                className={`h-5 w-5 ${i < userRating.rating ? 'fill-current text-yellow-400' : 'text-gray-300'}`}
+                                            />
+                                        ))}
+                                        <span className="ml-2 text-sm text-gray-600">({userRating.rating}/5)</span>
+                                    </div>
+                                    {userRating.review && <p className="mb-4 text-sm text-gray-700">{userRating.review}</p>}
+                                    <div className="flex gap-2">
+                                        <button
+                                            onClick={startEditRating}
+                                            className="flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm text-white hover:bg-primary/90"
+                                        >
+                                            <Edit2 className="h-4 w-4" />
+                                            Edit
+                                        </button>
+                                        <button
+                                            onClick={handleDeleteRating}
+                                            className="flex items-center gap-2 rounded-lg bg-red-500 px-4 py-2 text-sm text-white hover:bg-red-600"
+                                        >
+                                            <Trash2 className="h-4 w-4" />
+                                            Delete
+                                        </button>
+                                    </div>
+                                </div>
+                            ) : (
+                                <div>
+                                    <h3 className="mb-3 font-semibold text-gray-900">
+                                        {userRating ? 'Edit Your Rating' : 'Rate This Product'}
+                                    </h3>
+                                    <div className="mb-4">
+                                        <div className="flex gap-1">
+                                            {[1, 2, 3, 4, 5].map((star) => (
+                                                <button
+                                                    key={star}
+                                                    type="button"
+                                                    onMouseEnter={() => setHoverRating(star)}
+                                                    onMouseLeave={() => setHoverRating(0)}
+                                                    onClick={() => setSelectedRating(star)}
+                                                    className="transition-transform hover:scale-110"
+                                                >
+                                                    <Star
+                                                        className={`h-8 w-8 ${
+                                                            star <= (hoverRating || selectedRating)
+                                                                ? 'fill-current text-yellow-400'
+                                                                : 'text-gray-300'
+                                                        }`}
+                                                    />
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+                                    <textarea
+                                        value={reviewText}
+                                        onChange={(e) => setReviewText(e.target.value)}
+                                        placeholder="Write your review (optional)"
+                                        className="mb-4 w-full rounded-lg border border-gray-300 p-3 text-sm focus:border-primary focus:ring-1 focus:ring-primary"
+                                        rows={3}
+                                        maxLength={1000}
+                                    />
+                                    <div className="flex gap-2">
+                                        <button
+                                            onClick={userRating ? handleUpdateRating : handleSubmitRating}
+                                            disabled={isSubmittingRating || selectedRating === 0}
+                                            className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm text-white hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
+                                        >
+                                            <Send className="h-4 w-4" />
+                                            {isSubmittingRating ? 'Submitting...' : userRating ? 'Update Rating' : 'Submit Rating'}
+                                        </button>
+                                        {isEditingRating && userRating && (
+                                            <button
+                                                onClick={cancelEditRating}
+                                                className="rounded-lg border border-gray-300 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                            >
+                                                Cancel
+                                            </button>
+                                        )}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* Reviews List */}
+                    {ratings && ratings.length > 0 && (
+                        <div className="space-y-4">
+                            <h3 className="text-lg font-semibold text-gray-900">Customer Reviews</h3>
+                            {ratings.map((rating) => (
+                                <div key={rating.id} className="rounded-lg border border-gray-200 bg-white p-4">
+                                    <div className="flex items-start justify-between">
+                                        <div className="flex items-center gap-3">
+                                            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary">
+                                                {rating.user.profile_picture ? (
+                                                    <img
+                                                        src={`/storage/${rating.user.profile_picture}`}
+                                                        alt={rating.user.name}
+                                                        className="h-10 w-10 rounded-full object-cover"
+                                                    />
+                                                ) : (
+                                                    <User className="h-5 w-5" />
+                                                )}
+                                            </div>
+                                            <div>
+                                                <div className="font-medium text-gray-900">{rating.user.name}</div>
+                                                <div className="flex items-center gap-2">
+                                                    <div className="flex">
+                                                        {[...Array(5)].map((_, i) => (
+                                                            <Star
+                                                                key={i}
+                                                                className={`h-4 w-4 ${
+                                                                    i < rating.rating ? 'fill-current text-yellow-400' : 'text-gray-300'
+                                                                }`}
+                                                            />
+                                                        ))}
+                                                    </div>
+                                                    <span className="text-xs text-gray-500">
+                                                        {new Date(rating.created_at).toLocaleDateString()}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {rating.review && <p className="mt-3 text-sm text-gray-700">{rating.review}</p>}
+                                </div>
+                            ))}
+                        </div>
+                    )}
+
+                    {ratings && ratings.length === 0 && !userRating && (
+                        <div className="py-8 text-center text-gray-500">
+                            <p>No reviews yet. Be the first to review this product!</p>
+                        </div>
+                    )}
+                </div>
+
                 {/* Related Products */}
                 {relatedProducts && relatedProducts.length > 0 && (
                     <div className="mt-16">
@@ -348,7 +691,7 @@ export default function Show({ product, relatedProducts }: ProductShowProps) {
                                             {relatedProduct.average_rating > 0 && (
                                                 <div className="flex items-center">
                                                     <Star className="h-4 w-4 fill-current text-yellow-400" />
-                                                    <span className="ml-1 text-sm text-gray-600">{relatedProduct.average_rating.toFixed(1)}</span>
+                                                    <span className="ml-1 text-sm text-gray-600">{Number(relatedProduct.average_rating).toFixed(1)}</span>
                                                 </div>
                                             )}
                                         </div>
@@ -361,7 +704,7 @@ export default function Show({ product, relatedProducts }: ProductShowProps) {
             </div>
 
             {/* Toast Notification */}
-            {showToast && <Toast message={toastMessage} type="success" onClose={() => setShowToast(false)} />}
+            {showToast && <Toast message={toastMessage} type={toastType} onClose={() => setShowToast(false)} />}
         </BuyerLayout>
     );
 }

@@ -171,8 +171,8 @@ class Product extends Model
         });
 
         static::updating(function ($product) {
-            // Update stock status when quantity changes
-            if ($product->isDirty('quantity')) {
+            // Update stock status when quantity or threshold changes
+            if ($product->isDirty('quantity') || $product->isDirty('low_stock_threshold')) {
                 $product->updateStockStatus();
             }
 
@@ -197,6 +197,44 @@ class Product extends Model
     public function category(): BelongsTo
     {
         return $this->belongsTo(ProductCategory::class, 'category_id');
+    }
+
+    /**
+     * Get the ratings for the product
+     */
+    public function ratings()
+    {
+        return $this->hasMany(ProductRating::class);
+    }
+
+    /**
+     * Calculate and update the average rating for the product
+     */
+    public function updateAverageRating(): void
+    {
+        $ratingsData = $this->ratings()
+            ->selectRaw('AVG(rating) as avg_rating, COUNT(*) as count')
+            ->first();
+
+        $this->average_rating = $ratingsData->avg_rating ? round($ratingsData->avg_rating, 2) : 0;
+        $this->review_count = $ratingsData->count;
+        $this->saveQuietly(); // Save without triggering events
+    }
+
+    /**
+     * Check if a user has rated this product
+     */
+    public function hasUserRated($userId): bool
+    {
+        return $this->ratings()->where('user_id', $userId)->exists();
+    }
+
+    /**
+     * Get a user's rating for this product
+     */
+    public function getUserRating($userId)
+    {
+        return $this->ratings()->where('user_id', $userId)->first();
     }
 
     /**

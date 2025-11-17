@@ -106,6 +106,7 @@ interface ProductsPageProps extends SharedData {
         search?: string;
         category?: string;
         status?: string;
+        stock_status?: string;
         sort: string;
         direction: string;
     };
@@ -237,7 +238,14 @@ export default function ProductsIndex() {
 
                 {/* Stats Cards */}
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                    <div className="rounded-lg border bg-white p-4 dark:bg-gray-900">
+                    <button
+                        onClick={() => handleFilter('stock_status', '')}
+                        className={`rounded-lg border p-4 text-left transition-all hover:shadow-md ${
+                            !filters.stock_status && !filters.status
+                                ? 'border-blue-500 bg-blue-50 ring-2 ring-blue-200 dark:bg-blue-950/50'
+                                : 'border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900'
+                        }`}
+                    >
                         <div className="flex items-center justify-between">
                             <div>
                                 <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Total Products</p>
@@ -245,8 +253,15 @@ export default function ProductsIndex() {
                             </div>
                             <Package className="h-8 w-8 text-blue-500" />
                         </div>
-                    </div>
-                    <div className="rounded-lg border bg-white p-4 dark:bg-gray-900">
+                    </button>
+                    <button
+                        onClick={() => handleFilter('status', 'active')}
+                        className={`rounded-lg border p-4 text-left transition-all hover:shadow-md ${
+                            filters.status === 'active'
+                                ? 'border-green-500 bg-green-50 ring-2 ring-green-200 dark:bg-green-950/50'
+                                : 'border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900'
+                        }`}
+                    >
                         <div className="flex items-center justify-between">
                             <div>
                                 <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Active Products</p>
@@ -254,8 +269,15 @@ export default function ProductsIndex() {
                             </div>
                             <CheckCircle className="h-8 w-8 text-green-500" />
                         </div>
-                    </div>
-                    <div className="rounded-lg border bg-white p-4 dark:bg-gray-900">
+                    </button>
+                    <button
+                        onClick={() => handleFilter('stock_status', 'low_stock')}
+                        className={`rounded-lg border p-4 text-left transition-all hover:shadow-md ${
+                            filters.stock_status === 'low_stock'
+                                ? 'border-yellow-500 bg-yellow-50 ring-2 ring-yellow-200 dark:bg-yellow-950/50'
+                                : 'border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900'
+                        }`}
+                    >
                         <div className="flex items-center justify-between">
                             <div>
                                 <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Low Stock</p>
@@ -263,8 +285,15 @@ export default function ProductsIndex() {
                             </div>
                             <AlertTriangle className="h-8 w-8 text-yellow-500" />
                         </div>
-                    </div>
-                    <div className="rounded-lg border bg-white p-4 dark:bg-gray-900">
+                    </button>
+                    <button
+                        onClick={() => handleFilter('stock_status', 'out_of_stock')}
+                        className={`rounded-lg border p-4 text-left transition-all hover:shadow-md ${
+                            filters.stock_status === 'out_of_stock'
+                                ? 'border-red-500 bg-red-50 ring-2 ring-red-200 dark:bg-red-950/50'
+                                : 'border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900'
+                        }`}
+                    >
                         <div className="flex items-center justify-between">
                             <div>
                                 <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Out of Stock</p>
@@ -272,7 +301,7 @@ export default function ProductsIndex() {
                             </div>
                             <AlertTriangle className="h-8 w-8 text-red-500" />
                         </div>
-                    </div>
+                    </button>
                 </div>
 
                 {/* Filters and Search */}
@@ -314,6 +343,19 @@ export default function ProductsIndex() {
                         >
                             <option value="">All Status</option>
                             {Object.entries(statuses).map(([key, label]) => (
+                                <option key={key} value={key}>
+                                    {label}
+                                </option>
+                            ))}
+                        </select>
+
+                        <select
+                            value={filters.stock_status || ''}
+                            onChange={(e) => handleFilter('stock_status', e.target.value)}
+                            className="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-800"
+                        >
+                            <option value="">All Stock Status</option>
+                            {Object.entries(stockStatuses).map(([key, label]) => (
                                 <option key={key} value={key}>
                                     {label}
                                 </option>

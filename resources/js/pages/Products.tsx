@@ -24,8 +24,8 @@ interface Product {
         id: number;
         name: string;
     };
-    average_rating?: number;
-    rating?: number;
+    average_rating?: number | null;
+    review_count?: number;
     short_description?: string;
     description?: string;
     stock_status?: string;
@@ -390,14 +390,14 @@ export default function Products({ products, categories = [], filters = {} }: Pr
                                         )}
 
                                         {/* Rating */}
-                                        {(product.average_rating || product.rating) && (product.average_rating || product.rating)! > 0 && (
+                                        {product.average_rating && Number(product.average_rating) > 0 && (
                                             <div className="flex items-center space-x-1">
                                                 <div className="flex">
                                                     {[...Array(5)].map((_, i) => (
                                                         <Star
                                                             key={i}
                                                             className={`h-3.5 w-3.5 ${
-                                                                i < Math.floor(product.average_rating || product.rating || 0)
+                                                                i < Math.floor(Number(product.average_rating))
                                                                     ? 'fill-current text-yellow-400'
                                                                     : 'text-gray-300'
                                                             }`}
@@ -405,7 +405,7 @@ export default function Products({ products, categories = [], filters = {} }: Pr
                                                     ))}
                                                 </div>
                                                 <span className="ml-1 text-xs text-gray-600">
-                                                    ({(product.average_rating || product.rating || 0).toFixed(1)})
+                                                    {Number(product.average_rating).toFixed(1)} ({product.review_count || 0} {product.review_count === 1 ? 'review' : 'reviews'})
                                                 </span>
                                             </div>
                                         )}
@@ -451,7 +451,7 @@ export default function Products({ products, categories = [], filters = {} }: Pr
                                                     }`}
                                                     title="Buy Now"
                                                 >
-                                                    <ShoppingCart className="h-4 w-4" />
+                                                    Buy Now
                                                 </button>
                                             </div>
                                         </div>

@@ -2,7 +2,6 @@ import { NavFooter } from '@/components/nav-footer';
 import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
-import { dashboard } from '@/routes';
 import { type NavItem, type SharedData } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
 import { BarChart3, BookOpen, Folder, LayoutGrid, Package, Settings, ShoppingBag, Users } from 'lucide-react';
@@ -70,11 +69,6 @@ function getRoleNavItems(userRole?: string): NavItem[] {
                     href: '/admin/reports',
                     icon: BarChart3,
                 },
-                {
-                    title: 'Settings',
-                    href: '/admin/settings',
-                    icon: Settings,
-                },
             ];
 
         case 'buyer':
@@ -100,7 +94,7 @@ function getRoleNavItems(userRole?: string): NavItem[] {
             return [
                 {
                     title: 'Dashboard',
-                    href: dashboard(),
+                    href: '/',
                     icon: LayoutGrid,
                 },
             ];
@@ -121,7 +115,7 @@ export function AppSidebar() {
                 <SidebarMenu>
                     <SidebarMenuItem>
                         <SidebarMenuButton size="lg" asChild>
-                            <Link href={dashboard()} prefetch>
+                            <Link href="/" prefetch>
                                 <AppLogo />
                             </Link>
                         </SidebarMenuButton>
@@ -134,7 +128,6 @@ export function AppSidebar() {
             </SidebarContent>
 
             <SidebarFooter>
-                <NavFooter items={footerNavItems} className="mt-auto" />
                 <NavUser />
             </SidebarFooter>
         </Sidebar>

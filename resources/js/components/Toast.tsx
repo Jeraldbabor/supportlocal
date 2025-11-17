@@ -1,4 +1,4 @@
-import { CheckCircle, X } from 'lucide-react';
+import { AlertCircle, CheckCircle, Info, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 interface ToastProps {
@@ -25,22 +25,31 @@ export default function Toast({ message, type = 'success', duration = 3000, onCl
         setTimeout(onClose, 300);
     };
 
-    const bgColor = {
-        success: 'bg-green-500',
-        error: 'bg-red-500',
-        info: 'bg-blue-500',
+    const iconColorClass = {
+        success: 'text-green-500',
+        error: 'text-red-500',
+        info: 'text-blue-500',
+    }[type];
+
+    const Icon = {
+        success: CheckCircle,
+        error: AlertCircle,
+        info: Info,
     }[type];
 
     return (
         <div
-            className={`fixed top-4 right-4 z-[9999] transition-all duration-300 ${
-                isVisible ? 'translate-x-0 opacity-100' : 'translate-x-full opacity-0'
+            className={`fixed bottom-6 left-6 z-[9999] transition-all duration-300 ${
+                isVisible ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
             }`}
         >
-            <div className={`${bgColor} flex min-w-[300px] items-center gap-3 rounded-lg px-6 py-4 text-white shadow-lg`}>
-                <CheckCircle className="h-5 w-5 flex-shrink-0" />
-                <span className="flex-1">{message}</span>
-                <button onClick={handleClose} className="flex-shrink-0 text-white hover:text-gray-200">
+            <div className="flex min-w-[320px] max-w-md items-center gap-3 rounded-lg border border-gray-200 bg-white px-4 py-3 shadow-lg">
+                <Icon className={`h-5 w-5 flex-shrink-0 ${iconColorClass}`} />
+                <span className="flex-1 text-sm font-medium text-gray-900">{message}</span>
+                <button 
+                    onClick={handleClose} 
+                    className="flex-shrink-0 text-gray-400 transition-colors hover:text-gray-600"
+                >
                     <X className="h-4 w-4" />
                 </button>
             </div>

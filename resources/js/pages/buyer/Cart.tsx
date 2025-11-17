@@ -1,5 +1,6 @@
 import { Head, Link, router, usePage } from '@inertiajs/react';
 import { ArrowLeft, Minus, Plus, ShoppingBag, ShoppingCart, Trash2 } from 'lucide-react';
+import { useEffect } from 'react';
 import BuyerLayout from '../../layouts/BuyerLayout';
 import { formatPeso } from '../../utils/currency';
 
@@ -27,11 +28,25 @@ interface CartProps {
 export default function Cart() {
     const { cartItems, cartTotal } = usePage<CartProps>().props;
 
+    // Helper function to update cart badge
+    const updateCartBadge = (items: CartItem[]) => {
+        const count = items.reduce((sum: number, item: CartItem) => sum + item.quantity, 0);
+        localStorage.setItem('cart_item_count', count.toString());
+        window.dispatchEvent(new CustomEvent('cart-updated', { detail: { count } }));
+    };
+
+    // Sync cart badge when page loads
+    useEffect(() => {
+        updateCartBadge(cartItems);
+    }, [cartItems]);
+
     const handleQuantityChange = (itemId: number, newQuantity: number) => {
         if (newQuantity <= 0) {
             handleRemove(itemId);
         } else {
-            router.put('/buyer/cart/update', { item_id: itemId, quantity: newQuantity }, { preserveScroll: true });
+            router.put('/buyer/cart/update', { item_id: itemId, quantity: newQuantity }, { 
+                preserveScroll: true,
+            });
         }
     };
 

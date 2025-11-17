@@ -14,6 +14,7 @@ interface Notification {
         message?: string;
         action_url?: string;
         order_id?: number;
+        admin_notes?: string;
     };
     read_at: string | null;
     created_at: string;
@@ -39,13 +40,10 @@ function NotificationsContent({ notifications }: NotificationsProps) {
 
     const handleMarkAsRead = (notificationId: string) => {
         markAsRead(notificationId);
-        // Optionally reload the page or update local state
-        router.reload();
     };
 
     const handleMarkAllAsRead = () => {
         markAllAsRead();
-        router.reload();
     };
 
     const handleClearAllHistory = () => {
@@ -168,6 +166,12 @@ function NotificationsContent({ notifications }: NotificationsProps) {
                                                     <p className="mt-1 text-sm text-gray-700 dark:text-gray-300">
                                                         {notification.data.message || 'No message'}
                                                     </p>
+                                                    {notification.data.admin_notes && (
+                                                        <div className="mt-2 rounded-md bg-blue-50 p-3 border border-blue-200 dark:bg-blue-900/30 dark:border-blue-800">
+                                                            <p className="text-xs font-semibold text-blue-900 dark:text-blue-200 mb-1">Note from Admin:</p>
+                                                            <p className="text-sm text-blue-800 dark:text-blue-300">{notification.data.admin_notes}</p>
+                                                        </div>
+                                                    )}
                                                     <div className="mt-2 flex items-center text-xs text-gray-500 dark:text-gray-400">
                                                         <Clock className="mr-1 h-3 w-3" />
                                                         {formatDate(notification.created_at)}

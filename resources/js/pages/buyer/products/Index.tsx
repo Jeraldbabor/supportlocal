@@ -303,14 +303,14 @@ export default function Index({ products, categories, filters }: ProductsIndexPr
                                                         <Star
                                                             key={i}
                                                             className={`h-3.5 w-3.5 ${
-                                                                i < Math.floor(product.average_rating)
+                                                                i < Math.floor(Number(product.average_rating) || 0)
                                                                     ? 'fill-current text-yellow-400'
                                                                     : 'text-gray-300'
                                                             }`}
                                                         />
                                                     ))}
                                                 </div>
-                                                <span className="ml-1 text-xs text-gray-600">({product.average_rating.toFixed(1)})</span>
+                                                <span className="ml-1 text-xs text-gray-600">({Number(product.average_rating).toFixed(1)})</span>
                                             </div>
                                         )}
 
@@ -355,7 +355,7 @@ export default function Index({ products, categories, filters }: ProductsIndexPr
                                                     }`}
                                                     title="Buy Now"
                                                 >
-                                                    <ShoppingCart className="h-4 w-4" />
+                                                    Buy Now
                                                 </button>
                                             </div>
                                         </div>

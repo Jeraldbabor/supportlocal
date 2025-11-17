@@ -127,10 +127,27 @@ class ProductController extends Controller
             ->limit(4)
             ->get();
 
+        // Get ratings with user information (limited to first 5, frontend can load more)
+        $ratings = $product->ratings()
+            ->with('user:id,name,profile_picture')
+            ->orderBy('created_at', 'desc')
+            ->limit(5)
+            ->get();
+
+        // Check if current user has rated this product
+        $userRating = null;
+        if (auth()->check()) {
+            $userRating = $product->ratings()
+                ->where('user_id', auth()->id())
+                ->first();
+        }
+
         return Inertia::render('buyer/products/Show', [
             'product' => $product,
             'relatedProducts' => $relatedProducts,
             'similarProducts' => $similarProducts,
+            'ratings' => $ratings,
+            'userRating' => $userRating,
         ]);
     }
 }

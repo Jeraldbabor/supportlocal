@@ -1,6 +1,7 @@
 import { Head, router, useForm } from '@inertiajs/react';
 import { ArrowLeft, CheckCircle, CreditCard, MapPin, Phone, ShoppingBag, Truck, User } from 'lucide-react';
 import React, { useState } from 'react';
+import LocationPicker from '../../components/LocationPicker';
 import Toast from '../../components/Toast';
 import { useCart } from '../../contexts/CartContext';
 import BuyerLayout from '../../layouts/BuyerLayout';
@@ -17,6 +18,13 @@ interface CheckoutProps {
         delivery_address?: string;
         delivery_phone?: string;
         delivery_notes?: string;
+        delivery_province?: string;
+        delivery_city?: string;
+        delivery_barangay?: string;
+        delivery_street?: string;
+        delivery_building_details?: string;
+        delivery_latitude?: number;
+        delivery_longitude?: number;
         gcash_number?: string;
         gcash_name?: string;
     };
@@ -50,6 +58,13 @@ export default function Checkout({ user, buyNowItem }: CheckoutProps) {
         delivery_address: user.delivery_address || user.address || '',
         delivery_phone: user.delivery_phone || user.phone_number || '',
         delivery_notes: user.delivery_notes || '',
+        delivery_province: user.delivery_province || '',
+        delivery_city: user.delivery_city || '',
+        delivery_barangay: user.delivery_barangay || '',
+        delivery_street: user.delivery_street || '',
+        delivery_building_details: user.delivery_building_details || '',
+        delivery_latitude: user.delivery_latitude || null,
+        delivery_longitude: user.delivery_longitude || null,
         payment_method: 'cod',
         gcash_reference: user.gcash_number || '',
         items: [] as Array<{ product_id: number; quantity: number }>,
@@ -65,11 +80,18 @@ export default function Checkout({ user, buyNowItem }: CheckoutProps) {
             return;
         }
 
-        // Prepare the order data with items
+        // Prepare the order data with items and delivery location
         const orderData = {
             delivery_address: data.delivery_address,
             delivery_phone: data.delivery_phone,
             delivery_notes: data.delivery_notes,
+            delivery_province: data.delivery_province,
+            delivery_city: data.delivery_city,
+            delivery_barangay: data.delivery_barangay,
+            delivery_street: data.delivery_street,
+            delivery_building_details: data.delivery_building_details,
+            delivery_latitude: data.delivery_latitude,
+            delivery_longitude: data.delivery_longitude,
             payment_method: data.payment_method,
             gcash_reference: data.gcash_reference,
             items: checkoutItems.map((item) => ({
@@ -164,69 +186,172 @@ export default function Checkout({ user, buyNowItem }: CheckoutProps) {
                         <div className="space-y-8 lg:col-span-2">
                             {/* Shipping Information */}
                             <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
-                                <div className="mb-6 flex items-center">
-                                    <MapPin className="mr-3 h-6 w-6 text-primary" />
-                                    <h2 className="text-xl font-semibold text-gray-900">Shipping Information</h2>
+                                <div className="mb-6 flex items-center justify-between">
+                                    <div className="flex items-center">
+                                        <Truck className="mr-3 h-6 w-6 text-primary" />
+                                        <h2 className="text-xl font-semibold text-gray-900">Shipping Information</h2>
+                                    </div>
+                                    {user.delivery_province && user.delivery_city && user.delivery_barangay && (
+                                        <div className="inline-flex items-center rounded-full bg-green-100 px-3 py-1 text-xs font-medium text-green-800">
+                                            <CheckCircle className="mr-1 h-3 w-3" />
+                                            Profile Saved
+                                        </div>
+                                    )}
                                 </div>
 
-                                <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-                                    <div>
-                                        <label htmlFor="shipping_name" className="mb-2 block text-sm font-medium text-gray-700">
-                                            Full Name
-                                        </label>
-                                        <input
-                                            type="text"
-                                            id="shipping_name"
-                                            value={user.name || ''}
-                                            readOnly
-                                            className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-primary focus:ring-primary"
-                                            required
-                                        />
+                                {/* Editable Delivery Location */}
+                                <div className="space-y-6">
+                                    {/* Province, City, Barangay */}
+                                    <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+                                        <div>
+                                            <label htmlFor="delivery_province" className="mb-2 block text-sm font-medium text-gray-700">
+                                                Province *
+                                            </label>
+                                            <input
+                                                type="text"
+                                                id="delivery_province"
+                                                value={data.delivery_province}
+                                                onChange={(e) => setData('delivery_province', e.target.value)}
+                                                className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-primary focus:ring-primary"
+                                                placeholder="Enter province"
+                                                required
+                                            />
+                                            {errors.delivery_province && <p className="mt-1 text-sm text-red-600">{errors.delivery_province}</p>}
+                                        </div>
+
+                                        <div>
+                                            <label htmlFor="delivery_city" className="mb-2 block text-sm font-medium text-gray-700">
+                                                City / Municipality *
+                                            </label>
+                                            <input
+                                                type="text"
+                                                id="delivery_city"
+                                                value={data.delivery_city}
+                                                onChange={(e) => setData('delivery_city', e.target.value)}
+                                                className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-primary focus:ring-primary"
+                                                placeholder="Enter city"
+                                                required
+                                            />
+                                            {errors.delivery_city && <p className="mt-1 text-sm text-red-600">{errors.delivery_city}</p>}
+                                        </div>
+
+                                        <div>
+                                            <label htmlFor="delivery_barangay" className="mb-2 block text-sm font-medium text-gray-700">
+                                                Barangay *
+                                            </label>
+                                            <input
+                                                type="text"
+                                                id="delivery_barangay"
+                                                value={data.delivery_barangay}
+                                                onChange={(e) => setData('delivery_barangay', e.target.value)}
+                                                className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-primary focus:ring-primary"
+                                                placeholder="Enter barangay"
+                                                required
+                                            />
+                                            {errors.delivery_barangay && <p className="mt-1 text-sm text-red-600">{errors.delivery_barangay}</p>}
+                                        </div>
                                     </div>
 
-                                    <div>
-                                        <label htmlFor="shipping_email" className="mb-2 block text-sm font-medium text-gray-700">
-                                            Email Address
-                                        </label>
-                                        <input
-                                            type="email"
-                                            id="shipping_email"
-                                            value={user.email}
-                                            readOnly
-                                            className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-primary focus:ring-primary"
-                                            required
-                                        />
+                                    {/* Street and Building Details */}
+                                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                                        <div>
+                                            <label htmlFor="delivery_street" className="mb-2 block text-sm font-medium text-gray-700">
+                                                Street Address
+                                            </label>
+                                            <input
+                                                type="text"
+                                                id="delivery_street"
+                                                value={data.delivery_street}
+                                                onChange={(e) => setData('delivery_street', e.target.value)}
+                                                className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-primary focus:ring-primary"
+                                                placeholder="e.g., 123 Main Street"
+                                            />
+                                            {errors.delivery_street && <p className="mt-1 text-sm text-red-600">{errors.delivery_street}</p>}
+                                        </div>
+
+                                        <div>
+                                            <label htmlFor="delivery_building_details" className="mb-2 block text-sm font-medium text-gray-700">
+                                                Building / Unit Details
+                                            </label>
+                                            <input
+                                                type="text"
+                                                id="delivery_building_details"
+                                                value={data.delivery_building_details}
+                                                onChange={(e) => setData('delivery_building_details', e.target.value)}
+                                                className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-primary focus:ring-primary"
+                                                placeholder="e.g., Bldg 5, Unit 201"
+                                            />
+                                            {errors.delivery_building_details && <p className="mt-1 text-sm text-red-600">{errors.delivery_building_details}</p>}
+                                        </div>
                                     </div>
 
+                                    {/* Interactive Map - Editable */}
                                     <div>
-                                        <label htmlFor="shipping_phone" className="mb-2 block text-sm font-medium text-gray-700">
-                                            Phone Number
+                                        <label className="mb-2 block text-sm font-medium text-gray-700">
+                                            Pin Your Exact Location on Map
                                         </label>
-                                        <input
-                                            type="tel"
-                                            id="shipping_phone"
-                                            value={data.delivery_phone}
-                                            onChange={(e) => setData('delivery_phone', e.target.value)}
-                                            className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-primary focus:ring-primary"
-                                            required
+                                        <LocationPicker
+                                            latitude={data.delivery_latitude || undefined}
+                                            longitude={data.delivery_longitude || undefined}
+                                            address={
+                                                data.delivery_barangay && data.delivery_city && data.delivery_province
+                                                    ? `${data.delivery_barangay}, ${data.delivery_city}, ${data.delivery_province}, Philippines`
+                                                    : ''
+                                            }
+                                            onLocationChange={(lat, lng) => {
+                                                setData('delivery_latitude', lat);
+                                                setData('delivery_longitude', lng);
+                                            }}
+                                            centerOnAddress={true}
                                         />
-                                        {errors.delivery_phone && <p className="mt-1 text-sm text-red-600">{errors.delivery_phone}</p>}
+                                        <p className="mt-2 text-xs text-gray-500">
+                                            💡 Click on the map or drag the marker to set your exact delivery location. This helps ensure accurate delivery!
+                                        </p>
                                     </div>
 
-                                    <div className="md:col-span-2">
-                                        <label htmlFor="shipping_address" className="mb-2 block text-sm font-medium text-gray-700">
-                                            Complete Address
-                                        </label>
-                                        <textarea
-                                            id="shipping_address"
-                                            rows={3}
-                                            value={data.delivery_address}
-                                            onChange={(e) => setData('delivery_address', e.target.value)}
-                                            className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-primary focus:ring-primary"
-                                            placeholder="Street address, city, province, postal code"
-                                            required
-                                        />
-                                        {errors.delivery_address && <p className="mt-1 text-sm text-red-600">{errors.delivery_address}</p>}
+                                    {/* Contact Information */}
+                                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                                        <div>
+                                            <label htmlFor="shipping_name" className="mb-2 block text-sm font-medium text-gray-700">
+                                                Full Name
+                                            </label>
+                                            <input
+                                                type="text"
+                                                id="shipping_name"
+                                                value={user.name || ''}
+                                                readOnly
+                                                className="w-full rounded-lg border border-gray-300 bg-gray-50 px-3 py-2"
+                                            />
+                                        </div>
+
+                                        <div>
+                                            <label htmlFor="shipping_email" className="mb-2 block text-sm font-medium text-gray-700">
+                                                Email Address
+                                            </label>
+                                            <input
+                                                type="email"
+                                                id="shipping_email"
+                                                value={user.email}
+                                                readOnly
+                                                className="w-full rounded-lg border border-gray-300 bg-gray-50 px-3 py-2"
+                                            />
+                                        </div>
+
+                                        <div className="md:col-span-2">
+                                            <label htmlFor="shipping_phone" className="mb-2 block text-sm font-medium text-gray-700">
+                                                Contact Phone Number *
+                                            </label>
+                                            <input
+                                                type="tel"
+                                                id="shipping_phone"
+                                                value={data.delivery_phone}
+                                                onChange={(e) => setData('delivery_phone', e.target.value)}
+                                                className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-primary focus:ring-primary"
+                                                placeholder="e.g., 09123456789"
+                                                required
+                                            />
+                                            {errors.delivery_phone && <p className="mt-1 text-sm text-red-600">{errors.delivery_phone}</p>}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
