@@ -2,9 +2,55 @@ import { type SharedData } from '@/types/index';
 import { Head, Link, usePage } from '@inertiajs/react';
 import { ArrowRight, Bell, Clock, CreditCard, MapPin, Package, ShoppingBag, Star, TrendingUp, User } from 'lucide-react';
 import BuyerLayout from '../../layouts/BuyerLayout';
+import { formatPeso } from '@/utils/currency';
+
+interface Stats {
+    totalOrders: number;
+    pendingOrders: number;
+    completedOrders: number;
+    totalSpent: number;
+    totalReviews: number;
+    averageRating: number;
+}
+
+interface OrderItem {
+    product_name: string;
+    quantity: number;
+    price: number;
+    image: string;
+}
+
+interface RecentOrder {
+    id: number;
+    order_number: string;
+    status: string;
+    total_amount: number;
+    items_count: number;
+    seller_name: string;
+    created_at: string;
+    created_at_human: string;
+    items: OrderItem[];
+}
+
+interface Activity {
+    type: 'order' | 'review';
+    description: string;
+    date: string;
+    date_human: string;
+    status?: string;
+    amount?: number;
+    product_name?: string;
+    rating?: number;
+}
+
+interface PageProps extends SharedData {
+    stats: Stats;
+    recentOrders: RecentOrder[];
+    recentActivity: Activity[];
+}
 
 export default function BuyerDashboard() {
-    const { auth } = usePage<SharedData>().props;
+    const { auth, stats, recentOrders, recentActivity } = usePage<PageProps>().props;
     const user = auth.user;
 
     return (
@@ -70,10 +116,12 @@ export default function BuyerDashboard() {
                                 </div>
                                 <h3 className="mb-2 text-lg font-semibold text-gray-800">Total Orders</h3>
                                 <div className="flex items-baseline space-x-2">
-                                    <p className="text-3xl font-bold text-amber-700">0</p>
+                                    <p className="text-3xl font-bold text-amber-700">{stats.totalOrders}</p>
                                     <span className="text-sm text-gray-600">orders placed</span>
                                 </div>
-                                <p className="mt-2 text-sm text-gray-600">Start shopping to see your orders here</p>
+                                <p className="mt-2 text-sm text-gray-600">
+                                    {stats.totalOrders > 0 ? `${stats.completedOrders} completed, ${stats.pendingOrders} pending` : 'Start shopping to see your orders here'}
+                                </p>
                             </div>
 
                             {/* Reviews Card */}
@@ -86,10 +134,12 @@ export default function BuyerDashboard() {
                                 </div>
                                 <h3 className="mb-2 text-lg font-semibold text-gray-800">Reviews Given</h3>
                                 <div className="flex items-baseline space-x-2">
-                                    <p className="text-3xl font-bold text-yellow-700">0</p>
+                                    <p className="text-3xl font-bold text-yellow-700">{stats.totalReviews}</p>
                                     <span className="text-sm text-gray-600">reviews written</span>
                                 </div>
-                                <p className="mt-2 text-sm text-gray-600">Share your experience with others</p>
+                                <p className="mt-2 text-sm text-gray-600">
+                                    {stats.averageRating > 0 ? `Average rating: ${stats.averageRating}/5` : 'Share your experience with others'}
+                                </p>
                             </div>
 
                             {/* Spending Card */}
@@ -102,7 +152,7 @@ export default function BuyerDashboard() {
                                 </div>
                                 <h3 className="mb-2 text-lg font-semibold text-gray-800">Total Spent</h3>
                                 <div className="flex items-baseline space-x-2">
-                                    <p className="text-3xl font-bold text-green-700">$0.00</p>
+                                    <p className="text-3xl font-bold text-green-700">{formatPeso(stats.totalSpent)}</p>
                                     <span className="text-sm text-gray-600">lifetime</span>
                                 </div>
                                 <p className="mt-2 text-sm text-gray-600">Supporting local artisans</p>
@@ -123,20 +173,84 @@ export default function BuyerDashboard() {
                                 <Clock className="h-6 w-6 text-gray-400" />
                             </div>
 
-                            <div className="py-12 text-center">
-                                <div className="mx-auto mb-4 h-16 w-16 rounded-full bg-gray-100 p-4">
-                                    <Clock className="mx-auto h-8 w-8 text-gray-400" />
+                            {recentActivity.length > 0 ? (
+                                <div className="space-y-4">
+                                    {recentActivity.map((activity, index) => (
+                                        <div
+                                            key={index}
+                                            className="flex items-start gap-4 rounded-lg border border-gray-100 bg-gray-50 p-4 transition-all duration-200 hover:border-amber-200 hover:bg-amber-50"
+                                        >
+                                            <div
+                                                className={`mt-1 rounded-full p-2 ${
+                                                    activity.type === 'order'
+                                                        ? 'bg-gradient-to-r from-amber-600 to-orange-600'
+                                                        : 'bg-gradient-to-r from-yellow-600 to-amber-600'
+                                                }`}
+                                            >
+                                                {activity.type === 'order' ? (
+                                                    <Package className="h-4 w-4 text-white" />
+                                                ) : (
+                                                    <Star className="h-4 w-4 text-white" />
+                                                )}
+                                            </div>
+                                            <div className="flex-1">
+                                                <div className="flex items-start justify-between">
+                                                    <div>
+                                                        <p className="font-semibold text-gray-900">{activity.description}</p>
+                                                        {activity.type === 'order' && activity.status && (
+                                                            <p className="mt-1 text-sm text-gray-600">
+                                                                Status:{' '}
+                                                                <span
+                                                                    className={`font-medium ${
+                                                                        activity.status === 'completed'
+                                                                            ? 'text-green-600'
+                                                                            : activity.status === 'pending'
+                                                                              ? 'text-yellow-600'
+                                                                              : 'text-amber-600'
+                                                                    }`}
+                                                                >
+                                                                    {activity.status}
+                                                                </span>
+                                                            </p>
+                                                        )}
+                                                        {activity.type === 'review' && activity.rating && (
+                                                            <div className="mt-1 flex items-center gap-1">
+                                                                {[...Array(5)].map((_, i) => (
+                                                                    <Star
+                                                                        key={i}
+                                                                        className={`h-3 w-3 ${
+                                                                            i < activity.rating! ? 'fill-yellow-500 text-yellow-500' : 'text-gray-300'
+                                                                        }`}
+                                                                    />
+                                                                ))}
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                    <div className="text-right">
+                                                        <p className="text-sm text-gray-500">{activity.date_human}</p>
+                                                        {activity.amount && <p className="mt-1 font-semibold text-amber-700">{formatPeso(activity.amount)}</p>}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
                                 </div>
-                                <h3 className="mb-2 text-lg font-medium text-gray-600">No Recent Activity</h3>
-                                <p className="mb-6 text-gray-500">Start shopping to see your activity here</p>
-                                <Link
-                                    href="/products"
-                                    className="inline-flex items-center rounded-lg bg-primary px-6 py-3 font-medium text-white transition-colors duration-200 hover:bg-primary/90"
-                                >
-                                    <ShoppingBag className="mr-2 h-4 w-4" />
-                                    Start Shopping
-                                </Link>
-                            </div>
+                            ) : (
+                                <div className="py-12 text-center">
+                                    <div className="mx-auto mb-4 h-16 w-16 rounded-full bg-gray-100 p-4">
+                                        <Clock className="mx-auto h-8 w-8 text-gray-400" />
+                                    </div>
+                                    <h3 className="mb-2 text-lg font-medium text-gray-600">No Recent Activity</h3>
+                                    <p className="mb-6 text-gray-500">Start shopping to see your activity here</p>
+                                    <Link
+                                        href="/products"
+                                        className="inline-flex items-center rounded-lg bg-primary px-6 py-3 font-medium text-white transition-colors duration-200 hover:bg-primary/90"
+                                    >
+                                        <ShoppingBag className="mr-2 h-4 w-4" />
+                                        Start Shopping
+                                    </Link>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </section>
@@ -157,22 +271,85 @@ export default function BuyerDashboard() {
                                     </div>
                                 </div>
                                 <div className="p-6">
-                                    <div className="py-12 text-center">
-                                        <div className="mx-auto mb-6 h-20 w-20 rounded-full bg-amber-100 p-4">
-                                            <Package className="mx-auto h-12 w-12 text-amber-700" />
+                                    {recentOrders.length > 0 ? (
+                                        <div className="space-y-4">
+                                            {recentOrders.map((order) => (
+                                                <div
+                                                    key={order.id}
+                                                    className="rounded-lg border border-amber-100 bg-gradient-to-r from-amber-50 to-orange-50 p-4 transition-all duration-200 hover:border-amber-300 hover:shadow-md"
+                                                >
+                                                    <div className="mb-3 flex items-start justify-between">
+                                                        <div>
+                                                            <h4 className="font-semibold text-gray-900">Order #{order.order_number}</h4>
+                                                            <p className="text-sm text-gray-600">From {order.seller_name}</p>
+                                                        </div>
+                                                        <div className="text-right">
+                                                            <span
+                                                                className={`rounded-full px-3 py-1 text-xs font-semibold ${
+                                                                    order.status === 'completed'
+                                                                        ? 'bg-green-100 text-green-700'
+                                                                        : order.status === 'pending'
+                                                                          ? 'bg-yellow-100 text-yellow-700'
+                                                                          : order.status === 'processing'
+                                                                            ? 'bg-blue-100 text-blue-700'
+                                                                            : order.status === 'shipped'
+                                                                              ? 'bg-purple-100 text-purple-700'
+                                                                              : 'bg-gray-100 text-gray-700'
+                                                                }`}
+                                                            >
+                                                                {order.status}
+                                                            </span>
+                                                            <p className="mt-1 text-sm text-gray-500">{order.created_at_human}</p>
+                                                        </div>
+                                                    </div>
+                                                    <div className="mb-3 flex items-center gap-2 text-sm text-gray-600">
+                                                        <Package className="h-4 w-4" />
+                                                        <span>{order.items_count} item(s)</span>
+                                                        <span className="mx-2">•</span>
+                                                        <span className="font-semibold text-amber-700">{formatPeso(order.total_amount)}</span>
+                                                    </div>
+                                                    <div className="flex flex-wrap gap-2">
+                                                        {order.items.slice(0, 3).map((item, idx) => (
+                                                            <div
+                                                                key={idx}
+                                                                className="rounded border border-amber-200 bg-white px-3 py-1 text-xs text-gray-700"
+                                                            >
+                                                                {item.product_name} (x{item.quantity})
+                                                            </div>
+                                                        ))}
+                                                        {order.items.length > 3 && (
+                                                            <div className="rounded border border-amber-200 bg-white px-3 py-1 text-xs text-gray-500">
+                                                                +{order.items.length - 3} more
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            ))}
+                                            <Link
+                                                href="/buyer/orders"
+                                                className="block pt-2 text-center text-sm font-medium text-amber-700 hover:text-amber-900"
+                                            >
+                                                View all orders →
+                                            </Link>
                                         </div>
-                                        <h4 className="mb-3 text-lg font-medium text-gray-600">No orders yet</h4>
-                                        <p className="mx-auto mb-6 max-w-sm text-gray-500">
-                                            Discover amazing handcrafted products from local artisans
-                                        </p>
-                                        <Link
-                                            href="/products"
-                                            className="inline-flex transform items-center rounded-xl bg-gradient-to-r from-amber-600 to-orange-600 px-8 py-3 font-semibold text-white shadow-lg transition-all duration-200 hover:scale-105 hover:from-amber-700 hover:to-orange-700 hover:shadow-xl active:scale-[0.98]"
-                                        >
-                                            <ShoppingBag className="mr-2 h-5 w-5" />
-                                            Browse Products
-                                        </Link>
-                                    </div>
+                                    ) : (
+                                        <div className="py-12 text-center">
+                                            <div className="mx-auto mb-6 h-20 w-20 rounded-full bg-amber-100 p-4">
+                                                <Package className="mx-auto h-12 w-12 text-amber-700" />
+                                            </div>
+                                            <h4 className="mb-3 text-lg font-medium text-gray-600">No orders yet</h4>
+                                            <p className="mx-auto mb-6 max-w-sm text-gray-500">
+                                                Discover amazing handcrafted products from local artisans
+                                            </p>
+                                            <Link
+                                                href="/products"
+                                                className="inline-flex transform items-center rounded-xl bg-gradient-to-r from-amber-600 to-orange-600 px-8 py-3 font-semibold text-white shadow-lg transition-all duration-200 hover:scale-105 hover:from-amber-700 hover:to-orange-700 hover:shadow-xl active:scale-[0.98]"
+                                            >
+                                                <ShoppingBag className="mr-2 h-5 w-5" />
+                                                Browse Products
+                                            </Link>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
 

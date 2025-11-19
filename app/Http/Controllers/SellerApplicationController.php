@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\SellerApplication;
 use App\Models\User;
+use App\Notifications\NewSellerApplicationSubmitted;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rules\File;
 use Inertia\Inertia;
@@ -119,7 +121,7 @@ class SellerApplicationController extends Controller
         }
 
         // Create the application
-        SellerApplication::create([
+        $application = SellerApplication::create([
             'user_id' => $user->id,
             'business_description' => $request->business_description,
             'business_type' => $request->business_type,
@@ -128,6 +130,10 @@ class SellerApplicationController extends Controller
             'additional_documents_path' => $additionalDocumentPaths,
             'status' => SellerApplication::STATUS_PENDING,
         ]);
+
+        // Notify all administrators about the new application
+        $admins = User::where('role', User::ROLE_ADMINISTRATOR)->get();
+        Notification::send($admins, new NewSellerApplicationSubmitted($application));
 
         return redirect()->route('seller.application.create')->with('success',
             'Your seller application has been submitted successfully! We will review it within 3-5 business days.');

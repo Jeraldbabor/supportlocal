@@ -36,47 +36,42 @@ export function NotificationsProvider({
         setUnreadCount(0);
     };
 
-    const markAsRead = async (notificationId: string) => {
-        try {
-            const baseRoute = userRole === 'seller' ? '/seller' : '/buyer';
-            const response = await fetch(`${baseRoute}/notifications/${notificationId}/read`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
+    const markAsRead = (notificationId: string) => {
+        const baseRoute = userRole === 'seller' ? 'seller' : userRole === 'administrator' ? 'admin' : 'buyer';
+        
+        router.post(
+            `/${baseRoute}/notifications/${notificationId}/read`,
+            {},
+            {
+                preserveState: false,
+                preserveScroll: true,
+                onSuccess: () => {
+                    // Page will reload automatically, updating the notification state
                 },
-            });
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+                onError: (errors) => {
+                    console.error('Error marking notification as read:', errors);
+                },
             }
-
-            // Refresh the count after marking as read
-            refreshUnreadCount();
-        } catch (error) {
-            console.error('Error marking notification as read:', error);
-        }
+        );
     };
 
-    const markAllAsRead = async () => {
-        try {
-            const baseRoute = userRole === 'seller' ? '/seller' : '/buyer';
-            const response = await fetch(`${baseRoute}/notifications/read-all`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
+    const markAllAsRead = () => {
+        const baseRoute = userRole === 'seller' ? 'seller' : userRole === 'administrator' ? 'admin' : 'buyer';
+        
+        router.post(
+            `/${baseRoute}/notifications/read-all`,
+            {},
+            {
+                preserveState: false,
+                preserveScroll: true,
+                onSuccess: () => {
+                    // Page will reload automatically, updating all notifications
                 },
-            });
-
-            if (response.ok) {
-                // Update local state immediately, then refresh from server
-                setUnreadCount(0);
-                refreshUnreadCount();
+                onError: (errors) => {
+                    console.error('Error marking all notifications as read:', errors);
+                },
             }
-        } catch (error) {
-            console.error('Error marking all notifications as read:', error);
-        }
+        );
     };
 
     // Listen for route changes to refresh notification count

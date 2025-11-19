@@ -49,8 +49,6 @@ export function CartProvider({ children, isAuthenticated: authProp }: CartProvid
         const wasAuthenticated = isAuthenticated;
         const nowAuthenticated = authProp || false;
 
-        console.log('[CartContext] Auth state change:', { wasAuthenticated, nowAuthenticated, hasTransferredCart });
-
         setIsAuthenticated(nowAuthenticated);
 
         // If user just logged in, transfer guest cart and clear profile dismissal
@@ -68,6 +66,17 @@ export function CartProvider({ children, isAuthenticated: authProp }: CartProvid
     // Initial cart load
     useEffect(() => {
         loadCart();
+    }, [isAuthenticated]);
+
+    // Listen for cart-updated events from other components
+    useEffect(() => {
+        const handleCartUpdate = () => {
+            console.log('[CartContext] Received cart-updated event, refreshing cart...');
+            loadCart();
+        };
+
+        window.addEventListener('cart-updated', handleCartUpdate);
+        return () => window.removeEventListener('cart-updated', handleCartUpdate);
     }, [isAuthenticated]);
 
     // Transfer guest cart to backend when user logs in

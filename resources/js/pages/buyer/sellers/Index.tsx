@@ -14,6 +14,7 @@ interface Seller {
     phone: string | null;
     products_count: number;
     average_rating: number;
+    review_count: number;
     total_sales: number;
     created_at: string;
     is_verified: boolean;
@@ -172,10 +173,12 @@ export default function Index({ sellers, filters }: SellersIndexProps) {
                                                 <div className="flex items-center justify-center">
                                                     <Star className="mr-1 h-4 w-4 fill-current text-yellow-400" />
                                                     <span className="text-lg font-semibold text-gray-900">
-                                                        {seller.average_rating ? seller.average_rating.toFixed(1) : '0.0'}
+                                                        {seller.average_rating ? Number(seller.average_rating).toFixed(1) : '0.0'}
                                                     </span>
                                                 </div>
-                                                <div className="text-xs text-gray-500">Rating</div>
+                                                <div className="text-xs text-gray-500">
+                                                    {seller.review_count || 0} {seller.review_count === 1 ? 'review' : 'reviews'}
+                                                </div>
                                             </div>
 
                                             <div>

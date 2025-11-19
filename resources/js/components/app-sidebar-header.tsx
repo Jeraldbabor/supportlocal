@@ -10,18 +10,32 @@ export function AppSidebarHeader({ breadcrumbs = [] }: { breadcrumbs?: Breadcrum
     const { props } = usePage<{ auth?: { user?: { role?: string } }; unreadNotificationsCount?: number }>();
     const user = props.auth?.user;
 
-    // Add defensive handling for notifications context
+    
     let unreadCount = 0;
     try {
         const notificationsContext = useNotifications();
         unreadCount = notificationsContext.unreadCount;
     } catch {
-        // Fallback to props if context is not available
+        
         unreadCount = props.unreadNotificationsCount || 0;
     }
 
-    // Only show notifications for sellers and admins
-    const showNotifications = user?.role === 'seller' || user?.role === 'admin';
+    
+    const showNotifications = user?.role === 'seller' || user?.role === 'administrator' || user?.role === 'buyer';
+    
+   
+    const getNotificationRoute = () => {
+        switch (user?.role) {
+            case 'seller':
+                return '/seller/notifications';
+            case 'administrator':
+                return '/admin/notifications';
+            case 'buyer':
+                return '/buyer/notifications';
+            default:
+                return '/notifications';
+        }
+    };
 
     return (
         <header className="flex h-16 shrink-0 items-center gap-2 border-b border-sidebar-border/50 px-6 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12 md:px-4">
@@ -32,7 +46,7 @@ export function AppSidebarHeader({ breadcrumbs = [] }: { breadcrumbs?: Breadcrum
             <div className="flex items-center gap-4">
                 {showNotifications && (
                     <Link
-                        href="/seller/notifications"
+                        href={getNotificationRoute()}
                         className="relative rounded-lg p-2 text-sidebar-foreground/60 transition-colors hover:bg-sidebar-accent hover:text-sidebar-foreground"
                         title="Notifications"
                     >

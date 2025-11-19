@@ -185,10 +185,7 @@ class ProfileController extends Controller
         $user = $request->user();
         $user->dismissProfileCompletionReminder();
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Profile completion reminder dismissed.',
-        ]);
+        return back();
     }
 
     /**

@@ -47,6 +47,13 @@ class User extends Authenticatable
         'delivery_address',
         'delivery_phone',
         'delivery_notes',
+        'delivery_province',
+        'delivery_city',
+        'delivery_barangay',
+        'delivery_street',
+        'delivery_building_details',
+        'delivery_latitude',
+        'delivery_longitude',
         'gcash_number',
         'gcash_name',
         'is_active',
@@ -59,6 +66,8 @@ class User extends Authenticatable
         'provider_id',
         'provider_token',
         'avatar',
+        'average_rating',
+        'review_count',
     ];
 
     /**
@@ -95,6 +104,8 @@ class User extends Authenticatable
             'is_active' => 'boolean',
             'profile_completion_reminder_dismissed_at' => 'datetime',
             'profile_completed_at' => 'datetime',
+            'average_rating' => 'decimal:2',
+            'review_count' => 'integer',
         ];
     }
 
@@ -144,6 +155,36 @@ class User extends Authenticatable
     public function products()
     {
         return $this->hasMany(Product::class, 'seller_id');
+    }
+
+    /**
+     * Get ratings received as a seller
+     */
+    public function sellerRatings()
+    {
+        return $this->hasMany(SellerRating::class, 'seller_id');
+    }
+
+    /**
+     * Get ratings given by this user
+     */
+    public function givenSellerRatings()
+    {
+        return $this->hasMany(SellerRating::class, 'user_id');
+    }
+
+    /**
+     * Update average rating for seller
+     */
+    public function updateAverageRating(): void
+    {
+        $avgRating = $this->sellerRatings()->avg('rating');
+        $reviewCount = $this->sellerRatings()->count();
+
+        $this->update([
+            'average_rating' => $avgRating ? round($avgRating, 2) : 0,
+            'review_count' => $reviewCount,
+        ]);
     }
 
     /**
@@ -357,7 +398,9 @@ class User extends Authenticatable
             ],
             self::ROLE_BUYER => [
                 'phone_number' => 'Phone Number',
-                'delivery_address' => 'Delivery Address',
+                'delivery_province' => 'Delivery Province',
+                'delivery_city' => 'Delivery City',
+                'delivery_barangay' => 'Delivery Barangay',
             ],
             self::ROLE_ADMINISTRATOR => [
                 'phone_number' => 'Phone Number',

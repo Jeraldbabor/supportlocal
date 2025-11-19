@@ -11,8 +11,8 @@ interface Product {
     artisan: string;
     artisan_id: number;
     artisan_image?: string;
-    rating: number;
-    reviewCount: number;
+    average_rating?: number | null;
+    review_count: number;
     category: string;
     description: string;
     materials: string[];
@@ -35,12 +35,22 @@ interface RelatedProduct {
     rating: number;
 }
 
+interface Review {
+    id: number;
+    rating: number;
+    review: string;
+    created_at: string;
+    buyer_name: string;
+    buyer_avatar: string;
+}
+
 interface ProductDetailProps {
     product: Product;
     relatedProducts?: RelatedProduct[];
+    reviews?: Review[];
 }
 
-export default function ProductDetail({ product, relatedProducts = [] }: ProductDetailProps) {
+export default function ProductDetail({ product, relatedProducts = [], reviews = [] }: ProductDetailProps) {
     const [selectedImage, setSelectedImage] = useState(0);
     const [quantity, setQuantity] = useState(1);
     const [isFavorited, setIsFavorited] = useState(false);
@@ -146,19 +156,21 @@ export default function ProductDetail({ product, relatedProducts = [] }: Product
                             </span>
                         </div>
 
-                        <div className="mb-4 flex items-center">
-                            <div className="flex items-center">
-                                {[...Array(5)].map((_, i) => (
-                                    <Star
-                                        key={i}
-                                        className={`h-5 w-5 ${i < Math.floor(product.rating) ? 'fill-current text-yellow-400' : 'text-gray-300'}`}
-                                    />
-                                ))}
+                        {product.average_rating && product.average_rating > 0 && (
+                            <div className="mb-4 flex items-center">
+                                <div className="flex items-center">
+                                    {[...Array(5)].map((_, i) => (
+                                        <Star
+                                            key={i}
+                                            className={`h-5 w-5 ${i < Math.floor(product.average_rating || 0) ? 'fill-current text-yellow-400' : 'text-gray-300'}`}
+                                        />
+                                    ))}
+                                </div>
+                                <span className="ml-2 text-sm text-gray-600">
+                                    {product.average_rating.toFixed(1)} ({product.review_count} {product.review_count === 1 ? 'review' : 'reviews'})
+                                </span>
                             </div>
-                            <span className="ml-2 text-sm text-gray-600">
-                                {product.rating} ({product.reviewCount} reviews)
-                            </span>
-                        </div>
+                        )}
 
                         <div className="mb-6 text-3xl font-bold text-primary">₱{product.price.toFixed(2)}</div>
 
@@ -249,6 +261,48 @@ export default function ProductDetail({ product, relatedProducts = [] }: Product
                         </div>
                     </div>
                 </div>
+
+                {/* Reviews Section */}
+                {reviews.length > 0 && (
+                    <section className="mt-16 border-t border-gray-200 pt-16">
+                        <div className="mb-8">
+                            <h2 className="text-2xl font-bold text-gray-900">Customer Reviews</h2>
+                            <p className="text-gray-600">{reviews.length} {reviews.length === 1 ? 'review' : 'reviews'} from verified buyers</p>
+                        </div>
+                        <div className="space-y-6">
+                            {reviews.map((review) => (
+                                <div key={review.id} className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+                                    <div className="mb-4 flex items-start justify-between">
+                                        <div className="flex items-center gap-3">
+                                            <img
+                                                src={review.buyer_avatar}
+                                                alt={review.buyer_name}
+                                                className="h-12 w-12 rounded-full object-cover"
+                                            />
+                                            <div>
+                                                <h3 className="font-semibold text-gray-900">{review.buyer_name}</h3>
+                                                <p className="text-sm text-gray-500">{review.created_at}</p>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center">
+                                            {[...Array(5)].map((_, i) => (
+                                                <Star
+                                                    key={i}
+                                                    className={`h-5 w-5 ${
+                                                        i < review.rating ? 'fill-current text-yellow-400' : 'text-gray-300'
+                                                    }`}
+                                                />
+                                            ))}
+                                        </div>
+                                    </div>
+                                    {review.review && (
+                                        <p className="leading-relaxed text-gray-700">{review.review}</p>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+                    </section>
+                )}
 
                 {/* Related Products */}
                 {relatedProducts.length > 0 && (

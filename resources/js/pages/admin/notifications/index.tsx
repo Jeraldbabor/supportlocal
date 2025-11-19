@@ -1,7 +1,7 @@
 import { useNotifications } from '@/contexts/NotificationsContext';
 import AppLayout from '@/layouts/app-layout';
 import { Head, router } from '@inertiajs/react';
-import { Bell, Check, Clock, Trash2, X } from 'lucide-react';
+import { Bell, Check, Clock, FileText, Trash2, User, X } from 'lucide-react';
 import { useState } from 'react';
 
 interface Notification {
@@ -13,8 +13,10 @@ interface Notification {
         title?: string;
         message?: string;
         action_url?: string;
-        order_id?: number;
-        admin_notes?: string;
+        applicant_name?: string;
+        applicant_email?: string;
+        business_type?: string;
+        application_id?: number;
     };
     read_at: string | null;
     created_at: string;
@@ -64,7 +66,7 @@ function NotificationsPageContent({ notifications }: NotificationsProps) {
     const handleClearAllHistory = () => {
         setIsClearing(true);
         router.post(
-            '/seller/notifications/clear-all',
+            '/admin/notifications/clear-all',
             {},
             {
                 onFinish: () => {
@@ -77,7 +79,7 @@ function NotificationsPageContent({ notifications }: NotificationsProps) {
 
     const handleDeleteNotification = (notificationId: string) => {
         setDeletingId(notificationId);
-        router.delete(`/seller/notifications/${notificationId}`, {
+        router.delete(`/admin/notifications/${notificationId}`, {
             onFinish: () => {
                 setDeletingId(null);
                 setShowDeleteConfirm(null);
@@ -97,9 +99,8 @@ function NotificationsPageContent({ notifications }: NotificationsProps) {
 
     const getNotificationIcon = (type: string) => {
         switch (type) {
-            case 'new_order':
-            case 'App\\Notifications\\NewOrderReceived':
-                return <Bell className="h-5 w-5 text-blue-600" />;
+            case 'App\\Notifications\\NewSellerApplicationSubmitted':
+                return <FileText className="h-5 w-5 text-amber-600" />;
             default:
                 return <Bell className="h-5 w-5 text-gray-600" />;
         }
@@ -114,7 +115,7 @@ function NotificationsPageContent({ notifications }: NotificationsProps) {
                 <div className="border-b border-gray-200 px-6 py-4 dark:border-gray-700">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-3">
-                            <Bell className="h-6 w-6 text-blue-600" />
+                            <Bell className="h-6 w-6 text-amber-600" />
                             <h1 className="text-xl font-semibold text-gray-900 dark:text-white">Notifications</h1>
                             {unreadCount > 0 && (
                                 <span className="rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-medium text-red-800">{unreadCount} unread</span>
@@ -136,7 +137,7 @@ function NotificationsPageContent({ notifications }: NotificationsProps) {
                             {unreadCount > 0 && (
                                 <button
                                     onClick={handleMarkAllAsRead}
-                                    className="inline-flex items-center gap-2 rounded-lg border border-blue-300 bg-white px-3 py-1.5 text-sm font-medium text-blue-700 transition-colors hover:bg-blue-50"
+                                    className="inline-flex items-center gap-2 rounded-lg border border-amber-300 bg-white px-3 py-1.5 text-sm font-medium text-amber-700 transition-colors hover:bg-amber-50"
                                 >
                                     <Check className="h-4 w-4" />
                                     Mark All Read
@@ -153,7 +154,7 @@ function NotificationsPageContent({ notifications }: NotificationsProps) {
                             <Bell className="mx-auto h-12 w-12 text-gray-400" />
                             <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-white">No notifications</h3>
                             <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                                You're all caught up! New order notifications will appear here.
+                                You're all caught up! New notifications will appear here.
                             </p>
                         </div>
                     ) : (
@@ -161,7 +162,7 @@ function NotificationsPageContent({ notifications }: NotificationsProps) {
                             <div
                                 key={notification.id}
                                 className={`px-6 py-4 transition-colors ${
-                                    !notification.read_at ? 'bg-blue-50 dark:bg-blue-900/20' : ''
+                                    !notification.read_at ? 'bg-amber-50 dark:bg-amber-900/20' : ''
                                 } ${notification.data.action_url ? 'cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700' : ''}`}
                             >
                                 <div className="flex items-start space-x-3">
@@ -179,12 +180,23 @@ function NotificationsPageContent({ notifications }: NotificationsProps) {
                                                 <p className="mt-1 text-sm text-gray-700 dark:text-gray-300">
                                                     {notification.data.message || 'No message'}
                                                 </p>
-                                                {notification.data.admin_notes && (
-                                                    <div className="mt-2 rounded-md bg-blue-50 p-3 border border-blue-200 dark:bg-blue-900/30 dark:border-blue-800">
-                                                        <p className="text-xs font-semibold text-blue-900 dark:text-blue-200 mb-1">Note from Admin:</p>
-                                                        <p className="text-sm text-blue-800 dark:text-blue-300">{notification.data.admin_notes}</p>
+                                                
+                                                {/* Show applicant details for seller applications */}
+                                                {notification.data.applicant_name && (
+                                                    <div className="mt-2 space-y-1 text-xs text-gray-600 dark:text-gray-400">
+                                                        <div className="flex items-center gap-1">
+                                                            <User className="h-3 w-3" />
+                                                            <span>{notification.data.applicant_name}</span>
+                                                        </div>
+                                                        {notification.data.business_type && (
+                                                            <div className="flex items-center gap-1">
+                                                                <FileText className="h-3 w-3" />
+                                                                <span>Business: {notification.data.business_type}</span>
+                                                            </div>
+                                                        )}
                                                     </div>
                                                 )}
+
                                                 <div className="mt-2 flex items-center text-xs text-gray-500 dark:text-gray-400">
                                                     <Clock className="mr-1 h-3 w-3" />
                                                     {formatDate(notification.created_at)}
@@ -209,7 +221,7 @@ function NotificationsPageContent({ notifications }: NotificationsProps) {
                                                             e.stopPropagation();
                                                             handleMarkAsRead(notification.id);
                                                         }}
-                                                        className="text-xs font-medium text-blue-600 hover:text-blue-800"
+                                                        className="text-xs font-medium text-amber-600 hover:text-amber-800"
                                                     >
                                                         Mark as read
                                                     </button>
@@ -234,7 +246,7 @@ function NotificationsPageContent({ notifications }: NotificationsProps) {
                             <div className="flex space-x-2">
                                 {notifications.current_page > 1 && (
                                     <button
-                                        onClick={() => router.get(`/seller/notifications?page=${notifications.current_page - 1}`)}
+                                        onClick={() => router.get(`/admin/notifications?page=${notifications.current_page - 1}`)}
                                         className="rounded-md border border-gray-300 px-3 py-1 text-sm hover:bg-gray-50"
                                     >
                                         Previous
@@ -242,7 +254,7 @@ function NotificationsPageContent({ notifications }: NotificationsProps) {
                                 )}
                                 {notifications.current_page < notifications.last_page && (
                                     <button
-                                        onClick={() => router.get(`/seller/notifications?page=${notifications.current_page + 1}`)}
+                                        onClick={() => router.get(`/admin/notifications?page=${notifications.current_page + 1}`)}
                                         className="rounded-md border border-gray-300 px-3 py-1 text-sm hover:bg-gray-50"
                                     >
                                         Next
@@ -316,8 +328,8 @@ function NotificationsPage({ notifications }: NotificationsProps) {
     return (
         <AppLayout
             breadcrumbs={[
-                { title: 'Seller Dashboard', href: '/seller/dashboard' },
-                { title: 'Notifications', href: '/seller/notifications' },
+                { title: 'Admin Dashboard', href: '/admin/dashboard' },
+                { title: 'Notifications', href: '/admin/notifications' },
             ]}
         >
             <Head title="Notifications" />

@@ -1,11 +1,13 @@
 import { Product as GlobalProduct } from '@/types';
 import { Head, Link, router } from '@inertiajs/react';
-import { ArrowLeft, Calendar, Eye, Mail, MapPin, Package, Phone, ShoppingCart, Star, User } from 'lucide-react';
-import React, { useState } from 'react';
+import { ArrowLeft, Calendar, Eye, Mail, MapPin, MessageSquare, Package, Phone, ShoppingCart, Star, Trash2, User } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
 import AddToCartModal from '../../../components/AddToCartModal';
+import SellerRatingModal from '../../../components/SellerRatingModal';
 import Toast from '../../../components/Toast';
 import { useCart } from '../../../contexts/CartContext';
 import BuyerLayout from '../../../layouts/BuyerLayout';
+import axios from 'axios';
 
 interface Product {
     id: number;
@@ -34,9 +36,22 @@ interface Seller {
     phone: string | null;
     products_count: number;
     average_rating: number;
+    review_count: number;
     total_sales: number;
     created_at: string;
     is_verified: boolean;
+}
+
+interface SellerRating {
+    id: number;
+    rating: number;
+    review: string | null;
+    created_at: string;
+    user: {
+        id: number;
+        name: string;
+        profile_picture: string | null;
+    };
 }
 
 interface SellerShowProps {
@@ -53,9 +68,10 @@ interface SellerShowProps {
         sort: string;
         direction: string;
     };
+    userRating?: SellerRating | null;
 }
 
-export default function Show({ seller, products, filters }: SellerShowProps) {
+export default function Show({ seller, products, filters, userRating: initialUserRating }: SellerShowProps) {
     const [searchTerm, setSearchTerm] = useState(filters.search || '');
     const [showToast, setShowToast] = useState(false);
     const [toastMessage, setToastMessage] = useState('');
@@ -63,6 +79,14 @@ export default function Show({ seller, products, filters }: SellerShowProps) {
     const [modalProduct, setModalProduct] = useState<Product | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [modalMode, setModalMode] = useState<'cart' | 'buy'>('cart');
+    
+    // Rating states
+    const [isRatingModalOpen, setIsRatingModalOpen] = useState(false);
+    const [userRating, setUserRating] = useState<SellerRating | null>(initialUserRating || null);
+    const [ratings, setRatings] = useState<SellerRating[]>([]);
+    const [ratingsLoading, setRatingsLoading] = useState(false);
+    const [ratingDistribution, setRatingDistribution] = useState<Record<number, number>>({});
+    const [showAllReviews, setShowAllReviews] = useState(false);
 
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
@@ -167,6 +191,63 @@ export default function Show({ seller, products, filters }: SellerShowProps) {
         }
     };
 
+    // Fetch seller ratings
+    const fetchRatings = async () => {
+        setRatingsLoading(true);
+        try {
+            const response = await axios.get(`/buyer/seller/${seller.id}/ratings`);
+            setRatings(response.data.ratings.data || []);
+            setRatingDistribution(response.data.distribution || {});
+        } catch (error) {
+            console.error('Error fetching ratings:', error);
+        } finally {
+            setRatingsLoading(false);
+        }
+    };
+
+    // Fetch user's rating
+    const fetchUserRating = async () => {
+        try {
+            const response = await axios.get(`/buyer/seller/${seller.id}/ratings/user`);
+            setUserRating(response.data.rating);
+        } catch (error) {
+            console.error('Error fetching user rating:', error);
+        }
+    };
+
+    // Delete rating
+    const handleDeleteRating = async () => {
+        if (!userRating || !confirm('Are you sure you want to delete your rating?')) return;
+
+        try {
+            await axios.delete(`/buyer/seller/${seller.id}/ratings/${userRating.id}`);
+            setUserRating(null);
+            fetchRatings();
+            setToastMessage('✅ Rating deleted successfully!');
+            setShowToast(true);
+            // Refresh page to update seller's average rating
+            router.reload();
+        } catch (error) {
+            setToastMessage('❌ Failed to delete rating. Please try again.');
+            setShowToast(true);
+        }
+    };
+
+    // Handle rating success
+    const handleRatingSuccess = () => {
+        fetchUserRating();
+        fetchRatings();
+        setToastMessage(userRating ? '✅ Rating updated successfully!' : '✅ Rating submitted successfully!');
+        setShowToast(true);
+        // Refresh page to update seller's average rating
+        router.reload();
+    };
+
+    // Load ratings on mount
+    useEffect(() => {
+        fetchRatings();
+    }, [seller.id]);
+
     return (
         <BuyerLayout title={seller.business_name || seller.name}>
             <Head title={seller.business_name || seller.name} />
@@ -222,7 +303,7 @@ export default function Show({ seller, products, filters }: SellerShowProps) {
                                         <div className="flex items-center justify-center">
                                             <Star className="mr-1 h-5 w-5 fill-current text-yellow-400" />
                                             <span className="text-2xl font-bold text-gray-900">
-                                                {seller.average_rating ? seller.average_rating.toFixed(1) : '0.0'}
+                                                {seller.average_rating ? Number(seller.average_rating).toFixed(1) : '0.0'}
                                             </span>
                                         </div>
                                         <div className="text-sm text-gray-500">Rating</div>
@@ -261,6 +342,162 @@ export default function Show({ seller, products, filters }: SellerShowProps) {
                             </div>
                         </div>
                     </div>
+                </div>
+
+                {/* Ratings & Reviews Section */}
+                <div className="mb-8 rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+                    <div className="mb-6 flex items-center justify-between">
+                        <h2 className="text-2xl font-bold text-gray-900">Ratings & Reviews</h2>
+                        <button
+                            onClick={() => setIsRatingModalOpen(true)}
+                            className="rounded-lg bg-gradient-to-r from-amber-600 to-orange-600 px-4 py-2 text-white shadow-md hover:from-amber-700 hover:to-orange-700"
+                        >
+                            {userRating ? 'Edit Your Rating' : 'Rate This Seller'}
+                        </button>
+                    </div>
+
+                    {/* Rating Summary */}
+                    <div className="mb-6 grid grid-cols-1 gap-6 md:grid-cols-2">
+                        {/* Average Rating */}
+                        <div className="flex items-center gap-6">
+                            <div className="text-center">
+                                <div className="text-5xl font-bold text-gray-900">
+                                    {seller.average_rating ? Number(seller.average_rating).toFixed(1) : '0.0'}
+                                </div>
+                                <div className="mt-2 flex justify-center">
+                                    {[...Array(5)].map((_, i) => (
+                                        <Star
+                                            key={i}
+                                            className={`h-5 w-5 ${
+                                                i < Math.floor(Number(seller.average_rating) || 0)
+                                                    ? 'fill-current text-yellow-400'
+                                                    : 'text-gray-300'
+                                            }`}
+                                        />
+                                    ))}
+                                </div>
+                                <div className="mt-1 text-sm text-gray-600">{seller.review_count || 0} reviews</div>
+                            </div>
+
+                            {/* Rating Distribution */}
+                            <div className="flex-1">
+                                {[5, 4, 3, 2, 1].map((star) => {
+                                    const count = ratingDistribution[star] || 0;
+                                    const percentage = seller.review_count ? (count / seller.review_count) * 100 : 0;
+                                    return (
+                                        <div key={star} className="mb-2 flex items-center gap-2">
+                                            <div className="flex items-center gap-1">
+                                                <span className="text-sm text-gray-600">{star}</span>
+                                                <Star className="h-4 w-4 fill-current text-yellow-400" />
+                                            </div>
+                                            <div className="h-2 flex-1 rounded-full bg-gray-200">
+                                                <div
+                                                    className="h-2 rounded-full bg-gradient-to-r from-amber-400 to-orange-400"
+                                                    style={{ width: `${percentage}%` }}
+                                                />
+                                            </div>
+                                            <span className="w-8 text-sm text-gray-600">{count}</span>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </div>
+
+                        {/* User's Rating */}
+                        {userRating && (
+                            <div className="rounded-lg border border-amber-200 bg-amber-50 p-4">
+                                <div className="mb-2 flex items-center justify-between">
+                                    <h3 className="font-semibold text-gray-900">Your Rating</h3>
+                                    <div className="flex gap-2">
+                                        <button
+                                            onClick={() => setIsRatingModalOpen(true)}
+                                            className="text-sm text-amber-600 hover:text-amber-700"
+                                        >
+                                            Edit
+                                        </button>
+                                        <button onClick={handleDeleteRating} className="text-sm text-red-600 hover:text-red-700">
+                                            <Trash2 className="h-4 w-4" />
+                                        </button>
+                                    </div>
+                                </div>
+                                <div className="mb-2 flex">
+                                    {[...Array(5)].map((_, i) => (
+                                        <Star
+                                            key={i}
+                                            className={`h-5 w-5 ${
+                                                i < userRating.rating ? 'fill-current text-yellow-400' : 'text-gray-300'
+                                            }`}
+                                        />
+                                    ))}
+                                </div>
+                                {userRating.review && <p className="text-sm text-gray-700">{userRating.review}</p>}
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Reviews List */}
+                    {ratings.length > 0 && (
+                        <div>
+                            <h3 className="mb-4 text-lg font-semibold text-gray-900">Customer Reviews</h3>
+                            <div className="space-y-4">
+                                {(showAllReviews ? ratings : ratings.slice(0, 3)).map((rating) => (
+                                    <div key={rating.id} className="border-b border-gray-200 pb-4 last:border-0">
+                                        <div className="mb-2 flex items-start justify-between">
+                                            <div className="flex items-center gap-3">
+                                                {rating.user.profile_picture ? (
+                                                    <img
+                                                        src={`/storage/${rating.user.profile_picture}`}
+                                                        alt={rating.user.name}
+                                                        className="h-10 w-10 rounded-full object-cover"
+                                                    />
+                                                ) : (
+                                                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-200">
+                                                        <User className="h-5 w-5 text-gray-400" />
+                                                    </div>
+                                                )}
+                                                <div>
+                                                    <div className="font-medium text-gray-900">{rating.user.name}</div>
+                                                    <div className="flex items-center gap-2">
+                                                        <div className="flex">
+                                                            {[...Array(5)].map((_, i) => (
+                                                                <Star
+                                                                    key={i}
+                                                                    className={`h-4 w-4 ${
+                                                                        i < rating.rating
+                                                                            ? 'fill-current text-yellow-400'
+                                                                            : 'text-gray-300'
+                                                                    }`}
+                                                                />
+                                                            ))}
+                                                        </div>
+                                                        <span className="text-xs text-gray-500">
+                                                            {new Date(rating.created_at).toLocaleDateString()}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {rating.review && <p className="ml-13 text-sm text-gray-700">{rating.review}</p>}
+                                    </div>
+                                ))}
+                            </div>
+                            {ratings.length > 3 && (
+                                <button
+                                    onClick={() => setShowAllReviews(!showAllReviews)}
+                                    className="mt-4 text-sm font-medium text-amber-600 hover:text-amber-700"
+                                >
+                                    {showAllReviews ? 'Show Less' : `Show All ${ratings.length} Reviews`}
+                                </button>
+                            )}
+                        </div>
+                    )}
+
+                    {ratings.length === 0 && !ratingsLoading && (
+                        <div className="py-8 text-center">
+                            <MessageSquare className="mx-auto mb-2 h-12 w-12 text-gray-400" />
+                            <p className="text-gray-600">No reviews yet. Be the first to rate this seller!</p>
+                        </div>
+                    )}
                 </div>
 
                 {/* Products Section */}
@@ -328,7 +565,7 @@ export default function Show({ seller, products, filters }: SellerShowProps) {
                                                 <div className="flex items-center">
                                                     <Star className="h-4 w-4 fill-current text-yellow-400" />
                                                     <span className="ml-1 text-sm text-gray-600">
-                                                        {product.average_rating ? product.average_rating.toFixed(1) : '0.0'}
+                                                        {product.average_rating ? Number(product.average_rating).toFixed(1) : '0.0'}
                                                     </span>
                                                 </div>
 
@@ -432,6 +669,15 @@ export default function Show({ seller, products, filters }: SellerShowProps) {
                 product={modalProduct}
                 onAddToCart={handleModalAddToCart}
                 onBuyNow={modalMode === 'buy' ? handleModalBuyNow : undefined}
+            />
+
+            {/* Seller Rating Modal */}
+            <SellerRatingModal
+                isOpen={isRatingModalOpen}
+                onClose={() => setIsRatingModalOpen(false)}
+                seller={seller}
+                existingRating={userRating}
+                onSuccess={handleRatingSuccess}
             />
         </BuyerLayout>
     );
