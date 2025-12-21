@@ -368,8 +368,8 @@ export default function Analytics({
                     </CardHeader>
                     <CardContent>
                         {revenue.timeline.length > 0 ? (
-                            <div className="w-full" style={{ height: '300px', minHeight: '300px' }}>
-                                <ResponsiveContainer width="100%" height="100%">
+                            <div className="w-full" style={{ height: '300px', minHeight: '300px', position: 'relative' }}>
+                                <ResponsiveContainer width="100%" height={300}>
                                     <LineChart
                                         data={revenue.timeline}
                                         margin={{ top: 5, right: 20, left: 0, bottom: 5 }}
@@ -437,8 +437,8 @@ export default function Analytics({
                         </CardHeader>
                         <CardContent className="pt-6">
                             {orders.by_status.length > 0 ? (
-                                <div className="w-full" style={{ height: '280px', minHeight: '280px' }}>
-                                    <ResponsiveContainer width="100%" height="100%">
+                                <div className="w-full" style={{ height: '280px', minHeight: '280px', position: 'relative' }}>
+                                    <ResponsiveContainer width="100%" height={280}>
                                         <PieChart>
                                             <defs>
                                                 <filter id="shadow" height="200%">
@@ -523,8 +523,8 @@ export default function Analytics({
                         </CardHeader>
                         <CardContent className="pt-6">
                             {orders.by_payment_method.length > 0 ? (
-                                <div className="w-full" style={{ height: '280px', minHeight: '280px' }}>
-                                    <ResponsiveContainer width="100%" height="100%">
+                                <div className="w-full" style={{ height: '280px', minHeight: '280px', position: 'relative' }}>
+                                    <ResponsiveContainer width="100%" height={280}>
                                         <BarChart
                                             data={orders.by_payment_method}
                                             margin={{ top: 10, right: 20, left: 0, bottom: 10 }}

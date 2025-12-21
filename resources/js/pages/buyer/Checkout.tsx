@@ -395,7 +395,7 @@ export default function Checkout({ user, buyNowItem }: CheckoutProps) {
                                                     className="mr-3"
                                                 />
                                                 <div className="flex items-center">
-                                                    <div className="mr-3 flex h-8 w-8 items-center justify-center rounded bg-gradient-to-r from-amber-600 to-orange-600 shadow-sm">
+                                                    <div className="mr-3 flex h-8 w-8 items-center justify-center rounded bg-gradient-to-r from-blue-500 to-blue-600 shadow-sm">
                                                         <span className="text-xs font-bold text-white">G</span>
                                                     </div>
                                                     <div>

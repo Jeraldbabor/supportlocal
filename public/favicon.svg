@@ -1,1 +1,24 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#f59e0b;stop-opacity:1" /><stop offset="100%" style="stop-color:#ea580c;stop-opacity:1" /></linearGradient></defs><rect width="100" height="100" rx="20" fill="url(#grad)"/><g transform="translate(50, 50)" fill="none" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M0,-20 L-16,-12 L-16,8 L0,16 L16,8 L16,-12 Z"/><path d="M0,-20 L0,16"/><path d="M-16,-12 L0,-4 L16,-12"/><path d="M-12,-16 L0,-20"/></g></svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" fill="none">
+  <!-- Background with gradient from amber-500 to orange-600 -->
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#f59e0b;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#ea580c;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Rounded rectangle background -->
+  <rect width="64" height="64" rx="12" fill="url(#bgGradient)"/>
+  
+  <!-- Icon paths -->
+  <g transform="translate(16, 16)">
+    <path
+      stroke="white"
+      stroke-width="2.5"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      fill="none"
+      d="M26.67 9.33l-10.67-5.33-10.67 5.33m21.34 0l-10.67 5.34m10.67-5.34v13.34l-10.67 5.33m0-13.34L5.33 9.33m10.67 5.34v13.33M12 6.67l10.67 5.33"
+    />
+  </g>
+</svg>

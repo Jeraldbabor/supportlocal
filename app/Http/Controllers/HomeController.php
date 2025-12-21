@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\WishlistHelper;
 use App\Models\Product;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -29,13 +30,17 @@ class HomeController extends Controller
                     'image' => $product->primary_image ? '/images/'.$product->primary_image : '/placeholder.jpg',
                     'artisan' => $product->seller->name ?? 'Unknown Artisan',
                     'artisan_image' => $product->seller->avatar_url,
-                    'rating' => $product->average_rating ?? 4.5,
+                    'rating' => $product->average_rating ?? 0,
                     'category' => $product->category->name ?? 'Miscellaneous',
                 ];
             });
 
+        // Get wishlist product IDs for current user/guest
+        $wishlistProductIds = WishlistHelper::getProductIds();
+
         return Inertia::render('Home', [
             'featuredProducts' => $featuredProducts ?? [],
+            'wishlistProductIds' => $wishlistProductIds,
         ]);
     }
 

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\WishlistHelper;
 use App\Models\Product;
 use App\Models\ProductCategory;
 use App\Models\User;
@@ -76,6 +77,7 @@ class PublicController extends Controller
                 'id' => $product->id,
                 'name' => $product->name,
                 'price' => (float) $product->price,
+                'compare_price' => $product->compare_price ? (float) $product->compare_price : null,
                 'primary_image' => $product->featured_image,
                 'image' => $product->featured_image ? '/storage/'.$product->featured_image : '/placeholder.jpg',
                 'artisan' => $product->seller->name ?? 'Unknown Artisan',
@@ -91,9 +93,13 @@ class PublicController extends Controller
         // Get all categories for filtering
         $categories = ProductCategory::withCount('products')->get();
 
+        // Get wishlist product IDs for current user/guest
+        $wishlistProductIds = WishlistHelper::getProductIds();
+
         return Inertia::render('Products', [
             'products' => $products,
             'categories' => $categories ?? [],
+            'wishlistProductIds' => $wishlistProductIds,
             'filters' => array_merge([
                 'category' => null,
                 'search' => null,
@@ -177,7 +183,11 @@ class PublicController extends Controller
                 ];
             });
 
+        // Check if product is in wishlist
+        $inWishlist = WishlistHelper::hasProduct($product->id);
+
         return Inertia::render('ProductDetail', [
+            'inWishlist' => $inWishlist,
             'product' => $productData,
             'relatedProducts' => $relatedProducts,
             'reviews' => $reviews,

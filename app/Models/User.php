@@ -196,6 +196,23 @@ class User extends Authenticatable
     }
 
     /**
+     * Get user's wishlist items
+     */
+    public function wishlistItems()
+    {
+        return $this->hasMany(WishlistItem::class, 'user_id');
+    }
+
+    /**
+     * Get products in user's wishlist
+     */
+    public function wishlist()
+    {
+        return $this->belongsToMany(Product::class, 'wishlist_items')
+            ->withTimestamps();
+    }
+
+    /**
      * Get orders where user is the seller
      */
     public function sellerOrders()

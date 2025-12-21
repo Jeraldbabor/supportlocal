@@ -47,30 +47,30 @@ export function UserMenuContent({ user }: UserMenuContentProps) {
     return (
         <>
             <DropdownMenuLabel className="p-0 font-normal">
-                <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
+                <div className="flex items-center gap-3 px-3 py-3 text-left">
                     <UserInfo user={user} showEmail={true} />
                 </div>
             </DropdownMenuLabel>
-            <DropdownMenuSeparator />
+            <DropdownMenuSeparator className="my-1" />
             <DropdownMenuGroup>
-                <DropdownMenuItem asChild>
-                    <Link className="block w-full" href={getProfileUrl()} as="button" onClick={cleanup}>
-                        <UserIcon className="mr-2" />
-                        Profile
+                <DropdownMenuItem asChild className="cursor-pointer">
+                    <Link className="flex items-center gap-3 px-3 py-2.5 transition-colors duration-150" href={getProfileUrl()} as="button" onClick={cleanup}>
+                        <UserIcon className="h-4 w-4" />
+                        <span className="font-medium">Profile</span>
                     </Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                    <Link className="block w-full" href={getSettingsUrl()} as="button" onClick={cleanup}>
-                        <Settings className="mr-2" />
-                        Settings
+                <DropdownMenuItem asChild className="cursor-pointer">
+                    <Link className="flex items-center gap-3 px-3 py-2.5 transition-colors duration-150" href={getSettingsUrl()} as="button" onClick={cleanup}>
+                        <Settings className="h-4 w-4" />
+                        <span className="font-medium">Settings</span>
                     </Link>
                 </DropdownMenuItem>
             </DropdownMenuGroup>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem asChild>
-                <Link className="block w-full" href="/logout" as="button" method="post" onClick={handleLogout} data-test="logout-button">
-                    <LogOut className="mr-2" />
-                    Log out
+            <DropdownMenuSeparator className="my-1" />
+            <DropdownMenuItem asChild className="cursor-pointer text-destructive focus:text-destructive">
+                <Link className="flex items-center gap-3 px-3 py-2.5 transition-colors duration-150" href="/logout" as="button" method="post" onClick={handleLogout} data-test="logout-button">
+                    <LogOut className="h-4 w-4" />
+                    <span className="font-medium">Log out</span>
                 </Link>
             </DropdownMenuItem>
         </>

@@ -4,6 +4,7 @@ import { Eye, Filter, Grid, Info, List, Package, Search, ShoppingCart, Star, Use
 import React, { useState } from 'react';
 import AddToCartModal from '../../../components/AddToCartModal';
 import Toast from '../../../components/Toast';
+import WishlistButton from '../../../components/WishlistButton';
 import { useCart } from '../../../contexts/CartContext';
 import BuyerLayout from '../../../layouts/BuyerLayout';
 
@@ -11,10 +12,12 @@ interface Product {
     id: number;
     name: string;
     price: number;
+    compare_price?: number | null;
     primary_image: string;
     seller: {
         id: number;
         name: string;
+        avatar_url?: string;
     };
     category: {
         id: number;
@@ -47,6 +50,7 @@ interface ProductsIndexProps {
     };
     categories: Category[];
     sellers: Seller[];
+    wishlistProductIds?: number[];
     filters: {
         search: string | null;
         category: string | null;
@@ -58,7 +62,7 @@ interface ProductsIndexProps {
     };
 }
 
-export default function Index({ products, categories, filters }: ProductsIndexProps) {
+export default function Index({ products, categories, filters, wishlistProductIds = [] }: ProductsIndexProps) {
     const [searchTerm, setSearchTerm] = useState(filters.search || '');
     const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
     const { addToCart, isLoading } = useCart();
@@ -159,7 +163,7 @@ export default function Index({ products, categories, filters }: ProductsIndexPr
     };
 
     return (
-        <BuyerLayout title="Browse Products">
+        <BuyerLayout>
             <Head title="Browse Products" />
 
             <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
@@ -260,6 +264,15 @@ export default function Index({ products, categories, filters }: ProductsIndexPr
                                             </span>
                                         </div>
 
+                                        {/* Wishlist Button */}
+                                        <div className="absolute top-3 right-3 z-10" onClick={(e) => e.stopPropagation()}>
+                                            <WishlistButton 
+                                                productId={product.id} 
+                                                initialInWishlist={wishlistProductIds.includes(product.id)} 
+                                                variant="icon-filled"
+                                            />
+                                        </div>
+
                                         {/* Quick Actions Overlay */}
                                         <div className="absolute inset-0 bg-black/0 opacity-0 transition-all duration-300 group-hover:bg-black/10 group-hover:opacity-100" />
                                     </div>
@@ -283,40 +296,64 @@ export default function Index({ products, categories, filters }: ProductsIndexPr
                                                     e.stopPropagation();
                                                     handleSellerClick(product.seller.id);
                                                 }}
-                                                className="hover:text-primary-dark flex items-center font-medium text-primary transition-colors"
+                                                className="hover:text-primary-dark flex items-center gap-1.5 font-medium text-primary transition-colors"
                                             >
-                                                <User className="mr-1.5 h-3.5 w-3.5" />
+                                                {product.seller.avatar_url ? (
+                                                    <img
+                                                        src={product.seller.avatar_url}
+                                                        alt={product.seller.name}
+                                                        className="h-5 w-5 rounded-full object-cover ring-1 ring-gray-200"
+                                                    />
+                                                ) : (
+                                                    <User className="h-3.5 w-3.5" />
+                                                )}
                                                 {product.seller.name}
                                             </button>
 
-                                            <div className="flex items-center text-gray-500">
-                                                <Eye className="mr-1 h-3.5 w-3.5" />
-                                                <span className="text-xs">{product.view_count}</span>
-                                            </div>
+                                            {product.view_count > 0 && (
+                                                <div className="flex items-center text-gray-500">
+                                                    <Eye className="mr-1 h-3.5 w-3.5" />
+                                                    <span className="text-xs">{product.view_count}</span>
+                                                </div>
+                                            )}
                                         </div>
 
                                         {/* Rating */}
-                                        {product.average_rating > 0 && (
-                                            <div className="flex items-center space-x-1">
-                                                <div className="flex">
-                                                    {[...Array(5)].map((_, i) => (
-                                                        <Star
-                                                            key={i}
-                                                            className={`h-3.5 w-3.5 ${
-                                                                i < Math.floor(Number(product.average_rating) || 0)
-                                                                    ? 'fill-current text-yellow-400'
-                                                                    : 'text-gray-300'
-                                                            }`}
-                                                        />
-                                                    ))}
-                                                </div>
-                                                <span className="ml-1 text-xs text-gray-600">({Number(product.average_rating).toFixed(1)})</span>
+                                        <div className="flex items-center space-x-1">
+                                            <div className="flex">
+                                                {[...Array(5)].map((_, i) => (
+                                                    <Star
+                                                        key={i}
+                                                        className={`h-3.5 w-3.5 ${
+                                                            i < Math.floor(Number(product.average_rating) || 0)
+                                                                ? 'fill-current text-yellow-400'
+                                                                : 'text-gray-300'
+                                                        }`}
+                                                    />
+                                                ))}
                                             </div>
-                                        )}
+                                            {product.average_rating > 0 ? (
+                                                <span className="ml-1 text-xs text-gray-600">({Number(product.average_rating).toFixed(1)})</span>
+                                            ) : (
+                                                <span className="ml-1 text-xs text-gray-400">(No ratings yet)</span>
+                                            )}
+                                        </div>
 
                                         {/* Price */}
                                         <div className="pt-2">
-                                            <span className="text-2xl font-bold text-gray-900">₱{Number(product.price).toLocaleString()}</span>
+                                            <div className="flex items-center gap-2">
+                                                <span className="text-2xl font-bold text-gray-900">₱{Number(product.price).toLocaleString()}</span>
+                                                {product.compare_price && product.compare_price > product.price && (
+                                                    <span className="rounded-md bg-red-100 px-2 py-0.5 text-xs font-semibold text-red-600">
+                                                        -{Math.round(((product.compare_price - product.price) / product.compare_price) * 100)}%
+                                                    </span>
+                                                )}
+                                            </div>
+                                            {product.compare_price && product.compare_price > product.price && (
+                                                <div className="mt-1">
+                                                    <span className="text-sm text-gray-500 line-through">₱{Number(product.compare_price).toLocaleString()}</span>
+                                                </div>
+                                            )}
                                         </div>
 
                                         {/* Action Buttons */}

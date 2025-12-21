@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Helpers\WishlistHelper;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
@@ -62,6 +63,9 @@ class HandleInertiaRequests extends Middleware
                 'recommendation' => $request->user()->getProfileCompletionRecommendation(),
             ];
         }
+
+        // Add wishlist count (works for both guests and authenticated users)
+        $sharedData['wishlistCount'] = WishlistHelper::getCount();
 
         return $sharedData;
     }

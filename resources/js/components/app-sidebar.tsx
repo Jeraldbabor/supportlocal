@@ -110,12 +110,16 @@ export function AppSidebar() {
     const mainNavItems = getRoleNavItems(user?.role);
 
     return (
-        <Sidebar collapsible="icon" variant="inset">
-            <SidebarHeader>
+        <Sidebar collapsible="icon" variant="inset" className="border-r border-sidebar-border/50">
+            <SidebarHeader className="border-b border-sidebar-border/50 py-4">
                 <SidebarMenu>
                     <SidebarMenuItem>
-                        <SidebarMenuButton size="lg" asChild>
-                            <Link href="/" prefetch>
+                        <SidebarMenuButton 
+                            size="lg" 
+                            asChild 
+                            className="hover:bg-sidebar-accent/50 transition-colors duration-200 px-3"
+                        >
+                            <Link href="/" prefetch className="flex items-center gap-3">
                                 <AppLogo />
                             </Link>
                         </SidebarMenuButton>
@@ -123,11 +127,11 @@ export function AppSidebar() {
                 </SidebarMenu>
             </SidebarHeader>
 
-            <SidebarContent>
+            <SidebarContent className="py-4 bg-gradient-to-b from-sidebar/50 to-sidebar">
                 <NavMain items={mainNavItems} />
             </SidebarContent>
 
-            <SidebarFooter>
+            <SidebarFooter className="border-t border-sidebar-border/50 py-3">
                 <NavUser />
             </SidebarFooter>
         </Sidebar>

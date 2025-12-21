@@ -63,23 +63,10 @@ export function CartProvider({ children, isAuthenticated: authProp }: CartProvid
         }
     }, [authProp]);
 
-    // Initial cart load
     useEffect(() => {
         loadCart();
     }, [isAuthenticated]);
 
-    // Listen for cart-updated events from other components
-    useEffect(() => {
-        const handleCartUpdate = () => {
-            console.log('[CartContext] Received cart-updated event, refreshing cart...');
-            loadCart();
-        };
-
-        window.addEventListener('cart-updated', handleCartUpdate);
-        return () => window.removeEventListener('cart-updated', handleCartUpdate);
-    }, [isAuthenticated]);
-
-    // Transfer guest cart to backend when user logs in
     const transferGuestCartToBackend = async () => {
         const guestCart = localStorage.getItem('guest_cart');
 

@@ -28,14 +28,14 @@ interface CartProps {
 export default function Cart() {
     const { cartItems, cartTotal } = usePage<CartProps>().props;
 
-    // Helper function to update cart badge
+
     const updateCartBadge = (items: CartItem[]) => {
         const count = items.reduce((sum: number, item: CartItem) => sum + item.quantity, 0);
         localStorage.setItem('cart_item_count', count.toString());
         window.dispatchEvent(new CustomEvent('cart-updated', { detail: { count } }));
     };
 
-    // Sync cart badge when page loads
+    
     useEffect(() => {
         updateCartBadge(cartItems);
     }, [cartItems]);

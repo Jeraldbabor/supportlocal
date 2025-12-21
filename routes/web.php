@@ -4,6 +4,7 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\GeocodeController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PublicController;
+use App\Http\Controllers\WishlistController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -28,6 +29,15 @@ Route::put('/cart/update', [CartController::class, 'updateQuantity'])->name('car
 Route::delete('/cart/remove', [CartController::class, 'removeFromCart'])->name('cart.remove');
 Route::delete('/cart/clear', [CartController::class, 'clearCart'])->name('cart.clear');
 Route::get('/cart/count', [CartController::class, 'getCartCount'])->name('cart.count');
+
+// Wishlist routes (supports both guests and authenticated users)
+Route::get('/wishlist', [WishlistController::class, 'index'])->name('wishlist.index');
+Route::post('/wishlist/add', [WishlistController::class, 'store'])->name('wishlist.add');
+Route::delete('/wishlist/remove', [WishlistController::class, 'destroy'])->name('wishlist.remove');
+Route::delete('/wishlist/clear', [WishlistController::class, 'clear'])->name('wishlist.clear');
+Route::post('/wishlist/toggle', [WishlistController::class, 'toggle'])->name('wishlist.toggle');
+Route::get('/wishlist/count', [WishlistController::class, 'count'])->name('wishlist.count');
+Route::post('/wishlist/check', [WishlistController::class, 'check'])->name('wishlist.check');
 
 // Guest checkout route - prompts to login or continue
 Route::get('/checkout', function () {
@@ -184,9 +194,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/buyer/dashboard', [App\Http\Controllers\Buyer\DashboardController::class, 'index'])->name('buyer.dashboard');
 
         // About and Contact pages
-        Route::get('/buyer/about', function () {
-            return Inertia::render('buyer/About');
-        })->name('buyer.about');
+        Route::get('/buyer/about', [App\Http\Controllers\Buyer\AboutController::class, 'index'])->name('buyer.about');
 
         Route::get('/buyer/contact', function () {
             return Inertia::render('buyer/Contact');

@@ -24,6 +24,23 @@ import {
 } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
+const PesoIcon = ({ className }: { className?: string }) => (
+    <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        className={className}
+    >
+        <rect x="2" y="6" width="20" height="12" rx="2" />
+        <circle cx="12" cy="12" r="3" />
+        <path d="M6 12h.01M18 12h.01" />
+    </svg>
+);
+
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: 'Seller Dashboard',
@@ -239,7 +256,7 @@ export default function SellerDashboard() {
 
     // Memoized utility functions
     const formatCurrency = useCallback((amount: number) => {
-        return new Intl.NumberFormat('en-PH', {
+        return new Intl.NumberFormat('fil-PH', {
             style: 'currency',
             currency: 'PHP',
         }).format(amount);
@@ -266,8 +283,8 @@ export default function SellerDashboard() {
         () => ({
             conversionRate: products.total_views > 0 ? ((products.total_orders / products.total_views) * 100).toFixed(1) : 'N/A',
             successRate: orders.total > 0 ? ((orders.completed / orders.total) * 100).toFixed(1) : 'N/A',
-            averageRating: products.average_rating > 0 ? products.average_rating.toFixed(1) : 'N/A',
-            averageItemsPerOrder: orders.average_items_per_order.toFixed(1),
+            averageRating: products.average_rating > 0 ? Number(products.average_rating).toFixed(1) : 'N/A',
+            averageItemsPerOrder: Number(orders.average_items_per_order).toFixed(1),
         }),
         [products, orders],
     );
@@ -580,7 +597,7 @@ export default function SellerDashboard() {
                     <div className="group rounded-xl border bg-white p-6 shadow-sm transition-all hover:shadow-md dark:bg-gray-800">
                         <div className="flex items-center justify-between">
                             <div className="flex h-12 w-12 items-center justify-center rounded-full bg-green-100 dark:bg-green-900">
-                                <DollarSign className="h-6 w-6 text-green-600 dark:text-green-400" />
+                                <PesoIcon className="h-6 w-6 text-green-600 dark:text-green-400" />
                             </div>
                             <div className="text-right">
                                 <p
@@ -703,7 +720,7 @@ export default function SellerDashboard() {
                     {/* Revenue Insights */}
                     <div className="rounded-xl border bg-white p-6 shadow-sm dark:bg-gray-800">
                         <h3 className="mb-4 flex items-center gap-2 text-lg font-semibold text-gray-900 dark:text-gray-100">
-                            <DollarSign className="h-5 w-5" />
+                            <PesoIcon className="h-5 w-5" />
                             Revenue Insights
                         </h3>
                         <div className="space-y-4">

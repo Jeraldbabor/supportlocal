@@ -1,5 +1,4 @@
 import { useCart } from '@/contexts/CartContext';
-import { dashboard, login, register } from '@/routes';
 import { type SharedData } from '@/types';
 import { Link, router, usePage } from '@inertiajs/react';
 import { Bell, ChevronDown, Contact, Heart, House, LogOut, Menu, Package, Phone, ShoppingCart, User, X } from 'lucide-react';
@@ -19,10 +18,10 @@ export default function MainLayout({ children, title }: MainLayoutProps) {
     const mobileMenuRef = useRef<HTMLDivElement>(null);
     const mobileMenuButtonRef = useRef<HTMLButtonElement>(null);
 
-    const { auth } = usePage<SharedData>().props;
+    const { auth, wishlistCount } = usePage<SharedData>().props;
     const currentPath = usePage().url;
-    const unreadCount = 0; // You can replace this with actual notification count logic
-    const { totalItems } = useCart(); // Get cart count from context
+    const unreadCount = 0; 
+    const { totalItems } = useCart(); 
 
     // Simplified notification logic
     useEffect(() => {
@@ -30,26 +29,21 @@ export default function MainLayout({ children, title }: MainLayoutProps) {
         const lastSeenCount = parseInt(localStorage.getItem('cart_last_seen_count') || '0', 10);
 
         if (currentPath === '/cart') {
-            // On cart page: always hide notification and mark as seen
             setShowCartNotification(false);
             if (totalItems > 0) {
                 localStorage.setItem('cart_notification_dismissed', 'true');
                 localStorage.setItem('cart_last_seen_count', totalItems.toString());
             }
         } else if (totalItems === 0) {
-            // Empty cart: reset everything
             setShowCartNotification(false);
             localStorage.removeItem('cart_notification_dismissed');
             localStorage.removeItem('cart_last_seen_count');
         } else if (totalItems > lastSeenCount) {
-            // New items added: always show notification regardless of dismissed state
             setShowCartNotification(true);
             localStorage.setItem('cart_notification_dismissed', 'false');
         } else if (!notificationDismissed && totalItems > 0) {
-            // Items exist and not dismissed: show notification
             setShowCartNotification(true);
         } else {
-            // Items exist but already dismissed: hide notification
             setShowCartNotification(false);
         }
     }, [totalItems, currentPath]);
@@ -101,7 +95,6 @@ export default function MainLayout({ children, title }: MainLayoutProps) {
         { name: 'Home', href: '/', icon: House },
         { name: 'Products', href: '/products', icon: Package },
         { name: 'Artisans', href: '/artisans', icon: User },
-        { name: 'Wishlist', href: '#', icon: Heart },
         { name: 'About', href: '/about', icon: Contact },
         { name: 'Contact', href: '/contact', icon: Phone },
     ];
@@ -184,6 +177,22 @@ export default function MainLayout({ children, title }: MainLayoutProps) {
                                 )}
                                 <span className="absolute inset-0 rounded-xl opacity-0 ring-primary/50 transition-all duration-300 group-hover:opacity-100 group-hover:ring-2 group-hover:ring-offset-2"></span>
                             </Link>
+
+                            {/* Wishlist Icon */}
+                            <Link
+                                href="/wishlist"
+                                className="group relative rounded-xl p-2 text-gray-600 transition-all duration-300 hover:bg-primary/5 hover:text-primary hover:shadow-sm focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 focus:outline-none"
+                                aria-label={`Wishlist ${(wishlistCount ?? 0) > 0 ? `(${wishlistCount} items)` : '(empty)'}`}
+                            >
+                                <Heart className="h-5 w-5 transition-transform duration-300 group-hover:scale-110" />
+                                {(wishlistCount ?? 0) > 0 && (
+                                    <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-gradient-to-r from-pink-500 to-red-500 text-xs font-medium text-white shadow-sm">
+                                        {wishlistCount! > 99 ? '99+' : wishlistCount}
+                                    </span>
+                                )}
+                                <span className="absolute inset-0 rounded-xl opacity-0 ring-primary/50 transition-all duration-300 group-hover:opacity-100 group-hover:ring-2 group-hover:ring-offset-2"></span>
+                            </Link>
+
                             {/* Cart Icon */}
                             <Link
                                 href="/cart"
@@ -241,7 +250,7 @@ export default function MainLayout({ children, title }: MainLayoutProps) {
                                             {/* Menu Items */}
                                             <div className="py-2">
                                                 <Link
-                                                    href={dashboard().url}
+                                                    href="/dashboard"
                                                     className="group mx-2 flex items-center rounded-lg px-4 py-3 text-sm font-medium text-gray-700 transition-all duration-300 hover:bg-primary/5 hover:text-primary focus:bg-primary/5 focus:text-primary focus:outline-none"
                                                     onClick={() => setIsUserMenuOpen(false)}
                                                     role="menuitem"
@@ -270,13 +279,13 @@ export default function MainLayout({ children, title }: MainLayoutProps) {
                             ) : (
                                 <div className="hidden items-center gap-2 md:flex">
                                     <Link
-                                        href={login.url()}
+                                        href="/login"
                                         className="rounded-xl px-3 py-2 text-sm font-medium text-gray-700 transition-all duration-300 hover:bg-gray-50 hover:text-primary focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 focus:outline-none lg:px-4"
                                     >
                                         Log in
                                     </Link>
                                     <Link
-                                        href={register.url()}
+                                        href="/register"
                                         className="rounded-xl border border-primary/20 bg-gradient-to-r from-primary/5 to-primary/10 px-3 py-2 text-sm font-medium text-primary transition-all duration-300 hover:from-primary/10 hover:to-primary/20 hover:shadow-sm focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 focus:outline-none lg:px-4"
                                     >
                                         Get Started
@@ -353,7 +362,7 @@ export default function MainLayout({ children, title }: MainLayoutProps) {
 
                                         <div className="mt-3 space-y-2">
                                             <Link
-                                                href={dashboard().url}
+                                                href="/dashboard"
                                                 className="flex items-center gap-3 rounded-xl px-4 py-3 text-gray-700 transition-all duration-300 hover:bg-primary/5 hover:text-primary"
                                                 onClick={() => setIsMenuOpen(false)}
                                             >
@@ -376,14 +385,14 @@ export default function MainLayout({ children, title }: MainLayoutProps) {
                                 ) : (
                                     <div className="space-y-3">
                                         <Link
-                                            href={login.url()}
+                                            href="/login"
                                             className="flex items-center justify-center rounded-xl px-4 py-3 text-gray-700 transition-all duration-300 hover:bg-gray-50 hover:text-primary"
                                             onClick={() => setIsMenuOpen(false)}
                                         >
                                             Log in
                                         </Link>
                                         <Link
-                                            href={register.url()}
+                                            href="/register"
                                             className="flex items-center justify-center rounded-xl border border-primary/20 bg-gradient-to-r from-primary/5 to-primary/10 px-4 py-3 text-primary transition-all duration-300 hover:from-primary/10 hover:to-primary/20"
                                             onClick={() => setIsMenuOpen(false)}
                                         >

@@ -4,6 +4,7 @@ import { ArrowRight, Heart, ShoppingCart, Star, Truck } from 'lucide-react';
 import { useState } from 'react';
 import AddToCartModal from '../components/AddToCartModal';
 import Toast from '../components/Toast';
+import WishlistButton from '../components/WishlistButton';
 import { useCart } from '../contexts/CartContext';
 import MainLayout from '../layouts/MainLayout';
 
@@ -19,9 +20,10 @@ interface Product {
 
 interface HomeProps {
     featuredProducts: Product[];
+    wishlistProductIds: number[];
 }
 
-export default function Home({ featuredProducts = [] }: HomeProps) {
+export default function Home({ featuredProducts = [], wishlistProductIds = [] }: HomeProps) {
     const [modalProduct, setModalProduct] = useState<Product | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [showToast, setShowToast] = useState(false);
@@ -208,8 +210,18 @@ export default function Home({ featuredProducts = [] }: HomeProps) {
                         {featuredProducts.map((product) => (
                             <div
                                 key={product.id}
-                                className="overflow-hidden rounded-lg bg-white shadow-sm transition-shadow duration-200 hover:shadow-md"
+                                className="relative overflow-hidden rounded-lg bg-white shadow-sm transition-shadow duration-200 hover:shadow-md"
                             >
+                                {/* Wishlist Button */}
+                                <div className="absolute right-2 top-2 z-10">
+                                    <WishlistButton
+                                        productId={product.id}
+                                        initialInWishlist={wishlistProductIds.includes(product.id)}
+                                        variant="icon-filled"
+                                        size="md"
+                                    />
+                                </div>
+
                                 <Link href={`/product/${product.id}`}>
                                     <img src={product.image} alt={product.name} className="h-48 w-full cursor-pointer object-cover" />
                                 </Link>
@@ -229,12 +241,16 @@ export default function Home({ featuredProducts = [] }: HomeProps) {
                                                 <Star
                                                     key={i}
                                                     className={`h-4 w-4 ${
-                                                        i < Math.floor(product.rating) ? 'fill-current text-yellow-400' : 'text-gray-300'
+                                                        i < Math.floor(product.rating || 0) ? 'fill-current text-yellow-400' : 'text-gray-300'
                                                     }`}
                                                 />
                                             ))}
                                         </div>
-                                        <span className="ml-1 text-sm text-gray-600">({product.rating})</span>
+                                        {product.rating && product.rating > 0 ? (
+                                            <span className="ml-1 text-sm text-gray-600">({Number(product.rating).toFixed(1)})</span>
+                                        ) : (
+                                            <span className="ml-1 text-sm text-gray-400">(No ratings yet)</span>
+                                        )}
                                     </div>
                                     <div className="mb-3">
                                         <span className="text-xl font-bold text-gray-900">₱{product.price.toFixed(2)}</span>

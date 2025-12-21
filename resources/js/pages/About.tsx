@@ -17,7 +17,6 @@ interface AboutProps {
 }
 
 export default function About({ artisans = [] }: AboutProps) {
-    // Sample artisans if none provided
     const defaultArtisans: Artisan[] = [
         {
             id: 1,
@@ -63,7 +62,7 @@ export default function About({ artisans = [] }: AboutProps) {
     const featuredArtisans = artisans.length > 0 ? artisans : defaultArtisans;
 
     return (
-        <MainLayout title="About Us">
+        <MainLayout>
             {/* Mission Statement */}
             <section className="bg-white py-16">
                 <div className="mx-auto max-w-4xl px-4 text-center sm:px-6 lg:px-8">

@@ -2,6 +2,7 @@ import { Link } from '@inertiajs/react';
 import { ArrowLeft, Heart, Minus, Plus, Shield, ShoppingCart, Star, Truck } from 'lucide-react';
 import { useState } from 'react';
 import MainLayout from '../layouts/MainLayout';
+import WishlistButton from '../components/WishlistButton';
 
 interface Product {
     id: number;
@@ -48,12 +49,12 @@ interface ProductDetailProps {
     product: Product;
     relatedProducts?: RelatedProduct[];
     reviews?: Review[];
+    inWishlist?: boolean;
 }
 
-export default function ProductDetail({ product, relatedProducts = [], reviews = [] }: ProductDetailProps) {
+export default function ProductDetail({ product, relatedProducts = [], reviews = [], inWishlist = false }: ProductDetailProps) {
     const [selectedImage, setSelectedImage] = useState(0);
     const [quantity, setQuantity] = useState(1);
-    const [isFavorited, setIsFavorited] = useState(false);
 
     if (!product) {
         return (
@@ -211,16 +212,12 @@ export default function ProductDetail({ product, relatedProducts = [], reviews =
                                     <ShoppingCart className="h-5 w-5" />
                                     {product.inStock ? 'Add to Cart' : 'Out of Stock'}
                                 </button>
-                                <button
-                                    onClick={() => setIsFavorited(!isFavorited)}
-                                    className={`rounded-lg border-2 p-3 transition-all duration-200 ${
-                                        isFavorited
-                                            ? 'border-amber-500 bg-amber-50 text-amber-600 hover:scale-110'
-                                            : 'border-gray-300 text-gray-600 hover:scale-110 hover:border-amber-500 hover:text-amber-600'
-                                    }`}
-                                >
-                                    <Heart className={`h-6 w-6 ${isFavorited ? 'fill-current' : ''}`} />
-                                </button>
+                                <WishlistButton 
+                                    productId={product.id} 
+                                    initialInWishlist={inWishlist} 
+                                    variant="button"
+                                    size="lg"
+                                />
                             </div>
                         </div>
 

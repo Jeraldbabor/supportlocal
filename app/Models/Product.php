@@ -230,6 +230,23 @@ class Product extends Model
     }
 
     /**
+     * Get wishlist items for this product
+     */
+    public function wishlistItems()
+    {
+        return $this->hasMany(WishlistItem::class);
+    }
+
+    /**
+     * Get users who have this product in their wishlist
+     */
+    public function wishlistedBy()
+    {
+        return $this->belongsToMany(User::class, 'wishlist_items')
+            ->withTimestamps();
+    }
+
+    /**
      * Get a user's rating for this product
      */
     public function getUserRating($userId)

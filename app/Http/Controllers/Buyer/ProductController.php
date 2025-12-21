@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Buyer;
 
+use App\Helpers\WishlistHelper;
 use App\Http\Controllers\Controller;
 use App\Models\Product;
 use App\Models\ProductCategory;
@@ -62,7 +63,11 @@ class ProductController extends Controller
             $query->orderBy($sort, $direction);
         }
 
-        $products = $query->paginate(12)->withQueryString();
+        $products = $query->paginate(12)->withQueryString()->through(function ($product) {
+            return array_merge($product->toArray(), [
+                'compare_price' => $product->compare_price ? (float) $product->compare_price : null,
+            ]);
+        });
 
         // Get categories for filter dropdown
         $categories = ProductCategory::active()
@@ -80,10 +85,14 @@ class ProductController extends Controller
             ->orderBy('name')
             ->get(['id', 'name']);
 
+        // Get wishlist product IDs
+        $wishlistProductIds = WishlistHelper::getProductIds();
+
         return Inertia::render('buyer/products/Index', [
             'products' => $products,
             'categories' => $categories,
             'sellers' => $sellers,
+            'wishlistProductIds' => $wishlistProductIds,
             'filters' => [
                 'search' => $search,
                 'category' => $category,
@@ -142,11 +151,15 @@ class ProductController extends Controller
                 ->first();
         }
 
+        // Check if product is in wishlist
+        $inWishlist = WishlistHelper::hasProduct($product->id);
+
         return Inertia::render('buyer/products/Show', [
             'product' => $product,
             'relatedProducts' => $relatedProducts,
             'similarProducts' => $similarProducts,
             'ratings' => $ratings,
+            'inWishlist' => $inWishlist,
             'userRating' => $userRating,
         ]);
     }

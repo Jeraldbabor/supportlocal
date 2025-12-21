@@ -21,7 +21,7 @@ function BuyerLayoutContent({ children, title }: BuyerLayoutProps) {
 
     const { totalItems } = useCart();
     const { unreadCount } = useNotifications();
-    const { auth, profileCompletion } = usePage<
+    const { auth, profileCompletion, wishlistCount } = usePage<
         SharedData & {
             profileCompletion?: {
                 status: {
@@ -87,7 +87,6 @@ function BuyerLayoutContent({ children, title }: BuyerLayoutProps) {
         { name: 'Home', href: '/buyer/dashboard', icon: House },
         { name: 'Products', href: '/buyer/products', icon: Package },
         { name: 'Artisans', href: '/buyer/sellers', icon: User },
-        { name: 'Wishlist', href: '/buyer/wishlist', icon: Heart },
         { name: 'My Orders', href: '/buyer/orders', icon: Package },
         { name: 'About', href: '/buyer/about', icon: Contact },
         { name: 'Contact', href: '/buyer/contact', icon: Phone },
@@ -168,6 +167,21 @@ function BuyerLayoutContent({ children, title }: BuyerLayoutProps) {
                                 {unreadCount > 0 && (
                                     <span className="absolute -top-1 -right-1 flex h-5 w-5 animate-pulse items-center justify-center rounded-full bg-gradient-to-r from-red-500 to-red-600 text-xs font-medium text-white shadow-sm">
                                         {unreadCount > 9 ? '9+' : unreadCount}
+                                    </span>
+                                )}
+                                <span className="absolute inset-0 rounded-xl opacity-0 ring-primary/50 transition-all duration-300 group-hover:opacity-100 group-hover:ring-2 group-hover:ring-offset-2"></span>
+                            </Link>
+
+                            {/* Wishlist Icon */}
+                            <Link
+                                href="/wishlist"
+                                className="group relative rounded-xl p-2 text-gray-600 transition-all duration-300 hover:bg-primary/5 hover:text-primary hover:shadow-sm focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 focus:outline-none"
+                                aria-label={`Wishlist ${(wishlistCount ?? 0) > 0 ? `(${wishlistCount} items)` : '(empty)'}`}
+                            >
+                                <Heart className="h-5 w-5 transition-transform duration-300 group-hover:scale-110" />
+                                {(wishlistCount ?? 0) > 0 && (
+                                    <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-gradient-to-r from-pink-500 to-red-500 text-xs font-medium text-white shadow-sm">
+                                        {wishlistCount! > 99 ? '99+' : wishlistCount}
                                     </span>
                                 )}
                                 <span className="absolute inset-0 rounded-xl opacity-0 ring-primary/50 transition-all duration-300 group-hover:opacity-100 group-hover:ring-2 group-hover:ring-offset-2"></span>
@@ -502,7 +516,7 @@ function BuyerLayoutContent({ children, title }: BuyerLayoutProps) {
                                 </li>
                                 <li>
                                     <Link
-                                        href="/buyer/wishlist"
+                                        href="/wishlist"
                                         className="group flex items-center text-gray-300 transition-all duration-200 hover:translate-x-1 hover:text-amber-400"
                                     >
                                         <span className="mr-2 text-amber-600 opacity-0 transition-opacity group-hover:opacity-100">→</span>
