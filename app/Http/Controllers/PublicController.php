@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\WishlistHelper;
 use App\Models\Product;
 use App\Models\ProductCategory;
 use App\Models\User;
@@ -76,11 +77,13 @@ class PublicController extends Controller
                 'id' => $product->id,
                 'name' => $product->name,
                 'price' => (float) $product->price,
+                'compare_price' => $product->compare_price ? (float) $product->compare_price : null,
                 'primary_image' => $product->featured_image,
                 'image' => $product->featured_image ? '/storage/'.$product->featured_image : '/placeholder.jpg',
                 'artisan' => $product->seller->name ?? 'Unknown Artisan',
                 'artisan_image' => $product->seller->avatar_url ?? null,
-                'rating' => $product->average_rating ?? 4.5,
+                'average_rating' => $product->average_rating ? (float) $product->average_rating : null,
+                'review_count' => $product->review_count ?? 0,
                 'category' => $product->category->name ?? 'Miscellaneous',
                 'description' => $product->description,
                 'stock_quantity' => $product->quantity,
@@ -90,9 +93,13 @@ class PublicController extends Controller
         // Get all categories for filtering
         $categories = ProductCategory::withCount('products')->get();
 
+        // Get wishlist product IDs for current user/guest
+        $wishlistProductIds = WishlistHelper::getProductIds();
+
         return Inertia::render('Products', [
             'products' => $products,
             'categories' => $categories ?? [],
+            'wishlistProductIds' => $wishlistProductIds,
             'filters' => array_merge([
                 'category' => null,
                 'search' => null,
@@ -123,8 +130,8 @@ class PublicController extends Controller
             'artisan' => $product->seller->name ?? 'Unknown Artisan',
             'artisan_id' => $product->seller_id,
             'artisan_image' => $product->seller->avatar_url,
-            'rating' => $product->average_rating ?? 4.5,
-            'reviewCount' => $product->review_count ?? 0,
+            'average_rating' => $product->average_rating ? (float) $product->average_rating : null,
+            'review_count' => $product->review_count ?? 0,
             'category' => $product->category->name ?? 'Miscellaneous',
             'description' => $product->description,
             'materials' => $product->tags ? $product->tags : ['Handmade', 'Natural materials'],
@@ -153,13 +160,37 @@ class PublicController extends Controller
                     'image' => $relatedProduct->primary_image ? '/images/'.$relatedProduct->primary_image : '/placeholder.jpg',
                     'artisan' => $relatedProduct->seller->name ?? 'Unknown Artisan',
                     'artisan_image' => $relatedProduct->seller->avatar_url,
-                    'rating' => $relatedProduct->average_rating ?? 4.5,
+                    'average_rating' => $relatedProduct->average_rating ? (float) $relatedProduct->average_rating : null,
+                    'review_count' => $relatedProduct->review_count ?? 0,
                 ];
             });
 
+        // Get product reviews with buyer information
+        $reviews = $product->ratings()
+            ->with('user')
+            ->orderBy('created_at', 'desc')
+            ->get()
+            ->map(function ($rating) {
+                return [
+                    'id' => $rating->id,
+                    'rating' => $rating->rating,
+                    'review' => $rating->review,
+                    'created_at' => $rating->created_at->format('M d, Y'),
+                    'buyer_name' => $rating->user->name ?? 'Anonymous',
+                    'buyer_avatar' => $rating->user->profile_picture
+                        ? '/storage/'.$rating->user->profile_picture
+                        : 'https://ui-avatars.com/api/?name='.urlencode($rating->user->name ?? 'Anonymous').'&color=7F9CF5&background=EBF4FF',
+                ];
+            });
+
+        // Check if product is in wishlist
+        $inWishlist = WishlistHelper::hasProduct($product->id);
+
         return Inertia::render('ProductDetail', [
+            'inWishlist' => $inWishlist,
             'product' => $productData,
             'relatedProducts' => $relatedProducts,
+            'reviews' => $reviews,
         ]);
     }
 
@@ -234,6 +265,11 @@ class PublicController extends Controller
                 $location = trim(end($addressParts));
             }
 
+            // Calculate total sales from completed orders
+            $totalSales = \App\Models\Order::where('seller_id', $artisan->id)
+                ->whereIn('status', ['completed', 'delivered'])
+                ->count();
+
             return [
                 'id' => $artisan->id,
                 'name' => $artisan->name,
@@ -246,9 +282,10 @@ class PublicController extends Controller
                 'phone' => $artisan->phone_number,
                 'products_count' => $artisan->products_count,
                 'specialties' => [], // Not available in current schema
-                'rating' => 0, // Not available in current schema
-                'average_rating' => 0, // Not available in current schema
-                'total_sales' => $artisan->orders_count ?? 0,
+                'rating' => (float) $artisan->average_rating,
+                'average_rating' => (float) $artisan->average_rating,
+                'review_count' => $artisan->review_count ?? 0,
+                'total_sales' => $totalSales,
                 'created_at' => $artisan->created_at,
                 'is_verified' => false, // Not available in current schema
             ];
@@ -287,6 +324,11 @@ class PublicController extends Controller
             $location = trim(end($addressParts));
         }
 
+        // Calculate total sales from completed orders
+        $totalSales = \App\Models\Order::where('seller_id', $artisan->id)
+            ->whereIn('status', ['completed', 'delivered'])
+            ->count();
+
         $artisanData = [
             'id' => $artisan->id,
             'name' => $artisan->name,
@@ -298,13 +340,14 @@ class PublicController extends Controller
             'location' => $location,
             'phone' => $artisan->phone_number,
             'specialties' => [], // Not available in current schema
-            'rating' => 0, // Not available in current schema
-            'average_rating' => 0, // Not available in current schema
+            'rating' => (float) $artisan->average_rating,
+            'average_rating' => (float) $artisan->average_rating,
+            'review_count' => $artisan->review_count ?? 0,
             'years_of_experience' => null, // Not available in current schema
             'website' => null, // Not available in current schema
             'social_links' => null, // Not available in current schema
             'products_count' => $artisan->products()->where('status', 'active')->count(),
-            'total_sales' => $artisan->orders()->count(),
+            'total_sales' => $totalSales,
             'created_at' => $artisan->created_at,
             'is_verified' => false, // Not available in current schema
         ];

@@ -68,6 +68,12 @@ class ProfileController extends Controller
     public function edit(): Response
     {
         $user = Auth::user();
+        if (empty($user->delivery_address) && ! empty($user->address)) {
+            $user->delivery_address = $user->address;
+        }
+        if (empty($user->delivery_phone) && ! empty($user->phone_number)) {
+            $user->delivery_phone = $user->phone_number;
+        }
 
         return Inertia::render('seller/profile/edit', [
             'user' => [

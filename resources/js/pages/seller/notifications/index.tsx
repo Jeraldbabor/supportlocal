@@ -14,6 +14,7 @@ interface Notification {
         message?: string;
         action_url?: string;
         order_id?: number;
+        admin_notes?: string;
     };
     read_at: string | null;
     created_at: string;
@@ -41,6 +42,18 @@ function NotificationsPageContent({ notifications }: NotificationsProps) {
     const handleMarkAsRead = (notificationId: string) => {
         markAsRead(notificationId);
         router.reload();
+    };
+
+    const handleNotificationClick = (notification: Notification) => {
+        // Mark as read first
+        if (!notification.read_at) {
+            markAsRead(notification.id);
+        }
+
+        // Navigate to the action URL if it exists
+        if (notification.data.action_url) {
+            router.visit(notification.data.action_url);
+        }
     };
 
     const handleMarkAllAsRead = () => {
@@ -147,14 +160,17 @@ function NotificationsPageContent({ notifications }: NotificationsProps) {
                         notifications.data.map((notification) => (
                             <div
                                 key={notification.id}
-                                className={`px-6 py-4 hover:bg-gray-50 dark:hover:bg-gray-700 ${
+                                className={`px-6 py-4 transition-colors ${
                                     !notification.read_at ? 'bg-blue-50 dark:bg-blue-900/20' : ''
-                                }`}
+                                } ${notification.data.action_url ? 'cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700' : ''}`}
                             >
                                 <div className="flex items-start space-x-3">
                                     <div className="mt-1 flex-shrink-0">{getNotificationIcon(notification.type)}</div>
 
-                                    <div className="min-w-0 flex-1">
+                                    <div
+                                        className="min-w-0 flex-1"
+                                        onClick={() => notification.data.action_url && handleNotificationClick(notification)}
+                                    >
                                         <div className="flex items-start justify-between">
                                             <div className="flex-1">
                                                 <p className="text-sm font-medium text-gray-900 dark:text-white">
@@ -163,6 +179,14 @@ function NotificationsPageContent({ notifications }: NotificationsProps) {
                                                 <p className="mt-1 text-sm text-gray-700 dark:text-gray-300">
                                                     {notification.data.message || 'No message'}
                                                 </p>
+                                                {notification.data.admin_notes && (
+                                                    <div className="mt-2 rounded-md border border-blue-200 bg-blue-50 p-3 dark:border-blue-800 dark:bg-blue-900/30">
+                                                        <p className="mb-1 text-xs font-semibold text-blue-900 dark:text-blue-200">
+                                                            Note from Admin:
+                                                        </p>
+                                                        <p className="text-sm text-blue-800 dark:text-blue-300">{notification.data.admin_notes}</p>
+                                                    </div>
+                                                )}
                                                 <div className="mt-2 flex items-center text-xs text-gray-500 dark:text-gray-400">
                                                     <Clock className="mr-1 h-3 w-3" />
                                                     {formatDate(notification.created_at)}
@@ -171,7 +195,10 @@ function NotificationsPageContent({ notifications }: NotificationsProps) {
 
                                             <div className="flex items-center space-x-2">
                                                 <button
-                                                    onClick={() => setShowDeleteConfirm(notification.id)}
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        setShowDeleteConfirm(notification.id);
+                                                    }}
                                                     disabled={deletingId === notification.id}
                                                     className="rounded-full p-1 text-red-500 transition-colors hover:bg-red-50 hover:text-red-700 disabled:opacity-50"
                                                     title="Delete notification"
@@ -180,7 +207,10 @@ function NotificationsPageContent({ notifications }: NotificationsProps) {
                                                 </button>
                                                 {!notification.read_at && (
                                                     <button
-                                                        onClick={() => handleMarkAsRead(notification.id)}
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            handleMarkAsRead(notification.id);
+                                                        }}
                                                         className="text-xs font-medium text-blue-600 hover:text-blue-800"
                                                     >
                                                         Mark as read

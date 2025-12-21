@@ -18,14 +18,16 @@ class ProfileCompletionTest extends TestCase
             'email' => 'buyer@test.com',
             'role' => User::ROLE_BUYER,
             'phone_number' => null,
-            'delivery_address' => null,
+            'delivery_province' => null,
+            'delivery_city' => null,
+            'delivery_barangay' => null,
         ]);
 
         $status = $user->getProfileCompletionStatus();
 
         $this->assertFalse($status['is_complete']);
-        $this->assertEquals(50, $status['percentage']); // 2 out of 4 fields complete
-        $this->assertCount(2, $status['missing_fields']);
+        $this->assertEquals(33, $status['percentage']); // 2 out of 6 fields complete
+        $this->assertCount(4, $status['missing_fields']);
     }
 
     /** @test */
@@ -36,7 +38,9 @@ class ProfileCompletionTest extends TestCase
             'email' => 'complete@test.com',
             'role' => User::ROLE_BUYER,
             'phone_number' => '1234567890',
-            'delivery_address' => '123 Main Street',
+            'delivery_province' => 'Metro Manila',
+            'delivery_city' => 'Manila',
+            'delivery_barangay' => 'Barangay 1',
         ]);
 
         $status = $user->getProfileCompletionStatus();
@@ -90,7 +94,9 @@ class ProfileCompletionTest extends TestCase
             'email' => 'test@test.com',
             'role' => User::ROLE_BUYER,
             'phone_number' => null,
-            'delivery_address' => null,
+            'delivery_province' => null,
+            'delivery_city' => null,
+            'delivery_barangay' => null,
         ]);
 
         $recommendation = $user->getProfileCompletionRecommendation();
@@ -109,7 +115,9 @@ class ProfileCompletionTest extends TestCase
             'email' => 'verified@test.com',
             'role' => User::ROLE_BUYER,
             'phone_number' => '1234567890',
-            'delivery_address' => '123 Main St',
+            'delivery_province' => 'Metro Manila',
+            'delivery_city' => 'Manila',
+            'delivery_barangay' => 'Barangay 1',
             'email_verified_at' => null,
         ]);
 
@@ -128,7 +136,9 @@ class ProfileCompletionTest extends TestCase
             'email' => 'perfect@test.com',
             'role' => User::ROLE_BUYER,
             'phone_number' => '1234567890',
-            'delivery_address' => '123 Main St',
+            'delivery_province' => 'Metro Manila',
+            'delivery_city' => 'Manila',
+            'delivery_barangay' => 'Barangay 1',
             'email_verified_at' => now(),
             'profile_picture' => 'path/to/picture.jpg',
         ]);
@@ -159,13 +169,17 @@ class ProfileCompletionTest extends TestCase
             'email' => 'test@test.com',
             'role' => User::ROLE_BUYER,
             'phone_number' => null,
-            'delivery_address' => null,
+            'delivery_province' => null,
+            'delivery_city' => null,
+            'delivery_barangay' => null,
             'profile_completion_percentage' => 0,
         ]);
 
         $user->update([
             'phone_number' => '1234567890',
-            'delivery_address' => '123 Main St',
+            'delivery_province' => 'Metro Manila',
+            'delivery_city' => 'Manila',
+            'delivery_barangay' => 'Barangay 1',
         ]);
 
         $user->updateProfileCompletionTracking();
@@ -192,7 +206,7 @@ class ProfileCompletionTest extends TestCase
             ->has('profileCompletion.status')
             ->has('profileCompletion.recommendation')
             ->where('profileCompletion.status.is_complete', false)
-            ->where('profileCompletion.status.percentage', 50)
+            ->where('profileCompletion.status.percentage', 33)
         );
     }
 
@@ -273,7 +287,9 @@ class ProfileCompletionTest extends TestCase
         $this->assertArrayHasKey('name', $requiredFields);
         $this->assertArrayHasKey('email', $requiredFields);
         $this->assertArrayHasKey('phone_number', $requiredFields);
-        $this->assertArrayHasKey('delivery_address', $requiredFields);
+        $this->assertArrayHasKey('delivery_province', $requiredFields);
+        $this->assertArrayHasKey('delivery_city', $requiredFields);
+        $this->assertArrayHasKey('delivery_barangay', $requiredFields);
         $this->assertArrayNotHasKey('address', $requiredFields);
     }
 

@@ -1,5 +1,4 @@
 import { useCart } from '@/contexts/CartContext';
-import { dashboard, login, register } from '@/routes';
 import { type SharedData } from '@/types';
 import { Link, router, usePage } from '@inertiajs/react';
 import { Bell, ChevronDown, Contact, Heart, House, LogOut, Menu, Package, Phone, ShoppingCart, User, X } from 'lucide-react';
@@ -17,11 +16,12 @@ export default function MainLayout({ children, title }: MainLayoutProps) {
     const [showCartNotification, setShowCartNotification] = useState(false);
     const userMenuRef = useRef<HTMLDivElement>(null);
     const mobileMenuRef = useRef<HTMLDivElement>(null);
+    const mobileMenuButtonRef = useRef<HTMLButtonElement>(null);
 
-    const { auth } = usePage<SharedData>().props;
+    const { auth, wishlistCount } = usePage<SharedData>().props;
     const currentPath = usePage().url;
-    const unreadCount = 0; // You can replace this with actual notification count logic
-    const { totalItems } = useCart(); // Get cart count from context
+    const unreadCount = 0;
+    const { totalItems } = useCart();
 
     // Simplified notification logic
     useEffect(() => {
@@ -29,26 +29,21 @@ export default function MainLayout({ children, title }: MainLayoutProps) {
         const lastSeenCount = parseInt(localStorage.getItem('cart_last_seen_count') || '0', 10);
 
         if (currentPath === '/cart') {
-            // On cart page: always hide notification and mark as seen
             setShowCartNotification(false);
             if (totalItems > 0) {
                 localStorage.setItem('cart_notification_dismissed', 'true');
                 localStorage.setItem('cart_last_seen_count', totalItems.toString());
             }
         } else if (totalItems === 0) {
-            // Empty cart: reset everything
             setShowCartNotification(false);
             localStorage.removeItem('cart_notification_dismissed');
             localStorage.removeItem('cart_last_seen_count');
         } else if (totalItems > lastSeenCount) {
-            // New items added: always show notification regardless of dismissed state
             setShowCartNotification(true);
             localStorage.setItem('cart_notification_dismissed', 'false');
         } else if (!notificationDismissed && totalItems > 0) {
-            // Items exist and not dismissed: show notification
             setShowCartNotification(true);
         } else {
-            // Items exist but already dismissed: hide notification
             setShowCartNotification(false);
         }
     }, [totalItems, currentPath]);
@@ -69,7 +64,12 @@ export default function MainLayout({ children, title }: MainLayoutProps) {
             if (userMenuRef.current && !userMenuRef.current.contains(event.target as Node)) {
                 setIsUserMenuOpen(false);
             }
-            if (mobileMenuRef.current && !mobileMenuRef.current.contains(event.target as Node)) {
+            if (
+                mobileMenuRef.current &&
+                !mobileMenuRef.current.contains(event.target as Node) &&
+                mobileMenuButtonRef.current &&
+                !mobileMenuButtonRef.current.contains(event.target as Node)
+            ) {
                 setIsMenuOpen(false);
             }
         }
@@ -95,7 +95,6 @@ export default function MainLayout({ children, title }: MainLayoutProps) {
         { name: 'Home', href: '/', icon: House },
         { name: 'Products', href: '/products', icon: Package },
         { name: 'Artisans', href: '/artisans', icon: User },
-        { name: 'Wishlist', href: '#', icon: Heart },
         { name: 'About', href: '/about', icon: Contact },
         { name: 'Contact', href: '/contact', icon: Phone },
     ];
@@ -113,7 +112,7 @@ export default function MainLayout({ children, title }: MainLayoutProps) {
                                 className="flex items-center gap-2 rounded-xl px-2 py-2 transition-all duration-300 hover:scale-105 focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 focus:outline-none active:scale-95"
                                 aria-label="Support Local - Go to homepage"
                             >
-                                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-amber-500 to-orange-600 shadow-md">
+                                <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-amber-500 to-orange-600 shadow-md">
                                     <svg className="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path
                                             strokeLinecap="round"
@@ -123,7 +122,7 @@ export default function MainLayout({ children, title }: MainLayoutProps) {
                                         />
                                     </svg>
                                 </div>
-                                <span className="bg-gradient-to-r from-amber-600 to-orange-600 bg-clip-text text-xl font-bold text-transparent">
+                                <span className="hidden bg-gradient-to-r from-amber-600 to-orange-600 bg-clip-text text-xl font-bold text-transparent sm:inline">
                                     Support Local
                                 </span>
                             </Link>
@@ -178,6 +177,22 @@ export default function MainLayout({ children, title }: MainLayoutProps) {
                                 )}
                                 <span className="absolute inset-0 rounded-xl opacity-0 ring-primary/50 transition-all duration-300 group-hover:opacity-100 group-hover:ring-2 group-hover:ring-offset-2"></span>
                             </Link>
+
+                            {/* Wishlist Icon */}
+                            <Link
+                                href="/wishlist"
+                                className="group relative rounded-xl p-2 text-gray-600 transition-all duration-300 hover:bg-primary/5 hover:text-primary hover:shadow-sm focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 focus:outline-none"
+                                aria-label={`Wishlist ${(wishlistCount ?? 0) > 0 ? `(${wishlistCount} items)` : '(empty)'}`}
+                            >
+                                <Heart className="h-5 w-5 transition-transform duration-300 group-hover:scale-110" />
+                                {(wishlistCount ?? 0) > 0 && (
+                                    <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-gradient-to-r from-pink-500 to-red-500 text-xs font-medium text-white shadow-sm">
+                                        {wishlistCount! > 99 ? '99+' : wishlistCount}
+                                    </span>
+                                )}
+                                <span className="absolute inset-0 rounded-xl opacity-0 ring-primary/50 transition-all duration-300 group-hover:opacity-100 group-hover:ring-2 group-hover:ring-offset-2"></span>
+                            </Link>
+
                             {/* Cart Icon */}
                             <Link
                                 href="/cart"
@@ -196,7 +211,7 @@ export default function MainLayout({ children, title }: MainLayoutProps) {
 
                             {/* User Authentication Section */}
                             {auth.user ? (
-                                <div className="relative" ref={userMenuRef}>
+                                <div className="relative hidden md:block" ref={userMenuRef}>
                                     <button
                                         onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
                                         className={`flex items-center space-x-2 rounded-xl px-3 py-2 transition-all duration-300 focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 focus:outline-none ${
@@ -208,7 +223,7 @@ export default function MainLayout({ children, title }: MainLayoutProps) {
                                         aria-haspopup="true"
                                         aria-label="User menu"
                                     >
-                                        <div className="hidden text-left sm:block">
+                                        <div className="text-left">
                                             <p className="text-sm font-semibold text-gray-900">{auth.user?.name}</p>
                                             <p className="text-xs font-medium text-gray-500">Welcome back</p>
                                         </div>
@@ -235,7 +250,7 @@ export default function MainLayout({ children, title }: MainLayoutProps) {
                                             {/* Menu Items */}
                                             <div className="py-2">
                                                 <Link
-                                                    href={dashboard().url}
+                                                    href="/dashboard"
                                                     className="group mx-2 flex items-center rounded-lg px-4 py-3 text-sm font-medium text-gray-700 transition-all duration-300 hover:bg-primary/5 hover:text-primary focus:bg-primary/5 focus:text-primary focus:outline-none"
                                                     onClick={() => setIsUserMenuOpen(false)}
                                                     role="menuitem"
@@ -262,16 +277,16 @@ export default function MainLayout({ children, title }: MainLayoutProps) {
                                     )}
                                 </div>
                             ) : (
-                                <div className="flex items-center gap-2">
+                                <div className="hidden items-center gap-2 md:flex">
                                     <Link
-                                        href={login().url}
-                                        className="rounded-xl px-4 py-2 text-sm font-medium text-gray-700 transition-all duration-300 hover:bg-gray-50 hover:text-primary focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 focus:outline-none"
+                                        href="/login"
+                                        className="rounded-xl px-3 py-2 text-sm font-medium text-gray-700 transition-all duration-300 hover:bg-gray-50 hover:text-primary focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 focus:outline-none lg:px-4"
                                     >
                                         Log in
                                     </Link>
                                     <Link
-                                        href={register().url}
-                                        className="rounded-xl border border-primary/20 bg-gradient-to-r from-primary/5 to-primary/10 px-4 py-2 text-sm font-medium text-primary transition-all duration-300 hover:from-primary/10 hover:to-primary/20 hover:shadow-sm focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 focus:outline-none"
+                                        href="/register"
+                                        className="rounded-xl border border-primary/20 bg-gradient-to-r from-primary/5 to-primary/10 px-3 py-2 text-sm font-medium text-primary transition-all duration-300 hover:from-primary/10 hover:to-primary/20 hover:shadow-sm focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 focus:outline-none lg:px-4"
                                     >
                                         Get Started
                                     </Link>
@@ -281,6 +296,7 @@ export default function MainLayout({ children, title }: MainLayoutProps) {
                             {/* Mobile menu button */}
                             <div className="ml-1 lg:hidden">
                                 <button
+                                    ref={mobileMenuButtonRef}
                                     onClick={() => setIsMenuOpen(!isMenuOpen)}
                                     className="rounded-xl p-2 text-gray-600 transition-all duration-300 hover:bg-primary/5 hover:text-primary focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 focus:outline-none"
                                     aria-expanded={isMenuOpen}
@@ -288,10 +304,10 @@ export default function MainLayout({ children, title }: MainLayoutProps) {
                                 >
                                     <div className="relative h-6 w-6">
                                         <Menu
-                                            className={`absolute inset-0 h-6 w-6 transition-all duration-300 ${isMenuOpen ? 'rotate-180 opacity-0' : 'rotate-0 opacity-100'}`}
+                                            className={`pointer-events-none absolute inset-0 h-6 w-6 transition-all duration-300 ${isMenuOpen ? 'rotate-180 opacity-0' : 'rotate-0 opacity-100'}`}
                                         />
                                         <X
-                                            className={`absolute inset-0 h-6 w-6 transition-all duration-300 ${isMenuOpen ? 'rotate-0 opacity-100' : '-rotate-180 opacity-0'}`}
+                                            className={`pointer-events-none absolute inset-0 h-6 w-6 transition-all duration-300 ${isMenuOpen ? 'rotate-0 opacity-100' : '-rotate-180 opacity-0'}`}
                                         />
                                     </div>
                                 </button>
@@ -346,7 +362,7 @@ export default function MainLayout({ children, title }: MainLayoutProps) {
 
                                         <div className="mt-3 space-y-2">
                                             <Link
-                                                href={dashboard().url}
+                                                href="/dashboard"
                                                 className="flex items-center gap-3 rounded-xl px-4 py-3 text-gray-700 transition-all duration-300 hover:bg-primary/5 hover:text-primary"
                                                 onClick={() => setIsMenuOpen(false)}
                                             >
@@ -369,14 +385,14 @@ export default function MainLayout({ children, title }: MainLayoutProps) {
                                 ) : (
                                     <div className="space-y-3">
                                         <Link
-                                            href={login().url}
+                                            href="/login"
                                             className="flex items-center justify-center rounded-xl px-4 py-3 text-gray-700 transition-all duration-300 hover:bg-gray-50 hover:text-primary"
                                             onClick={() => setIsMenuOpen(false)}
                                         >
                                             Log in
                                         </Link>
                                         <Link
-                                            href={register().url}
+                                            href="/register"
                                             className="flex items-center justify-center rounded-xl border border-primary/20 bg-gradient-to-r from-primary/5 to-primary/10 px-4 py-3 text-primary transition-all duration-300 hover:from-primary/10 hover:to-primary/20"
                                             onClick={() => setIsMenuOpen(false)}
                                         >
@@ -392,9 +408,9 @@ export default function MainLayout({ children, title }: MainLayoutProps) {
 
             {/* Page Title */}
             {title && (
-                <div className="bg-gray-50 py-8">
+                <div className="bg-gray-50 py-6 sm:py-8">
                     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                        <h1 className="text-3xl font-bold text-gray-900">{title}</h1>
+                        <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl">{title}</h1>
                     </div>
                 </div>
             )}
@@ -404,10 +420,10 @@ export default function MainLayout({ children, title }: MainLayoutProps) {
 
             {/* Footer */}
             <footer className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white">
-                <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
-                    <div className="grid grid-cols-1 gap-12 md:grid-cols-4">
+                <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-16 lg:px-8">
+                    <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:gap-12 lg:grid-cols-4">
                         {/* Brand Section */}
-                        <div className="col-span-1 md:col-span-2">
+                        <div className="col-span-1 sm:col-span-2">
                             <div className="mb-4 flex items-center gap-2">
                                 <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-amber-500 to-orange-600 shadow-lg">
                                     <svg className="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -427,7 +443,7 @@ export default function MainLayout({ children, title }: MainLayoutProps) {
                                 Empowering local artisans and craftsmen by connecting them with customers who value authenticity, quality, and the
                                 beauty of handmade products.
                             </p>
-                            <div className="flex gap-4">
+                            <div className="flex flex-wrap gap-3 sm:gap-4">
                                 <a
                                     href="#"
                                     className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-800 text-gray-400 transition-all hover:scale-110 hover:bg-gradient-to-r hover:from-amber-600 hover:to-orange-600 hover:text-white"
@@ -524,12 +540,12 @@ export default function MainLayout({ children, title }: MainLayoutProps) {
                     </div>
 
                     {/* Bottom Bar */}
-                    <div className="mt-12 border-t border-gray-800 pt-8">
-                        <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
+                    <div className="mt-8 border-t border-gray-800 pt-6 sm:mt-12 sm:pt-8">
+                        <div className="flex flex-col items-center justify-between gap-4 text-center md:flex-row md:text-left">
                             <p className="text-sm text-gray-400">
                                 &copy; {new Date().getFullYear()} Support Local. All rights reserved. Crafted with ❤️ for artisans.
                             </p>
-                            <div className="flex gap-6 text-sm">
+                            <div className="flex flex-wrap justify-center gap-4 text-sm sm:gap-6 md:justify-start">
                                 <Link href="/privacy" className="text-gray-400 transition-colors hover:text-amber-400">
                                     Privacy Policy
                                 </Link>

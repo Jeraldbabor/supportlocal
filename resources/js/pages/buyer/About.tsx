@@ -63,7 +63,7 @@ export default function About({ artisans = [] }: AboutProps) {
     const featuredArtisans = artisans.length > 0 ? artisans : defaultArtisans;
 
     return (
-        <BuyerLayout title="About Us">
+        <BuyerLayout>
             <Head title="About Us" />
 
             {/* Mission Statement */}

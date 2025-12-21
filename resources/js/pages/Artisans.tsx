@@ -17,6 +17,7 @@ interface Artisan {
     specialties: string[];
     rating: number;
     average_rating?: number;
+    review_count?: number;
     total_sales?: number;
     created_at?: string;
     is_verified?: boolean;
@@ -57,7 +58,7 @@ export default function Artisans({ artisans, filters = {} }: ArtisansProps) {
     const artisanList = artisans?.data || [];
 
     return (
-        <MainLayout title="Local Artisans">
+        <MainLayout>
             <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
                 {/* Header */}
                 <div className="mb-8">
@@ -193,11 +194,13 @@ export default function Artisans({ artisans, filters = {} }: ArtisansProps) {
                                                     <Star className="mr-1 h-4 w-4 fill-current text-yellow-400" />
                                                     <span className="text-lg font-semibold text-gray-900">
                                                         {artisan.average_rating || artisan.rating
-                                                            ? (artisan.average_rating || artisan.rating).toFixed(1)
+                                                            ? Number(artisan.average_rating || artisan.rating).toFixed(1)
                                                             : '0.0'}
                                                     </span>
                                                 </div>
-                                                <div className="text-xs text-gray-500">Rating</div>
+                                                <div className="text-xs text-gray-500">
+                                                    Rating {artisan.review_count ? `(${artisan.review_count})` : ''}
+                                                </div>
                                             </div>
 
                                             <div>

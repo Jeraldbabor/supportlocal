@@ -15,8 +15,8 @@ interface Product {
     artisan?: string;
     description?: string;
     short_description?: string;
-    average_rating?: number;
-    rating?: number;
+    average_rating?: number | null;
+    review_count?: number;
     category?: string | { id: number; name: string };
     sku?: string;
 }
@@ -51,7 +51,7 @@ export default function AddToCartModal({ isOpen, onClose, product, onAddToCart, 
 
     const maxQuantity = product.stock_quantity || 999;
     const totalPrice = product.price * quantity;
-    const rating = product.average_rating || product.rating || 0;
+    const rating = product.average_rating ? Number(product.average_rating) : 0;
     const categoryName = typeof product.category === 'string' ? product.category : product.category?.name;
 
     const handleQuantityChange = (newQuantity: number) => {

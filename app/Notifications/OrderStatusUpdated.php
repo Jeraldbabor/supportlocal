@@ -60,11 +60,12 @@ class OrderStatusUpdated extends Notification
     public function toArray(object $notifiable): array
     {
         return [
+            'title' => 'Order Status Updated',
             'order_id' => $this->order->id,
             'message' => $this->message,
             'status' => $this->order->status,
             'total_amount' => $this->order->total_amount,
-            'url' => $this->getOrderUrl($notifiable),
+            'action_url' => $this->getOrderUrl($notifiable),
         ];
     }
 

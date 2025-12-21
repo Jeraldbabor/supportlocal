@@ -129,7 +129,7 @@ export default function Orders({ orders }: OrdersIndexProps) {
 
     if (!orders.data || orders.data.length === 0) {
         return (
-            <BuyerLayout title="My Orders">
+            <BuyerLayout>
                 <Head title="My Orders" />
 
                 <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8">
@@ -153,7 +153,7 @@ export default function Orders({ orders }: OrdersIndexProps) {
     }
 
     return (
-        <BuyerLayout title="My Orders">
+        <BuyerLayout>
             <Head title="My Orders" />
 
             <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">

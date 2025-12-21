@@ -1,4 +1,6 @@
 import InputError from '@/components/input-error';
+import LocationPicker from '@/components/LocationPicker';
+import Toast from '@/components/Toast';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -6,11 +8,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
+import { getBarangaysByCity, getCitiesByProvince, getProvinces } from '@/data/philippineLocations';
 import BuyerLayout from '@/layouts/BuyerLayout';
-import { Head, useForm } from '@inertiajs/react';
+import { Head, useForm, usePage } from '@inertiajs/react';
 import { AlertTriangle, Calendar, Camera, CreditCard, Key, MapPin, Phone, Save, Shield, Trash2, Truck, Upload, User } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 interface User {
     id: number;
@@ -24,19 +28,40 @@ interface User {
     delivery_address?: string;
     delivery_phone?: string;
     delivery_notes?: string;
+    delivery_province?: string;
+    delivery_city?: string;
+    delivery_barangay?: string;
+    delivery_street?: string;
+    delivery_building_details?: string;
+    delivery_latitude?: number;
+    delivery_longitude?: number;
     gcash_number?: string;
     gcash_name?: string;
 }
 
 interface BuyerProfileProps {
     user: User;
+    flash?: {
+        success?: string;
+        error?: string;
+    };
+    [key: string]: string | number | boolean | File | null | undefined | { success?: string; error?: string };
 }
 
 export default function BuyerProfile({ user }: BuyerProfileProps) {
+    const { flash } = usePage<BuyerProfileProps>().props;
+    const [showToast, setShowToast] = useState(false);
+    const [toastMessage, setToastMessage] = useState('');
+    const [toastType, setToastType] = useState<'success' | 'error'>('success');
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
     const [showPasswordForm, setShowPasswordForm] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [deleteStep, setDeleteStep] = useState(1);
+
+    // Location dropdown states
+    const [provinces] = useState<string[]>(getProvinces());
+    const [cities, setCities] = useState<string[]>([]);
+    const [barangays, setBarangays] = useState<string[]>([]);
 
     const { data, setData, post, processing, errors } = useForm({
         name: user.name || '',
@@ -50,6 +75,13 @@ export default function BuyerProfile({ user }: BuyerProfileProps) {
         delivery_address: user.delivery_address || '',
         delivery_phone: user.delivery_phone || '',
         delivery_notes: user.delivery_notes || '',
+        delivery_province: user.delivery_province || '',
+        delivery_city: user.delivery_city || '',
+        delivery_barangay: user.delivery_barangay || '',
+        delivery_street: user.delivery_street || '',
+        delivery_building_details: user.delivery_building_details || '',
+        delivery_latitude: user.delivery_latitude || null,
+        delivery_longitude: user.delivery_longitude || null,
         gcash_number: user.gcash_number || '',
         gcash_name: user.gcash_name || '',
         profile_picture: null as File | null,
@@ -65,6 +97,65 @@ export default function BuyerProfile({ user }: BuyerProfileProps) {
         password: '',
         confirmation_phrase: '',
     });
+
+    // Update cities when province changes
+    useEffect(() => {
+        if (data.delivery_province) {
+            const availableCities = getCitiesByProvince(data.delivery_province);
+            setCities(availableCities);
+
+            // Reset city and barangay if the selected city is not in the new province
+            if (data.delivery_city && !availableCities.includes(data.delivery_city)) {
+                setData('delivery_city', '');
+                setData('delivery_barangay', '');
+            }
+        } else {
+            setCities([]);
+            setData('delivery_city', '');
+            setData('delivery_barangay', '');
+        }
+    }, [data.delivery_province]);
+
+    // Update barangays when city changes
+    useEffect(() => {
+        if (data.delivery_province && data.delivery_city) {
+            const availableBarangays = getBarangaysByCity(data.delivery_province, data.delivery_city);
+            setBarangays(availableBarangays);
+
+            // Reset barangay if the selected barangay is not in the new city
+            if (data.delivery_barangay && !availableBarangays.includes(data.delivery_barangay)) {
+                setData('delivery_barangay', '');
+            }
+        } else {
+            setBarangays([]);
+            setData('delivery_barangay', '');
+        }
+    }, [data.delivery_city, data.delivery_province]);
+
+    // Initialize cities and barangays on mount
+    useEffect(() => {
+        if (user.delivery_province) {
+            const availableCities = getCitiesByProvince(user.delivery_province);
+            setCities(availableCities);
+        }
+        if (user.delivery_province && user.delivery_city) {
+            const availableBarangays = getBarangaysByCity(user.delivery_province, user.delivery_city);
+            setBarangays(availableBarangays);
+        }
+    }, []);
+
+    // Handle flash messages
+    useEffect(() => {
+        if (flash?.success) {
+            setToastMessage(flash.success);
+            setToastType('success');
+            setShowToast(true);
+        } else if (flash?.error) {
+            setToastMessage(flash.error);
+            setToastType('error');
+            setShowToast(true);
+        }
+    }, [flash]);
 
     const handleProfilePictureChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0] || null;
@@ -85,6 +176,14 @@ export default function BuyerProfile({ user }: BuyerProfileProps) {
             forceFormData: true,
             onSuccess: () => {
                 setPreviewUrl(null);
+                setToastMessage('Profile updated successfully!');
+                setToastType('success');
+                setShowToast(true);
+            },
+            onError: () => {
+                setToastMessage('Failed to update profile. Please check your inputs.');
+                setToastType('error');
+                setShowToast(true);
             },
         });
     };
@@ -93,17 +192,42 @@ export default function BuyerProfile({ user }: BuyerProfileProps) {
         post('/buyer/profile/delete-picture', {
             onSuccess: () => {
                 setPreviewUrl(null);
+                setToastMessage('Profile picture deleted successfully!');
+                setToastType('success');
+                setShowToast(true);
+            },
+            onError: () => {
+                setToastMessage('Failed to delete profile picture.');
+                setToastType('error');
+                setShowToast(true);
             },
         });
     };
 
     const handlePasswordChange = (e: React.FormEvent) => {
         e.preventDefault();
+        e.stopPropagation();
+        console.log('Password change form submitted');
+        console.log('Form data:', passwordForm.data);
+
         passwordForm.post('/buyer/profile/change-password', {
             preserveScroll: true,
             onSuccess: () => {
+                console.log('Password change successful');
                 passwordForm.reset();
+                passwordForm.clearErrors();
                 setShowPasswordForm(false);
+                setToastMessage('Password changed successfully!');
+                setToastType('success');
+                setShowToast(true);
+            },
+            onError: (errors) => {
+                console.log('Password change error:', errors);
+                // Show specific error message if available
+                const errorMessage = errors.current_password || errors.password || 'Failed to change password. Please check your inputs.';
+                setToastMessage(typeof errorMessage === 'string' ? errorMessage : 'Failed to change password. Please check your inputs.');
+                setToastType('error');
+                setShowToast(true);
             },
         });
     };
@@ -127,7 +251,9 @@ export default function BuyerProfile({ user }: BuyerProfileProps) {
                 window.location.href = '/';
             },
             onError: () => {
-                // Handle errors
+                setToastMessage('Failed to delete account. Please check your password and try again.');
+                setToastType('error');
+                setShowToast(true);
             },
         });
     };
@@ -160,6 +286,9 @@ export default function BuyerProfile({ user }: BuyerProfileProps) {
     return (
         <BuyerLayout title="My Profile">
             <Head title="My Profile" />
+
+            {/* Toast Notification */}
+            {showToast && <Toast message={toastMessage} type={toastType} onClose={() => setShowToast(false)} />}
 
             <div className="mx-auto max-w-6xl space-y-6 p-6">
                 {/* Header */}
@@ -320,29 +449,141 @@ export default function BuyerProfile({ user }: BuyerProfileProps) {
                                         <Truck className="h-5 w-5" />
                                         Delivery Information
                                     </CardTitle>
-                                    <CardDescription>Where should we deliver your orders?</CardDescription>
+                                    <CardDescription>Select your delivery location using dropdowns and map pin</CardDescription>
                                 </CardHeader>
                                 <CardContent className="space-y-4">
-                                    <div className="space-y-2">
-                                        <Label htmlFor="delivery_address">Delivery Address</Label>
-                                        <Textarea
-                                            id="delivery_address"
-                                            placeholder="Street, Barangay, City, Province (if different from your address above)"
-                                            value={data.delivery_address}
-                                            onChange={(e) => setData('delivery_address', e.target.value)}
-                                            rows={2}
-                                        />
-                                        <p className="text-xs text-gray-500">Leave blank to use your address above</p>
-                                        <InputError message={errors.delivery_address} />
+                                    {/* Province, City, Barangay Dropdowns */}
+                                    <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+                                        <div className="space-y-2">
+                                            <Label htmlFor="delivery_province">
+                                                <MapPin className="mr-1 inline h-4 w-4" />
+                                                Province *
+                                            </Label>
+                                            <Select value={data.delivery_province} onValueChange={(value) => setData('delivery_province', value)}>
+                                                <SelectTrigger id="delivery_province">
+                                                    <SelectValue placeholder="Select province" />
+                                                </SelectTrigger>
+                                                <SelectContent className="z-[100] max-h-[200px]">
+                                                    {provinces.map((province) => (
+                                                        <SelectItem key={province} value={province}>
+                                                            {province}
+                                                        </SelectItem>
+                                                    ))}
+                                                </SelectContent>
+                                            </Select>
+                                            <InputError message={errors.delivery_province} />
+                                        </div>
+
+                                        <div className="space-y-2">
+                                            <Label htmlFor="delivery_city">City / Municipality *</Label>
+                                            <Select
+                                                value={data.delivery_city}
+                                                onValueChange={(value) => setData('delivery_city', value)}
+                                                disabled={!data.delivery_province || cities.length === 0}
+                                            >
+                                                <SelectTrigger id="delivery_city">
+                                                    <SelectValue placeholder="Select city" />
+                                                </SelectTrigger>
+                                                <SelectContent className="z-[100] max-h-[200px]">
+                                                    {cities.map((city) => (
+                                                        <SelectItem key={city} value={city}>
+                                                            {city}
+                                                        </SelectItem>
+                                                    ))}
+                                                </SelectContent>
+                                            </Select>
+                                            <InputError message={errors.delivery_city} />
+                                        </div>
+
+                                        <div className="space-y-2">
+                                            <Label htmlFor="delivery_barangay">Barangay *</Label>
+                                            <Select
+                                                value={data.delivery_barangay}
+                                                onValueChange={(value) => setData('delivery_barangay', value)}
+                                                disabled={!data.delivery_city || barangays.length === 0}
+                                            >
+                                                <SelectTrigger id="delivery_barangay">
+                                                    <SelectValue placeholder="Select barangay" />
+                                                </SelectTrigger>
+                                                <SelectContent className="z-[100] max-h-[200px]">
+                                                    {barangays.map((barangay) => (
+                                                        <SelectItem key={barangay} value={barangay}>
+                                                            {barangay}
+                                                        </SelectItem>
+                                                    ))}
+                                                </SelectContent>
+                                            </Select>
+                                            <InputError message={errors.delivery_barangay} />
+                                        </div>
                                     </div>
 
+                                    {/* Street Address and Building Details */}
                                     <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                                         <div className="space-y-2">
-                                            <Label htmlFor="delivery_phone">Delivery Contact Number</Label>
+                                            <Label htmlFor="delivery_street">Street Address</Label>
+                                            <Input
+                                                id="delivery_street"
+                                                type="text"
+                                                placeholder="e.g., 123 Main Street"
+                                                value={data.delivery_street}
+                                                onChange={(e) => setData('delivery_street', e.target.value)}
+                                            />
+                                            <InputError message={errors.delivery_street} />
+                                        </div>
+
+                                        <div className="space-y-2">
+                                            <Label htmlFor="delivery_building_details">Building / Unit Details</Label>
+                                            <Input
+                                                id="delivery_building_details"
+                                                type="text"
+                                                placeholder="e.g., Bldg 5, Unit 201"
+                                                value={data.delivery_building_details}
+                                                onChange={(e) => setData('delivery_building_details', e.target.value)}
+                                            />
+                                            <InputError message={errors.delivery_building_details} />
+                                        </div>
+                                    </div>
+
+                                    {/* Map Location Picker - with auto-centering */}
+                                    <div className="mt-6 space-y-2">
+                                        <Label>Pin Your Exact Location on Map</Label>
+                                        <p className="mb-3 text-sm text-muted-foreground">
+                                            💡 The map will automatically center when you select Province, City, and Barangay above. You can then
+                                            click or drag the marker to fine-tune your exact location.
+                                        </p>
+                                        <div className="relative">
+                                            <LocationPicker
+                                                latitude={data.delivery_latitude || undefined}
+                                                longitude={data.delivery_longitude || undefined}
+                                                address={
+                                                    data.delivery_barangay && data.delivery_city && data.delivery_province
+                                                        ? `${data.delivery_barangay}, ${data.delivery_city}, ${data.delivery_province}, Philippines`
+                                                        : data.delivery_city && data.delivery_province
+                                                          ? `${data.delivery_city}, ${data.delivery_province}, Philippines`
+                                                          : data.delivery_province
+                                                            ? `${data.delivery_province}, Philippines`
+                                                            : ''
+                                                }
+                                                centerOnAddress={true}
+                                                onLocationChange={(lat, lng) => {
+                                                    setData('delivery_latitude', lat);
+                                                    setData('delivery_longitude', lng);
+                                                }}
+                                            />
+                                        </div>
+                                    </div>
+
+                                    {/* Contact and Notes */}
+                                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                                        <div className="space-y-2">
+                                            <Label htmlFor="delivery_phone">
+                                                <Phone className="mr-1 inline h-4 w-4" />
+                                                Delivery Contact Number
+                                            </Label>
                                             <Input
                                                 id="delivery_phone"
                                                 type="tel"
-                                                placeholder="Contact number for delivery"
+                                                placeholder="e.g., 09123456789"
                                                 value={data.delivery_phone}
                                                 onChange={(e) => setData('delivery_phone', e.target.value)}
                                             />
@@ -354,7 +595,7 @@ export default function BuyerProfile({ user }: BuyerProfileProps) {
                                             <Input
                                                 id="delivery_notes"
                                                 type="text"
-                                                placeholder="Special instructions for delivery"
+                                                placeholder="Landmarks, special instructions, etc."
                                                 value={data.delivery_notes}
                                                 onChange={(e) => setData('delivery_notes', e.target.value)}
                                             />
@@ -411,240 +652,6 @@ export default function BuyerProfile({ user }: BuyerProfileProps) {
                         </div>
                     </div>
 
-                    {/* Account Security Section */}
-                    <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-                        {/* Password Change */}
-                        <Card>
-                            <CardHeader>
-                                <CardTitle className="flex items-center gap-2">
-                                    <Key className="h-5 w-5" />
-                                    Change Password
-                                </CardTitle>
-                                <CardDescription>Update your password to keep your account secure</CardDescription>
-                            </CardHeader>
-                            <CardContent>
-                                {!showPasswordForm ? (
-                                    <Button type="button" variant="outline" onClick={() => setShowPasswordForm(true)} className="w-full">
-                                        <Shield className="mr-2 h-4 w-4" />
-                                        Change Password
-                                    </Button>
-                                ) : (
-                                    <form onSubmit={handlePasswordChange} className="space-y-4">
-                                        <div className="space-y-2">
-                                            <Label htmlFor="current_password">Current Password</Label>
-                                            <Input
-                                                id="current_password"
-                                                type="password"
-                                                value={passwordForm.data.current_password}
-                                                onChange={(e) => passwordForm.setData('current_password', e.target.value)}
-                                                required
-                                            />
-                                            <InputError message={passwordForm.errors.current_password} />
-                                        </div>
-
-                                        <div className="space-y-2">
-                                            <Label htmlFor="new_password">New Password</Label>
-                                            <Input
-                                                id="new_password"
-                                                type="password"
-                                                value={passwordForm.data.password}
-                                                onChange={(e) => passwordForm.setData('password', e.target.value)}
-                                                required
-                                            />
-                                            <InputError message={passwordForm.errors.password} />
-                                        </div>
-
-                                        <div className="space-y-2">
-                                            <Label htmlFor="password_confirmation">Confirm New Password</Label>
-                                            <Input
-                                                id="password_confirmation"
-                                                type="password"
-                                                value={passwordForm.data.password_confirmation}
-                                                onChange={(e) => passwordForm.setData('password_confirmation', e.target.value)}
-                                                required
-                                            />
-                                            <InputError message={passwordForm.errors.password_confirmation} />
-                                        </div>
-
-                                        <div className="flex gap-2">
-                                            <Button type="submit" disabled={passwordForm.processing} size="sm">
-                                                {passwordForm.processing ? 'Updating...' : 'Update Password'}
-                                            </Button>
-                                            <Button
-                                                type="button"
-                                                variant="outline"
-                                                size="sm"
-                                                onClick={() => {
-                                                    setShowPasswordForm(false);
-                                                    passwordForm.reset();
-                                                }}
-                                            >
-                                                Cancel
-                                            </Button>
-                                        </div>
-                                    </form>
-                                )}
-                            </CardContent>
-                        </Card>
-
-                        {/* Account Deletion */}
-                        <Card className="border-red-200">
-                            <CardHeader>
-                                <CardTitle className="flex items-center gap-2 text-red-600">
-                                    <AlertTriangle className="h-5 w-5" />
-                                    Delete Account
-                                </CardTitle>
-                                <CardDescription>Permanently delete your account and all associated data</CardDescription>
-                            </CardHeader>
-                            <CardContent>
-                                <Alert className="mb-4 border-red-200 bg-red-50">
-                                    <AlertTriangle className="h-4 w-4 text-red-600" />
-                                    <AlertDescription className="text-red-800">
-                                        <strong>Warning:</strong> This action cannot be undone. All your data including profile information, orders,
-                                        and account history will be permanently deleted.
-                                    </AlertDescription>
-                                </Alert>
-
-                                <Dialog open={showDeleteModal} onOpenChange={setShowDeleteModal}>
-                                    <DialogTrigger asChild>
-                                        <Button type="button" variant="destructive" onClick={handleDeleteAccount} className="w-full">
-                                            <Trash2 className="mr-2 h-4 w-4" />
-                                            Delete My Account
-                                        </Button>
-                                    </DialogTrigger>
-
-                                    <DialogContent className="sm:max-w-md">
-                                        <DialogHeader>
-                                            <DialogTitle className="flex items-center gap-2 text-red-600">
-                                                <AlertTriangle className="h-5 w-5" />
-                                                Delete Account
-                                            </DialogTitle>
-                                            <DialogDescription>
-                                                {deleteStep === 1
-                                                    ? 'This will permanently delete your account and all associated data.'
-                                                    : 'Please confirm your password and type the confirmation phrase to proceed.'}
-                                            </DialogDescription>
-                                        </DialogHeader>
-
-                                        {deleteStep === 1 ? (
-                                            // Step 1: Warning and consequences
-                                            <div className="space-y-4">
-                                                <Alert className="border-red-200 bg-red-50">
-                                                    <AlertTriangle className="h-4 w-4 text-red-600" />
-                                                    <AlertDescription className="text-red-800">
-                                                        <strong>This action cannot be undone.</strong> Once deleted, you will permanently lose:
-                                                    </AlertDescription>
-                                                </Alert>
-
-                                                <div className="space-y-2 text-sm text-gray-600">
-                                                    <div className="flex items-center gap-2">
-                                                        <div className="h-2 w-2 rounded-full bg-red-500"></div>
-                                                        <span>All profile information and personal data</span>
-                                                    </div>
-                                                    <div className="flex items-center gap-2">
-                                                        <div className="h-2 w-2 rounded-full bg-red-500"></div>
-                                                        <span>Order history and purchase records</span>
-                                                    </div>
-                                                    <div className="flex items-center gap-2">
-                                                        <div className="h-2 w-2 rounded-full bg-red-500"></div>
-                                                        <span>Saved addresses and payment information</span>
-                                                    </div>
-                                                    <div className="flex items-center gap-2">
-                                                        <div className="h-2 w-2 rounded-full bg-red-500"></div>
-                                                        <span>Account settings and configurations</span>
-                                                    </div>
-                                                </div>
-
-                                                <div className="rounded-lg border border-yellow-200 bg-yellow-50 p-3">
-                                                    <p className="text-sm text-yellow-800">
-                                                        <strong>Consider:</strong> You can change your password or update your profile information
-                                                        instead of deleting your account.
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        ) : (
-                                            // Step 2: Confirmation form
-                                            <form onSubmit={handleDeleteConfirmation} className="space-y-4">
-                                                <div className="space-y-2">
-                                                    <Label htmlFor="delete_password">Confirm Your Password</Label>
-                                                    <Input
-                                                        id="delete_password"
-                                                        type="password"
-                                                        placeholder="Enter your current password"
-                                                        value={deleteForm.data.password}
-                                                        onChange={(e) => deleteForm.setData('password', e.target.value)}
-                                                        required
-                                                    />
-                                                    <InputError message={deleteForm.errors.password} />
-                                                </div>
-
-                                                <div className="space-y-2">
-                                                    <Label htmlFor="confirmation_phrase">
-                                                        Type <span className="font-mono font-bold text-red-600">DELETE MY ACCOUNT</span> to confirm
-                                                    </Label>
-                                                    <Input
-                                                        id="confirmation_phrase"
-                                                        type="text"
-                                                        placeholder="DELETE MY ACCOUNT"
-                                                        value={deleteForm.data.confirmation_phrase}
-                                                        onChange={(e) => deleteForm.setData('confirmation_phrase', e.target.value)}
-                                                        required
-                                                    />
-                                                    <InputError message={deleteForm.errors.confirmation_phrase} />
-                                                </div>
-
-                                                <Alert className="border-red-200 bg-red-50">
-                                                    <AlertTriangle className="h-4 w-4 text-red-600" />
-                                                    <AlertDescription className="text-red-800">
-                                                        Once you click "Delete Account", this action cannot be reversed.
-                                                    </AlertDescription>
-                                                </Alert>
-                                            </form>
-                                        )}
-
-                                        <DialogFooter>
-                                            {deleteStep === 1 ? (
-                                                <div className="flex w-full gap-2">
-                                                    <Button type="button" variant="outline" onClick={resetDeleteModal} className="flex-1">
-                                                        Cancel
-                                                    </Button>
-                                                    <Button type="button" variant="destructive" onClick={() => setDeleteStep(2)} className="flex-1">
-                                                        Continue
-                                                    </Button>
-                                                </div>
-                                            ) : (
-                                                <div className="flex w-full gap-2">
-                                                    <Button type="button" variant="outline" onClick={() => setDeleteStep(1)} className="flex-1">
-                                                        Back
-                                                    </Button>
-                                                    <Button
-                                                        type="button"
-                                                        variant="destructive"
-                                                        onClick={handleDeleteConfirmation}
-                                                        disabled={deleteForm.processing}
-                                                        className="flex-1"
-                                                    >
-                                                        {deleteForm.processing ? (
-                                                            <>
-                                                                <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
-                                                                Deleting...
-                                                            </>
-                                                        ) : (
-                                                            <>
-                                                                <Trash2 className="mr-2 h-4 w-4" />
-                                                                Delete Account
-                                                            </>
-                                                        )}
-                                                    </Button>
-                                                </div>
-                                            )}
-                                        </DialogFooter>
-                                    </DialogContent>
-                                </Dialog>
-                            </CardContent>
-                        </Card>
-                    </div>
-
                     {/* Submit Button */}
                     <div className="flex justify-end">
                         <Button type="submit" disabled={processing} className="flex items-center gap-2 px-8" size="lg">
@@ -662,6 +669,241 @@ export default function BuyerProfile({ user }: BuyerProfileProps) {
                         </Button>
                     </div>
                 </form>
+
+                {/* Account Security Section */}
+                <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+                    {/* Password Change */}
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="flex items-center gap-2">
+                                <Key className="h-5 w-5" />
+                                Change Password
+                            </CardTitle>
+                            <CardDescription>Update your password to keep your account secure</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            {!showPasswordForm ? (
+                                <Button type="button" variant="outline" onClick={() => setShowPasswordForm(true)} className="w-full">
+                                    <Shield className="mr-2 h-4 w-4" />
+                                    Change Password
+                                </Button>
+                            ) : (
+                                <form onSubmit={handlePasswordChange} className="space-y-4">
+                                    <div className="space-y-2">
+                                        <Label htmlFor="current_password">Current Password</Label>
+                                        <Input
+                                            id="current_password"
+                                            type="password"
+                                            value={passwordForm.data.current_password}
+                                            onChange={(e) => passwordForm.setData('current_password', e.target.value)}
+                                            required
+                                        />
+                                        <InputError message={passwordForm.errors.current_password} />
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <Label htmlFor="new_password">New Password</Label>
+                                        <Input
+                                            id="new_password"
+                                            type="password"
+                                            value={passwordForm.data.password}
+                                            onChange={(e) => passwordForm.setData('password', e.target.value)}
+                                            required
+                                        />
+                                        <InputError message={passwordForm.errors.password} />
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <Label htmlFor="password_confirmation">Confirm New Password</Label>
+                                        <Input
+                                            id="password_confirmation"
+                                            type="password"
+                                            value={passwordForm.data.password_confirmation}
+                                            onChange={(e) => passwordForm.setData('password_confirmation', e.target.value)}
+                                            required
+                                        />
+                                        <InputError message={passwordForm.errors.password_confirmation} />
+                                    </div>
+
+                                    <div className="flex gap-2">
+                                        <Button type="submit" disabled={passwordForm.processing} size="sm">
+                                            {passwordForm.processing ? 'Updating...' : 'Update Password'}
+                                        </Button>
+                                        <Button
+                                            type="button"
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={() => {
+                                                setShowPasswordForm(false);
+                                                passwordForm.reset();
+                                                passwordForm.clearErrors();
+                                            }}
+                                        >
+                                            Cancel
+                                        </Button>
+                                    </div>
+                                </form>
+                            )}
+                        </CardContent>
+                    </Card>
+
+                    {/* Account Deletion */}
+                    <Card className="border-red-200">
+                        <CardHeader>
+                            <CardTitle className="flex items-center gap-2 text-red-600">
+                                <AlertTriangle className="h-5 w-5" />
+                                Delete Account
+                            </CardTitle>
+                            <CardDescription>Permanently delete your account and all associated data</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <Alert className="mb-4 border-red-200 bg-red-50">
+                                <AlertTriangle className="h-4 w-4 text-red-600" />
+                                <AlertDescription className="text-red-800">
+                                    <strong>Warning:</strong> This action cannot be undone. All your data including profile information, orders, and
+                                    account history will be permanently deleted.
+                                </AlertDescription>
+                            </Alert>
+
+                            <Dialog open={showDeleteModal} onOpenChange={setShowDeleteModal}>
+                                <DialogTrigger asChild>
+                                    <Button type="button" variant="destructive" onClick={handleDeleteAccount} className="w-full">
+                                        <Trash2 className="mr-2 h-4 w-4" />
+                                        Delete My Account
+                                    </Button>
+                                </DialogTrigger>
+
+                                <DialogContent className="sm:max-w-md">
+                                    <DialogHeader>
+                                        <DialogTitle className="flex items-center gap-2 text-red-600">
+                                            <AlertTriangle className="h-5 w-5" />
+                                            Delete Account
+                                        </DialogTitle>
+                                        <DialogDescription>
+                                            {deleteStep === 1
+                                                ? 'This will permanently delete your account and all associated data.'
+                                                : 'Please confirm your password and type the confirmation phrase to proceed.'}
+                                        </DialogDescription>
+                                    </DialogHeader>
+
+                                    {deleteStep === 1 ? (
+                                        // Step 1: Warning and consequences
+                                        <div className="space-y-4">
+                                            <Alert className="border-red-200 bg-red-50">
+                                                <AlertTriangle className="h-4 w-4 text-red-600" />
+                                                <AlertDescription className="text-red-800">
+                                                    <strong>This action cannot be undone.</strong> Once deleted, you will permanently lose:
+                                                </AlertDescription>
+                                            </Alert>
+
+                                            <div className="space-y-2 text-sm text-gray-600">
+                                                <div className="flex items-center gap-2">
+                                                    <div className="h-2 w-2 rounded-full bg-red-500"></div>
+                                                    <span>All profile information and personal data</span>
+                                                </div>
+                                                <div className="flex items-center gap-2">
+                                                    <div className="h-2 w-2 rounded-full bg-red-500"></div>
+                                                    <span>Order history and purchase records</span>
+                                                </div>
+                                                <div className="flex items-center gap-2">
+                                                    <div className="h-2 w-2 rounded-full bg-red-500"></div>
+                                                    <span>Saved addresses and payment information</span>
+                                                </div>
+                                                <div className="flex items-center gap-2">
+                                                    <div className="h-2 w-2 rounded-full bg-red-500"></div>
+                                                    <span>Account settings and configurations</span>
+                                                </div>
+                                            </div>
+
+                                            <div className="rounded-lg border border-yellow-200 bg-yellow-50 p-3">
+                                                <p className="text-sm text-yellow-800">
+                                                    <strong>Consider:</strong> You can change your password or update your profile information instead
+                                                    of deleting your account.
+                                                </p>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        // Step 2: Confirmation form
+                                        <form onSubmit={handleDeleteConfirmation} className="space-y-4">
+                                            <div className="space-y-2">
+                                                <Label htmlFor="delete_password">Confirm Your Password</Label>
+                                                <Input
+                                                    id="delete_password"
+                                                    type="password"
+                                                    placeholder="Enter your current password"
+                                                    value={deleteForm.data.password}
+                                                    onChange={(e) => deleteForm.setData('password', e.target.value)}
+                                                    required
+                                                />
+                                                <InputError message={deleteForm.errors.password} />
+                                            </div>
+
+                                            <div className="space-y-2">
+                                                <Label htmlFor="confirmation_phrase">
+                                                    Type <span className="font-mono font-bold text-red-600">DELETE MY ACCOUNT</span> to confirm
+                                                </Label>
+                                                <Input
+                                                    id="confirmation_phrase"
+                                                    type="text"
+                                                    placeholder="DELETE MY ACCOUNT"
+                                                    value={deleteForm.data.confirmation_phrase}
+                                                    onChange={(e) => deleteForm.setData('confirmation_phrase', e.target.value)}
+                                                    required
+                                                />
+                                                <InputError message={deleteForm.errors.confirmation_phrase} />
+                                            </div>
+
+                                            <Alert className="border-red-200 bg-red-50">
+                                                <AlertTriangle className="h-4 w-4 text-red-600" />
+                                                <AlertDescription className="text-red-800">
+                                                    Once you click "Delete Account", this action cannot be reversed.
+                                                </AlertDescription>
+                                            </Alert>
+                                        </form>
+                                    )}
+
+                                    <DialogFooter>
+                                        {deleteStep === 1 ? (
+                                            <div className="flex w-full gap-2">
+                                                <Button type="button" variant="outline" onClick={resetDeleteModal} className="flex-1">
+                                                    Cancel
+                                                </Button>
+                                                <Button type="button" variant="destructive" onClick={() => setDeleteStep(2)} className="flex-1">
+                                                    Continue
+                                                </Button>
+                                            </div>
+                                        ) : (
+                                            <div className="flex w-full gap-2">
+                                                <Button type="button" variant="outline" onClick={() => setDeleteStep(1)} className="flex-1">
+                                                    Back
+                                                </Button>
+                                                <Button
+                                                    type="button"
+                                                    variant="destructive"
+                                                    onClick={handleDeleteConfirmation}
+                                                    disabled={deleteForm.processing}
+                                                    className="flex-1"
+                                                >
+                                                    {deleteForm.processing ? (
+                                                        <>
+                                                            <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
+                                                            Deleting...
+                                                        </>
+                                                    ) : (
+                                                        <>
+                                                            <Trash2 className="mr-2 h-4 w-4" />
+                                                            Delete Account
+                                                        </>
+                                                    )}
+                                                </Button>
+                                            </div>
+                                        )}
+                                    </DialogFooter>
+                                </DialogContent>
+                            </Dialog>
+                        </CardContent>
+                    </Card>
+                </div>
             </div>
         </BuyerLayout>
     );

@@ -24,6 +24,7 @@ class ProductController extends Controller
         $search = $request->get('search');
         $category = $request->get('category');
         $status = $request->get('status');
+        $stockStatus = $request->get('stock_status');
         $sort = $request->get('sort', 'created_at');
         $direction = $request->get('direction', 'desc');
 
@@ -41,6 +42,10 @@ class ProductController extends Controller
 
         if ($status) {
             $query->where('status', $status);
+        }
+
+        if ($stockStatus) {
+            $query->where('stock_status', $stockStatus);
         }
 
         // Apply sorting
@@ -70,6 +75,7 @@ class ProductController extends Controller
                 'search' => $search,
                 'category' => $category,
                 'status' => $status,
+                'stock_status' => $stockStatus,
                 'sort' => $sort,
                 'direction' => $direction,
             ],

@@ -17,10 +17,11 @@ function BuyerLayoutContent({ children, title }: BuyerLayoutProps) {
     const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
     const userMenuRef = useRef<HTMLDivElement>(null);
     const mobileMenuRef = useRef<HTMLDivElement>(null);
+    const mobileMenuButtonRef = useRef<HTMLButtonElement>(null);
 
     const { totalItems } = useCart();
     const { unreadCount } = useNotifications();
-    const { auth, profileCompletion } = usePage<
+    const { auth, profileCompletion, wishlistCount } = usePage<
         SharedData & {
             profileCompletion?: {
                 status: {
@@ -55,7 +56,12 @@ function BuyerLayoutContent({ children, title }: BuyerLayoutProps) {
             if (userMenuRef.current && !userMenuRef.current.contains(event.target as Node)) {
                 setIsUserMenuOpen(false);
             }
-            if (mobileMenuRef.current && !mobileMenuRef.current.contains(event.target as Node)) {
+            if (
+                mobileMenuRef.current &&
+                !mobileMenuRef.current.contains(event.target as Node) &&
+                mobileMenuButtonRef.current &&
+                !mobileMenuButtonRef.current.contains(event.target as Node)
+            ) {
                 setIsMenuOpen(false);
             }
         }
@@ -81,7 +87,6 @@ function BuyerLayoutContent({ children, title }: BuyerLayoutProps) {
         { name: 'Home', href: '/buyer/dashboard', icon: House },
         { name: 'Products', href: '/buyer/products', icon: Package },
         { name: 'Artisans', href: '/buyer/sellers', icon: User },
-        { name: 'Wishlist', href: '/buyer/wishlist', icon: Heart },
         { name: 'My Orders', href: '/buyer/orders', icon: Package },
         { name: 'About', href: '/buyer/about', icon: Contact },
         { name: 'Contact', href: '/buyer/contact', icon: Phone },
@@ -100,7 +105,7 @@ function BuyerLayoutContent({ children, title }: BuyerLayoutProps) {
                                 className="flex items-center gap-2 rounded-xl px-2 py-2 transition-all duration-300 hover:scale-105 focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 focus:outline-none active:scale-95"
                                 aria-label="Support Local - Go to dashboard"
                             >
-                                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-amber-500 to-orange-600 shadow-md">
+                                <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-amber-500 to-orange-600 shadow-md">
                                     <svg className="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path
                                             strokeLinecap="round"
@@ -110,7 +115,7 @@ function BuyerLayoutContent({ children, title }: BuyerLayoutProps) {
                                         />
                                     </svg>
                                 </div>
-                                <span className="bg-gradient-to-r from-amber-600 to-orange-600 bg-clip-text text-xl font-bold text-transparent">
+                                <span className="hidden bg-gradient-to-r from-amber-600 to-orange-600 bg-clip-text text-xl font-bold text-transparent sm:inline">
                                     Support Local
                                 </span>
                             </Link>
@@ -167,6 +172,21 @@ function BuyerLayoutContent({ children, title }: BuyerLayoutProps) {
                                 <span className="absolute inset-0 rounded-xl opacity-0 ring-primary/50 transition-all duration-300 group-hover:opacity-100 group-hover:ring-2 group-hover:ring-offset-2"></span>
                             </Link>
 
+                            {/* Wishlist Icon */}
+                            <Link
+                                href="/wishlist"
+                                className="group relative rounded-xl p-2 text-gray-600 transition-all duration-300 hover:bg-primary/5 hover:text-primary hover:shadow-sm focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 focus:outline-none"
+                                aria-label={`Wishlist ${(wishlistCount ?? 0) > 0 ? `(${wishlistCount} items)` : '(empty)'}`}
+                            >
+                                <Heart className="h-5 w-5 transition-transform duration-300 group-hover:scale-110" />
+                                {(wishlistCount ?? 0) > 0 && (
+                                    <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-gradient-to-r from-pink-500 to-red-500 text-xs font-medium text-white shadow-sm">
+                                        {wishlistCount! > 99 ? '99+' : wishlistCount}
+                                    </span>
+                                )}
+                                <span className="absolute inset-0 rounded-xl opacity-0 ring-primary/50 transition-all duration-300 group-hover:opacity-100 group-hover:ring-2 group-hover:ring-offset-2"></span>
+                            </Link>
+
                             {/* Cart Icon */}
                             <Link
                                 href="/buyer/cart"
@@ -183,7 +203,7 @@ function BuyerLayoutContent({ children, title }: BuyerLayoutProps) {
                             </Link>
 
                             {/* User Profile Section with Dropdown */}
-                            <div className="relative" ref={userMenuRef}>
+                            <div className="relative hidden md:block" ref={userMenuRef}>
                                 <button
                                     onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
                                     className={`flex items-center space-x-2 rounded-xl p-2 transition-all duration-300 focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 focus:outline-none ${
@@ -286,6 +306,7 @@ function BuyerLayoutContent({ children, title }: BuyerLayoutProps) {
                             {/* Mobile menu button */}
                             <div className="ml-1 lg:hidden">
                                 <button
+                                    ref={mobileMenuButtonRef}
                                     onClick={() => setIsMenuOpen(!isMenuOpen)}
                                     className="rounded-xl p-2 text-gray-600 transition-all duration-300 hover:bg-primary/5 hover:text-primary focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 focus:outline-none"
                                     aria-expanded={isMenuOpen}
@@ -293,10 +314,10 @@ function BuyerLayoutContent({ children, title }: BuyerLayoutProps) {
                                 >
                                     <div className="relative h-6 w-6">
                                         <Menu
-                                            className={`absolute inset-0 h-6 w-6 transition-all duration-300 ${isMenuOpen ? 'rotate-180 opacity-0' : 'rotate-0 opacity-100'}`}
+                                            className={`pointer-events-none absolute inset-0 h-6 w-6 transition-all duration-300 ${isMenuOpen ? 'rotate-180 opacity-0' : 'rotate-0 opacity-100'}`}
                                         />
                                         <X
-                                            className={`absolute inset-0 h-6 w-6 transition-all duration-300 ${isMenuOpen ? 'rotate-0 opacity-100' : '-rotate-180 opacity-0'}`}
+                                            className={`pointer-events-none absolute inset-0 h-6 w-6 transition-all duration-300 ${isMenuOpen ? 'rotate-0 opacity-100' : '-rotate-180 opacity-0'}`}
                                         />
                                     </div>
                                 </button>
@@ -392,9 +413,9 @@ function BuyerLayoutContent({ children, title }: BuyerLayoutProps) {
 
             {/* Page Title */}
             {title && (
-                <div className="bg-gray-50 py-6">
+                <div className="bg-gray-50 py-4 sm:py-6">
                     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                        <h1 className="text-2xl font-bold text-gray-900">{title}</h1>
+                        <h1 className="text-xl font-bold text-gray-900 sm:text-2xl">{title}</h1>
                     </div>
                 </div>
             )}
@@ -420,10 +441,10 @@ function BuyerLayoutContent({ children, title }: BuyerLayoutProps) {
 
             {/* Footer - Buyer specific */}
             <footer className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white">
-                <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
-                    <div className="grid grid-cols-1 gap-12 md:grid-cols-4">
+                <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-16 lg:px-8">
+                    <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:gap-12 lg:grid-cols-4">
                         {/* Brand Section */}
-                        <div className="col-span-1 md:col-span-2">
+                        <div className="col-span-1 sm:col-span-2">
                             <div className="mb-4 flex items-center gap-2">
                                 <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-amber-500 to-orange-600 shadow-lg">
                                     <svg className="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -443,7 +464,7 @@ function BuyerLayoutContent({ children, title }: BuyerLayoutProps) {
                                 Your trusted marketplace for authentic, handcrafted products from talented local artisans. Every purchase supports
                                 creative communities.
                             </p>
-                            <div className="flex gap-4">
+                            <div className="flex flex-wrap gap-3 sm:gap-4">
                                 <a
                                     href="#"
                                     className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-800 text-gray-400 transition-all hover:scale-110 hover:bg-gradient-to-r hover:from-amber-600 hover:to-orange-600 hover:text-white"
@@ -495,7 +516,7 @@ function BuyerLayoutContent({ children, title }: BuyerLayoutProps) {
                                 </li>
                                 <li>
                                     <Link
-                                        href="/buyer/wishlist"
+                                        href="/wishlist"
                                         className="group flex items-center text-gray-300 transition-all duration-200 hover:translate-x-1 hover:text-amber-400"
                                     >
                                         <span className="mr-2 text-amber-600 opacity-0 transition-opacity group-hover:opacity-100">→</span>
@@ -559,12 +580,12 @@ function BuyerLayoutContent({ children, title }: BuyerLayoutProps) {
                     </div>
 
                     {/* Bottom Bar */}
-                    <div className="mt-12 border-t border-gray-800 pt-8">
-                        <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
+                    <div className="mt-8 border-t border-gray-800 pt-6 sm:mt-12 sm:pt-8">
+                        <div className="flex flex-col items-center justify-between gap-4 text-center md:flex-row md:text-left">
                             <p className="text-sm text-gray-400">
                                 &copy; {new Date().getFullYear()} Support Local. Empowering buyers and artisans. Made with ❤️
                             </p>
-                            <div className="flex gap-6 text-sm">
+                            <div className="flex flex-wrap justify-center gap-4 text-sm sm:gap-6 md:justify-start">
                                 <Link href="/privacy" className="text-gray-400 transition-colors hover:text-amber-400">
                                     Privacy Policy
                                 </Link>

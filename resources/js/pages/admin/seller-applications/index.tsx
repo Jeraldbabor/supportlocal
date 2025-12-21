@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import AppLayout from '@/layouts/app-layout';
 import { Head, Link } from '@inertiajs/react';
-import { Calendar, Eye, FileText, Filter, Search, User } from 'lucide-react';
+import { Calendar, Eye, FileText, Filter, MessageSquare, Search, User } from 'lucide-react';
 import { useState } from 'react';
 
 interface User {
@@ -21,6 +21,7 @@ interface SellerApplication {
     business_type: string | null;
     id_document_type: string;
     status: 'pending' | 'approved' | 'rejected';
+    admin_notes: string | null;
     created_at: string;
     reviewed_at: string | null;
     reviewer?: User;
@@ -219,6 +220,18 @@ export default function SellerApplicationsIndex({ applications }: SellerApplicat
                                                 </div>
 
                                                 <p className="mt-2 line-clamp-2 text-sm text-gray-600">{application.business_description}</p>
+
+                                                {application.admin_notes && (
+                                                    <div className="mt-3 rounded-md border border-blue-100 bg-blue-50 p-3">
+                                                        <div className="flex items-start gap-2">
+                                                            <MessageSquare className="mt-0.5 h-4 w-4 flex-shrink-0 text-blue-600" />
+                                                            <div className="min-w-0 flex-1">
+                                                                <p className="mb-1 text-xs font-medium text-blue-900">Admin Notes</p>
+                                                                <p className="line-clamp-2 text-sm text-blue-800">{application.admin_notes}</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                )}
                                             </div>
 
                                             <div className="ml-4">

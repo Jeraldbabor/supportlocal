@@ -205,7 +205,7 @@ class Order extends Model
      */
     public function scopeForBuyer($query, $buyerId)
     {
-        return $query->where('buyer_id', $buyerId);
+        return $query->where('user_id', $buyerId);
     }
 
     /**

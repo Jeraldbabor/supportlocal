@@ -1,8 +1,10 @@
 <?php
 
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\GeocodeController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PublicController;
+use App\Http\Controllers\WishlistController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -28,6 +30,15 @@ Route::delete('/cart/remove', [CartController::class, 'removeFromCart'])->name('
 Route::delete('/cart/clear', [CartController::class, 'clearCart'])->name('cart.clear');
 Route::get('/cart/count', [CartController::class, 'getCartCount'])->name('cart.count');
 
+// Wishlist routes (supports both guests and authenticated users)
+Route::get('/wishlist', [WishlistController::class, 'index'])->name('wishlist.index');
+Route::post('/wishlist/add', [WishlistController::class, 'store'])->name('wishlist.add');
+Route::delete('/wishlist/remove', [WishlistController::class, 'destroy'])->name('wishlist.remove');
+Route::delete('/wishlist/clear', [WishlistController::class, 'clear'])->name('wishlist.clear');
+Route::post('/wishlist/toggle', [WishlistController::class, 'toggle'])->name('wishlist.toggle');
+Route::get('/wishlist/count', [WishlistController::class, 'count'])->name('wishlist.count');
+Route::post('/wishlist/check', [WishlistController::class, 'check'])->name('wishlist.check');
+
 // Guest checkout route - prompts to login or continue
 Route::get('/checkout', function () {
     return Inertia::render('GuestCheckout');
@@ -37,6 +48,9 @@ Route::get('/checkout', function () {
 Route::post('/api/cart/transfer', [App\Http\Controllers\Api\CartTransferController::class, 'transfer'])
     ->middleware('auth')
     ->name('api.cart.transfer');
+
+// API route for geocoding (Nominatim proxy to avoid CORS)
+Route::get('/api/geocode', [GeocodeController::class, 'geocode'])->name('api.geocode');
 
 // API routes for buyer cart (returns JSON)
 Route::middleware('auth')->prefix('api/buyer')->group(function () {
@@ -88,9 +102,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/seller/customers/{customer}', [App\Http\Controllers\Seller\CustomerController::class, 'show'])->name('seller.customers.show');
         Route::get('/seller/customers/{customer}/orders', [App\Http\Controllers\Seller\CustomerController::class, 'orders'])->name('seller.customers.orders');
 
-        Route::get('/seller/analytics', function () {
-            return Inertia::render('seller/analytics');
-        })->name('seller.analytics');
+        // Analytics Routes
+        Route::get('/seller/analytics', [App\Http\Controllers\Seller\AnalyticsController::class, 'index'])->name('seller.analytics');
+        Route::post('/seller/analytics/export', [App\Http\Controllers\Seller\AnalyticsController::class, 'export'])->name('seller.analytics.export');
 
         // Seller Profile Routes
         Route::get('/seller/profile', [App\Http\Controllers\Seller\ProfileController::class, 'show'])->name('seller.profile.show');
@@ -167,17 +181,20 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/admin/seller-applications/{application}/approve', [App\Http\Controllers\SellerApplicationController::class, 'approve'])->name('admin.seller-applications.approve');
         Route::post('/admin/seller-applications/{application}/reject', [App\Http\Controllers\SellerApplicationController::class, 'reject'])->name('admin.seller-applications.reject');
         Route::get('/admin/seller-applications/{application}/download/{type}', [App\Http\Controllers\SellerApplicationController::class, 'downloadDocument'])->name('admin.seller-applications.download');
+
+        // Admin notifications routes
+        Route::get('/admin/notifications', [App\Http\Controllers\Admin\NotificationController::class, 'index'])->name('admin.notifications.index');
+        Route::post('/admin/notifications/{id}/read', [App\Http\Controllers\Admin\NotificationController::class, 'markAsRead'])->name('admin.notifications.read');
+        Route::delete('/admin/notifications/{id}', [App\Http\Controllers\Admin\NotificationController::class, 'destroy'])->name('admin.notifications.destroy');
+        Route::post('/admin/notifications/read-all', [App\Http\Controllers\Admin\NotificationController::class, 'markAllAsRead'])->name('admin.notifications.read-all');
+        Route::post('/admin/notifications/clear-all', [App\Http\Controllers\Admin\NotificationController::class, 'clearAllHistory'])->name('admin.notifications.clear-all');
     });
 
     Route::middleware(['role:buyer'])->group(function () {
-        Route::get('/buyer/dashboard', function () {
-            return Inertia::render('buyer/dashboard');
-        })->name('buyer.dashboard');
+        Route::get('/buyer/dashboard', [App\Http\Controllers\Buyer\DashboardController::class, 'index'])->name('buyer.dashboard');
 
         // About and Contact pages
-        Route::get('/buyer/about', function () {
-            return Inertia::render('buyer/About');
-        })->name('buyer.about');
+        Route::get('/buyer/about', [App\Http\Controllers\Buyer\AboutController::class, 'index'])->name('buyer.about');
 
         Route::get('/buyer/contact', function () {
             return Inertia::render('buyer/Contact');
@@ -189,9 +206,23 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/buyer/products', [App\Http\Controllers\Buyer\ProductController::class, 'index'])->name('buyer.products');
         Route::get('/buyer/product/{product}', [App\Http\Controllers\Buyer\ProductController::class, 'show'])->name('buyer.product.show');
 
+        // Product rating routes
+        Route::get('/buyer/product/{product}/ratings', [App\Http\Controllers\Buyer\ProductRatingController::class, 'index'])->name('buyer.product.ratings.index');
+        Route::post('/buyer/product/{product}/ratings', [App\Http\Controllers\Buyer\ProductRatingController::class, 'store'])->name('buyer.product.ratings.store');
+        Route::put('/buyer/product/{product}/ratings/{rating}', [App\Http\Controllers\Buyer\ProductRatingController::class, 'update'])->name('buyer.product.ratings.update');
+        Route::delete('/buyer/product/{product}/ratings/{rating}', [App\Http\Controllers\Buyer\ProductRatingController::class, 'destroy'])->name('buyer.product.ratings.destroy');
+        Route::get('/buyer/product/{product}/ratings/user', [App\Http\Controllers\Buyer\ProductRatingController::class, 'getUserRating'])->name('buyer.product.ratings.user');
+
         // Seller browsing routes
         Route::get('/buyer/sellers', [App\Http\Controllers\Buyer\SellerController::class, 'index'])->name('buyer.sellers');
         Route::get('/buyer/seller/{seller}', [App\Http\Controllers\Buyer\SellerController::class, 'show'])->name('buyer.seller.show');
+
+        // Seller rating routes
+        Route::get('/buyer/seller/{seller}/ratings', [App\Http\Controllers\Buyer\SellerRatingController::class, 'index'])->name('buyer.seller.ratings.index');
+        Route::post('/buyer/seller/{seller}/ratings', [App\Http\Controllers\Buyer\SellerRatingController::class, 'store'])->name('buyer.seller.ratings.store');
+        Route::put('/buyer/seller/{seller}/ratings/{rating}', [App\Http\Controllers\Buyer\SellerRatingController::class, 'update'])->name('buyer.seller.ratings.update');
+        Route::delete('/buyer/seller/{seller}/ratings/{rating}', [App\Http\Controllers\Buyer\SellerRatingController::class, 'destroy'])->name('buyer.seller.ratings.destroy');
+        Route::get('/buyer/seller/{seller}/ratings/user', [App\Http\Controllers\Buyer\SellerRatingController::class, 'getUserRating'])->name('buyer.seller.ratings.user');
 
         // Cart and checkout routes
         Route::get('/buyer/cart', [App\Http\Controllers\Buyer\CartController::class, 'index'])->name('buyer.cart');
@@ -240,7 +271,26 @@ Route::middleware(['auth', 'verified'])->group(function () {
             }
 
             return Inertia::render('buyer/Checkout', [
-                'user' => $user,
+                'user' => [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'phone' => $user->phone_number,
+                    'phone_number' => $user->phone_number,
+                    'address' => $user->address,
+                    'delivery_address' => $user->delivery_address,
+                    'delivery_phone' => $user->delivery_phone,
+                    'delivery_notes' => $user->delivery_notes,
+                    'delivery_province' => $user->delivery_province,
+                    'delivery_city' => $user->delivery_city,
+                    'delivery_barangay' => $user->delivery_barangay,
+                    'delivery_street' => $user->delivery_street,
+                    'delivery_building_details' => $user->delivery_building_details,
+                    'delivery_latitude' => $user->delivery_latitude,
+                    'delivery_longitude' => $user->delivery_longitude,
+                    'gcash_number' => $user->gcash_number,
+                    'gcash_name' => $user->gcash_name,
+                ],
                 'buyNowItem' => $buyNowItem,
             ]);
         })->name('buyer.checkout');

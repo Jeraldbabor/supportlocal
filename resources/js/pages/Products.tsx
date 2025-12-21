@@ -5,6 +5,7 @@ import React, { useState } from 'react';
 import AddToCartModal from '../components/AddToCartModal';
 import AuthRequiredModal from '../components/AuthRequiredModal';
 import Toast from '../components/Toast';
+import WishlistButton from '../components/WishlistButton';
 import { useCart } from '../contexts/CartContext';
 import MainLayout from '../layouts/MainLayout';
 
@@ -24,8 +25,8 @@ interface Product {
         id: number;
         name: string;
     };
-    average_rating?: number;
-    rating?: number;
+    average_rating?: number | null;
+    review_count?: number;
     short_description?: string;
     description?: string;
     stock_status?: string;
@@ -50,6 +51,7 @@ interface ProductsProps {
         meta?: Record<string, unknown>;
     };
     categories?: Category[];
+    wishlistProductIds?: number[];
     filters?: {
         category?: string;
         search?: string;
@@ -60,7 +62,7 @@ interface ProductsProps {
     };
 }
 
-export default function Products({ products, categories = [], filters = {} }: ProductsProps) {
+export default function Products({ products, categories = [], wishlistProductIds = [], filters = {} }: ProductsProps) {
     const [searchTerm, setSearchTerm] = useState(filters?.search || '');
     const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
     const { addToCart, isLoading } = useCart();
@@ -211,7 +213,7 @@ export default function Products({ products, categories = [], filters = {} }: Pr
     };
 
     return (
-        <MainLayout title="Browse Products">
+        <MainLayout>
             <Head title="Browse Products" />
 
             <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
@@ -327,6 +329,15 @@ export default function Products({ products, categories = [], filters = {} }: Pr
                                             </span>
                                         </div>
 
+                                        {/* Wishlist Button */}
+                                        <div className="absolute top-3 right-3 z-10" onClick={(e) => e.stopPropagation()}>
+                                            <WishlistButton
+                                                productId={product.id}
+                                                initialInWishlist={wishlistProductIds.includes(product.id)}
+                                                variant="icon-filled"
+                                            />
+                                        </div>
+
                                         {/* Quick Actions Overlay */}
                                         <div className="absolute inset-0 bg-black/0 opacity-0 transition-all duration-300 group-hover:bg-black/10 group-hover:opacity-100" />
                                     </div>
@@ -367,7 +378,6 @@ export default function Products({ products, categories = [], filters = {} }: Pr
                                                             className="mr-1.5 h-5 w-5 rounded-full object-cover"
                                                         />
                                                     )}
-                                                    <User className="mr-1.5 h-3.5 w-3.5" />
                                                     {product.artisan}
                                                 </div>
                                             )}
@@ -390,25 +400,28 @@ export default function Products({ products, categories = [], filters = {} }: Pr
                                         )}
 
                                         {/* Rating */}
-                                        {(product.average_rating || product.rating) && (product.average_rating || product.rating)! > 0 && (
-                                            <div className="flex items-center space-x-1">
-                                                <div className="flex">
-                                                    {[...Array(5)].map((_, i) => (
-                                                        <Star
-                                                            key={i}
-                                                            className={`h-3.5 w-3.5 ${
-                                                                i < Math.floor(product.average_rating || product.rating || 0)
-                                                                    ? 'fill-current text-yellow-400'
-                                                                    : 'text-gray-300'
-                                                            }`}
-                                                        />
-                                                    ))}
-                                                </div>
-                                                <span className="ml-1 text-xs text-gray-600">
-                                                    ({(product.average_rating || product.rating || 0).toFixed(1)})
-                                                </span>
+                                        <div className="flex items-center space-x-1">
+                                            <div className="flex">
+                                                {[...Array(5)].map((_, i) => (
+                                                    <Star
+                                                        key={i}
+                                                        className={`h-3.5 w-3.5 ${
+                                                            i < Math.floor(Number(product.average_rating) || 0)
+                                                                ? 'fill-current text-yellow-400'
+                                                                : 'text-gray-300'
+                                                        }`}
+                                                    />
+                                                ))}
                                             </div>
-                                        )}
+                                            {product.average_rating && Number(product.average_rating) > 0 ? (
+                                                <span className="ml-1 text-xs text-gray-600">
+                                                    {Number(product.average_rating).toFixed(1)} ({product.review_count || 0}{' '}
+                                                    {product.review_count === 1 ? 'review' : 'reviews'})
+                                                </span>
+                                            ) : (
+                                                <span className="ml-1 text-xs text-gray-400">(No ratings yet)</span>
+                                            )}
+                                        </div>
 
                                         {/* Price */}
                                         <div className="pt-2">
@@ -451,7 +464,7 @@ export default function Products({ products, categories = [], filters = {} }: Pr
                                                     }`}
                                                     title="Buy Now"
                                                 >
-                                                    <ShoppingCart className="h-4 w-4" />
+                                                    Buy Now
                                                 </button>
                                             </div>
                                         </div>

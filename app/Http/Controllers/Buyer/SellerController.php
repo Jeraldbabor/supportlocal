@@ -69,9 +69,11 @@ class SellerController extends Controller
             $seller->is_verified = $seller->sellerApplication &&
                                   $seller->sellerApplication->status === SellerApplication::STATUS_APPROVED;
 
-            // Add missing fields with default values
-            $seller->average_rating = 0; // TODO: Calculate from product reviews
-            $seller->total_sales = 0; // TODO: Calculate from orders
+            // Calculate total sales from completed orders
+            $seller->total_sales = \App\Models\Order::where('seller_id', $seller->id)
+                ->whereIn('status', ['completed', 'delivered'])
+                ->count();
+
             $seller->location = $seller->address ?? null;
             $seller->business_description = $seller->sellerApplication->business_description ?? null;
             $seller->business_name = $seller->sellerApplication->business_name ?? null;
@@ -148,13 +150,29 @@ class SellerController extends Controller
         $seller->is_verified = $seller->sellerApplication &&
                               $seller->sellerApplication->status === SellerApplication::STATUS_APPROVED;
 
-        // Add missing fields with default values
-        $seller->average_rating = 0; // TODO: Calculate from product reviews
-        $seller->total_sales = 0; // TODO: Calculate from orders
+        // Calculate actual products count
+        $seller->products_count = $seller->products()
+            ->where('status', Product::STATUS_ACTIVE)
+            ->count();
+
+        // Calculate total sales from completed orders
+        $seller->total_sales = \App\Models\Order::where('seller_id', $seller->id)
+            ->whereIn('status', ['completed', 'delivered'])
+            ->count();
+
+        // Add other fields
         $seller->location = $seller->address ?? null;
         $seller->business_description = $seller->sellerApplication->business_description ?? null;
         $seller->business_name = $seller->sellerApplication->business_name ?? null;
         $seller->profile_image = $seller->profile_picture; // Map profile_picture to profile_image
+
+        // Get current user's rating for this seller
+        $userRating = null;
+        if (auth()->check()) {
+            $userRating = $seller->sellerRatings()
+                ->where('user_id', auth()->id())
+                ->first();
+        }
 
         return Inertia::render('buyer/sellers/Show', [
             'seller' => $seller,
@@ -166,6 +184,7 @@ class SellerController extends Controller
                 'sort' => $sort,
                 'direction' => $direction,
             ],
+            'userRating' => $userRating,
         ]);
     }
 }

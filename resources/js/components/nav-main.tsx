@@ -24,15 +24,22 @@ export function NavMain({ items = [] }: { items: NavItem[] }) {
     };
 
     return (
-        <SidebarGroup className="px-2 py-0">
-            <SidebarGroupLabel>Platform</SidebarGroupLabel>
-            <SidebarMenu>
+        <SidebarGroup className="px-3 py-2">
+            <SidebarGroupLabel className="px-2 text-xs font-semibold tracking-wider text-sidebar-foreground/60 uppercase">
+                Navigation
+            </SidebarGroupLabel>
+            <SidebarMenu className="mt-2 gap-1">
                 {items.map((item) => (
                     <SidebarMenuItem key={item.title}>
-                        <SidebarMenuButton asChild isActive={isItemActive(item)} tooltip={{ children: item.title }}>
-                            <Link href={item.href} prefetch>
-                                {item.icon && <item.icon />}
-                                <span>{item.title}</span>
+                        <SidebarMenuButton
+                            asChild
+                            isActive={isItemActive(item)}
+                            tooltip={{ children: item.title }}
+                            className="group relative transition-all duration-200 hover:scale-[1.02] hover:bg-sidebar-accent active:scale-[0.98] data-[active=true]:bg-primary data-[active=true]:font-semibold data-[active=true]:text-primary-foreground data-[active=true]:shadow-md"
+                        >
+                            <Link href={item.href} prefetch className="flex items-center gap-3 px-3 py-2.5">
+                                {item.icon && <item.icon className="h-5 w-5 shrink-0 transition-transform duration-200 group-hover:scale-110" />}
+                                <span className="truncate font-medium">{item.title}</span>
                             </Link>
                         </SidebarMenuButton>
                     </SidebarMenuItem>

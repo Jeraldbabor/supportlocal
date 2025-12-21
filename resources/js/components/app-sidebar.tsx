@@ -1,25 +1,10 @@
-import { NavFooter } from '@/components/nav-footer';
 import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
-import { dashboard } from '@/routes';
 import { type NavItem, type SharedData } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
-import { BarChart3, BookOpen, Folder, LayoutGrid, Package, Settings, ShoppingBag, Users } from 'lucide-react';
+import { BarChart3, LayoutGrid, Package, ShoppingBag, Users } from 'lucide-react';
 import AppLogo from './app-logo';
-
-const footerNavItems: NavItem[] = [
-    {
-        title: 'Repository',
-        href: 'https://github.com/laravel/react-starter-kit',
-        icon: Folder,
-    },
-    {
-        title: 'Documentation',
-        href: 'https://laravel.com/docs/starter-kits#react',
-        icon: BookOpen,
-    },
-];
 
 // Function to get role-specific navigation items
 function getRoleNavItems(userRole?: string): NavItem[] {
@@ -70,11 +55,6 @@ function getRoleNavItems(userRole?: string): NavItem[] {
                     href: '/admin/reports',
                     icon: BarChart3,
                 },
-                {
-                    title: 'Settings',
-                    href: '/admin/settings',
-                    icon: Settings,
-                },
             ];
 
         case 'buyer':
@@ -100,7 +80,7 @@ function getRoleNavItems(userRole?: string): NavItem[] {
             return [
                 {
                     title: 'Dashboard',
-                    href: dashboard(),
+                    href: '/',
                     icon: LayoutGrid,
                 },
             ];
@@ -116,12 +96,12 @@ export function AppSidebar() {
     const mainNavItems = getRoleNavItems(user?.role);
 
     return (
-        <Sidebar collapsible="icon" variant="inset">
-            <SidebarHeader>
+        <Sidebar collapsible="icon" variant="inset" className="border-r border-sidebar-border/50">
+            <SidebarHeader className="border-b border-sidebar-border/50 py-4">
                 <SidebarMenu>
                     <SidebarMenuItem>
-                        <SidebarMenuButton size="lg" asChild>
-                            <Link href={dashboard()} prefetch>
+                        <SidebarMenuButton size="lg" asChild className="px-3 transition-colors duration-200 hover:bg-sidebar-accent/50">
+                            <Link href="/" prefetch className="flex items-center gap-3">
                                 <AppLogo />
                             </Link>
                         </SidebarMenuButton>
@@ -129,12 +109,11 @@ export function AppSidebar() {
                 </SidebarMenu>
             </SidebarHeader>
 
-            <SidebarContent>
+            <SidebarContent className="bg-gradient-to-b from-sidebar/50 to-sidebar py-4">
                 <NavMain items={mainNavItems} />
             </SidebarContent>
 
-            <SidebarFooter>
-                <NavFooter items={footerNavItems} className="mt-auto" />
+            <SidebarFooter className="border-t border-sidebar-border/50 py-3">
                 <NavUser />
             </SidebarFooter>
         </Sidebar>

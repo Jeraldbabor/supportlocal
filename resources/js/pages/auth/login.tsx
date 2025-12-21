@@ -6,7 +6,6 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import AuthLayout from '@/layouts/auth-layout';
-import { register } from '@/routes';
 import { Form, Head } from '@inertiajs/react';
 import { Eye, EyeOff, LoaderCircle, Lock, Mail } from 'lucide-react';
 import { useState } from 'react';
@@ -216,7 +215,7 @@ export default function Login({ status, canResetPassword, sellerCount, featuredA
 
                             <div className="text-center">
                                 <TextLink
-                                    href={register().url}
+                                    href="/register"
                                     tabIndex={6}
                                     className="inline-flex h-10 w-full items-center justify-center rounded-lg border-2 border-amber-200 bg-gradient-to-r from-amber-50 to-orange-50 px-4 py-2 text-sm font-semibold text-amber-700 shadow-sm transition-all duration-300 hover:scale-[1.02] hover:border-amber-300 hover:from-amber-100 hover:to-orange-100 hover:shadow-md active:scale-[0.98] dark:border-amber-700 dark:from-amber-900/20 dark:to-orange-900/20 dark:text-amber-400 dark:hover:from-amber-900/30 dark:hover:to-orange-900/30"
                                 >

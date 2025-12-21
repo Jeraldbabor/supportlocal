@@ -18,6 +18,7 @@ interface Artisan {
     phone?: string;
     specialties: string[];
     rating: number;
+    review_count?: number;
     years_of_experience?: number;
     website?: string;
     social_links?: Record<string, string>;
@@ -227,10 +228,12 @@ export default function ArtisanProfile({ artisan, products, filters }: ArtisanPr
                                         <div className="flex items-center justify-center">
                                             <Star className="mr-1 h-5 w-5 fill-current text-yellow-400" />
                                             <span className="text-2xl font-bold text-gray-900">
-                                                {artisan.rating ? artisan.rating.toFixed(1) : '0.0'}
+                                                {artisan.rating ? Number(artisan.rating).toFixed(1) : '0.0'}
                                             </span>
                                         </div>
-                                        <div className="text-sm text-gray-500">Rating</div>
+                                        <div className="text-sm text-gray-500">
+                                            Rating {artisan.review_count ? `(${artisan.review_count} reviews)` : ''}
+                                        </div>
                                     </div>
                                     {artisan.total_sales !== undefined && (
                                         <div className="text-center">
@@ -368,7 +371,7 @@ export default function ArtisanProfile({ artisan, products, filters }: ArtisanPr
                                                 <div className="flex items-center">
                                                     <Star className="h-4 w-4 fill-current text-yellow-400" />
                                                     <span className="ml-1 text-sm text-gray-600">
-                                                        {product.average_rating ? product.average_rating.toFixed(1) : '0.0'}
+                                                        {product.average_rating ? Number(product.average_rating).toFixed(1) : '0.0'}
                                                     </span>
                                                 </div>
 

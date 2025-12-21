@@ -25,11 +25,11 @@ interface Order {
     created_at: string;
     updated_at: string;
     order_items: OrderItem[];
-    seller: {
+    seller?: {
         id: number;
         name: string;
         email: string;
-    };
+    } | null;
 }
 
 interface OrderShowProps {
@@ -151,11 +151,11 @@ export default function OrderShow({ order }: OrderShowProps) {
                         <div className="space-y-3">
                             <div>
                                 <p className="text-sm font-medium text-gray-700">Seller Name</p>
-                                <p className="text-gray-900">{order.seller.name}</p>
+                                <p className="text-gray-900">{order.seller?.name || 'Unknown Seller'}</p>
                             </div>
                             <div>
                                 <p className="text-sm font-medium text-gray-700">Contact Email</p>
-                                <p className="text-gray-900">{order.seller.email}</p>
+                                <p className="text-gray-900">{order.seller?.email || 'Not available'}</p>
                             </div>
                         </div>
                     </div>
@@ -228,7 +228,7 @@ export default function OrderShow({ order }: OrderShowProps) {
                 </div>
 
                 {/* Order Actions */}
-                {order.status === 'pending' && (
+                {order.status === 'pending' && order.seller?.email && (
                     <div className="mt-8 rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
                         <h2 className="mb-4 text-lg font-semibold text-gray-900">Need Help?</h2>
                         <p className="mb-4 text-gray-600">
