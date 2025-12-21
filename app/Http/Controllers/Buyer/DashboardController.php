@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Buyer;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\ProductRating;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -55,7 +54,7 @@ class DashboardController extends Controller
                     'seller_name' => $order->seller ? $order->seller->name : 'Unknown Seller',
                     'created_at' => $order->created_at->format('M d, Y'),
                     'created_at_human' => $order->created_at->diffForHumans(),
-                    'items' => $order->items->filter(fn($item) => $item->product)->map(function ($item) {
+                    'items' => $order->items->filter(fn ($item) => $item->product)->map(function ($item) {
                         return [
                             'product_name' => $item->product->name,
                             'quantity' => $item->quantity,
@@ -92,7 +91,7 @@ class DashboardController extends Controller
             ->orderBy('created_at', 'desc')
             ->take(3)
             ->get()
-            ->filter(fn($rating) => $rating->product)
+            ->filter(fn ($rating) => $rating->product)
             ->map(function ($rating) {
                 return [
                     'type' => 'review',

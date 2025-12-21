@@ -2,7 +2,22 @@ import Toast from '@/components/Toast';
 import AppLayout from '@/layouts/app-layout';
 import { formatPeso } from '@/utils/currency';
 import { Head, router } from '@inertiajs/react';
-import { AlertTriangle, CheckCircle, Clock, Eye, Package, User, XCircle, MapPin, Phone, Mail, CreditCard, ShoppingBag, Calendar, ChevronRight } from 'lucide-react';
+import {
+    AlertTriangle,
+    Calendar,
+    CheckCircle,
+    ChevronRight,
+    Clock,
+    CreditCard,
+    Eye,
+    Mail,
+    MapPin,
+    Package,
+    Phone,
+    ShoppingBag,
+    User,
+    XCircle,
+} from 'lucide-react';
 import { useState } from 'react';
 
 interface OrderItem {
@@ -207,7 +222,9 @@ export default function Orders({ orders }: OrdersProps) {
                                 <ShoppingBag className="h-7 w-7 text-white" />
                             </div>
                             <div>
-                                <h1 className="text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">Order Management</h1>
+                                <h1 className="bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-3xl font-bold text-transparent">
+                                    Order Management
+                                </h1>
                                 <p className="mt-1 text-gray-500">Review and process your customer orders</p>
                             </div>
                         </div>
@@ -220,7 +237,7 @@ export default function Orders({ orders }: OrdersProps) {
                     </div>
 
                     {orders.data.length === 0 ? (
-                        <div className="rounded-3xl bg-white p-16 text-center shadow-xl shadow-gray-100 ring-1 ring-gray-100">
+                        <div className="rounded-3xl bg-white p-16 text-center shadow-xl ring-1 shadow-gray-100 ring-gray-100">
                             <div className="mx-auto flex h-24 w-24 items-center justify-center rounded-full bg-gradient-to-br from-gray-100 to-gray-200">
                                 <Package className="h-12 w-12 text-gray-400" />
                             </div>
@@ -230,30 +247,44 @@ export default function Orders({ orders }: OrdersProps) {
                     ) : (
                         <div className="space-y-6">
                             {orders.data.map((order) => (
-                                <div key={order.id} className="group overflow-hidden rounded-2xl bg-white shadow-lg shadow-gray-100 ring-1 ring-gray-100 transition-all duration-300 hover:shadow-xl hover:ring-gray-200">
+                                <div
+                                    key={order.id}
+                                    className="group overflow-hidden rounded-2xl bg-white shadow-lg ring-1 shadow-gray-100 ring-gray-100 transition-all duration-300 hover:shadow-xl hover:ring-gray-200"
+                                >
                                     {/* Order Header */}
                                     <div className="bg-gradient-to-r from-slate-50 to-blue-50/50 p-6">
                                         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                                             <div className="flex items-center gap-4">
-                                                <div className={`flex h-12 w-12 items-center justify-center rounded-xl shadow-sm ${
-                                                    order.status === 'pending' ? 'bg-gradient-to-br from-amber-100 to-yellow-100' :
-                                                    order.status === 'confirmed' ? 'bg-gradient-to-br from-blue-100 to-indigo-100' :
-                                                    order.status === 'completed' ? 'bg-gradient-to-br from-emerald-100 to-green-100' :
-                                                    'bg-gradient-to-br from-red-100 to-rose-100'
-                                                }`}>
+                                                <div
+                                                    className={`flex h-12 w-12 items-center justify-center rounded-xl shadow-sm ${
+                                                        order.status === 'pending'
+                                                            ? 'bg-gradient-to-br from-amber-100 to-yellow-100'
+                                                            : order.status === 'confirmed'
+                                                              ? 'bg-gradient-to-br from-blue-100 to-indigo-100'
+                                                              : order.status === 'completed'
+                                                                ? 'bg-gradient-to-br from-emerald-100 to-green-100'
+                                                                : 'bg-gradient-to-br from-red-100 to-rose-100'
+                                                    }`}
+                                                >
                                                     {getStatusIcon(order.status)}
                                                 </div>
                                                 <div>
                                                     <div className="flex flex-wrap items-center gap-3">
                                                         <h3 className="text-xl font-bold text-gray-900">Order #{order.id}</h3>
-                                                        <span className={`rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wide shadow-sm ${getStatusColor(order.status)}`}>
+                                                        <span
+                                                            className={`rounded-full px-3 py-1 text-xs font-semibold tracking-wide uppercase shadow-sm ${getStatusColor(order.status)}`}
+                                                        >
                                                             {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
                                                         </span>
                                                     </div>
                                                     <div className="mt-1 flex items-center gap-2 text-sm text-gray-500">
                                                         <Calendar className="h-4 w-4" />
-                                                        {new Date(order.created_at).toLocaleDateString('en-US', { 
-                                                            year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'
+                                                        {new Date(order.created_at).toLocaleDateString('en-US', {
+                                                            year: 'numeric',
+                                                            month: 'long',
+                                                            day: 'numeric',
+                                                            hour: '2-digit',
+                                                            minute: '2-digit',
                                                         })}
                                                     </div>
                                                 </div>
@@ -262,7 +293,9 @@ export default function Orders({ orders }: OrdersProps) {
                                                 <CreditCard className="h-5 w-5 text-gray-400" />
                                                 <div>
                                                     <p className="text-xl font-bold text-gray-900">{formatPeso(order.total_amount)}</p>
-                                                    <p className="text-xs font-medium uppercase tracking-wide text-gray-500">{order.payment_method}</p>
+                                                    <p className="text-xs font-medium tracking-wide text-gray-500 uppercase">
+                                                        {order.payment_method}
+                                                    </p>
                                                 </div>
                                             </div>
                                         </div>
@@ -270,7 +303,7 @@ export default function Orders({ orders }: OrdersProps) {
 
                                     {/* Customer Info */}
                                     <div className="border-b border-gray-100 p-6">
-                                        <h4 className="mb-4 flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-gray-500">
+                                        <h4 className="mb-4 flex items-center gap-2 text-sm font-semibold tracking-wide text-gray-500 uppercase">
                                             <User className="h-4 w-4" />
                                             Customer Details
                                         </h4>
@@ -308,7 +341,7 @@ export default function Orders({ orders }: OrdersProps) {
                                                 </div>
                                                 <div className="min-w-0 flex-1">
                                                     <p className="text-xs font-medium text-gray-500">Delivery Address</p>
-                                                    <p className="font-semibold text-gray-900 line-clamp-2">{order.delivery_address}</p>
+                                                    <p className="line-clamp-2 font-semibold text-gray-900">{order.delivery_address}</p>
                                                     {order.delivery_notes && (
                                                         <p className="mt-1 text-xs text-gray-500 italic">Note: {order.delivery_notes}</p>
                                                     )}
@@ -320,7 +353,7 @@ export default function Orders({ orders }: OrdersProps) {
                                     {/* Order Items */}
                                     <div className="p-6">
                                         <div className="mb-4 flex items-center justify-between">
-                                            <h4 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-gray-500">
+                                            <h4 className="flex items-center gap-2 text-sm font-semibold tracking-wide text-gray-500 uppercase">
                                                 <Package className="h-4 w-4" />
                                                 Order Items
                                             </h4>
@@ -330,7 +363,10 @@ export default function Orders({ orders }: OrdersProps) {
                                         </div>
                                         <div className="space-y-3">
                                             {order.order_items.map((item) => (
-                                                <div key={item.id} className="group/item flex items-center gap-4 rounded-xl bg-gradient-to-r from-gray-50 to-white p-4 ring-1 ring-gray-100 transition-all hover:ring-blue-200 hover:shadow-sm">
+                                                <div
+                                                    key={item.id}
+                                                    className="group/item flex items-center gap-4 rounded-xl bg-gradient-to-r from-gray-50 to-white p-4 ring-1 ring-gray-100 transition-all hover:shadow-sm hover:ring-blue-200"
+                                                >
                                                     {item.product_image ? (
                                                         <img
                                                             src={`/storage/${item.product_image}`}
@@ -343,9 +379,11 @@ export default function Orders({ orders }: OrdersProps) {
                                                         </div>
                                                     )}
                                                     <div className="min-w-0 flex-1">
-                                                        <h5 className="font-semibold text-gray-900 truncate">{item.product_name}</h5>
+                                                        <h5 className="truncate font-semibold text-gray-900">{item.product_name}</h5>
                                                         <div className="mt-1 flex items-center gap-2">
-                                                            <span className="rounded-md bg-blue-100 px-2 py-0.5 text-xs font-semibold text-blue-700">Qty: {item.quantity}</span>
+                                                            <span className="rounded-md bg-blue-100 px-2 py-0.5 text-xs font-semibold text-blue-700">
+                                                                Qty: {item.quantity}
+                                                            </span>
                                                             <span className="text-sm text-gray-500">× {formatPeso(item.price)}</span>
                                                         </div>
                                                     </div>
@@ -364,14 +402,14 @@ export default function Orders({ orders }: OrdersProps) {
                                                 <>
                                                     <button
                                                         onClick={() => handleConfirmOrder(order.id)}
-                                                        className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-emerald-600 to-green-600 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-green-200 transition-all hover:shadow-xl hover:shadow-green-300 hover:from-emerald-700 hover:to-green-700"
+                                                        className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-emerald-600 to-green-600 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-green-200 transition-all hover:from-emerald-700 hover:to-green-700 hover:shadow-xl hover:shadow-green-300"
                                                     >
                                                         <CheckCircle className="h-4 w-4" />
                                                         Confirm Order
                                                     </button>
                                                     <button
                                                         onClick={() => handleRejectOrder(order.id)}
-                                                        className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-red-600 to-rose-600 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-red-200 transition-all hover:shadow-xl hover:shadow-red-300 hover:from-red-700 hover:to-rose-700"
+                                                        className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-red-600 to-rose-600 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-red-200 transition-all hover:from-red-700 hover:to-rose-700 hover:shadow-xl hover:shadow-red-300"
                                                     >
                                                         <XCircle className="h-4 w-4" />
                                                         Cancel Order
@@ -383,14 +421,14 @@ export default function Orders({ orders }: OrdersProps) {
                                                 <>
                                                     <button
                                                         onClick={() => handleCompleteOrder(order.id)}
-                                                        className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-blue-200 transition-all hover:shadow-xl hover:shadow-blue-300 hover:from-blue-700 hover:to-indigo-700"
+                                                        className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-blue-200 transition-all hover:from-blue-700 hover:to-indigo-700 hover:shadow-xl hover:shadow-blue-300"
                                                     >
                                                         <Package className="h-4 w-4" />
                                                         Mark as Delivered
                                                     </button>
                                                     <button
                                                         onClick={() => handleRejectOrder(order.id)}
-                                                        className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-red-600 to-rose-600 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-red-200 transition-all hover:shadow-xl hover:shadow-red-300 hover:from-red-700 hover:to-rose-700"
+                                                        className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-red-600 to-rose-600 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-red-200 transition-all hover:from-red-700 hover:to-rose-700 hover:shadow-xl hover:shadow-red-300"
                                                     >
                                                         <XCircle className="h-4 w-4" />
                                                         Cancel Order
@@ -401,7 +439,7 @@ export default function Orders({ orders }: OrdersProps) {
 
                                         <button
                                             onClick={() => router.visit(`/seller/orders/${order.id}`)}
-                                            className="group/btn inline-flex items-center gap-2 rounded-xl bg-white px-5 py-2.5 text-sm font-semibold text-gray-700 shadow-sm ring-1 ring-gray-200 transition-all hover:bg-gray-50 hover:ring-gray-300 hover:shadow-md"
+                                            className="group/btn inline-flex items-center gap-2 rounded-xl bg-white px-5 py-2.5 text-sm font-semibold text-gray-700 shadow-sm ring-1 ring-gray-200 transition-all hover:bg-gray-50 hover:shadow-md hover:ring-gray-300"
                                         >
                                             <Eye className="h-4 w-4" />
                                             View Details
@@ -414,7 +452,7 @@ export default function Orders({ orders }: OrdersProps) {
                             {/* Pagination */}
                             {orders.last_page > 1 && (
                                 <div className="mt-8 flex justify-center">
-                                    <div className="inline-flex items-center gap-1 rounded-2xl bg-white p-2 shadow-lg shadow-gray-100 ring-1 ring-gray-100">
+                                    <div className="inline-flex items-center gap-1 rounded-2xl bg-white p-2 shadow-lg ring-1 shadow-gray-100 ring-gray-100">
                                         {orders.links.map((link, index) => (
                                             <button
                                                 key={index}
@@ -439,7 +477,7 @@ export default function Orders({ orders }: OrdersProps) {
 
                     {/* Cancel Order Modal */}
                     {showCancelModal && (
-                        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+                        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm">
                             <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl">
                                 <div className="mb-5 flex items-center gap-4">
                                     <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-red-100 to-rose-100 shadow-sm">
@@ -485,10 +523,12 @@ export default function Orders({ orders }: OrdersProps) {
                                     <button
                                         type="button"
                                         onClick={handleConfirmCancel}
-                                        className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-red-600 to-rose-600 px-5 py-3 font-semibold text-white shadow-lg shadow-red-200 transition-all hover:shadow-xl hover:from-red-700 hover:to-rose-700 disabled:opacity-50"
+                                        className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-red-600 to-rose-600 px-5 py-3 font-semibold text-white shadow-lg shadow-red-200 transition-all hover:from-red-700 hover:to-rose-700 hover:shadow-xl disabled:opacity-50"
                                         disabled={isCancelling}
                                     >
-                                        {isCancelling && <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />}
+                                        {isCancelling && (
+                                            <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                                        )}
                                         {isCancelling ? 'Cancelling...' : 'Cancel Order'}
                                     </button>
                                 </div>

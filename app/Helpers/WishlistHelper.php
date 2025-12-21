@@ -12,7 +12,7 @@ class WishlistHelper
      */
     public static function getGuestToken(): string
     {
-        if (!session()->has('guest_wishlist_token')) {
+        if (! session()->has('guest_wishlist_token')) {
             session()->put('guest_wishlist_token', Str::uuid()->toString());
         }
 
@@ -144,7 +144,7 @@ class WishlistHelper
      */
     public static function mergeGuestWishlist(int $userId): void
     {
-        if (!session()->has('guest_wishlist_token')) {
+        if (! session()->has('guest_wishlist_token')) {
             return;
         }
 

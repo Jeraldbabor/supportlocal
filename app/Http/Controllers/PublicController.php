@@ -177,8 +177,8 @@ class PublicController extends Controller
                     'review' => $rating->review,
                     'created_at' => $rating->created_at->format('M d, Y'),
                     'buyer_name' => $rating->user->name ?? 'Anonymous',
-                    'buyer_avatar' => $rating->user->profile_picture 
-                        ? '/storage/'.$rating->user->profile_picture 
+                    'buyer_avatar' => $rating->user->profile_picture
+                        ? '/storage/'.$rating->user->profile_picture
                         : 'https://ui-avatars.com/api/?name='.urlencode($rating->user->name ?? 'Anonymous').'&color=7F9CF5&background=EBF4FF',
                 ];
             });

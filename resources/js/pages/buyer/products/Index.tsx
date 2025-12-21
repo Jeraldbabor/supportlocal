@@ -266,9 +266,9 @@ export default function Index({ products, categories, filters, wishlistProductId
 
                                         {/* Wishlist Button */}
                                         <div className="absolute top-3 right-3 z-10" onClick={(e) => e.stopPropagation()}>
-                                            <WishlistButton 
-                                                productId={product.id} 
-                                                initialInWishlist={wishlistProductIds.includes(product.id)} 
+                                            <WishlistButton
+                                                productId={product.id}
+                                                initialInWishlist={wishlistProductIds.includes(product.id)}
                                                 variant="icon-filled"
                                             />
                                         </div>
@@ -351,7 +351,9 @@ export default function Index({ products, categories, filters, wishlistProductId
                                             </div>
                                             {product.compare_price && product.compare_price > product.price && (
                                                 <div className="mt-1">
-                                                    <span className="text-sm text-gray-500 line-through">₱{Number(product.compare_price).toLocaleString()}</span>
+                                                    <span className="text-sm text-gray-500 line-through">
+                                                        ₱{Number(product.compare_price).toLocaleString()}
+                                                    </span>
                                                 </div>
                                             )}
                                         </div>

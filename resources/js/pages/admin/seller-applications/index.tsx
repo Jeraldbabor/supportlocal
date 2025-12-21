@@ -222,12 +222,12 @@ export default function SellerApplicationsIndex({ applications }: SellerApplicat
                                                 <p className="mt-2 line-clamp-2 text-sm text-gray-600">{application.business_description}</p>
 
                                                 {application.admin_notes && (
-                                                    <div className="mt-3 rounded-md bg-blue-50 p-3 border border-blue-100">
+                                                    <div className="mt-3 rounded-md border border-blue-100 bg-blue-50 p-3">
                                                         <div className="flex items-start gap-2">
-                                                            <MessageSquare className="h-4 w-4 text-blue-600 mt-0.5 flex-shrink-0" />
-                                                            <div className="flex-1 min-w-0">
-                                                                <p className="text-xs font-medium text-blue-900 mb-1">Admin Notes</p>
-                                                                <p className="text-sm text-blue-800 line-clamp-2">{application.admin_notes}</p>
+                                                            <MessageSquare className="mt-0.5 h-4 w-4 flex-shrink-0 text-blue-600" />
+                                                            <div className="min-w-0 flex-1">
+                                                                <p className="mb-1 text-xs font-medium text-blue-900">Admin Notes</p>
+                                                                <p className="line-clamp-2 text-sm text-blue-800">{application.admin_notes}</p>
                                                             </div>
                                                         </div>
                                                     </div>

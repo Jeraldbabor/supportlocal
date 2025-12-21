@@ -332,13 +332,16 @@ export default function Show({ product, relatedProducts, ratings: initialRatings
                                             <Star
                                                 key={i}
                                                 className={`h-5 w-5 ${
-                                                    i < Math.floor(Number(product.average_rating) || 0) ? 'fill-current text-yellow-400' : 'text-gray-300'
+                                                    i < Math.floor(Number(product.average_rating) || 0)
+                                                        ? 'fill-current text-yellow-400'
+                                                        : 'text-gray-300'
                                                 }`}
                                             />
                                         ))}
                                     </div>
                                     <span className="ml-2 text-sm text-gray-600">
-                                        {product.average_rating ? Number(product.average_rating).toFixed(1) : '0.0'} ({product.review_count || 0} reviews)
+                                        {product.average_rating ? Number(product.average_rating).toFixed(1) : '0.0'} ({product.review_count || 0}{' '}
+                                        reviews)
                                     </span>
                                 </div>
 
@@ -501,7 +504,9 @@ export default function Show({ product, relatedProducts, ratings: initialRatings
                     {/* Rating Summary */}
                     <div className="mb-8 grid grid-cols-1 gap-8 md:grid-cols-2">
                         <div className="text-center">
-                            <div className="text-5xl font-bold text-gray-900">{product.average_rating ? Number(product.average_rating).toFixed(1) : '0.0'}</div>
+                            <div className="text-5xl font-bold text-gray-900">
+                                {product.average_rating ? Number(product.average_rating).toFixed(1) : '0.0'}
+                            </div>
                             <div className="mt-2 flex justify-center">
                                 {[...Array(5)].map((_, i) => (
                                     <Star
@@ -551,9 +556,7 @@ export default function Show({ product, relatedProducts, ratings: initialRatings
                                 </div>
                             ) : (
                                 <div>
-                                    <h3 className="mb-3 font-semibold text-gray-900">
-                                        {userRating ? 'Edit Your Rating' : 'Rate This Product'}
-                                    </h3>
+                                    <h3 className="mb-3 font-semibold text-gray-900">{userRating ? 'Edit Your Rating' : 'Rate This Product'}</h3>
                                     <div className="mb-4">
                                         <div className="flex gap-1">
                                             {[1, 2, 3, 4, 5].map((star) => (
@@ -567,9 +570,7 @@ export default function Show({ product, relatedProducts, ratings: initialRatings
                                                 >
                                                     <Star
                                                         className={`h-8 w-8 ${
-                                                            star <= (hoverRating || selectedRating)
-                                                                ? 'fill-current text-yellow-400'
-                                                                : 'text-gray-300'
+                                                            star <= (hoverRating || selectedRating) ? 'fill-current text-yellow-400' : 'text-gray-300'
                                                         }`}
                                                     />
                                                 </button>
@@ -639,9 +640,7 @@ export default function Show({ product, relatedProducts, ratings: initialRatings
                                                             />
                                                         ))}
                                                     </div>
-                                                    <span className="text-xs text-gray-500">
-                                                        {new Date(rating.created_at).toLocaleDateString()}
-                                                    </span>
+                                                    <span className="text-xs text-gray-500">{new Date(rating.created_at).toLocaleDateString()}</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -691,7 +690,9 @@ export default function Show({ product, relatedProducts, ratings: initialRatings
                                             {relatedProduct.average_rating > 0 && (
                                                 <div className="flex items-center">
                                                     <Star className="h-4 w-4 fill-current text-yellow-400" />
-                                                    <span className="ml-1 text-sm text-gray-600">{Number(relatedProduct.average_rating).toFixed(1)}</span>
+                                                    <span className="ml-1 text-sm text-gray-600">
+                                                        {Number(relatedProduct.average_rating).toFixed(1)}
+                                                    </span>
                                                 </div>
                                             )}
                                         </div>

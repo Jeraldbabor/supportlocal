@@ -47,9 +47,7 @@ function RecenterMap({ position }: { position: [number, number] }) {
 }
 
 export default function LocationPicker({ latitude, longitude, onLocationChange, address, centerOnAddress = false }: LocationPickerProps) {
-    const [markerPosition, setMarkerPosition] = useState<[number, number]>(
-        latitude && longitude ? [latitude, longitude] : defaultCenter
-    );
+    const [markerPosition, setMarkerPosition] = useState<[number, number]>(latitude && longitude ? [latitude, longitude] : defaultCenter);
     const [searchAddress, setSearchAddress] = useState(address || '');
     const [isSearching, setIsSearching] = useState(false);
     const [isPinning, setIsPinning] = useState(false);
@@ -68,9 +66,7 @@ export default function LocationPicker({ latitude, longitude, onLocationChange, 
             // Auto-search when the address prop changes
             const searchLocation = async () => {
                 try {
-                    const response = await fetch(
-                        `/api/geocode?address=${encodeURIComponent(address)}`
-                    );
+                    const response = await fetch(`/api/geocode?address=${encodeURIComponent(address)}`);
                     const data = await response.json();
 
                     if (data && data.lat && data.lon) {
@@ -121,9 +117,7 @@ export default function LocationPicker({ latitude, longitude, onLocationChange, 
 
         setIsSearching(true);
         try {
-            const response = await fetch(
-                `/api/geocode?address=${encodeURIComponent(searchAddress + ', Philippines')}`
-            );
+            const response = await fetch(`/api/geocode?address=${encodeURIComponent(searchAddress + ', Philippines')}`);
             const data = await response.json();
 
             if (data && data.lat && data.lon) {
@@ -167,7 +161,7 @@ export default function LocationPicker({ latitude, longitude, onLocationChange, 
             {/* Search Bar */}
             <div className="flex gap-2">
                 <div className="relative flex-1">
-                    <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+                    <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-400" />
                     <Input
                         type="text"
                         placeholder="Search address on map..."
@@ -191,7 +185,7 @@ export default function LocationPicker({ latitude, longitude, onLocationChange, 
             </div>
 
             {/* Leaflet Map */}
-            <div className="overflow-hidden rounded-lg border shadow-sm relative z-0" style={{ cursor: 'crosshair', height: '400px' }}>
+            <div className="relative z-0 overflow-hidden rounded-lg border shadow-sm" style={{ cursor: 'crosshair', height: '400px' }}>
                 <MapContainer
                     center={markerPosition}
                     zoom={latitude && longitude ? 17 : 12}
@@ -218,7 +212,7 @@ export default function LocationPicker({ latitude, longitude, onLocationChange, 
 
                     {/* Map Click Handler */}
                     <MapClickHandler onLocationSelect={handleLocationSelect} />
-                    
+
                     {/* Recenter Map */}
                     <RecenterMap position={markerPosition} />
                 </MapContainer>
@@ -227,31 +221,43 @@ export default function LocationPicker({ latitude, longitude, onLocationChange, 
             {/* Instructions */}
             <div className="rounded-lg border border-blue-200 bg-blue-50 p-3 text-sm text-blue-800">
                 <p className="font-medium">📍 How to pin your exact location:</p>
-                <ul className="ml-4 mt-1 list-disc space-y-1">
-                    <li><strong>Click anywhere</strong> on the map to drop a pin at that location</li>
-                    <li><strong>Drag the red marker</strong> to fine-tune your exact position</li>
-                    <li><strong>Search address</strong> above to quickly find a location</li>
-                    <li><strong>Use GPS button</strong> <MapPin className="inline h-3 w-3" /> to auto-detect your current location</li>
-                    <li><strong>Zoom in</strong> using scroll or +/- buttons for precise pinning</li>
+                <ul className="mt-1 ml-4 list-disc space-y-1">
+                    <li>
+                        <strong>Click anywhere</strong> on the map to drop a pin at that location
+                    </li>
+                    <li>
+                        <strong>Drag the red marker</strong> to fine-tune your exact position
+                    </li>
+                    <li>
+                        <strong>Search address</strong> above to quickly find a location
+                    </li>
+                    <li>
+                        <strong>Use GPS button</strong> <MapPin className="inline h-3 w-3" /> to auto-detect your current location
+                    </li>
+                    <li>
+                        <strong>Zoom in</strong> using scroll or +/- buttons for precise pinning
+                    </li>
                 </ul>
             </div>
 
             {/* Coordinates Display */}
             {markerPosition && Array.isArray(markerPosition) && markerPosition.length === 2 && (
-                <div className={`rounded-lg border p-3 text-sm transition-all ${isPinning ? 'border-green-400 bg-green-50' : 'border-gray-200 bg-gray-50'}`}>
+                <div
+                    className={`rounded-lg border p-3 text-sm transition-all ${isPinning ? 'border-green-400 bg-green-50' : 'border-gray-200 bg-gray-50'}`}
+                >
                     <div className="flex items-center justify-between">
                         <div>
                             <span className="font-semibold text-gray-700">📌 Pin Location:</span>
                             <div className="mt-1 font-mono text-xs text-gray-600">
-                                <div><strong>Latitude:</strong> {Number(markerPosition[0]).toFixed(7)}°</div>
-                                <div><strong>Longitude:</strong> {Number(markerPosition[1]).toFixed(7)}°</div>
+                                <div>
+                                    <strong>Latitude:</strong> {Number(markerPosition[0]).toFixed(7)}°
+                                </div>
+                                <div>
+                                    <strong>Longitude:</strong> {Number(markerPosition[1]).toFixed(7)}°
+                                </div>
                             </div>
                         </div>
-                        {isPinning && (
-                            <div className="rounded bg-green-600 px-2 py-1 text-xs font-semibold text-white">
-                                ✓ Location Updated
-                            </div>
-                        )}
+                        {isPinning && <div className="rounded bg-green-600 px-2 py-1 text-xs font-semibold text-white">✓ Location Updated</div>}
                     </div>
                 </div>
             )}

@@ -22,11 +22,11 @@ class AnalyticsController extends Controller
     {
         $user = Auth::user();
         $dateRange = $request->input('range', '30'); // Default to last 30 days
-        
+
         // Calculate date range
         $endDate = Carbon::now();
         $startDate = $this->getStartDate($dateRange, $endDate);
-        
+
         // Get all analytics data
         $overview = $this->getOverviewStats($user->id, $startDate, $endDate);
         $revenueData = $this->getRevenueAnalytics($user->id, $startDate, $endDate, $dateRange);
@@ -35,7 +35,7 @@ class AnalyticsController extends Controller
         $customersData = $this->getCustomersAnalytics($user->id, $startDate, $endDate);
         $topProducts = $this->getTopProducts($user->id, $startDate, $endDate);
         $recentOrders = $this->getRecentOrders($user->id, 10);
-        
+
         return Inertia::render('seller/analytics', [
             'dateRange' => $dateRange,
             'startDate' => $startDate->format('Y-m-d'),
@@ -144,7 +144,7 @@ class AnalyticsController extends Controller
     {
         // Determine grouping based on range
         $groupBy = $this->getGroupByFormat($range);
-        
+
         $revenueByPeriod = Order::where('seller_id', $sellerId)
             ->where('status', Order::STATUS_COMPLETED)
             ->whereBetween('created_at', [$startDate, $endDate])
@@ -170,7 +170,7 @@ class AnalyticsController extends Controller
             )
             ->groupBy('status')
             ->get()
-            ->map(fn($item) => [
+            ->map(fn ($item) => [
                 'status' => ucfirst($item->status),
                 'revenue' => round($item->revenue, 2),
                 'count' => $item->count,
@@ -188,7 +188,7 @@ class AnalyticsController extends Controller
     private function getOrdersAnalytics(int $sellerId, Carbon $startDate, Carbon $endDate, string $range): array
     {
         $groupBy = $this->getGroupByFormat($range);
-        
+
         // Orders over time
         $ordersByPeriod = Order::where('seller_id', $sellerId)
             ->whereBetween('created_at', [$startDate, $endDate])
@@ -210,7 +210,7 @@ class AnalyticsController extends Controller
             ->select('status', DB::raw('COUNT(*) as count'))
             ->groupBy('status')
             ->get()
-            ->map(fn($item) => [
+            ->map(fn ($item) => [
                 'status' => ucfirst($item->status),
                 'count' => $item->count,
             ]);
@@ -225,7 +225,7 @@ class AnalyticsController extends Controller
             )
             ->groupBy('payment_method')
             ->get()
-            ->map(fn($item) => [
+            ->map(fn ($item) => [
                 'method' => strtoupper($item->payment_method),
                 'count' => $item->count,
                 'revenue' => round($item->revenue, 2),
@@ -256,13 +256,13 @@ class AnalyticsController extends Controller
         $activeProducts = Product::where('seller_id', $sellerId)
             ->where('status', Product::STATUS_ACTIVE)
             ->count();
-        
+
         // Products by status
         $productsByStatus = Product::where('seller_id', $sellerId)
             ->select('status', DB::raw('COUNT(*) as count'))
             ->groupBy('status')
             ->get()
-            ->map(fn($item) => [
+            ->map(fn ($item) => [
                 'status' => ucfirst($item->status),
                 'count' => $item->count,
             ]);
@@ -272,7 +272,7 @@ class AnalyticsController extends Controller
             ->select('stock_status', DB::raw('COUNT(*) as count'))
             ->groupBy('stock_status')
             ->get()
-            ->map(fn($item) => [
+            ->map(fn ($item) => [
                 'status' => str_replace('_', ' ', ucwords($item->stock_status, '_')),
                 'count' => $item->count,
             ]);
@@ -283,7 +283,7 @@ class AnalyticsController extends Controller
             ->orderByDesc('view_count')
             ->take(5)
             ->get(['id', 'name', 'view_count', 'featured_image', 'images'])
-            ->map(fn($product) => [
+            ->map(fn ($product) => [
                 'id' => $product->id,
                 'name' => $product->name,
                 'views' => $product->view_count,
@@ -349,7 +349,7 @@ class AnalyticsController extends Controller
             ->take(10)
             ->with('buyer:id,name,email,profile_picture,avatar')
             ->get()
-            ->map(fn($item) => [
+            ->map(fn ($item) => [
                 'customer' => [
                     'id' => $item->buyer->id,
                     'name' => $item->buyer->name,
@@ -399,7 +399,7 @@ class AnalyticsController extends Controller
             ->take(10)
             ->with('product:id,name,price,featured_image,images')
             ->get()
-            ->map(fn($item) => [
+            ->map(fn ($item) => [
                 'product' => [
                     'id' => $item->product->id,
                     'name' => $item->product->name,
@@ -425,7 +425,7 @@ class AnalyticsController extends Controller
             ->take(10)
             ->with('product:id,name,price,featured_image,images')
             ->get()
-            ->map(fn($item) => [
+            ->map(fn ($item) => [
                 'product' => [
                     'id' => $item->product->id,
                     'name' => $item->product->name,
@@ -452,7 +452,7 @@ class AnalyticsController extends Controller
             ->orderByDesc('created_at')
             ->take($limit)
             ->get()
-            ->map(fn($order) => [
+            ->map(fn ($order) => [
                 'id' => $order->id,
                 'order_number' => $order->order_number,
                 'customer' => [
@@ -478,7 +478,7 @@ class AnalyticsController extends Controller
         if ($previous == 0) {
             return $current > 0 ? 100 : 0;
         }
-        
+
         return round((($current - $previous) / $previous) * 100, 2);
     }
 
@@ -504,7 +504,7 @@ class AnalyticsController extends Controller
     {
         $periods = $this->generatePeriods($startDate, $endDate, $range);
         $dataMap = $data->pluck('revenue', 'period')->toArray();
-        
+
         return collect($periods)->map(function ($period) use ($dataMap) {
             return [
                 'period' => $period,
@@ -520,26 +520,26 @@ class AnalyticsController extends Controller
     {
         $periods = [];
         $current = $startDate->copy();
-        
+
         $format = match ($range) {
             '7', '30', 'mtd' => 'Y-m-d',
             '90' => 'o-W', // ISO year and week
             '365', 'ytd' => 'Y-m',
             default => 'Y-m-d',
         };
-        
+
         $increment = match ($range) {
             '7', '30', 'mtd' => 'day',
             '90' => 'week',
             '365', 'ytd' => 'month',
             default => 'day',
         };
-        
+
         while ($current->lte($endDate)) {
             $periods[] = $current->format($format);
             $current->add(1, $increment);
         }
-        
+
         return $periods;
     }
 

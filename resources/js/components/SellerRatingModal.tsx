@@ -78,12 +78,10 @@ export default function SellerRatingModal({ isOpen, onClose, seller, existingRat
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
+        <div className="bg-opacity-50 fixed inset-0 z-50 flex items-center justify-center bg-black p-4">
             <div className="w-full max-w-md rounded-lg bg-white p-6 shadow-xl">
                 <div className="mb-4 flex items-center justify-between">
-                    <h2 className="text-xl font-bold text-gray-900">
-                        {existingRating ? 'Edit Your Rating' : 'Rate Seller'}
-                    </h2>
+                    <h2 className="text-xl font-bold text-gray-900">{existingRating ? 'Edit Your Rating' : 'Rate Seller'}</h2>
                     <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
                         <X className="h-6 w-6" />
                     </button>
@@ -146,11 +144,7 @@ export default function SellerRatingModal({ isOpen, onClose, seller, existingRat
                     </div>
 
                     {/* Error Message */}
-                    {error && (
-                        <div className="mb-4 rounded-lg bg-red-50 p-3 text-sm text-red-600">
-                            {error}
-                        </div>
-                    )}
+                    {error && <div className="mb-4 rounded-lg bg-red-50 p-3 text-sm text-red-600">{error}</div>}
 
                     {/* Action Buttons */}
                     <div className="flex gap-3">

@@ -57,7 +57,7 @@ export default function BuyerProfile({ user }: BuyerProfileProps) {
     const [showPasswordForm, setShowPasswordForm] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [deleteStep, setDeleteStep] = useState(1);
-    
+
     // Location dropdown states
     const [provinces] = useState<string[]>(getProvinces());
     const [cities, setCities] = useState<string[]>([]);
@@ -103,7 +103,7 @@ export default function BuyerProfile({ user }: BuyerProfileProps) {
         if (data.delivery_province) {
             const availableCities = getCitiesByProvince(data.delivery_province);
             setCities(availableCities);
-            
+
             // Reset city and barangay if the selected city is not in the new province
             if (data.delivery_city && !availableCities.includes(data.delivery_city)) {
                 setData('delivery_city', '');
@@ -121,7 +121,7 @@ export default function BuyerProfile({ user }: BuyerProfileProps) {
         if (data.delivery_province && data.delivery_city) {
             const availableBarangays = getBarangaysByCity(data.delivery_province, data.delivery_city);
             setBarangays(availableBarangays);
-            
+
             // Reset barangay if the selected barangay is not in the new city
             if (data.delivery_barangay && !availableBarangays.includes(data.delivery_barangay)) {
                 setData('delivery_barangay', '');
@@ -209,7 +209,7 @@ export default function BuyerProfile({ user }: BuyerProfileProps) {
         e.stopPropagation();
         console.log('Password change form submitted');
         console.log('Form data:', passwordForm.data);
-        
+
         passwordForm.post('/buyer/profile/change-password', {
             preserveScroll: true,
             onSuccess: () => {
@@ -288,13 +288,7 @@ export default function BuyerProfile({ user }: BuyerProfileProps) {
             <Head title="My Profile" />
 
             {/* Toast Notification */}
-            {showToast && (
-                <Toast 
-                    message={toastMessage} 
-                    type={toastType} 
-                    onClose={() => setShowToast(false)} 
-                />
-            )}
+            {showToast && <Toast message={toastMessage} type={toastType} onClose={() => setShowToast(false)} />}
 
             <div className="mx-auto max-w-6xl space-y-6 p-6">
                 {/* Header */}
@@ -469,7 +463,7 @@ export default function BuyerProfile({ user }: BuyerProfileProps) {
                                                 <SelectTrigger id="delivery_province">
                                                     <SelectValue placeholder="Select province" />
                                                 </SelectTrigger>
-                                                <SelectContent className="max-h-[200px] z-[100]">
+                                                <SelectContent className="z-[100] max-h-[200px]">
                                                     {provinces.map((province) => (
                                                         <SelectItem key={province} value={province}>
                                                             {province}
@@ -482,15 +476,15 @@ export default function BuyerProfile({ user }: BuyerProfileProps) {
 
                                         <div className="space-y-2">
                                             <Label htmlFor="delivery_city">City / Municipality *</Label>
-                                            <Select 
-                                                value={data.delivery_city} 
+                                            <Select
+                                                value={data.delivery_city}
                                                 onValueChange={(value) => setData('delivery_city', value)}
                                                 disabled={!data.delivery_province || cities.length === 0}
                                             >
                                                 <SelectTrigger id="delivery_city">
                                                     <SelectValue placeholder="Select city" />
                                                 </SelectTrigger>
-                                                <SelectContent className="max-h-[200px] z-[100]">
+                                                <SelectContent className="z-[100] max-h-[200px]">
                                                     {cities.map((city) => (
                                                         <SelectItem key={city} value={city}>
                                                             {city}
@@ -503,15 +497,15 @@ export default function BuyerProfile({ user }: BuyerProfileProps) {
 
                                         <div className="space-y-2">
                                             <Label htmlFor="delivery_barangay">Barangay *</Label>
-                                            <Select 
-                                                value={data.delivery_barangay} 
+                                            <Select
+                                                value={data.delivery_barangay}
                                                 onValueChange={(value) => setData('delivery_barangay', value)}
                                                 disabled={!data.delivery_city || barangays.length === 0}
                                             >
                                                 <SelectTrigger id="delivery_barangay">
                                                     <SelectValue placeholder="Select barangay" />
                                                 </SelectTrigger>
-                                                <SelectContent className="max-h-[200px] z-[100]">
+                                                <SelectContent className="z-[100] max-h-[200px]">
                                                     {barangays.map((barangay) => (
                                                         <SelectItem key={barangay} value={barangay}>
                                                             {barangay}
@@ -551,10 +545,11 @@ export default function BuyerProfile({ user }: BuyerProfileProps) {
                                     </div>
 
                                     {/* Map Location Picker - with auto-centering */}
-                                    <div className="space-y-2 mt-6">
+                                    <div className="mt-6 space-y-2">
                                         <Label>Pin Your Exact Location on Map</Label>
-                                        <p className="text-sm text-muted-foreground mb-3">
-                                            💡 The map will automatically center when you select Province, City, and Barangay above. You can then click or drag the marker to fine-tune your exact location.
+                                        <p className="mb-3 text-sm text-muted-foreground">
+                                            💡 The map will automatically center when you select Province, City, and Barangay above. You can then
+                                            click or drag the marker to fine-tune your exact location.
                                         </p>
                                         <div className="relative">
                                             <LocationPicker
@@ -564,10 +559,10 @@ export default function BuyerProfile({ user }: BuyerProfileProps) {
                                                     data.delivery_barangay && data.delivery_city && data.delivery_province
                                                         ? `${data.delivery_barangay}, ${data.delivery_city}, ${data.delivery_province}, Philippines`
                                                         : data.delivery_city && data.delivery_province
-                                                        ? `${data.delivery_city}, ${data.delivery_province}, Philippines`
-                                                        : data.delivery_province
-                                                        ? `${data.delivery_province}, Philippines`
-                                                        : ''
+                                                          ? `${data.delivery_city}, ${data.delivery_province}, Philippines`
+                                                          : data.delivery_province
+                                                            ? `${data.delivery_province}, Philippines`
+                                                            : ''
                                                 }
                                                 centerOnAddress={true}
                                                 onLocationChange={(lat, lng) => {
@@ -677,238 +672,238 @@ export default function BuyerProfile({ user }: BuyerProfileProps) {
 
                 {/* Account Security Section */}
                 <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-                        {/* Password Change */}
-                        <Card>
-                            <CardHeader>
-                                <CardTitle className="flex items-center gap-2">
-                                    <Key className="h-5 w-5" />
+                    {/* Password Change */}
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="flex items-center gap-2">
+                                <Key className="h-5 w-5" />
+                                Change Password
+                            </CardTitle>
+                            <CardDescription>Update your password to keep your account secure</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            {!showPasswordForm ? (
+                                <Button type="button" variant="outline" onClick={() => setShowPasswordForm(true)} className="w-full">
+                                    <Shield className="mr-2 h-4 w-4" />
                                     Change Password
-                                </CardTitle>
-                                <CardDescription>Update your password to keep your account secure</CardDescription>
-                            </CardHeader>
-                            <CardContent>
-                                {!showPasswordForm ? (
-                                    <Button type="button" variant="outline" onClick={() => setShowPasswordForm(true)} className="w-full">
-                                        <Shield className="mr-2 h-4 w-4" />
-                                        Change Password
-                                    </Button>
-                                ) : (
-                                    <form onSubmit={handlePasswordChange} className="space-y-4">
-                                        <div className="space-y-2">
-                                            <Label htmlFor="current_password">Current Password</Label>
-                                            <Input
-                                                id="current_password"
-                                                type="password"
-                                                value={passwordForm.data.current_password}
-                                                onChange={(e) => passwordForm.setData('current_password', e.target.value)}
-                                                required
-                                            />
-                                            <InputError message={passwordForm.errors.current_password} />
-                                        </div>
+                                </Button>
+                            ) : (
+                                <form onSubmit={handlePasswordChange} className="space-y-4">
+                                    <div className="space-y-2">
+                                        <Label htmlFor="current_password">Current Password</Label>
+                                        <Input
+                                            id="current_password"
+                                            type="password"
+                                            value={passwordForm.data.current_password}
+                                            onChange={(e) => passwordForm.setData('current_password', e.target.value)}
+                                            required
+                                        />
+                                        <InputError message={passwordForm.errors.current_password} />
+                                    </div>
 
-                                        <div className="space-y-2">
-                                            <Label htmlFor="new_password">New Password</Label>
-                                            <Input
-                                                id="new_password"
-                                                type="password"
-                                                value={passwordForm.data.password}
-                                                onChange={(e) => passwordForm.setData('password', e.target.value)}
-                                                required
-                                            />
-                                            <InputError message={passwordForm.errors.password} />
-                                        </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="new_password">New Password</Label>
+                                        <Input
+                                            id="new_password"
+                                            type="password"
+                                            value={passwordForm.data.password}
+                                            onChange={(e) => passwordForm.setData('password', e.target.value)}
+                                            required
+                                        />
+                                        <InputError message={passwordForm.errors.password} />
+                                    </div>
 
-                                        <div className="space-y-2">
-                                            <Label htmlFor="password_confirmation">Confirm New Password</Label>
-                                            <Input
-                                                id="password_confirmation"
-                                                type="password"
-                                                value={passwordForm.data.password_confirmation}
-                                                onChange={(e) => passwordForm.setData('password_confirmation', e.target.value)}
-                                                required
-                                            />
-                                            <InputError message={passwordForm.errors.password_confirmation} />
-                                        </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="password_confirmation">Confirm New Password</Label>
+                                        <Input
+                                            id="password_confirmation"
+                                            type="password"
+                                            value={passwordForm.data.password_confirmation}
+                                            onChange={(e) => passwordForm.setData('password_confirmation', e.target.value)}
+                                            required
+                                        />
+                                        <InputError message={passwordForm.errors.password_confirmation} />
+                                    </div>
 
-                                        <div className="flex gap-2">
-                                            <Button type="submit" disabled={passwordForm.processing} size="sm">
-                                                {passwordForm.processing ? 'Updating...' : 'Update Password'}
-                                            </Button>
-                                            <Button
-                                                type="button"
-                                                variant="outline"
-                                                size="sm"
-                                                onClick={() => {
-                                                    setShowPasswordForm(false);
-                                                    passwordForm.reset();
-                                                    passwordForm.clearErrors();
-                                                }}
-                                            >
-                                                Cancel
-                                            </Button>
-                                        </div>
-                                    </form>
-                                )}
-                            </CardContent>
-                        </Card>
-
-                        {/* Account Deletion */}
-                        <Card className="border-red-200">
-                            <CardHeader>
-                                <CardTitle className="flex items-center gap-2 text-red-600">
-                                    <AlertTriangle className="h-5 w-5" />
-                                    Delete Account
-                                </CardTitle>
-                                <CardDescription>Permanently delete your account and all associated data</CardDescription>
-                            </CardHeader>
-                            <CardContent>
-                                <Alert className="mb-4 border-red-200 bg-red-50">
-                                    <AlertTriangle className="h-4 w-4 text-red-600" />
-                                    <AlertDescription className="text-red-800">
-                                        <strong>Warning:</strong> This action cannot be undone. All your data including profile information, orders,
-                                        and account history will be permanently deleted.
-                                    </AlertDescription>
-                                </Alert>
-
-                                <Dialog open={showDeleteModal} onOpenChange={setShowDeleteModal}>
-                                    <DialogTrigger asChild>
-                                        <Button type="button" variant="destructive" onClick={handleDeleteAccount} className="w-full">
-                                            <Trash2 className="mr-2 h-4 w-4" />
-                                            Delete My Account
+                                    <div className="flex gap-2">
+                                        <Button type="submit" disabled={passwordForm.processing} size="sm">
+                                            {passwordForm.processing ? 'Updating...' : 'Update Password'}
                                         </Button>
-                                    </DialogTrigger>
+                                        <Button
+                                            type="button"
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={() => {
+                                                setShowPasswordForm(false);
+                                                passwordForm.reset();
+                                                passwordForm.clearErrors();
+                                            }}
+                                        >
+                                            Cancel
+                                        </Button>
+                                    </div>
+                                </form>
+                            )}
+                        </CardContent>
+                    </Card>
 
-                                    <DialogContent className="sm:max-w-md">
-                                        <DialogHeader>
-                                            <DialogTitle className="flex items-center gap-2 text-red-600">
-                                                <AlertTriangle className="h-5 w-5" />
-                                                Delete Account
-                                            </DialogTitle>
-                                            <DialogDescription>
-                                                {deleteStep === 1
-                                                    ? 'This will permanently delete your account and all associated data.'
-                                                    : 'Please confirm your password and type the confirmation phrase to proceed.'}
-                                            </DialogDescription>
-                                        </DialogHeader>
+                    {/* Account Deletion */}
+                    <Card className="border-red-200">
+                        <CardHeader>
+                            <CardTitle className="flex items-center gap-2 text-red-600">
+                                <AlertTriangle className="h-5 w-5" />
+                                Delete Account
+                            </CardTitle>
+                            <CardDescription>Permanently delete your account and all associated data</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <Alert className="mb-4 border-red-200 bg-red-50">
+                                <AlertTriangle className="h-4 w-4 text-red-600" />
+                                <AlertDescription className="text-red-800">
+                                    <strong>Warning:</strong> This action cannot be undone. All your data including profile information, orders, and
+                                    account history will be permanently deleted.
+                                </AlertDescription>
+                            </Alert>
 
-                                        {deleteStep === 1 ? (
-                                            // Step 1: Warning and consequences
-                                            <div className="space-y-4">
-                                                <Alert className="border-red-200 bg-red-50">
-                                                    <AlertTriangle className="h-4 w-4 text-red-600" />
-                                                    <AlertDescription className="text-red-800">
-                                                        <strong>This action cannot be undone.</strong> Once deleted, you will permanently lose:
-                                                    </AlertDescription>
-                                                </Alert>
+                            <Dialog open={showDeleteModal} onOpenChange={setShowDeleteModal}>
+                                <DialogTrigger asChild>
+                                    <Button type="button" variant="destructive" onClick={handleDeleteAccount} className="w-full">
+                                        <Trash2 className="mr-2 h-4 w-4" />
+                                        Delete My Account
+                                    </Button>
+                                </DialogTrigger>
 
-                                                <div className="space-y-2 text-sm text-gray-600">
-                                                    <div className="flex items-center gap-2">
-                                                        <div className="h-2 w-2 rounded-full bg-red-500"></div>
-                                                        <span>All profile information and personal data</span>
-                                                    </div>
-                                                    <div className="flex items-center gap-2">
-                                                        <div className="h-2 w-2 rounded-full bg-red-500"></div>
-                                                        <span>Order history and purchase records</span>
-                                                    </div>
-                                                    <div className="flex items-center gap-2">
-                                                        <div className="h-2 w-2 rounded-full bg-red-500"></div>
-                                                        <span>Saved addresses and payment information</span>
-                                                    </div>
-                                                    <div className="flex items-center gap-2">
-                                                        <div className="h-2 w-2 rounded-full bg-red-500"></div>
-                                                        <span>Account settings and configurations</span>
-                                                    </div>
+                                <DialogContent className="sm:max-w-md">
+                                    <DialogHeader>
+                                        <DialogTitle className="flex items-center gap-2 text-red-600">
+                                            <AlertTriangle className="h-5 w-5" />
+                                            Delete Account
+                                        </DialogTitle>
+                                        <DialogDescription>
+                                            {deleteStep === 1
+                                                ? 'This will permanently delete your account and all associated data.'
+                                                : 'Please confirm your password and type the confirmation phrase to proceed.'}
+                                        </DialogDescription>
+                                    </DialogHeader>
+
+                                    {deleteStep === 1 ? (
+                                        // Step 1: Warning and consequences
+                                        <div className="space-y-4">
+                                            <Alert className="border-red-200 bg-red-50">
+                                                <AlertTriangle className="h-4 w-4 text-red-600" />
+                                                <AlertDescription className="text-red-800">
+                                                    <strong>This action cannot be undone.</strong> Once deleted, you will permanently lose:
+                                                </AlertDescription>
+                                            </Alert>
+
+                                            <div className="space-y-2 text-sm text-gray-600">
+                                                <div className="flex items-center gap-2">
+                                                    <div className="h-2 w-2 rounded-full bg-red-500"></div>
+                                                    <span>All profile information and personal data</span>
                                                 </div>
-
-                                                <div className="rounded-lg border border-yellow-200 bg-yellow-50 p-3">
-                                                    <p className="text-sm text-yellow-800">
-                                                        <strong>Consider:</strong> You can change your password or update your profile information
-                                                        instead of deleting your account.
-                                                    </p>
+                                                <div className="flex items-center gap-2">
+                                                    <div className="h-2 w-2 rounded-full bg-red-500"></div>
+                                                    <span>Order history and purchase records</span>
+                                                </div>
+                                                <div className="flex items-center gap-2">
+                                                    <div className="h-2 w-2 rounded-full bg-red-500"></div>
+                                                    <span>Saved addresses and payment information</span>
+                                                </div>
+                                                <div className="flex items-center gap-2">
+                                                    <div className="h-2 w-2 rounded-full bg-red-500"></div>
+                                                    <span>Account settings and configurations</span>
                                                 </div>
                                             </div>
+
+                                            <div className="rounded-lg border border-yellow-200 bg-yellow-50 p-3">
+                                                <p className="text-sm text-yellow-800">
+                                                    <strong>Consider:</strong> You can change your password or update your profile information instead
+                                                    of deleting your account.
+                                                </p>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        // Step 2: Confirmation form
+                                        <form onSubmit={handleDeleteConfirmation} className="space-y-4">
+                                            <div className="space-y-2">
+                                                <Label htmlFor="delete_password">Confirm Your Password</Label>
+                                                <Input
+                                                    id="delete_password"
+                                                    type="password"
+                                                    placeholder="Enter your current password"
+                                                    value={deleteForm.data.password}
+                                                    onChange={(e) => deleteForm.setData('password', e.target.value)}
+                                                    required
+                                                />
+                                                <InputError message={deleteForm.errors.password} />
+                                            </div>
+
+                                            <div className="space-y-2">
+                                                <Label htmlFor="confirmation_phrase">
+                                                    Type <span className="font-mono font-bold text-red-600">DELETE MY ACCOUNT</span> to confirm
+                                                </Label>
+                                                <Input
+                                                    id="confirmation_phrase"
+                                                    type="text"
+                                                    placeholder="DELETE MY ACCOUNT"
+                                                    value={deleteForm.data.confirmation_phrase}
+                                                    onChange={(e) => deleteForm.setData('confirmation_phrase', e.target.value)}
+                                                    required
+                                                />
+                                                <InputError message={deleteForm.errors.confirmation_phrase} />
+                                            </div>
+
+                                            <Alert className="border-red-200 bg-red-50">
+                                                <AlertTriangle className="h-4 w-4 text-red-600" />
+                                                <AlertDescription className="text-red-800">
+                                                    Once you click "Delete Account", this action cannot be reversed.
+                                                </AlertDescription>
+                                            </Alert>
+                                        </form>
+                                    )}
+
+                                    <DialogFooter>
+                                        {deleteStep === 1 ? (
+                                            <div className="flex w-full gap-2">
+                                                <Button type="button" variant="outline" onClick={resetDeleteModal} className="flex-1">
+                                                    Cancel
+                                                </Button>
+                                                <Button type="button" variant="destructive" onClick={() => setDeleteStep(2)} className="flex-1">
+                                                    Continue
+                                                </Button>
+                                            </div>
                                         ) : (
-                                            // Step 2: Confirmation form
-                                            <form onSubmit={handleDeleteConfirmation} className="space-y-4">
-                                                <div className="space-y-2">
-                                                    <Label htmlFor="delete_password">Confirm Your Password</Label>
-                                                    <Input
-                                                        id="delete_password"
-                                                        type="password"
-                                                        placeholder="Enter your current password"
-                                                        value={deleteForm.data.password}
-                                                        onChange={(e) => deleteForm.setData('password', e.target.value)}
-                                                        required
-                                                    />
-                                                    <InputError message={deleteForm.errors.password} />
-                                                </div>
-
-                                                <div className="space-y-2">
-                                                    <Label htmlFor="confirmation_phrase">
-                                                        Type <span className="font-mono font-bold text-red-600">DELETE MY ACCOUNT</span> to confirm
-                                                    </Label>
-                                                    <Input
-                                                        id="confirmation_phrase"
-                                                        type="text"
-                                                        placeholder="DELETE MY ACCOUNT"
-                                                        value={deleteForm.data.confirmation_phrase}
-                                                        onChange={(e) => deleteForm.setData('confirmation_phrase', e.target.value)}
-                                                        required
-                                                    />
-                                                    <InputError message={deleteForm.errors.confirmation_phrase} />
-                                                </div>
-
-                                                <Alert className="border-red-200 bg-red-50">
-                                                    <AlertTriangle className="h-4 w-4 text-red-600" />
-                                                    <AlertDescription className="text-red-800">
-                                                        Once you click "Delete Account", this action cannot be reversed.
-                                                    </AlertDescription>
-                                                </Alert>
-                                            </form>
+                                            <div className="flex w-full gap-2">
+                                                <Button type="button" variant="outline" onClick={() => setDeleteStep(1)} className="flex-1">
+                                                    Back
+                                                </Button>
+                                                <Button
+                                                    type="button"
+                                                    variant="destructive"
+                                                    onClick={handleDeleteConfirmation}
+                                                    disabled={deleteForm.processing}
+                                                    className="flex-1"
+                                                >
+                                                    {deleteForm.processing ? (
+                                                        <>
+                                                            <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
+                                                            Deleting...
+                                                        </>
+                                                    ) : (
+                                                        <>
+                                                            <Trash2 className="mr-2 h-4 w-4" />
+                                                            Delete Account
+                                                        </>
+                                                    )}
+                                                </Button>
+                                            </div>
                                         )}
-
-                                        <DialogFooter>
-                                            {deleteStep === 1 ? (
-                                                <div className="flex w-full gap-2">
-                                                    <Button type="button" variant="outline" onClick={resetDeleteModal} className="flex-1">
-                                                        Cancel
-                                                    </Button>
-                                                    <Button type="button" variant="destructive" onClick={() => setDeleteStep(2)} className="flex-1">
-                                                        Continue
-                                                    </Button>
-                                                </div>
-                                            ) : (
-                                                <div className="flex w-full gap-2">
-                                                    <Button type="button" variant="outline" onClick={() => setDeleteStep(1)} className="flex-1">
-                                                        Back
-                                                    </Button>
-                                                    <Button
-                                                        type="button"
-                                                        variant="destructive"
-                                                        onClick={handleDeleteConfirmation}
-                                                        disabled={deleteForm.processing}
-                                                        className="flex-1"
-                                                    >
-                                                        {deleteForm.processing ? (
-                                                            <>
-                                                                <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
-                                                                Deleting...
-                                                            </>
-                                                        ) : (
-                                                            <>
-                                                                <Trash2 className="mr-2 h-4 w-4" />
-                                                                Delete Account
-                                                            </>
-                                                        )}
-                                                    </Button>
-                                                </div>
-                                            )}
-                                        </DialogFooter>
-                                    </DialogContent>
-                                </Dialog>
-                            </CardContent>
-                        </Card>
-                    </div>
+                                    </DialogFooter>
+                                </DialogContent>
+                            </Dialog>
+                        </CardContent>
+                    </Card>
+                </div>
             </div>
         </BuyerLayout>
     );

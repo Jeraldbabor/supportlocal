@@ -28,14 +28,12 @@ interface CartProps {
 export default function Cart() {
     const { cartItems, cartTotal } = usePage<CartProps>().props;
 
-
     const updateCartBadge = (items: CartItem[]) => {
         const count = items.reduce((sum: number, item: CartItem) => sum + item.quantity, 0);
         localStorage.setItem('cart_item_count', count.toString());
         window.dispatchEvent(new CustomEvent('cart-updated', { detail: { count } }));
     };
 
-    
     useEffect(() => {
         updateCartBadge(cartItems);
     }, [cartItems]);
@@ -44,9 +42,13 @@ export default function Cart() {
         if (newQuantity <= 0) {
             handleRemove(itemId);
         } else {
-            router.put('/buyer/cart/update', { item_id: itemId, quantity: newQuantity }, { 
-                preserveScroll: true,
-            });
+            router.put(
+                '/buyer/cart/update',
+                { item_id: itemId, quantity: newQuantity },
+                {
+                    preserveScroll: true,
+                },
+            );
         }
     };
 

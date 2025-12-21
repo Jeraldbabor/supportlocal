@@ -14,38 +14,38 @@ class AboutController extends Controller
         $artisans = User::where('role', 'seller')
             ->orderBy('created_at', 'desc')
             ->get()
-            ->map(function($user) {
+            ->map(function ($user) {
                 // Calculate time since joining
                 $joinedAt = Carbon::parse($user->created_at);
                 $now = Carbon::now();
-                
+
                 $years = (int) $joinedAt->diffInYears($now);
                 $months = (int) $joinedAt->diffInMonths($now) % 12;
                 $days = (int) $joinedAt->diffInDays($now) % 30;
-                
+
                 // Build experience string - show only the most significant unit
                 if ($years >= 1) {
-                    $experience = $years . ' ' . ($years == 1 ? 'year' : 'years');
+                    $experience = $years.' '.($years == 1 ? 'year' : 'years');
                 } elseif ($months >= 1) {
-                    $experience = $months . ' ' . ($months == 1 ? 'month' : 'months');
+                    $experience = $months.' '.($months == 1 ? 'month' : 'months');
                 } else {
-                    $experience = max(1, $days) . ' ' . ($days <= 1 ? 'day' : 'days');
+                    $experience = max(1, $days).' '.($days <= 1 ? 'day' : 'days');
                 }
-                
+
                 // Build location string
                 $locationParts = array_filter([
                     $user->delivery_city,
-                    $user->delivery_province
+                    $user->delivery_province,
                 ]);
-                $location = !empty($locationParts) ? implode(', ', $locationParts) : ($user->address ?? 'Philippines');
-                
+                $location = ! empty($locationParts) ? implode(', ', $locationParts) : ($user->address ?? 'Philippines');
+
                 return [
                     'id' => $user->id,
                     'name' => $user->name,
                     'specialty' => 'Artisan',
-                    'image' => $user->profile_picture 
-                        ? '/storage/' . $user->profile_picture 
-                        : 'https://ui-avatars.com/api/?name=' . urlencode($user->name) . '&size=200&background=random',
+                    'image' => $user->profile_picture
+                        ? '/storage/'.$user->profile_picture
+                        : 'https://ui-avatars.com/api/?name='.urlencode($user->name).'&size=200&background=random',
                     'description' => 'A talented artisan creating unique handcrafted items.',
                     'location' => $location,
                     'experience' => $experience,
@@ -53,7 +53,7 @@ class AboutController extends Controller
             });
 
         return Inertia::render('buyer/About', [
-            'artisans' => $artisans
+            'artisans' => $artisans,
         ]);
     }
 }

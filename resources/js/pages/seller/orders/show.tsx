@@ -2,7 +2,22 @@ import Toast from '@/components/Toast';
 import AppLayout from '@/layouts/app-layout';
 import { formatPeso } from '@/utils/currency';
 import { Head, router } from '@inertiajs/react';
-import { ArrowLeft, CheckCircle, Clock, MapPin, Package, User, XCircle, Mail, Phone, CreditCard, Calendar, Truck, FileText, AlertCircle } from 'lucide-react';
+import {
+    AlertCircle,
+    ArrowLeft,
+    Calendar,
+    CheckCircle,
+    Clock,
+    CreditCard,
+    FileText,
+    Mail,
+    MapPin,
+    Package,
+    Phone,
+    Truck,
+    User,
+    XCircle,
+} from 'lucide-react';
 import { useState } from 'react';
 
 interface OrderItem {
@@ -168,7 +183,7 @@ export default function OrderShow({ order }: OrderShowProps) {
                     <div className="mb-8">
                         <button
                             onClick={() => router.visit('/seller/orders')}
-                            className="group inline-flex items-center gap-2 rounded-xl bg-white px-5 py-2.5 text-sm font-semibold text-gray-700 shadow-sm ring-1 ring-gray-200 transition-all hover:bg-gray-50 hover:ring-gray-300 hover:shadow-md"
+                            className="group inline-flex items-center gap-2 rounded-xl bg-white px-5 py-2.5 text-sm font-semibold text-gray-700 shadow-sm ring-1 ring-gray-200 transition-all hover:bg-gray-50 hover:shadow-md hover:ring-gray-300"
                         >
                             <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-0.5" />
                             Back to Orders
@@ -176,16 +191,21 @@ export default function OrderShow({ order }: OrderShowProps) {
                     </div>
 
                     {/* Order Header */}
-                    <div className="mb-8 overflow-hidden rounded-2xl bg-white shadow-xl shadow-gray-100 ring-1 ring-gray-100">
+                    <div className="mb-8 overflow-hidden rounded-2xl bg-white shadow-xl ring-1 shadow-gray-100 ring-gray-100">
                         <div className="bg-gradient-to-r from-slate-50 to-blue-50/50 p-8">
                             <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
                                 <div className="flex items-start gap-5">
-                                    <div className={`flex h-16 w-16 items-center justify-center rounded-2xl shadow-lg ${
-                                        order.status === 'pending' ? 'bg-gradient-to-br from-amber-400 to-yellow-500' :
-                                        order.status === 'confirmed' ? 'bg-gradient-to-br from-blue-500 to-indigo-600' :
-                                        order.status === 'completed' ? 'bg-gradient-to-br from-emerald-500 to-green-600' :
-                                        'bg-gradient-to-br from-red-500 to-rose-600'
-                                    }`}>
+                                    <div
+                                        className={`flex h-16 w-16 items-center justify-center rounded-2xl shadow-lg ${
+                                            order.status === 'pending'
+                                                ? 'bg-gradient-to-br from-amber-400 to-yellow-500'
+                                                : order.status === 'confirmed'
+                                                  ? 'bg-gradient-to-br from-blue-500 to-indigo-600'
+                                                  : order.status === 'completed'
+                                                    ? 'bg-gradient-to-br from-emerald-500 to-green-600'
+                                                    : 'bg-gradient-to-br from-red-500 to-rose-600'
+                                        }`}
+                                    >
                                         {order.status === 'pending' && <Clock className="h-8 w-8 text-white" />}
                                         {order.status === 'confirmed' && <Truck className="h-8 w-8 text-white" />}
                                         {order.status === 'completed' && <CheckCircle className="h-8 w-8 text-white" />}
@@ -193,19 +213,35 @@ export default function OrderShow({ order }: OrderShowProps) {
                                     </div>
                                     <div>
                                         <div className="flex flex-wrap items-center gap-3">
-                                            <h1 className="text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">Order #{order.id}</h1>
-                                            <span className={`rounded-full px-4 py-1.5 text-sm font-bold uppercase tracking-wide shadow-sm ${getStatusColor(order.status)}`}>
+                                            <h1 className="bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-3xl font-bold text-transparent">
+                                                Order #{order.id}
+                                            </h1>
+                                            <span
+                                                className={`rounded-full px-4 py-1.5 text-sm font-bold tracking-wide uppercase shadow-sm ${getStatusColor(order.status)}`}
+                                            >
                                                 {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
                                             </span>
                                         </div>
                                         <div className="mt-2 flex flex-wrap items-center gap-4 text-sm text-gray-500">
                                             <span className="flex items-center gap-1.5">
                                                 <Calendar className="h-4 w-4" />
-                                                {new Date(order.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                                                {new Date(order.created_at).toLocaleDateString('en-US', {
+                                                    year: 'numeric',
+                                                    month: 'long',
+                                                    day: 'numeric',
+                                                    hour: '2-digit',
+                                                    minute: '2-digit',
+                                                })}
                                             </span>
                                             {order.updated_at !== order.created_at && (
                                                 <span className="flex items-center gap-1.5 text-gray-400">
-                                                    Updated: {new Date(order.updated_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                                                    Updated:{' '}
+                                                    {new Date(order.updated_at).toLocaleDateString('en-US', {
+                                                        month: 'short',
+                                                        day: 'numeric',
+                                                        hour: '2-digit',
+                                                        minute: '2-digit',
+                                                    })}
                                                 </span>
                                             )}
                                         </div>
@@ -217,8 +253,11 @@ export default function OrderShow({ order }: OrderShowProps) {
                                     </div>
                                     <div>
                                         <p className="text-3xl font-bold text-gray-900">{formatPeso(order.total_amount)}</p>
-                                        <p className="text-sm font-medium uppercase tracking-wide text-gray-500">
-                                            {order.payment_method} • <span className={order.payment_status === 'paid' ? 'text-green-600' : 'text-amber-600'}>{order.payment_status}</span>
+                                        <p className="text-sm font-medium tracking-wide text-gray-500 uppercase">
+                                            {order.payment_method} •{' '}
+                                            <span className={order.payment_status === 'paid' ? 'text-green-600' : 'text-amber-600'}>
+                                                {order.payment_status}
+                                            </span>
                                         </p>
                                     </div>
                                 </div>
@@ -243,7 +282,7 @@ export default function OrderShow({ order }: OrderShowProps) {
 
                     <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
                         {/* Customer Information */}
-                        <div className="overflow-hidden rounded-2xl bg-white shadow-lg shadow-gray-100 ring-1 ring-gray-100">
+                        <div className="overflow-hidden rounded-2xl bg-white shadow-lg ring-1 shadow-gray-100 ring-gray-100">
                             <div className="border-b border-gray-100 bg-gradient-to-r from-blue-50 to-indigo-50 px-6 py-4">
                                 <h2 className="flex items-center gap-3 text-lg font-bold text-gray-900">
                                     <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 shadow-md">
@@ -252,13 +291,13 @@ export default function OrderShow({ order }: OrderShowProps) {
                                     Customer Information
                                 </h2>
                             </div>
-                            <div className="p-6 space-y-4">
+                            <div className="space-y-4 p-6">
                                 <div className="flex items-start gap-4 rounded-xl bg-gray-50 p-4">
                                     <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-white shadow-sm">
                                         <User className="h-5 w-5 text-blue-600" />
                                     </div>
                                     <div>
-                                        <p className="text-xs font-medium uppercase tracking-wide text-gray-500">Full Name</p>
+                                        <p className="text-xs font-medium tracking-wide text-gray-500 uppercase">Full Name</p>
                                         <p className="mt-0.5 font-semibold text-gray-900">{order.buyer.name}</p>
                                     </div>
                                 </div>
@@ -267,8 +306,8 @@ export default function OrderShow({ order }: OrderShowProps) {
                                         <Mail className="h-5 w-5 text-blue-600" />
                                     </div>
                                     <div className="min-w-0 flex-1">
-                                        <p className="text-xs font-medium uppercase tracking-wide text-gray-500">Email Address</p>
-                                        <p className="mt-0.5 font-semibold text-gray-900 truncate">{order.buyer.email}</p>
+                                        <p className="text-xs font-medium tracking-wide text-gray-500 uppercase">Email Address</p>
+                                        <p className="mt-0.5 truncate font-semibold text-gray-900">{order.buyer.email}</p>
                                     </div>
                                 </div>
                                 <div className="flex items-start gap-4 rounded-xl bg-gray-50 p-4">
@@ -276,7 +315,7 @@ export default function OrderShow({ order }: OrderShowProps) {
                                         <Phone className="h-5 w-5 text-blue-600" />
                                     </div>
                                     <div>
-                                        <p className="text-xs font-medium uppercase tracking-wide text-gray-500">Phone Number</p>
+                                        <p className="text-xs font-medium tracking-wide text-gray-500 uppercase">Phone Number</p>
                                         <p className="mt-0.5 font-semibold text-gray-900">{order.delivery_phone}</p>
                                     </div>
                                 </div>
@@ -284,7 +323,7 @@ export default function OrderShow({ order }: OrderShowProps) {
                         </div>
 
                         {/* Delivery Information */}
-                        <div className="overflow-hidden rounded-2xl bg-white shadow-lg shadow-gray-100 ring-1 ring-gray-100">
+                        <div className="overflow-hidden rounded-2xl bg-white shadow-lg ring-1 shadow-gray-100 ring-gray-100">
                             <div className="border-b border-gray-100 bg-gradient-to-r from-emerald-50 to-green-50 px-6 py-4">
                                 <h2 className="flex items-center gap-3 text-lg font-bold text-gray-900">
                                     <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-green-600 shadow-md">
@@ -293,13 +332,13 @@ export default function OrderShow({ order }: OrderShowProps) {
                                     Delivery Information
                                 </h2>
                             </div>
-                            <div className="p-6 space-y-4">
+                            <div className="space-y-4 p-6">
                                 <div className="flex items-start gap-4 rounded-xl bg-gray-50 p-4">
                                     <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-white shadow-sm">
                                         <MapPin className="h-5 w-5 text-emerald-600" />
                                     </div>
                                     <div>
-                                        <p className="text-xs font-medium uppercase tracking-wide text-gray-500">Delivery Address</p>
+                                        <p className="text-xs font-medium tracking-wide text-gray-500 uppercase">Delivery Address</p>
                                         <p className="mt-0.5 font-semibold text-gray-900">{order.delivery_address}</p>
                                     </div>
                                 </div>
@@ -308,7 +347,7 @@ export default function OrderShow({ order }: OrderShowProps) {
                                         <Phone className="h-5 w-5 text-emerald-600" />
                                     </div>
                                     <div>
-                                        <p className="text-xs font-medium uppercase tracking-wide text-gray-500">Contact Number</p>
+                                        <p className="text-xs font-medium tracking-wide text-gray-500 uppercase">Contact Number</p>
                                         <p className="mt-0.5 font-semibold text-gray-900">{order.delivery_phone}</p>
                                     </div>
                                 </div>
@@ -318,7 +357,7 @@ export default function OrderShow({ order }: OrderShowProps) {
                                             <FileText className="h-5 w-5 text-amber-600" />
                                         </div>
                                         <div>
-                                            <p className="text-xs font-medium uppercase tracking-wide text-amber-700">Special Instructions</p>
+                                            <p className="text-xs font-medium tracking-wide text-amber-700 uppercase">Special Instructions</p>
                                             <p className="mt-0.5 font-semibold text-amber-900">{order.delivery_notes}</p>
                                         </div>
                                     </div>
@@ -328,7 +367,7 @@ export default function OrderShow({ order }: OrderShowProps) {
                     </div>
 
                     {/* Order Items */}
-                    <div className="mt-6 overflow-hidden rounded-2xl bg-white shadow-lg shadow-gray-100 ring-1 ring-gray-100">
+                    <div className="mt-6 overflow-hidden rounded-2xl bg-white shadow-lg ring-1 shadow-gray-100 ring-gray-100">
                         <div className="border-b border-gray-100 bg-gradient-to-r from-purple-50 to-indigo-50 px-6 py-4">
                             <div className="flex items-center justify-between">
                                 <h2 className="flex items-center gap-3 text-lg font-bold text-gray-900">
@@ -342,9 +381,12 @@ export default function OrderShow({ order }: OrderShowProps) {
                                 </span>
                             </div>
                         </div>
-                        <div className="p-6 space-y-4">
+                        <div className="space-y-4 p-6">
                             {order.order_items.map((item) => (
-                                <div key={item.id} className="group flex items-center gap-5 rounded-xl bg-gradient-to-r from-gray-50 to-white p-5 ring-1 ring-gray-100 transition-all hover:ring-purple-200 hover:shadow-md">
+                                <div
+                                    key={item.id}
+                                    className="group flex items-center gap-5 rounded-xl bg-gradient-to-r from-gray-50 to-white p-5 ring-1 ring-gray-100 transition-all hover:shadow-md hover:ring-purple-200"
+                                >
                                     {item.product_image ? (
                                         <img
                                             src={`/storage/${item.product_image}`}
@@ -356,8 +398,8 @@ export default function OrderShow({ order }: OrderShowProps) {
                                             <Package className="h-12 w-12 text-gray-400" />
                                         </div>
                                     )}
-                                    <div className="flex-1 min-w-0">
-                                        <h3 className="text-lg font-bold text-gray-900 truncate">{item.product_name}</h3>
+                                    <div className="min-w-0 flex-1">
+                                        <h3 className="truncate text-lg font-bold text-gray-900">{item.product_name}</h3>
                                         <div className="mt-2 flex flex-wrap items-center gap-3">
                                             <span className="inline-flex items-center gap-1.5 rounded-lg bg-blue-100 px-3 py-1 text-sm font-semibold text-blue-700">
                                                 Qty: {item.quantity}
@@ -376,13 +418,15 @@ export default function OrderShow({ order }: OrderShowProps) {
                         <div className="border-t border-gray-100 bg-gradient-to-r from-gray-50 to-blue-50/50 px-6 py-5">
                             <div className="flex items-center justify-between">
                                 <span className="text-lg font-semibold text-gray-600">Order Total</span>
-                                <span className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">{formatPeso(order.total_amount)}</span>
+                                <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-3xl font-bold text-transparent">
+                                    {formatPeso(order.total_amount)}
+                                </span>
                             </div>
                         </div>
                     </div>
 
                     {/* Order Actions */}
-                    <div className="mt-6 overflow-hidden rounded-2xl bg-white shadow-lg shadow-gray-100 ring-1 ring-gray-100">
+                    <div className="mt-6 overflow-hidden rounded-2xl bg-white shadow-lg ring-1 shadow-gray-100 ring-gray-100">
                         <div className="border-b border-gray-100 bg-gradient-to-r from-gray-50 to-slate-50 px-6 py-4">
                             <h2 className="text-lg font-bold text-gray-900">Order Actions</h2>
                         </div>
@@ -392,14 +436,14 @@ export default function OrderShow({ order }: OrderShowProps) {
                                     <>
                                         <button
                                             onClick={handleConfirmOrder}
-                                            className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-emerald-600 to-green-600 px-8 py-3 text-sm font-bold text-white shadow-lg shadow-green-200 transition-all hover:shadow-xl hover:shadow-green-300 hover:from-emerald-700 hover:to-green-700"
+                                            className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-emerald-600 to-green-600 px-8 py-3 text-sm font-bold text-white shadow-lg shadow-green-200 transition-all hover:from-emerald-700 hover:to-green-700 hover:shadow-xl hover:shadow-green-300"
                                         >
                                             <CheckCircle className="h-5 w-5" />
                                             Confirm Order
                                         </button>
                                         <button
                                             onClick={handleRejectOrder}
-                                            className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-red-600 to-rose-600 px-8 py-3 text-sm font-bold text-white shadow-lg shadow-red-200 transition-all hover:shadow-xl hover:shadow-red-300 hover:from-red-700 hover:to-rose-700"
+                                            className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-red-600 to-rose-600 px-8 py-3 text-sm font-bold text-white shadow-lg shadow-red-200 transition-all hover:from-red-700 hover:to-rose-700 hover:shadow-xl hover:shadow-red-300"
                                         >
                                             <XCircle className="h-5 w-5" />
                                             Cancel Order
@@ -411,14 +455,14 @@ export default function OrderShow({ order }: OrderShowProps) {
                                     <>
                                         <button
                                             onClick={handleCompleteOrder}
-                                            className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-8 py-3 text-sm font-bold text-white shadow-lg shadow-blue-200 transition-all hover:shadow-xl hover:shadow-blue-300 hover:from-blue-700 hover:to-indigo-700"
+                                            className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-8 py-3 text-sm font-bold text-white shadow-lg shadow-blue-200 transition-all hover:from-blue-700 hover:to-indigo-700 hover:shadow-xl hover:shadow-blue-300"
                                         >
                                             <Package className="h-5 w-5" />
                                             Mark as Delivered
                                         </button>
                                         <button
                                             onClick={handleRejectOrder}
-                                            className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-red-600 to-rose-600 px-8 py-3 text-sm font-bold text-white shadow-lg shadow-red-200 transition-all hover:shadow-xl hover:shadow-red-300 hover:from-red-700 hover:to-rose-700"
+                                            className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-red-600 to-rose-600 px-8 py-3 text-sm font-bold text-white shadow-lg shadow-red-200 transition-all hover:from-red-700 hover:to-rose-700 hover:shadow-xl hover:shadow-red-300"
                                         >
                                             <XCircle className="h-5 w-5" />
                                             Cancel Order

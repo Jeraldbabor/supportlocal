@@ -8,7 +8,6 @@ use App\Models\ProductRating;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Validation\Rule;
 
 class ProductRatingController extends Controller
 {
@@ -33,7 +32,7 @@ class ProductRatingController extends Controller
 
         // Fill in missing ratings with 0
         for ($i = 1; $i <= 5; $i++) {
-            if (!isset($distribution[$i])) {
+            if (! isset($distribution[$i])) {
                 $distribution[$i] = 0;
             }
         }

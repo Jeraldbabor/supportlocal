@@ -1,8 +1,8 @@
 import { Link } from '@inertiajs/react';
 import { ArrowLeft, Minus, Plus, Shield, ShoppingCart, Star, Truck } from 'lucide-react';
 import { useState } from 'react';
-import MainLayout from '../layouts/MainLayout';
 import WishlistButton from '../components/WishlistButton';
+import MainLayout from '../layouts/MainLayout';
 
 interface Product {
     id: number;
@@ -212,12 +212,7 @@ export default function ProductDetail({ product, relatedProducts = [], reviews =
                                     <ShoppingCart className="h-5 w-5" />
                                     {product.inStock ? 'Add to Cart' : 'Out of Stock'}
                                 </button>
-                                <WishlistButton 
-                                    productId={product.id} 
-                                    initialInWishlist={inWishlist} 
-                                    variant="button"
-                                    size="lg"
-                                />
+                                <WishlistButton productId={product.id} initialInWishlist={inWishlist} variant="button" size="lg" />
                             </div>
                         </div>
 
@@ -264,18 +259,16 @@ export default function ProductDetail({ product, relatedProducts = [], reviews =
                     <section className="mt-16 border-t border-gray-200 pt-16">
                         <div className="mb-8">
                             <h2 className="text-2xl font-bold text-gray-900">Customer Reviews</h2>
-                            <p className="text-gray-600">{reviews.length} {reviews.length === 1 ? 'review' : 'reviews'} from verified buyers</p>
+                            <p className="text-gray-600">
+                                {reviews.length} {reviews.length === 1 ? 'review' : 'reviews'} from verified buyers
+                            </p>
                         </div>
                         <div className="space-y-6">
                             {reviews.map((review) => (
                                 <div key={review.id} className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
                                     <div className="mb-4 flex items-start justify-between">
                                         <div className="flex items-center gap-3">
-                                            <img
-                                                src={review.buyer_avatar}
-                                                alt={review.buyer_name}
-                                                className="h-12 w-12 rounded-full object-cover"
-                                            />
+                                            <img src={review.buyer_avatar} alt={review.buyer_name} className="h-12 w-12 rounded-full object-cover" />
                                             <div>
                                                 <h3 className="font-semibold text-gray-900">{review.buyer_name}</h3>
                                                 <p className="text-sm text-gray-500">{review.created_at}</p>
@@ -285,16 +278,12 @@ export default function ProductDetail({ product, relatedProducts = [], reviews =
                                             {[...Array(5)].map((_, i) => (
                                                 <Star
                                                     key={i}
-                                                    className={`h-5 w-5 ${
-                                                        i < review.rating ? 'fill-current text-yellow-400' : 'text-gray-300'
-                                                    }`}
+                                                    className={`h-5 w-5 ${i < review.rating ? 'fill-current text-yellow-400' : 'text-gray-300'}`}
                                                 />
                                             ))}
                                         </div>
                                     </div>
-                                    {review.review && (
-                                        <p className="leading-relaxed text-gray-700">{review.review}</p>
-                                    )}
+                                    {review.review && <p className="leading-relaxed text-gray-700">{review.review}</p>}
                                 </div>
                             ))}
                         </div>

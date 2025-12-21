@@ -54,13 +54,23 @@ export function UserMenuContent({ user }: UserMenuContentProps) {
             <DropdownMenuSeparator className="my-1" />
             <DropdownMenuGroup>
                 <DropdownMenuItem asChild className="cursor-pointer">
-                    <Link className="flex items-center gap-3 px-3 py-2.5 transition-colors duration-150" href={getProfileUrl()} as="button" onClick={cleanup}>
+                    <Link
+                        className="flex items-center gap-3 px-3 py-2.5 transition-colors duration-150"
+                        href={getProfileUrl()}
+                        as="button"
+                        onClick={cleanup}
+                    >
                         <UserIcon className="h-4 w-4" />
                         <span className="font-medium">Profile</span>
                     </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild className="cursor-pointer">
-                    <Link className="flex items-center gap-3 px-3 py-2.5 transition-colors duration-150" href={getSettingsUrl()} as="button" onClick={cleanup}>
+                    <Link
+                        className="flex items-center gap-3 px-3 py-2.5 transition-colors duration-150"
+                        href={getSettingsUrl()}
+                        as="button"
+                        onClick={cleanup}
+                    >
                         <Settings className="h-4 w-4" />
                         <span className="font-medium">Settings</span>
                     </Link>
@@ -68,7 +78,14 @@ export function UserMenuContent({ user }: UserMenuContentProps) {
             </DropdownMenuGroup>
             <DropdownMenuSeparator className="my-1" />
             <DropdownMenuItem asChild className="cursor-pointer text-destructive focus:text-destructive">
-                <Link className="flex items-center gap-3 px-3 py-2.5 transition-colors duration-150" href="/logout" as="button" method="post" onClick={handleLogout} data-test="logout-button">
+                <Link
+                    className="flex items-center gap-3 px-3 py-2.5 transition-colors duration-150"
+                    href="/logout"
+                    as="button"
+                    method="post"
+                    onClick={handleLogout}
+                    data-test="logout-button"
+                >
                     <LogOut className="h-4 w-4" />
                     <span className="font-medium">Log out</span>
                 </Link>

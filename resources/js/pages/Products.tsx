@@ -331,9 +331,9 @@ export default function Products({ products, categories = [], wishlistProductIds
 
                                         {/* Wishlist Button */}
                                         <div className="absolute top-3 right-3 z-10" onClick={(e) => e.stopPropagation()}>
-                                            <WishlistButton 
-                                                productId={product.id} 
-                                                initialInWishlist={wishlistProductIds.includes(product.id)} 
+                                            <WishlistButton
+                                                productId={product.id}
+                                                initialInWishlist={wishlistProductIds.includes(product.id)}
                                                 variant="icon-filled"
                                             />
                                         </div>
@@ -415,7 +415,8 @@ export default function Products({ products, categories = [], wishlistProductIds
                                             </div>
                                             {product.average_rating && Number(product.average_rating) > 0 ? (
                                                 <span className="ml-1 text-xs text-gray-600">
-                                                    {Number(product.average_rating).toFixed(1)} ({product.review_count || 0} {product.review_count === 1 ? 'review' : 'reviews'})
+                                                    {Number(product.average_rating).toFixed(1)} ({product.review_count || 0}{' '}
+                                                    {product.review_count === 1 ? 'review' : 'reviews'})
                                                 </span>
                                             ) : (
                                                 <span className="ml-1 text-xs text-gray-400">(No ratings yet)</span>

@@ -167,9 +167,13 @@ function NotificationsContent({ notifications }: NotificationsProps) {
                                                         {notification.data.message || 'No message'}
                                                     </p>
                                                     {notification.data.admin_notes && (
-                                                        <div className="mt-2 rounded-md bg-blue-50 p-3 border border-blue-200 dark:bg-blue-900/30 dark:border-blue-800">
-                                                            <p className="text-xs font-semibold text-blue-900 dark:text-blue-200 mb-1">Note from Admin:</p>
-                                                            <p className="text-sm text-blue-800 dark:text-blue-300">{notification.data.admin_notes}</p>
+                                                        <div className="mt-2 rounded-md border border-blue-200 bg-blue-50 p-3 dark:border-blue-800 dark:bg-blue-900/30">
+                                                            <p className="mb-1 text-xs font-semibold text-blue-900 dark:text-blue-200">
+                                                                Note from Admin:
+                                                            </p>
+                                                            <p className="text-sm text-blue-800 dark:text-blue-300">
+                                                                {notification.data.admin_notes}
+                                                            </p>
                                                         </div>
                                                     )}
                                                     <div className="mt-2 flex items-center text-xs text-gray-500 dark:text-gray-400">

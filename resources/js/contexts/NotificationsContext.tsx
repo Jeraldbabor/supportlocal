@@ -38,7 +38,7 @@ export function NotificationsProvider({
 
     const markAsRead = (notificationId: string) => {
         const baseRoute = userRole === 'seller' ? 'seller' : userRole === 'administrator' ? 'admin' : 'buyer';
-        
+
         router.post(
             `/${baseRoute}/notifications/${notificationId}/read`,
             {},
@@ -51,13 +51,13 @@ export function NotificationsProvider({
                 onError: (errors) => {
                     console.error('Error marking notification as read:', errors);
                 },
-            }
+            },
         );
     };
 
     const markAllAsRead = () => {
         const baseRoute = userRole === 'seller' ? 'seller' : userRole === 'administrator' ? 'admin' : 'buyer';
-        
+
         router.post(
             `/${baseRoute}/notifications/read-all`,
             {},
@@ -70,7 +70,7 @@ export function NotificationsProvider({
                 onError: (errors) => {
                     console.error('Error marking all notifications as read:', errors);
                 },
-            }
+            },
         );
     };
 

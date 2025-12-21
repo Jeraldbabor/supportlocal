@@ -56,7 +56,7 @@ export function useWishlist() {
                 onSuccess: () => {
                     // Optionally show a success message
                 },
-            }
+            },
         );
     }, []);
 

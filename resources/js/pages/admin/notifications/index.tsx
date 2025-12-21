@@ -153,9 +153,7 @@ function NotificationsPageContent({ notifications }: NotificationsProps) {
                         <div className="px-6 py-12 text-center">
                             <Bell className="mx-auto h-12 w-12 text-gray-400" />
                             <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-white">No notifications</h3>
-                            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                                You're all caught up! New notifications will appear here.
-                            </p>
+                            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">You're all caught up! New notifications will appear here.</p>
                         </div>
                     ) : (
                         notifications.data.map((notification) => (
@@ -168,7 +166,7 @@ function NotificationsPageContent({ notifications }: NotificationsProps) {
                                 <div className="flex items-start space-x-3">
                                     <div className="mt-1 flex-shrink-0">{getNotificationIcon(notification.type)}</div>
 
-                                    <div 
+                                    <div
                                         className="min-w-0 flex-1"
                                         onClick={() => notification.data.action_url && handleNotificationClick(notification)}
                                     >
@@ -180,7 +178,7 @@ function NotificationsPageContent({ notifications }: NotificationsProps) {
                                                 <p className="mt-1 text-sm text-gray-700 dark:text-gray-300">
                                                     {notification.data.message || 'No message'}
                                                 </p>
-                                                
+
                                                 {/* Show applicant details for seller applications */}
                                                 {notification.data.applicant_name && (
                                                     <div className="mt-2 space-y-1 text-xs text-gray-600 dark:text-gray-400">

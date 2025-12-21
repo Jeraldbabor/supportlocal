@@ -3,7 +3,7 @@ import { NavUser } from '@/components/nav-user';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { type NavItem, type SharedData } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
-import { BarChart3, BookOpen, Folder, LayoutGrid, Package, ShoppingBag, Users } from 'lucide-react';
+import { BarChart3, LayoutGrid, Package, ShoppingBag, Users } from 'lucide-react';
 import AppLogo from './app-logo';
 
 // Function to get role-specific navigation items
@@ -100,11 +100,7 @@ export function AppSidebar() {
             <SidebarHeader className="border-b border-sidebar-border/50 py-4">
                 <SidebarMenu>
                     <SidebarMenuItem>
-                        <SidebarMenuButton 
-                            size="lg" 
-                            asChild 
-                            className="hover:bg-sidebar-accent/50 transition-colors duration-200 px-3"
-                        >
+                        <SidebarMenuButton size="lg" asChild className="px-3 transition-colors duration-200 hover:bg-sidebar-accent/50">
                             <Link href="/" prefetch className="flex items-center gap-3">
                                 <AppLogo />
                             </Link>
@@ -113,7 +109,7 @@ export function AppSidebar() {
                 </SidebarMenu>
             </SidebarHeader>
 
-            <SidebarContent className="py-4 bg-gradient-to-b from-sidebar/50 to-sidebar">
+            <SidebarContent className="bg-gradient-to-b from-sidebar/50 to-sidebar py-4">
                 <NavMain items={mainNavItems} />
             </SidebarContent>
 

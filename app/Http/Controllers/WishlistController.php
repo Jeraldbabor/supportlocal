@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Helpers\WishlistHelper;
 use App\Models\Product;
-use App\Models\WishlistItem;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -125,6 +124,7 @@ class WishlistController extends Controller
 
         if (WishlistHelper::hasProduct($productId)) {
             WishlistHelper::removeProduct($productId);
+
             return response()->json([
                 'success' => true,
                 'message' => 'Product removed from wishlist',

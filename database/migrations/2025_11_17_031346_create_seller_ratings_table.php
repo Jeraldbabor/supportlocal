@@ -18,10 +18,10 @@ return new class extends Migration
             $table->tinyInteger('rating')->unsigned()->comment('Rating from 1 to 5');
             $table->text('review')->nullable();
             $table->timestamps();
-            
+
             // Ensure one user can only rate a seller once
             $table->unique(['seller_id', 'user_id']);
-            
+
             // Add indexes for performance
             $table->index('seller_id');
             $table->index('user_id');

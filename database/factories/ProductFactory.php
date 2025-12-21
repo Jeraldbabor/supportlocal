@@ -32,8 +32,8 @@ class ProductFactory extends Factory
             // If role column doesn't exist, just use any user or create one
             $sellerId = User::inRandomOrder()->first()?->id;
         }
-        
-        if (!$sellerId) {
+
+        if (! $sellerId) {
             // Create a user, with role if possible
             try {
                 $sellerId = User::factory()->create(['role' => 'seller'])->id;

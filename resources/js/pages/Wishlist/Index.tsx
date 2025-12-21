@@ -1,12 +1,12 @@
 import { Link, router, usePage } from '@inertiajs/react';
-import { ArrowLeft, Heart, ShoppingCart, X, Package, Star, User, Info } from 'lucide-react';
-import BuyerLayout from '../../layouts/BuyerLayout';
-import MainLayout from '../../layouts/MainLayout';
-import { useCart } from '../../contexts/CartContext';
+import { ArrowLeft, Heart, Info, Package, ShoppingCart, Star, User, X } from 'lucide-react';
 import { useState } from 'react';
-import Toast from '../../components/Toast';
 import AddToCartModal from '../../components/AddToCartModal';
 import AuthRequiredModal from '../../components/AuthRequiredModal';
+import Toast from '../../components/Toast';
+import { useCart } from '../../contexts/CartContext';
+import BuyerLayout from '../../layouts/BuyerLayout';
+import MainLayout from '../../layouts/MainLayout';
 
 interface Product {
     id: number;
@@ -72,7 +72,7 @@ export default function WishlistIndex({ wishlistItems, totalItems }: Props) {
 
     const handleAddToCart = (e: React.MouseEvent, product: Product) => {
         e.stopPropagation();
-        
+
         if (!props.auth?.user) {
             setShowAuthModal(true);
             return;
@@ -105,9 +105,7 @@ export default function WishlistIndex({ wishlistItems, totalItems }: Props) {
                 <div className="mx-auto max-w-4xl px-4 py-16 text-center sm:px-6 lg:px-8">
                     <Heart className="mx-auto mb-6 h-24 w-24 text-gray-300" />
                     <h2 className="mb-4 text-2xl font-bold text-gray-900">Your wishlist is empty</h2>
-                    <p className="mb-8 text-gray-600">
-                        Start adding products you love to keep track of them!
-                    </p>
+                    <p className="mb-8 text-gray-600">Start adding products you love to keep track of them!</p>
                     <Link
                         href="/products"
                         className="inline-flex items-center rounded-lg bg-primary px-8 py-3 font-semibold text-white transition-colors duration-200 hover:bg-primary/90"
@@ -132,10 +130,7 @@ export default function WishlistIndex({ wishlistItems, totalItems }: Props) {
                         </p>
                     </div>
                     {totalItems > 0 && (
-                        <button
-                            onClick={handleClear}
-                            className="text-red-600 hover:text-red-700 transition-colors"
-                        >
+                        <button onClick={handleClear} className="text-red-600 transition-colors hover:text-red-700">
                             Clear All
                         </button>
                     )}
@@ -155,7 +150,7 @@ export default function WishlistIndex({ wishlistItems, totalItems }: Props) {
                                 <div className="relative aspect-square overflow-hidden rounded-t-xl bg-gray-100">
                                     {product.primary_image || product.image ? (
                                         <img
-                                            src={product.primary_image ? `/storage/${product.primary_image}` : (product.image || '')}
+                                            src={product.primary_image ? `/storage/${product.primary_image}` : product.image || ''}
                                             alt={product.name}
                                             className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-110"
                                             onClick={() => handleProductClick(product.id)}
@@ -207,7 +202,7 @@ export default function WishlistIndex({ wishlistItems, totalItems }: Props) {
                                     <div className="absolute top-3 right-3 z-10" onClick={(e) => e.stopPropagation()}>
                                         <button
                                             onClick={() => handleRemove(product.id)}
-                                            className="rounded-full bg-white/90 p-2 shadow-md transition-colors hover:bg-red-50 hover:text-red-600 backdrop-blur-sm"
+                                            className="rounded-full bg-white/90 p-2 shadow-md backdrop-blur-sm transition-colors hover:bg-red-50 hover:text-red-600"
                                             aria-label="Remove from wishlist"
                                         >
                                             <X className="h-4 w-4" />
@@ -251,9 +246,7 @@ export default function WishlistIndex({ wishlistItems, totalItems }: Props) {
                                     {/* Category */}
                                     {product.category && (
                                         <div className="flex items-center">
-                                            <span className="rounded-full bg-primary/10 px-2 py-1 text-xs text-primary">
-                                                {product.category.name}
-                                            </span>
+                                            <span className="rounded-full bg-primary/10 px-2 py-1 text-xs text-primary">{product.category.name}</span>
                                         </div>
                                     )}
 
@@ -273,7 +266,8 @@ export default function WishlistIndex({ wishlistItems, totalItems }: Props) {
                                         </div>
                                         {product.average_rating && Number(product.average_rating) > 0 ? (
                                             <span className="ml-1 text-xs text-gray-600">
-                                                {Number(product.average_rating).toFixed(1)} ({product.review_count || 0} {product.review_count === 1 ? 'review' : 'reviews'})
+                                                {Number(product.average_rating).toFixed(1)} ({product.review_count || 0}{' '}
+                                                {product.review_count === 1 ? 'review' : 'reviews'})
                                             </span>
                                         ) : (
                                             <span className="ml-1 text-xs text-gray-400">(No ratings yet)</span>
@@ -318,10 +312,7 @@ export default function WishlistIndex({ wishlistItems, totalItems }: Props) {
 
                 {/* Continue Shopping */}
                 <div className="mt-8 text-center">
-                    <Link
-                        href="/products"
-                        className="inline-flex items-center text-primary hover:text-primary/80"
-                    >
+                    <Link href="/products" className="inline-flex items-center text-primary hover:text-primary/80">
                         <ArrowLeft className="mr-2 h-4 w-4" />
                         Continue Shopping
                     </Link>
@@ -329,13 +320,7 @@ export default function WishlistIndex({ wishlistItems, totalItems }: Props) {
             </div>
 
             {/* Modals */}
-            {showAuthModal && (
-                <AuthRequiredModal
-                    isOpen={showAuthModal}
-                    onClose={() => setShowAuthModal(false)}
-                    action="cart"
-                />
-            )}
+            {showAuthModal && <AuthRequiredModal isOpen={showAuthModal} onClose={() => setShowAuthModal(false)} action="cart" />}
             {showCartModal && selectedProduct && (
                 <AddToCartModal
                     isOpen={showCartModal}
@@ -352,13 +337,7 @@ export default function WishlistIndex({ wishlistItems, totalItems }: Props) {
                     }}
                 />
             )}
-            {toast && (
-                <Toast
-                    message={toast.message}
-                    type={toast.type}
-                    onClose={() => setToast(null)}
-                />
-            )}
+            {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
         </Layout>
     );
 }

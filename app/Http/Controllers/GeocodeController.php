@@ -11,7 +11,7 @@ class GeocodeController extends Controller
     {
         $address = $request->query('address');
 
-        if (!$address) {
+        if (! $address) {
             return response()->json(['error' => 'Address parameter is required'], 400);
         }
 
@@ -28,7 +28,7 @@ class GeocodeController extends Controller
             $data = $response->json();
 
             // Check if we got results
-            if (!empty($data) && isset($data[0])) {
+            if (! empty($data) && isset($data[0])) {
                 return response()->json([
                     'lat' => $data[0]['lat'],
                     'lon' => $data[0]['lon'],

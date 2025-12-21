@@ -20,8 +20,8 @@ export default function MainLayout({ children, title }: MainLayoutProps) {
 
     const { auth, wishlistCount } = usePage<SharedData>().props;
     const currentPath = usePage().url;
-    const unreadCount = 0; 
-    const { totalItems } = useCart(); 
+    const unreadCount = 0;
+    const { totalItems } = useCart();
 
     // Simplified notification logic
     useEffect(() => {
@@ -304,10 +304,10 @@ export default function MainLayout({ children, title }: MainLayoutProps) {
                                 >
                                     <div className="relative h-6 w-6">
                                         <Menu
-                                            className={`absolute inset-0 h-6 w-6 pointer-events-none transition-all duration-300 ${isMenuOpen ? 'rotate-180 opacity-0' : 'rotate-0 opacity-100'}`}
+                                            className={`pointer-events-none absolute inset-0 h-6 w-6 transition-all duration-300 ${isMenuOpen ? 'rotate-180 opacity-0' : 'rotate-0 opacity-100'}`}
                                         />
                                         <X
-                                            className={`absolute inset-0 h-6 w-6 pointer-events-none transition-all duration-300 ${isMenuOpen ? 'rotate-0 opacity-100' : '-rotate-180 opacity-0'}`}
+                                            className={`pointer-events-none absolute inset-0 h-6 w-6 transition-all duration-300 ${isMenuOpen ? 'rotate-0 opacity-100' : '-rotate-180 opacity-0'}`}
                                         />
                                     </div>
                                 </button>

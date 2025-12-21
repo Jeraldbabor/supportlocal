@@ -12,8 +12,8 @@ export default function AppLogo() {
                 </svg>
             </div>
             <div className="ml-3 grid flex-1 text-left">
-                <span className="truncate text-base font-bold leading-tight tracking-tight">Artisan Hub</span>
-                <span className="truncate text-[10px] font-medium text-muted-foreground uppercase tracking-wider">Marketplace</span>
+                <span className="truncate text-base leading-tight font-bold tracking-tight">Artisan Hub</span>
+                <span className="truncate text-[10px] font-medium tracking-wider text-muted-foreground uppercase">Marketplace</span>
             </div>
         </>
     );

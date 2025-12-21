@@ -213,7 +213,7 @@ export default function Home({ featuredProducts = [], wishlistProductIds = [] }:
                                 className="relative overflow-hidden rounded-lg bg-white shadow-sm transition-shadow duration-200 hover:shadow-md"
                             >
                                 {/* Wishlist Button */}
-                                <div className="absolute right-2 top-2 z-10">
+                                <div className="absolute top-2 right-2 z-10">
                                     <WishlistButton
                                         productId={product.id}
                                         initialInWishlist={wishlistProductIds.includes(product.id)}

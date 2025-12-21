@@ -32,7 +32,7 @@ class SellerRatingController extends Controller
 
         // Fill in missing ratings with 0
         for ($i = 1; $i <= 5; $i++) {
-            if (!isset($distribution[$i])) {
+            if (! isset($distribution[$i])) {
                 $distribution[$i] = 0;
             }
         }
@@ -53,7 +53,7 @@ class SellerRatingController extends Controller
     public function store(Request $request, User $seller): JsonResponse
     {
         // Ensure the user is rating a seller
-        if (!$seller->isSeller()) {
+        if (! $seller->isSeller()) {
             return response()->json([
                 'message' => 'This user is not a seller.',
             ], 400);

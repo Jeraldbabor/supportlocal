@@ -281,15 +281,15 @@ export default function Checkout({ user, buyNowItem }: CheckoutProps) {
                                                 className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-primary focus:ring-primary"
                                                 placeholder="e.g., Bldg 5, Unit 201"
                                             />
-                                            {errors.delivery_building_details && <p className="mt-1 text-sm text-red-600">{errors.delivery_building_details}</p>}
+                                            {errors.delivery_building_details && (
+                                                <p className="mt-1 text-sm text-red-600">{errors.delivery_building_details}</p>
+                                            )}
                                         </div>
                                     </div>
 
                                     {/* Interactive Map - Editable */}
                                     <div>
-                                        <label className="mb-2 block text-sm font-medium text-gray-700">
-                                            Pin Your Exact Location on Map
-                                        </label>
+                                        <label className="mb-2 block text-sm font-medium text-gray-700">Pin Your Exact Location on Map</label>
                                         <LocationPicker
                                             latitude={data.delivery_latitude || undefined}
                                             longitude={data.delivery_longitude || undefined}
@@ -305,7 +305,8 @@ export default function Checkout({ user, buyNowItem }: CheckoutProps) {
                                             centerOnAddress={true}
                                         />
                                         <p className="mt-2 text-xs text-gray-500">
-                                            💡 Click on the map or drag the marker to set your exact delivery location. This helps ensure accurate delivery!
+                                            💡 Click on the map or drag the marker to set your exact delivery location. This helps ensure accurate
+                                            delivery!
                                         </p>
                                     </div>
 

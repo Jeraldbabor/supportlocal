@@ -1,8 +1,8 @@
 import { type SharedData } from '@/types/index';
+import { formatPeso } from '@/utils/currency';
 import { Head, Link, usePage } from '@inertiajs/react';
 import { ArrowRight, Bell, Clock, CreditCard, MapPin, Package, ShoppingBag, Star, TrendingUp, User } from 'lucide-react';
 import BuyerLayout from '../../layouts/BuyerLayout';
-import { formatPeso } from '@/utils/currency';
 
 interface Stats {
     totalOrders: number;
@@ -120,7 +120,9 @@ export default function BuyerDashboard() {
                                     <span className="text-sm text-gray-600">orders placed</span>
                                 </div>
                                 <p className="mt-2 text-sm text-gray-600">
-                                    {stats.totalOrders > 0 ? `${stats.completedOrders} completed, ${stats.pendingOrders} pending` : 'Start shopping to see your orders here'}
+                                    {stats.totalOrders > 0
+                                        ? `${stats.completedOrders} completed, ${stats.pendingOrders} pending`
+                                        : 'Start shopping to see your orders here'}
                                 </p>
                             </div>
 
@@ -228,7 +230,9 @@ export default function BuyerDashboard() {
                                                     </div>
                                                     <div className="text-right">
                                                         <p className="text-sm text-gray-500">{activity.date_human}</p>
-                                                        {activity.amount && <p className="mt-1 font-semibold text-amber-700">{formatPeso(activity.amount)}</p>}
+                                                        {activity.amount && (
+                                                            <p className="mt-1 font-semibold text-amber-700">{formatPeso(activity.amount)}</p>
+                                                        )}
                                                     </div>
                                                 </div>
                                             </div>

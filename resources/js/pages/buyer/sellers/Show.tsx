@@ -1,5 +1,6 @@
 import { Product as GlobalProduct } from '@/types';
 import { Head, Link, router } from '@inertiajs/react';
+import axios from 'axios';
 import { ArrowLeft, Calendar, Eye, Mail, MapPin, MessageSquare, Package, Phone, ShoppingCart, Star, Trash2, User } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import AddToCartModal from '../../../components/AddToCartModal';
@@ -7,7 +8,6 @@ import SellerRatingModal from '../../../components/SellerRatingModal';
 import Toast from '../../../components/Toast';
 import { useCart } from '../../../contexts/CartContext';
 import BuyerLayout from '../../../layouts/BuyerLayout';
-import axios from 'axios';
 
 interface Product {
     id: number;
@@ -79,7 +79,7 @@ export default function Show({ seller, products, filters, userRating: initialUse
     const [modalProduct, setModalProduct] = useState<Product | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [modalMode, setModalMode] = useState<'cart' | 'buy'>('cart');
-    
+
     // Rating states
     const [isRatingModalOpen, setIsRatingModalOpen] = useState(false);
     const [userRating, setUserRating] = useState<SellerRating | null>(initialUserRating || null);
@@ -369,9 +369,7 @@ export default function Show({ seller, products, filters, userRating: initialUse
                                         <Star
                                             key={i}
                                             className={`h-5 w-5 ${
-                                                i < Math.floor(Number(seller.average_rating) || 0)
-                                                    ? 'fill-current text-yellow-400'
-                                                    : 'text-gray-300'
+                                                i < Math.floor(Number(seller.average_rating) || 0) ? 'fill-current text-yellow-400' : 'text-gray-300'
                                             }`}
                                         />
                                     ))}
@@ -409,10 +407,7 @@ export default function Show({ seller, products, filters, userRating: initialUse
                                 <div className="mb-2 flex items-center justify-between">
                                     <h3 className="font-semibold text-gray-900">Your Rating</h3>
                                     <div className="flex gap-2">
-                                        <button
-                                            onClick={() => setIsRatingModalOpen(true)}
-                                            className="text-sm text-amber-600 hover:text-amber-700"
-                                        >
+                                        <button onClick={() => setIsRatingModalOpen(true)} className="text-sm text-amber-600 hover:text-amber-700">
                                             Edit
                                         </button>
                                         <button onClick={handleDeleteRating} className="text-sm text-red-600 hover:text-red-700">
@@ -424,9 +419,7 @@ export default function Show({ seller, products, filters, userRating: initialUse
                                     {[...Array(5)].map((_, i) => (
                                         <Star
                                             key={i}
-                                            className={`h-5 w-5 ${
-                                                i < userRating.rating ? 'fill-current text-yellow-400' : 'text-gray-300'
-                                            }`}
+                                            className={`h-5 w-5 ${i < userRating.rating ? 'fill-current text-yellow-400' : 'text-gray-300'}`}
                                         />
                                     ))}
                                 </div>
@@ -463,9 +456,7 @@ export default function Show({ seller, products, filters, userRating: initialUse
                                                                 <Star
                                                                     key={i}
                                                                     className={`h-4 w-4 ${
-                                                                        i < rating.rating
-                                                                            ? 'fill-current text-yellow-400'
-                                                                            : 'text-gray-300'
+                                                                        i < rating.rating ? 'fill-current text-yellow-400' : 'text-gray-300'
                                                                     }`}
                                                                 />
                                                             ))}
