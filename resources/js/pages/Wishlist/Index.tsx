@@ -7,6 +7,7 @@ import Toast from '../../components/Toast';
 import { useCart } from '../../contexts/CartContext';
 import BuyerLayout from '../../layouts/BuyerLayout';
 import MainLayout from '../../layouts/MainLayout';
+import { Product as CartProduct } from '../../types';
 
 interface Product {
     id: number;
@@ -16,7 +17,7 @@ interface Product {
     sale_price: number | null;
     description: string;
     short_description?: string;
-    image: string | null;
+    image?: string;
     primary_image?: string;
     stock_status: string;
     stock_quantity: number;
@@ -293,9 +294,9 @@ export default function WishlistIndex({ wishlistItems, totalItems }: Props) {
                                         {/* Add to Cart Button */}
                                         <button
                                             onClick={(e) => handleAddToCart(e, product)}
-                                            disabled={isOutOfStock(product) || isLoading}
+                                            disabled={isOutOfStock(product)}
                                             className={`flex w-full transform items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium transition-all duration-200 ${
-                                                isOutOfStock(product) || isLoading
+                                                isOutOfStock(product)
                                                     ? 'cursor-not-allowed bg-gray-100 text-gray-400'
                                                     : 'bg-gradient-to-r from-amber-600 to-orange-600 text-white shadow-md hover:-translate-y-0.5 hover:from-amber-700 hover:to-orange-700 hover:shadow-lg focus:ring-2 focus:ring-amber-200 active:transform-none'
                                             }`}
@@ -324,14 +325,25 @@ export default function WishlistIndex({ wishlistItems, totalItems }: Props) {
             {showCartModal && selectedProduct && (
                 <AddToCartModal
                     isOpen={showCartModal}
-                    product={selectedProduct as Product}
+                    product={{
+                        ...selectedProduct,
+                        category: selectedProduct.category || undefined,
+                    }}
                     onClose={() => {
                         setShowCartModal(false);
                         setSelectedProduct(null);
                     }}
                     onAddToCart={(quantity) => {
                         if (selectedProduct) {
-                            addToCart(selectedProduct, quantity);
+                            // Convert to CartProduct for addToCart
+                            const cartProduct: CartProduct = {
+                                id: selectedProduct.id,
+                                name: selectedProduct.name,
+                                price: selectedProduct.price,
+                                primary_image: selectedProduct.primary_image || selectedProduct.image || '',
+                                seller: selectedProduct.seller,
+                            };
+                            addToCart(cartProduct, quantity);
                         }
                         setShowCartModal(false);
                         setSelectedProduct(null);

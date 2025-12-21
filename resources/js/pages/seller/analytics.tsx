@@ -353,7 +353,8 @@ export default function Analytics({ dateRange, overview, revenue, orders, produc
                                                     stroke: 'hsl(var(--muted-foreground))',
                                                     strokeWidth: 1,
                                                 }}
-                                                label={(entry: { status: string; percent?: number }) => {
+                                                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                                label={(entry: any) => {
                                                     const percent = ((entry.percent || 0) * 100).toFixed(0);
                                                     return Number(percent) > 5 ? `${entry.status}\n${percent}%` : '';
                                                 }}
@@ -387,7 +388,8 @@ export default function Analytics({ dateRange, overview, revenue, orders, produc
                                                     boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
                                                     padding: '12px',
                                                 }}
-                                                formatter={(value: number, name: string, props: { payload: { percent?: number; status: string } }) => [
+                                                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                                formatter={(value: number, name: string, props: any) => [
                                                     `${value} orders (${((props.payload.percent || 0) * 100).toFixed(1)}%)`,
                                                     props.payload.status,
                                                 ]}
