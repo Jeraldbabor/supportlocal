@@ -1,5 +1,7 @@
 # SupportLocal - Local Business Support Platform
 
+Developed by Jerald B Babor
+
 A Laravel-based e-commerce platform designed to support local businesses and sellers with integrated order management, seller applications, and product ratings.
 
 ## System Requirements
