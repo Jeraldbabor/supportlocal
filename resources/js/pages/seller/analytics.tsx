@@ -35,7 +35,7 @@ interface AnalyticsProps {
         by_status: Array<{ status: string; revenue: number; count: number }>;
     };
     orders: {
-        timeline: any[];
+        timeline: Array<{ period: string; revenue: number; count: number }>;
         by_status: Array<{ status: string; count: number }>;
         by_payment_method: Array<{ method: string; count: number; revenue: number }>;
         avg_fulfillment_hours: number;
@@ -353,7 +353,7 @@ export default function Analytics({ dateRange, overview, revenue, orders, produc
                                                     stroke: 'hsl(var(--muted-foreground))',
                                                     strokeWidth: 1,
                                                 }}
-                                                label={(entry: any) => {
+                                                label={(entry: { status: string; percent?: number }) => {
                                                     const percent = ((entry.percent || 0) * 100).toFixed(0);
                                                     return Number(percent) > 5 ? `${entry.status}\n${percent}%` : '';
                                                 }}
@@ -387,7 +387,7 @@ export default function Analytics({ dateRange, overview, revenue, orders, produc
                                                     boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
                                                     padding: '12px',
                                                 }}
-                                                formatter={(value: number, name: string, props: any) => [
+                                                formatter={(value: number, name: string, props: { payload: { percent?: number; status: string } }) => [
                                                     `${value} orders (${((props.payload.percent || 0) * 100).toFixed(1)}%)`,
                                                     props.payload.status,
                                                 ]}

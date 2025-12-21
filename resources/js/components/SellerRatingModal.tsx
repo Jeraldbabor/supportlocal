@@ -64,9 +64,10 @@ export default function SellerRatingModal({ isOpen, onClose, seller, existingRat
 
             onSuccess();
             onClose();
-        } catch (err: any) {
-            if (err.response?.data?.message) {
-                setError(err.response.data.message);
+        } catch (err: unknown) {
+            const error = err as { response?: { data?: { message?: string } } };
+            if (error.response?.data?.message) {
+                setError(error.response.data.message);
             } else {
                 setError('Failed to submit rating. Please try again.');
             }

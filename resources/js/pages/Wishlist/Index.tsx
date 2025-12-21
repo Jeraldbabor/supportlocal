@@ -324,13 +324,15 @@ export default function WishlistIndex({ wishlistItems, totalItems }: Props) {
             {showCartModal && selectedProduct && (
                 <AddToCartModal
                     isOpen={showCartModal}
-                    product={selectedProduct as any}
+                    product={selectedProduct as Product}
                     onClose={() => {
                         setShowCartModal(false);
                         setSelectedProduct(null);
                     }}
                     onAddToCart={(quantity) => {
-                        addToCart(selectedProduct as any, quantity);
+                        if (selectedProduct) {
+                            addToCart(selectedProduct, quantity);
+                        }
                         setShowCartModal(false);
                         setSelectedProduct(null);
                         setToast({ message: 'Product added to cart!', type: 'success' });

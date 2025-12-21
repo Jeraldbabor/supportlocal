@@ -45,7 +45,7 @@ interface BuyerProfileProps {
         success?: string;
         error?: string;
     };
-    [key: string]: any;
+    [key: string]: string | number | boolean | File | null | undefined | { success?: string; error?: string };
 }
 
 export default function BuyerProfile({ user }: BuyerProfileProps) {
