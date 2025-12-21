@@ -159,7 +159,7 @@ export default function Show({ product, relatedProducts, ratings: initialRatings
                 setToastType('error');
                 setShowToast(true);
             }
-        } catch (error) {
+        } catch {
             setToastMessage('An error occurred while submitting your rating');
             setToastType('error');
             setShowToast(true);
@@ -204,7 +204,7 @@ export default function Show({ product, relatedProducts, ratings: initialRatings
                 setToastType('error');
                 setShowToast(true);
             }
-        } catch (error) {
+        } catch {
             setToastMessage('An error occurred while updating your rating');
             setToastType('error');
             setShowToast(true);
@@ -242,7 +242,7 @@ export default function Show({ product, relatedProducts, ratings: initialRatings
                 setToastType('error');
                 setShowToast(true);
             }
-        } catch (error) {
+        } catch {
             setToastMessage('An error occurred while deleting your rating');
             setToastType('error');
             setShowToast(true);

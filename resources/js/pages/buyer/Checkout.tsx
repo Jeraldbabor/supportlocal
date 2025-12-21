@@ -1,5 +1,5 @@
 import { Head, router, useForm } from '@inertiajs/react';
-import { ArrowLeft, CheckCircle, CreditCard, MapPin, Phone, ShoppingBag, Truck, User } from 'lucide-react';
+import { ArrowLeft, CheckCircle, CreditCard, Phone, ShoppingBag, Truck, User } from 'lucide-react';
 import React, { useState } from 'react';
 import LocationPicker from '../../components/LocationPicker';
 import Toast from '../../components/Toast';

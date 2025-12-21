@@ -1,5 +1,3 @@
-import { User } from '@/types';
-import { router } from '@inertiajs/react';
 import axios from 'axios';
 import { Star, X } from 'lucide-react';
 import React, { useEffect, useState } from 'react';

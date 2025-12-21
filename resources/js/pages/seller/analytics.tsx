@@ -141,8 +141,6 @@ interface AnalyticsProps {
 
 export default function Analytics({
     dateRange,
-    startDate,
-    endDate,
     overview,
     revenue,
     orders,

@@ -1,5 +1,5 @@
 import { Link, router, usePage } from '@inertiajs/react';
-import { ArrowLeft, Heart, ShoppingCart, Trash2, X, Package, Star, User, Info } from 'lucide-react';
+import { ArrowLeft, Heart, ShoppingCart, X, Package, Star, User, Info } from 'lucide-react';
 import BuyerLayout from '../../layouts/BuyerLayout';
 import MainLayout from '../../layouts/MainLayout';
 import { useCart } from '../../contexts/CartContext';
@@ -50,7 +50,6 @@ export default function WishlistIndex({ wishlistItems, totalItems }: Props) {
     const [showAuthModal, setShowAuthModal] = useState(false);
     const [showCartModal, setShowCartModal] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-    const [isLoading, setIsLoading] = useState(false);
     const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
 
     // Use appropriate layout based on authentication status
@@ -146,7 +145,6 @@ export default function WishlistIndex({ wishlistItems, totalItems }: Props) {
                 <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                     {wishlistItems.map((item) => {
                         const product = item.product;
-                        const currentPrice = parseFloat(String(product.sale_price || product.price));
 
                         return (
                             <div

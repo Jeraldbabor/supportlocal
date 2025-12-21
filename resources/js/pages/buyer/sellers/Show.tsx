@@ -227,7 +227,7 @@ export default function Show({ seller, products, filters, userRating: initialUse
             setShowToast(true);
             // Refresh page to update seller's average rating
             router.reload();
-        } catch (error) {
+        } catch {
             setToastMessage('❌ Failed to delete rating. Please try again.');
             setShowToast(true);
         }
