@@ -43,21 +43,6 @@ export default function OrderShow({ order }: OrderShowProps) {
     const [toastMessage, setToastMessage] = useState('');
     const [toastType, setToastType] = useState<'success' | 'error'>('success');
 
-    const getStatusIcon = (status: string) => {
-        switch (status) {
-            case 'pending':
-                return <Clock className="h-6 w-6 text-yellow-500" />;
-            case 'confirmed':
-                return <CheckCircle className="h-6 w-6 text-blue-500" />;
-            case 'completed':
-                return <CheckCircle className="h-6 w-6 text-green-500" />;
-            case 'cancelled':
-                return <XCircle className="h-6 w-6 text-red-500" />;
-            default:
-                return <Package className="h-6 w-6 text-gray-500" />;
-        }
-    };
-
     const getStatusColor = (status: string) => {
         switch (status) {
             case 'pending':

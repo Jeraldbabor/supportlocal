@@ -2,14 +2,10 @@ import { Head, router } from '@inertiajs/react';
 import { useState } from 'react';
 import {
     TrendingUp,
-    TrendingDown,
     DollarSign,
     ShoppingCart,
     Users,
-    Package,
     Eye,
-    Star,
-    Calendar,
     Download,
     ArrowUpRight,
     ArrowDownRight,
@@ -40,7 +36,6 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
-import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
@@ -53,8 +48,6 @@ const breadcrumbs: BreadcrumbItem[] = [
 
 interface AnalyticsProps {
     dateRange: string;
-    startDate: string;
-    endDate: string;
     overview: {
         total_revenue: number;
         revenue_growth: number;

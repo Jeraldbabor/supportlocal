@@ -9,7 +9,6 @@ import {
     BarChart3,
     Calendar,
     CheckCircle,
-    DollarSign,
     Eye,
     Package,
     RefreshCw,
