@@ -1,12 +1,12 @@
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem, type SharedData } from '@/types';
-import { Head, Link, router, useForm } from '@inertiajs/react';
+import { Head, Link, router } from '@inertiajs/react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Textarea } from '@/components/ui/textarea';
-import { ArrowLeft, Star, MessageSquare, TrendingUp, TrendingDown, Reply, Send, Trash2 } from 'lucide-react';
+import { ArrowLeft, Star, MessageSquare, TrendingUp, Reply, Send, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import Swal from 'sweetalert2';
 import axios from 'axios';
@@ -71,7 +71,7 @@ interface ProductRatingsPageProps extends SharedData {
     summary: Summary;
 }
 
-export default function ProductRatings({ auth, product, ratings, distribution, summary }: ProductRatingsPageProps) {
+export default function ProductRatings({ product, ratings, distribution, summary }: ProductRatingsPageProps) {
     const breadcrumbs: BreadcrumbItem[] = [
         { title: 'Seller Dashboard', href: '/seller/dashboard' },
         { title: 'Products', href: '/seller/products' },
@@ -144,7 +144,7 @@ export default function ProductRatings({ auth, product, ratings, distribution, s
                 showConfirmButton: false,
             });
             router.reload();
-        } catch (error) {
+        } catch {
             Swal.fire({
                 title: 'Error',
                 text: 'Failed to post reply',
@@ -178,7 +178,7 @@ export default function ProductRatings({ auth, product, ratings, distribution, s
                     showConfirmButton: false,
                 });
                 router.reload();
-            } catch (error) {
+            } catch {
                 Swal.fire({
                     title: 'Error',
                     text: 'Failed to delete reply',

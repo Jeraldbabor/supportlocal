@@ -9,10 +9,6 @@ interface WishlistToggleResponse {
     count: number;
 }
 
-interface WishlistCheckResponse {
-    in_wishlist: Record<number, boolean>;
-}
-
 export function useWishlist() {
     const [isLoading, setIsLoading] = useState(false);
 

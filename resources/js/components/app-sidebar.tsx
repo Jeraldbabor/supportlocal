@@ -2,7 +2,7 @@ import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { type NavItem, type SharedData } from '@/types';
-import { Link, usePage } from '@inertiajs/react';
+import { usePage } from '@inertiajs/react';
 import { BarChart3, LayoutGrid, MessageSquare, Package, ShoppingBag, Star, Users } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import Echo from '@/lib/echo';
@@ -122,7 +122,7 @@ export function AppSidebar() {
                 const response = await fetch('/api/chat/conversations');
                 if (response.ok) {
                     const conversations = await response.json();
-                    const totalUnread = conversations.reduce((sum: number, conv: any) => sum + (conv.unread_count || 0), 0);
+                    const totalUnread = conversations.reduce((sum: number, conv: { unread_count?: number }) => sum + (conv.unread_count || 0), 0);
                     setUnreadMessagesCount(totalUnread);
                 }
             } catch (error) {

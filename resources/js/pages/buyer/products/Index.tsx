@@ -1,9 +1,8 @@
 import { Product as GlobalProduct } from '@/types';
-import { Head, Link, router, usePage } from '@inertiajs/react';
-import { Eye, Filter, Grid, Info, List, MessageSquare, Package, Search, ShoppingCart, Star, User } from 'lucide-react';
+import { Head, Link, router } from '@inertiajs/react';
+import { Eye, Filter, Grid, Info, List, Package, Search, ShoppingCart, Star, User } from 'lucide-react';
 import React, { useState } from 'react';
 import AddToCartModal from '../../../components/AddToCartModal';
-import StartChatButton from '../../../components/StartChatButton';
 import Toast from '../../../components/Toast';
 import WishlistButton from '../../../components/WishlistButton';
 import { useCart } from '../../../contexts/CartContext';
@@ -72,7 +71,6 @@ export default function Index({ products, categories, filters, wishlistProductId
     const [modalProduct, setModalProduct] = useState<Product | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [modalMode, setModalMode] = useState<'cart' | 'buy'>('cart');
-    const { auth } = usePage<{ auth: { user?: { id: number; role: string } } }>().props;
 
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();

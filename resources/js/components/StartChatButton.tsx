@@ -23,7 +23,7 @@ export default function StartChatButton({
   const [showChatModal, setShowChatModal] = useState(false);
   const [conversationId, setConversationId] = useState<number | null>(null);
   const [isMinimized, setIsMinimized] = useState(false);
-  const { auth } = usePage().props as any;
+  const { auth } = usePage().props as { auth: { user?: { id: number; seller_status?: string } } };
   const currentUserId = auth?.user?.id;
 
   const handleStartChat = async () => {

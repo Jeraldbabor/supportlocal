@@ -72,7 +72,7 @@ export default function MessagesDropdown({ currentUserId }: MessagesDropdownProp
     // Subscribe to user's private channel for new messages
     const channel = Echo.private(`App.Models.User.${currentUserId}`);
     
-    channel.listen('MessageSent', (data: any) => {
+    channel.listen('MessageSent', (data: { message: { conversation_id: number }; sender: { name: string } }) => {
       console.log('New message received:', data);
       
       // Only show notification if not viewing this conversation
@@ -88,9 +88,9 @@ export default function MessagesDropdown({ currentUserId }: MessagesDropdownProp
     return () => {
       channel.stopListening('MessageSent');
     };
-  }, [currentUserId, showChatModal, selectedConversationId]);
+  }, [currentUserId, showChatModal, selectedConversationId, loadConversations, showNewMessageNotification]);
 
-  const showNewMessageNotification = (data: any) => {
+  const showNewMessageNotification = (data: { message: { conversation_id: number }; sender: { name: string } }) => {
     const { message, sender } = data;
     
     // Play notification sound

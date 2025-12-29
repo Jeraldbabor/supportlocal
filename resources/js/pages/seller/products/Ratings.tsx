@@ -1,7 +1,6 @@
 import AppLayout from '@/layouts/app-layout';
-import { type BreadcrumbItem, type SharedData } from '@/types';
+import { type BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/react';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -9,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Textarea } from '@/components/ui/textarea';
 import { Search, Star, MessageSquare, Filter, TrendingUp, Package, Reply, Send, Trash2 } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Swal from 'sweetalert2';
 import axios from 'axios';
 
@@ -69,7 +68,7 @@ interface PaginationLink {
     active: boolean;
 }
 
-interface RatingsPageProps extends SharedData {
+interface RatingsPageProps {
     ratings: {
         data: Rating[];
         links: PaginationLink[];
@@ -86,7 +85,7 @@ interface RatingsPageProps extends SharedData {
     };
 }
 
-export default function Ratings({ auth, ratings, sellerProducts, statistics, filters }: RatingsPageProps) {
+export default function Ratings({ ratings, sellerProducts, statistics, filters }: RatingsPageProps) {
     const [searchTerm, setSearchTerm] = useState(filters.search || '');
     const [selectedProduct, setSelectedProduct] = useState(filters.product_id?.toString() || 'all');
     const [selectedRating, setSelectedRating] = useState(filters.rating?.toString() || 'all');
@@ -180,7 +179,7 @@ export default function Ratings({ auth, ratings, sellerProducts, statistics, fil
                 showConfirmButton: false,
             });
             router.reload();
-        } catch (error) {
+        } catch {
             Swal.fire({
                 title: 'Error',
                 text: 'Failed to post reply',
@@ -214,7 +213,7 @@ export default function Ratings({ auth, ratings, sellerProducts, statistics, fil
                     showConfirmButton: false,
                 });
                 router.reload();
-            } catch (error) {
+            } catch {
                 Swal.fire({
                     title: 'Error',
                     text: 'Failed to delete reply',

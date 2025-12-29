@@ -3,7 +3,6 @@ import { router } from '@inertiajs/react';
 import { Send, Trash2, Image, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { formatDistanceToNow } from 'date-fns';
 import Swal from 'sweetalert2';
@@ -52,7 +51,6 @@ export default function ChatWindow({ conversationId, currentUserId }: ChatWindow
   const [conversation, setConversation] = useState<Conversation | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isOtherUserTyping, setIsOtherUserTyping] = useState(false);
-  const [typingUserName, setTypingUserName] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);

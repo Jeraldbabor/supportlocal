@@ -1,5 +1,4 @@
 import { Head, router } from '@inertiajs/react';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -8,7 +7,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem } from '@/types';
-import { Filter, MessageSquare, Reply, Search, Star, Trash2, TrendingUp, Users } from 'lucide-react';
+import { Filter, MessageSquare, Reply, Search, Star, Trash2, Users } from 'lucide-react';
 import { FormEvent, useState } from 'react';
 import Swal from 'sweetalert2';
 import axios from 'axios';
@@ -47,7 +46,6 @@ interface Statistics {
 }
 
 interface SellerRatingsPageProps {
-    auth: any;
     ratings: {
         data: Rating[];
         links: PaginationLink[];
@@ -63,7 +61,7 @@ interface SellerRatingsPageProps {
     };
 }
 
-export default function Index({ auth, ratings, statistics, filters }: SellerRatingsPageProps) {
+export default function Index({ ratings, statistics, filters }: SellerRatingsPageProps) {
     const breadcrumbs: BreadcrumbItem[] = [
         { title: 'Seller Dashboard', href: '/seller/dashboard' },
         { title: 'Seller Ratings', href: '/seller/seller-ratings' },
@@ -112,7 +110,7 @@ export default function Index({ auth, ratings, statistics, filters }: SellerRati
             setReplyingTo(null);
             setReplyText('');
             router.reload();
-        } catch (error) {
+        } catch {
             Swal.fire({
                 icon: 'error',
                 title: 'Error',
@@ -147,7 +145,7 @@ export default function Index({ auth, ratings, statistics, filters }: SellerRati
                 });
 
                 router.reload();
-            } catch (error) {
+            } catch {
                 Swal.fire({
                     icon: 'error',
                     title: 'Error',

@@ -1,7 +1,6 @@
 import { Head, Link, router, usePage } from '@inertiajs/react';
-import { Eye, Filter, MapPin, MessageSquare, Search, Star, User } from 'lucide-react';
+import { Eye, Filter, MapPin, Search, Star, User } from 'lucide-react';
 import React, { useState } from 'react';
-import StartChatButton from '../../../components/StartChatButton';
 import BuyerLayout from '../../../layouts/BuyerLayout';
 
 interface Seller {
