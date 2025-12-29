@@ -1,8 +1,9 @@
 import { Product as GlobalProduct } from '@/types';
-import { Link, router } from '@inertiajs/react';
+import { Link, router, usePage } from '@inertiajs/react';
 import { ArrowLeft, Award, Calendar, Eye, Globe, Mail, MapPin, Package, Phone, ShoppingCart, Star, User } from 'lucide-react';
 import React, { useState } from 'react';
 import AddToCartModal from '../components/AddToCartModal';
+import StartChatButton from '../components/StartChatButton';
 import Toast from '../components/Toast';
 import { useCart } from '../contexts/CartContext';
 import MainLayout from '../layouts/MainLayout';
@@ -53,6 +54,19 @@ interface ArtisanProfileProps {
         last_page: number;
         total: number;
     };
+    ratings: Array<{
+        id: number;
+        rating: number;
+        review: string;
+        seller_reply: string | null;
+        seller_replied_at: string | null;
+        created_at: string;
+        user: {
+            id: number;
+            name: string;
+            avatar_url: string | null;
+        };
+    }>;
     filters: {
         search: string | null;
         sort: string;
@@ -60,7 +74,7 @@ interface ArtisanProfileProps {
     };
 }
 
-export default function ArtisanProfile({ artisan, products, filters }: ArtisanProfileProps) {
+export default function ArtisanProfile({ artisan, products, ratings, filters }: ArtisanProfileProps) {
     const [searchTerm, setSearchTerm] = useState(filters?.search || '');
     const [showToast, setShowToast] = useState(false);
     const [toastMessage, setToastMessage] = useState('');
@@ -68,6 +82,7 @@ export default function ArtisanProfile({ artisan, products, filters }: ArtisanPr
     const [modalProduct, setModalProduct] = useState<Product | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [modalMode, setModalMode] = useState<'cart' | 'buy'>('cart');
+    const { auth } = usePage<{ auth: { user?: { id: number; role: string } } }>().props;
 
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
@@ -200,7 +215,7 @@ export default function ArtisanProfile({ artisan, products, filters }: ArtisanPr
 
                         <div className="flex-1">
                             <div className="flex flex-col md:flex-row md:items-center md:justify-between">
-                                <div>
+                                <div className="flex-1">
                                     <div className="flex items-center space-x-3">
                                         <h1 className="text-2xl font-bold text-gray-900">{artisan.business_name || artisan.name}</h1>
                                         {artisan.is_verified && (
@@ -215,6 +230,18 @@ export default function ArtisanProfile({ artisan, products, filters }: ArtisanPr
                                         <div className="mt-2 flex items-center text-sm text-gray-500">
                                             <MapPin className="mr-1 h-4 w-4" />
                                             {artisan.location}
+                                        </div>
+                                    )}
+                                    
+                                    {auth?.user && auth.user.id !== artisan.id && (
+                                        <div className="mt-3">
+                                            <StartChatButton
+                                                userId={artisan.id}
+                                                variant="default"
+                                                className=""
+                                            >
+                                                Contact Seller
+                                            </StartChatButton>
                                         </div>
                                     )}
                                 </div>
@@ -305,6 +332,74 @@ export default function ArtisanProfile({ artisan, products, filters }: ArtisanPr
                         </div>
                     </div>
                 </div>
+
+                {/* Ratings & Reviews Section */}
+                {ratings && ratings.length > 0 && (
+                    <div className="mb-8 rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+                        <h2 className="mb-4 text-2xl font-bold text-gray-900">Customer Reviews</h2>
+                        <div className="space-y-6">
+                            {ratings.map((rating) => (
+                                <div key={rating.id} className="border-b border-gray-200 pb-6 last:border-0">
+                                    <div className="flex items-start space-x-4">
+                                        {rating.user.avatar_url ? (
+                                            <img
+                                                src={rating.user.avatar_url}
+                                                alt={rating.user.name}
+                                                className="h-10 w-10 rounded-full object-cover"
+                                            />
+                                        ) : (
+                                            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-200">
+                                                <User className="h-5 w-5 text-gray-400" />
+                                            </div>
+                                        )}
+                                        <div className="flex-1">
+                                            <div className="flex items-center justify-between">
+                                                <div>
+                                                    <p className="font-semibold text-gray-900">{rating.user.name}</p>
+                                                    <div className="mt-1 flex items-center space-x-1">
+                                                        {[...Array(5)].map((_, i) => (
+                                                            <Star
+                                                                key={i}
+                                                                className={`h-4 w-4 ${
+                                                                    i < rating.rating
+                                                                        ? 'fill-yellow-400 text-yellow-400'
+                                                                        : 'fill-gray-200 text-gray-200'
+                                                                }`}
+                                                            />
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                                <p className="text-sm text-gray-500">{rating.created_at}</p>
+                                            </div>
+                                            <p className="mt-2 text-gray-700">{rating.review}</p>
+
+                                            {rating.seller_reply && (
+                                                <div className="mt-4 rounded-lg bg-gray-50 p-4">
+                                                    <div className="flex items-start space-x-3">
+                                                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-amber-100">
+                                                            <User className="h-4 w-4 text-amber-600" />
+                                                        </div>
+                                                        <div className="flex-1">
+                                                            <p className="text-sm font-semibold text-gray-900">
+                                                                Response from {artisan.business_name || artisan.name}
+                                                            </p>
+                                                            <p className="mt-1 text-sm text-gray-700">{rating.seller_reply}</p>
+                                                            {rating.seller_replied_at && (
+                                                                <p className="mt-1 text-xs text-gray-500">
+                                                                    Replied on {new Date(rating.seller_replied_at).toLocaleDateString()}
+                                                                </p>
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
 
                 {/* Products Section */}
                 <div>

@@ -1,6 +1,7 @@
-import { Head, Link, router } from '@inertiajs/react';
-import { Eye, Filter, MapPin, Search, Star, User } from 'lucide-react';
+import { Head, Link, router, usePage } from '@inertiajs/react';
+import { Eye, Filter, MapPin, MessageSquare, Search, Star, User } from 'lucide-react';
 import React, { useState } from 'react';
+import StartChatButton from '../../../components/StartChatButton';
 import BuyerLayout from '../../../layouts/BuyerLayout';
 
 interface Seller {
@@ -39,6 +40,7 @@ interface SellersIndexProps {
 
 export default function Index({ sellers, filters }: SellersIndexProps) {
     const [searchTerm, setSearchTerm] = useState(filters.search || '');
+    const { auth } = usePage<{ auth: { user?: { id: number; role: string } } }>().props;
 
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
@@ -86,7 +88,7 @@ export default function Index({ sellers, filters }: SellersIndexProps) {
                         >
                             <option value="name">Sort by Name</option>
                             <option value="products_count">Most Products</option>
-                            <option value="average_rating">Highest Rated</option>
+                            <option value="average_rmessageting">Highest RMessageted</option>
                             <option value="total_sales">Best Selling</option>
                             <option value="created_at">Newest</option>
                         </select>
@@ -188,12 +190,19 @@ export default function Index({ sellers, filters }: SellersIndexProps) {
                                         </div>
 
                                         <div className="mt-4 border-t border-gray-100 pt-4">
-                                            <div className="flex items-center justify-between text-sm text-gray-500">
-                                                <span>Member since {new Date(seller.created_at).getFullYear()}</span>
-                                                <div className="flex items-center">
-                                                    <Eye className="mr-1 h-3 w-3" />
-                                                    View Profile
-                                                </div>
+                                            <div className="flex items-center justify-between gap-2">
+                                                <span className="text-sm text-gray-500">Member since {new Date(seller.created_at).getFullYear()}</span>
+                                                {auth?.user && auth.user.id !== seller.id ? (
+                                                    <div className="flex items-center text-sm text-primary group-hover:text-primary-dark">
+                                                        <Eye className="mr-1 h-3 w-3" />
+                                                        View Profile
+                                                    </div>
+                                                ) : (
+                                                    <div className="flex items-center text-sm text-gray-500">
+                                                        <Eye className="mr-1 h-3 w-3" />
+                                                        View Profile
+                                                    </div>
+                                                )}
                                             </div>
                                         </div>
                                     </div>

@@ -450,6 +450,17 @@ export default function ProductsIndex() {
                                                 </span>
                                                 <span className="text-gray-500">{product.view_count} views</span>
                                             </div>
+
+                                            {/* Rating Display */}
+                                            {product.review_count > 0 && (
+                                                <div className="mt-2 flex items-center gap-1 text-sm">
+                                                    <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
+                                                    <span className="font-medium text-gray-900 dark:text-gray-100">
+                                                        {product.average_rating ? Number(product.average_rating).toFixed(1) : '0.0'}
+                                                    </span>
+                                                    <span className="text-gray-500">({product.review_count})</span>
+                                                </div>
+                                            )}
                                         </div>
 
                                         {/* Actions */}
@@ -466,6 +477,15 @@ export default function ProductsIndex() {
                                             >
                                                 <Edit className="mx-auto h-4 w-4" />
                                             </Link>
+                                            {product.review_count > 0 && (
+                                                <Link
+                                                    href={`/seller/products/${product.id}/ratings`}
+                                                    className="flex-1 rounded-lg bg-yellow-100 px-3 py-2 text-center text-xs font-medium text-yellow-700 hover:bg-yellow-200 dark:bg-yellow-900 dark:text-yellow-300"
+                                                    title="View Ratings"
+                                                >
+                                                    <Star className="mx-auto h-4 w-4" />
+                                                </Link>
+                                            )}
                                             <button
                                                 onClick={() => toggleStatus(product)}
                                                 className="flex-1 rounded-lg bg-green-100 px-3 py-2 text-center text-xs font-medium text-green-700 hover:bg-green-200 dark:bg-green-900 dark:text-green-300"
@@ -519,6 +539,9 @@ export default function ProductsIndex() {
                                                 </th>
                                                 <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">
                                                     Status
+                                                </th>
+                                                <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">
+                                                    Rating
                                                 </th>
                                                 <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">
                                                     <button
@@ -588,6 +611,20 @@ export default function ProductsIndex() {
                                                             </span>
                                                             {product.is_featured && <Star className="h-4 w-4 text-yellow-500" />}
                                                         </div>
+                                                    </td>
+                                                    <td className="px-6 py-4 whitespace-nowrap">
+                                                        {product.review_count > 0 ? (
+                                                            <Link
+                                                                href={`/seller/products/${product.id}/ratings`}
+                                                                className="flex items-center gap-1 text-sm hover:text-blue-600"
+                                                            >
+                                                                <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
+                                                                <span className="font-medium">{product.average_rating ? Number(product.average_rating).toFixed(1) : '0.0'}</span>
+                                                                <span className="text-gray-500">({product.review_count})</span>
+                                                            </Link>
+                                                        ) : (
+                                                            <span className="text-sm text-gray-400">No reviews</span>
+                                                        )}
                                                     </td>
                                                     <td className="px-6 py-4 text-sm whitespace-nowrap text-gray-500">
                                                         {new Date(product.created_at).toLocaleDateString()}

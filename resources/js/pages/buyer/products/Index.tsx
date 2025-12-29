@@ -1,8 +1,9 @@
 import { Product as GlobalProduct } from '@/types';
-import { Head, Link, router } from '@inertiajs/react';
-import { Eye, Filter, Grid, Info, List, Package, Search, ShoppingCart, Star, User } from 'lucide-react';
+import { Head, Link, router, usePage } from '@inertiajs/react';
+import { Eye, Filter, Grid, Info, List, MessageSquare, Package, Search, ShoppingCart, Star, User } from 'lucide-react';
 import React, { useState } from 'react';
 import AddToCartModal from '../../../components/AddToCartModal';
+import StartChatButton from '../../../components/StartChatButton';
 import Toast from '../../../components/Toast';
 import WishlistButton from '../../../components/WishlistButton';
 import { useCart } from '../../../contexts/CartContext';
@@ -71,6 +72,7 @@ export default function Index({ products, categories, filters, wishlistProductId
     const [modalProduct, setModalProduct] = useState<Product | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [modalMode, setModalMode] = useState<'cart' | 'buy'>('cart');
+    const { auth } = usePage<{ auth: { user?: { id: number; role: string } } }>().props;
 
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
@@ -103,10 +105,8 @@ export default function Index({ products, categories, filters, wishlistProductId
         e.stopPropagation();
         if (product.stock_status === 'out_of_stock') return;
 
-        // Open modal for quantity selection
-        setModalProduct(product);
-        setModalMode('buy');
-        setIsModalOpen(true);
+        // Redirect directly to checkout with this product only (no cart)
+        router.visit(`/buyer/checkout?buy_now=true&product_id=${product.id}&quantity=1`);
     };
 
     const handleModalAddToCart = async (quantity: number) => {

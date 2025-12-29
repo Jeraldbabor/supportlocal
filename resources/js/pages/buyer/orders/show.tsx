@@ -1,7 +1,8 @@
 import BuyerLayout from '@/layouts/BuyerLayout';
 import { formatPeso } from '@/utils/currency';
-import { Head, router } from '@inertiajs/react';
+import { Head, router, usePage } from '@inertiajs/react';
 import { ArrowLeft, CheckCircle, Clock, MapPin, MessageSquare, Package, User, XCircle } from 'lucide-react';
+import StartChatButton from '../../../components/StartChatButton';
 
 interface OrderItem {
     id: number;
@@ -37,6 +38,7 @@ interface OrderShowProps {
 }
 
 export default function OrderShow({ order }: OrderShowProps) {
+    const { auth } = usePage<{ auth: { user?: { id: number; role: string } } }>().props;
     const getStatusIcon = (status: string) => {
         switch (status) {
             case 'pending':
@@ -157,6 +159,18 @@ export default function OrderShow({ order }: OrderShowProps) {
                                 <p className="text-sm font-medium text-gray-700">Contact Email</p>
                                 <p className="text-gray-900">{order.seller?.email || 'Not available'}</p>
                             </div>
+                            {auth?.user && order.seller && auth.user.id !== order.seller.id && (
+                                <div className="pt-2">
+                                    <StartChatButton
+                                        userId={order.seller.id}
+                                        variant="outline"
+                                        className="w-full"
+                                    >
+                                        <MessageSquare className="mr-2 h-4 w-4" />
+                                        Contact Seller
+                                    </StartChatButton>
+                                </div>
+                            )}
                         </div>
                     </div>
 

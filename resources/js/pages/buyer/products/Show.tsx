@@ -37,6 +37,8 @@ interface Rating {
     rating: number;
     review: string | null;
     created_at: string;
+    seller_reply?: string | null;
+    seller_replied_at?: string | null;
     user: {
         id: number;
         name: string;
@@ -646,6 +648,22 @@ export default function Show({ product, relatedProducts, ratings: initialRatings
                                         </div>
                                     </div>
                                     {rating.review && <p className="mt-3 text-sm text-gray-700">{rating.review}</p>}
+                                    
+                                    {/* Seller Reply */}
+                                    {rating.seller_reply && (
+                                        <div className="mt-4 ml-12 rounded-lg border border-blue-200 bg-blue-50 p-3">
+                                            <div className="mb-2 flex items-center gap-2">
+                                                <Package className="h-4 w-4 text-blue-600" />
+                                                <span className="text-sm font-semibold text-blue-900">Seller's Reply</span>
+                                                {rating.seller_replied_at && (
+                                                    <span className="ml-auto text-xs text-blue-600">
+                                                        {new Date(rating.seller_replied_at).toLocaleDateString()}
+                                                    </span>
+                                                )}
+                                            </div>
+                                            <p className="text-sm text-blue-900">{rating.seller_reply}</p>
+                                        </div>
+                                    )}
                                 </div>
                             ))}
                         </div>

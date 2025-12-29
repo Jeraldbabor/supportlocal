@@ -6,6 +6,7 @@ import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { CartProvider } from './contexts/CartContext';
 import { initializeTheme } from './hooks/use-appearance';
+import './lib/echo'; // Initialize Echo for real-time features
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 

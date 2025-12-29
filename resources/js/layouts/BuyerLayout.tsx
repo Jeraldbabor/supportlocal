@@ -6,6 +6,7 @@ import { type SharedData } from '@/types';
 import { Link, router, usePage } from '@inertiajs/react';
 import { Bell, Briefcase, ChevronDown, Contact, Heart, House, LogOut, Menu, Package, Phone, ShoppingCart, User, X } from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react';
+import MessagesDropdown from '@/components/MessagesDropdown';
 
 interface BuyerLayoutProps {
     children: React.ReactNode;
@@ -157,6 +158,9 @@ function BuyerLayoutContent({ children, title }: BuyerLayoutProps) {
 
                         {/* Right side - User specific actions */}
                         <div className="flex items-center space-x-1">
+                            {/* Messages Dropdown */}
+                            <MessagesDropdown currentUserId={user.id} />
+
                             {/* Notifications */}
                             <Link
                                 href="/buyer/notifications"

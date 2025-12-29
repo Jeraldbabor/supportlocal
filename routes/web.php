@@ -88,6 +88,18 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/seller/products/{product}/duplicate', [App\Http\Controllers\Seller\ProductController::class, 'duplicate'])->name('seller.products.duplicate');
         Route::patch('/seller/products/{product}/inventory', [App\Http\Controllers\Seller\ProductController::class, 'updateInventory'])->name('seller.products.inventory.update');
 
+        // Product Rating Routes for Sellers
+        Route::get('/seller/ratings', [App\Http\Controllers\Seller\ProductRatingController::class, 'index'])->name('seller.ratings.index');
+        Route::get('/seller/products/{product}/ratings', [App\Http\Controllers\Seller\ProductRatingController::class, 'show'])->name('seller.products.ratings.show');
+        Route::get('/seller/products/{product}/ratings/api', [App\Http\Controllers\Seller\ProductRatingController::class, 'apiIndex'])->name('seller.products.ratings.api');
+        Route::post('/seller/products/{product}/ratings/{rating}/reply', [App\Http\Controllers\Seller\ProductRatingController::class, 'storeReply'])->name('seller.products.ratings.reply.store');
+        Route::delete('/seller/products/{product}/ratings/{rating}/reply', [App\Http\Controllers\Seller\ProductRatingController::class, 'deleteReply'])->name('seller.products.ratings.reply.delete');
+
+        // Seller Rating Routes (ratings on the seller themselves)
+        Route::get('/seller/seller-ratings', [App\Http\Controllers\Seller\SellerRatingController::class, 'index'])->name('seller.seller-ratings.index');
+        Route::post('/seller/seller-ratings/{rating}/reply', [App\Http\Controllers\Seller\SellerRatingController::class, 'storeReply'])->name('seller.seller-ratings.reply.store');
+        Route::delete('/seller/seller-ratings/{rating}/reply', [App\Http\Controllers\Seller\SellerRatingController::class, 'deleteReply'])->name('seller.seller-ratings.reply.delete');
+
         Route::get('/seller/dashboard', [App\Http\Controllers\Seller\DashboardController::class, 'index'])->name('seller.dashboard');
 
         // Order Management Routes
@@ -345,6 +357,22 @@ Route::middleware('auth')->group(function () {
     // Profile completion tracking routes
     Route::post('/profile/dismiss-completion-reminder', [App\Http\Controllers\ProfileController::class, 'dismissProfileCompletionReminder'])->name('user.profile.dismiss-completion-reminder');
     Route::get('/profile/completion-status', [App\Http\Controllers\ProfileController::class, 'getProfileCompletionStatus'])->name('user.profile.completion-status');
+
+    // Chat routes
+    Route::prefix('chat')->name('chat.')->group(function () {
+        Route::get('/', [App\Http\Controllers\ChatController::class, 'index'])->name('index');
+        Route::post('/conversation', [App\Http\Controllers\ChatController::class, 'getOrCreateConversation'])->name('conversation.create');
+        Route::get('/conversation/{conversationId}/messages', [App\Http\Controllers\ChatController::class, 'getMessages'])->name('conversation.messages');
+        Route::post('/conversation/{conversationId}/message', [App\Http\Controllers\ChatController::class, 'sendMessage'])->name('conversation.send');
+        Route::post('/conversation/{conversationId}/read', [App\Http\Controllers\ChatController::class, 'markAsRead'])->name('conversation.read');
+        Route::post('/conversation/{conversationId}/typing/start', [App\Http\Controllers\ChatController::class, 'startTyping'])->name('conversation.typing.start');
+        Route::post('/conversation/{conversationId}/typing/stop', [App\Http\Controllers\ChatController::class, 'stopTyping'])->name('conversation.typing.stop');
+        Route::delete('/conversations/{conversationId}', [App\Http\Controllers\ChatController::class, 'deleteConversation'])->name('conversation.delete');
+    });
+
+    // API routes for chat
+    Route::get('/api/chat/unread-count', [App\Http\Controllers\ChatController::class, 'getUnreadCount'])->name('api.chat.unread-count');
+    Route::get('/api/chat/conversations', [App\Http\Controllers\ChatController::class, 'getConversations'])->name('api.chat.conversations');
 });
 
 require __DIR__.'/settings.php';

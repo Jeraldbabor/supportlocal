@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Buyer;
 
+use App\Helpers\WishlistHelper;
 use App\Http\Controllers\Controller;
 use App\Models\Product;
 use App\Models\SellerApplication;
@@ -174,6 +175,9 @@ class SellerController extends Controller
                 ->first();
         }
 
+        // Get wishlist product IDs
+        $wishlistProductIds = WishlistHelper::getProductIds();
+
         return Inertia::render('buyer/sellers/Show', [
             'seller' => $seller,
             'products' => $products,
@@ -185,6 +189,7 @@ class SellerController extends Controller
                 'direction' => $direction,
             ],
             'userRating' => $userRating,
+            'wishlistProductIds' => $wishlistProductIds,
         ]);
     }
 }

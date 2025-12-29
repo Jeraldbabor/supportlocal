@@ -42,6 +42,18 @@ function NotificationsContent({ notifications }: NotificationsProps) {
         markAsRead(notificationId);
     };
 
+    const handleNotificationClick = (notification: Notification) => {
+        // Mark as read first
+        if (!notification.read_at) {
+            markAsRead(notification.id);
+        }
+
+        // Navigate to the action URL if it exists
+        if (notification.data.action_url) {
+            router.visit(notification.data.action_url);
+        }
+    };
+
     const handleMarkAllAsRead = () => {
         markAllAsRead();
     };
@@ -88,6 +100,10 @@ function NotificationsContent({ notifications }: NotificationsProps) {
         switch (type) {
             case 'App\\Notifications\\OrderStatusUpdated':
                 return <Bell className="h-5 w-5 text-amber-700" />;
+            case 'App\\Notifications\\ProductRatingReplyReceived':
+                return <Bell className="h-5 w-5 text-blue-600" />;
+            case 'App\\Notifications\\SellerRatingReplyReceived':
+                return <Bell className="h-5 w-5 text-yellow-600" />;
             default:
                 return <Bell className="h-5 w-5 text-gray-600" />;
         }
@@ -148,11 +164,12 @@ function NotificationsContent({ notifications }: NotificationsProps) {
                             notifications.data.map((notification) => (
                                 <div
                                     key={notification.id}
-                                    className={`px-6 py-4 hover:bg-gray-50 dark:hover:bg-gray-700 ${
+                                    className={`px-6 py-4 ${
                                         !notification.read_at
                                             ? 'border-l-4 border-amber-400 bg-gradient-to-r from-amber-50 to-orange-50 dark:bg-amber-900/20'
                                             : ''
-                                    }`}
+                                    } ${notification.data.action_url ? 'cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700' : 'hover:bg-gray-50 dark:hover:bg-gray-700'}`}
+                                    onClick={() => notification.data.action_url && handleNotificationClick(notification)}
                                 >
                                     <div className="flex items-start space-x-3">
                                         <div className="mt-1 flex-shrink-0">{getNotificationIcon(notification.type)}</div>
@@ -184,7 +201,10 @@ function NotificationsContent({ notifications }: NotificationsProps) {
 
                                                 <div className="flex items-center space-x-2">
                                                     <button
-                                                        onClick={() => setShowDeleteConfirm(notification.id)}
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            setShowDeleteConfirm(notification.id);
+                                                        }}
                                                         disabled={deletingId === notification.id}
                                                         className="rounded-full p-1 text-red-500 transition-colors hover:bg-red-50 hover:text-red-700 disabled:opacity-50"
                                                         title="Delete notification"
@@ -193,7 +213,10 @@ function NotificationsContent({ notifications }: NotificationsProps) {
                                                     </button>
                                                     {!notification.read_at && (
                                                         <button
-                                                            onClick={() => handleMarkAsRead(notification.id)}
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                handleMarkAsRead(notification.id);
+                                                            }}
                                                             className="text-xs font-medium text-amber-700 hover:text-amber-900"
                                                         >
                                                             Mark as read

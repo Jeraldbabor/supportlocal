@@ -1,9 +1,10 @@
 import { Product as GlobalProduct } from '@/types';
 import { Head, Link, router, usePage } from '@inertiajs/react';
-import { Eye, Filter, Grid, Info, List, Package, Search, ShoppingCart, Star, User } from 'lucide-react';
+import { Eye, Filter, Grid, Info, List, MessageSquare, Package, Search, ShoppingCart, Star, User } from 'lucide-react';
 import React, { useState } from 'react';
 import AddToCartModal from '../components/AddToCartModal';
 import AuthRequiredModal from '../components/AuthRequiredModal';
+import StartChatButton from '../components/StartChatButton';
 import Toast from '../components/Toast';
 import WishlistButton from '../components/WishlistButton';
 import { useCart } from '../contexts/CartContext';
@@ -74,8 +75,8 @@ export default function Products({ products, categories = [], wishlistProductIds
     const [showAuthModal, setShowAuthModal] = useState(false);
     const [authModalAction, setAuthModalAction] = useState<'cart' | 'buy'>('cart');
     const [authModalProduct, setAuthModalProduct] = useState<string>('');
-    const { props } = usePage<{ auth?: { user?: unknown } }>();
-    const isAuthenticated = !!props?.auth?.user;
+    const { auth } = usePage<{ auth: { user?: { id: number; role: string } } }>().props;
+    const isAuthenticated = !!auth?.user;
 
     const productList = products?.data || [];
 
@@ -467,6 +468,21 @@ export default function Products({ products, categories = [], wishlistProductIds
                                                     Buy Now
                                                 </button>
                                             </div>
+                                            
+                                            {/* Contact Seller Button */}
+                                            {auth?.user && product.seller && auth.user.id !== product.seller.id && (
+                                                <div onClick={(e) => e.stopPropagation()}>
+                                                    <StartChatButton
+                                                        userId={product.seller.id}
+                                                        productId={product.id}
+                                                        variant="outline"
+                                                        className="w-full text-sm"
+                                                    >
+                                                        <MessageSquare className="mr-1 h-4 w-4" />
+                                                        Contact Seller
+                                                    </StartChatButton>
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
                                 </div>

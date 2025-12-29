@@ -175,6 +175,8 @@ class PublicController extends Controller
                     'id' => $rating->id,
                     'rating' => $rating->rating,
                     'review' => $rating->review,
+                    'seller_reply' => $rating->seller_reply,
+                    'seller_replied_at' => $rating->seller_replied_at ? $rating->seller_replied_at->format('M d, Y') : null,
                     'created_at' => $rating->created_at->format('M d, Y'),
                     'buyer_name' => $rating->user->name ?? 'Anonymous',
                     'buyer_avatar' => $rating->user->profile_picture
@@ -406,9 +408,35 @@ class PublicController extends Controller
             ];
         });
 
+        // Get seller ratings with buyer comments and seller replies
+        $ratings = $artisan->sellerRatings()
+            ->with(['user' => function ($query) {
+                $query->select('id', 'name', 'profile_picture');
+            }])
+            ->whereNotNull('review')
+            ->orderBy('created_at', 'desc')
+            ->take(10)
+            ->get()
+            ->map(function ($rating) {
+                return [
+                    'id' => $rating->id,
+                    'rating' => $rating->rating,
+                    'review' => $rating->review,
+                    'seller_reply' => $rating->seller_reply,
+                    'seller_replied_at' => $rating->seller_replied_at,
+                    'created_at' => $rating->created_at->format('M d, Y'),
+                    'user' => [
+                        'id' => $rating->user->id,
+                        'name' => $rating->user->name,
+                        'avatar_url' => $rating->user->avatar_url ?? null,
+                    ],
+                ];
+            });
+
         return Inertia::render('ArtisanProfile', [
             'artisan' => $artisanData,
             'products' => $products,
+            'ratings' => $ratings,
             'filters' => array_merge([
                 'search' => null,
                 'sort' => 'name',

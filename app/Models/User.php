@@ -237,6 +237,41 @@ class User extends Authenticatable
     }
 
     /**
+     * Get conversations where user is the buyer.
+     */
+    public function buyerConversations()
+    {
+        return $this->hasMany(Conversation::class, 'buyer_id');
+    }
+
+    /**
+     * Get conversations where user is the seller.
+     */
+    public function sellerConversations()
+    {
+        return $this->hasMany(Conversation::class, 'seller_id');
+    }
+
+    /**
+     * Get all conversations for the user (both buyer and seller).
+     */
+    public function conversations()
+    {
+        return Conversation::where('buyer_id', $this->id)
+            ->orWhere('seller_id', $this->id)
+            ->orderBy('last_message_at', 'desc')
+            ->get();
+    }
+
+    /**
+     * Get messages sent by the user.
+     */
+    public function sentMessages()
+    {
+        return $this->hasMany(Message::class, 'sender_id');
+    }
+
+    /**
      * Check if user is active
      */
     public function isActive(): bool

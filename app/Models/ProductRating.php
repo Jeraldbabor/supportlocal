@@ -18,6 +18,8 @@ class ProductRating extends Model
         'user_id',
         'rating',
         'review',
+        'seller_reply',
+        'seller_replied_at',
     ];
 
     /**
@@ -25,6 +27,7 @@ class ProductRating extends Model
      */
     protected $casts = [
         'rating' => 'integer',
+        'seller_replied_at' => 'datetime',
     ];
 
     /**

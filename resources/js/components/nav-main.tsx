@@ -2,7 +2,7 @@ import { SidebarGroup, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, Sideba
 import { type NavItem } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
 
-export function NavMain({ items = [] }: { items: NavItem[] }) {
+export function NavMain({ items = [], unreadMessagesCount = 0 }: { items: NavItem[]; unreadMessagesCount?: number }) {
     const page = usePage();
 
     // Function to determine if a nav item is active
@@ -40,6 +40,11 @@ export function NavMain({ items = [] }: { items: NavItem[] }) {
                             <Link href={item.href} prefetch className="flex items-center gap-3 px-3 py-2.5">
                                 {item.icon && <item.icon className="h-5 w-5 shrink-0 transition-transform duration-200 group-hover:scale-110" />}
                                 <span className="truncate font-medium">{item.title}</span>
+                                {item.title === 'Messages' && unreadMessagesCount > 0 && (
+                                    <span className="ml-auto flex h-5 w-5 items-center justify-center rounded-full bg-blue-500 text-xs font-semibold text-white group-data-[active=true]:bg-white group-data-[active=true]:text-primary">
+                                        {unreadMessagesCount > 9 ? '9+' : unreadMessagesCount}
+                                    </span>
+                                )}
                             </Link>
                         </SidebarMenuButton>
                     </SidebarMenuItem>
