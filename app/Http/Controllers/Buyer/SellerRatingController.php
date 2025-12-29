@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Buyer;
 use App\Http\Controllers\Controller;
 use App\Models\SellerRating;
 use App\Models\User;
+use App\Notifications\NewSellerRatingReceived;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -18,6 +19,7 @@ class SellerRatingController extends Controller
     {
         $ratings = $seller->sellerRatings()
             ->with('user:id,name,profile_picture')
+            ->select('id', 'seller_id', 'user_id', 'rating', 'review', 'seller_reply', 'seller_replied_at', 'created_at')
             ->orderBy('created_at', 'desc')
             ->paginate(10);
 
@@ -96,6 +98,12 @@ class SellerRatingController extends Controller
 
         // Load user relationship
         $rating->load('user:id,name,profile_picture');
+
+        // Notify the seller
+        $rating->load('seller');
+        if ($rating->seller) {
+            $rating->seller->notify(new NewSellerRatingReceived($rating));
+        }
 
         return response()->json([
             'message' => 'Rating submitted successfully!',

@@ -1,6 +1,7 @@
-import { Link, router } from '@inertiajs/react';
-import { Eye, Filter, MapPin, Search, Star, User } from 'lucide-react';
+import { Link, router, usePage } from '@inertiajs/react';
+import { Eye, Filter, MapPin, MessageSquare, Search, Star, User } from 'lucide-react';
 import React, { useState } from 'react';
+import StartChatButton from '../components/StartChatButton';
 import MainLayout from '../layouts/MainLayout';
 
 interface Artisan {
@@ -41,6 +42,7 @@ interface ArtisansProps {
 
 export default function Artisans({ artisans, filters = {} }: ArtisansProps) {
     const [searchTerm, setSearchTerm] = useState(filters.search || '');
+    const { auth } = usePage<{ auth: { user?: { id: number; role: string } } }>().props;
 
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
@@ -210,12 +212,23 @@ export default function Artisans({ artisans, filters = {} }: ArtisansProps) {
                                         </div>
 
                                         <div className="mt-4 border-t border-gray-100 pt-4">
-                                            <div className="flex items-center justify-between text-sm text-gray-500">
-                                                <span>Member since {artisan.created_at ? new Date(artisan.created_at).getFullYear() : 'N/A'}</span>
-                                                <div className="flex items-center">
-                                                    <Eye className="mr-1 h-3 w-3" />
-                                                    View Profile
-                                                </div>
+                                            <div className="flex items-center justify-between gap-2">
+                                                <span className="text-sm text-gray-500">Member since {artisan.created_at ? new Date(artisan.created_at).getFullYear() : 'N/A'}</span>
+                                                {auth?.user && auth.user.id !== artisan.id ? (
+                                                    <StartChatButton
+                                                        userId={artisan.id}
+                                                        variant="ghost"
+                                                        className="h-8 text-xs"
+                                                    >
+                                                        <MessageSquare className="mr-1 h-3 w-3" />
+                                                        Message
+                                                    </StartChatButton>
+                                                ) : (
+                                                    <div className="flex items-center text-sm text-gray-500">
+                                                        <Eye className="mr-1 h-3 w-3" />
+                                                        View Profile
+                                                    </div>
+                                                )}
                                             </div>
                                         </div>
                                     </div>

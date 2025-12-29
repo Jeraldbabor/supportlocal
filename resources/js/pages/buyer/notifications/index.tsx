@@ -37,12 +37,36 @@ function NotificationsContent({ notifications }: NotificationsProps) {
     const [isClearing, setIsClearing] = useState(false);
     const [deletingId, setDeletingId] = useState<string | null>(null);
     const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null);
+    const [localReadIds, setLocalReadIds] = useState<Set<string>>(new Set());
+
+    // Check if notification is read (either from server or locally marked)
+    const isRead = (notification: Notification) => {
+        return notification.read_at !== null || localReadIds.has(notification.id);
+    };
 
     const handleMarkAsRead = (notificationId: string) => {
+        // Immediately update local state for instant feedback
+        setLocalReadIds((prev) => new Set(prev).add(notificationId));
         markAsRead(notificationId);
     };
 
-    const handleMarkAllAsRead = () => {
+    const handleNotificationClick = (notification: Notification) => {
+        // Mark as read first (with immediate visual feedback)
+        if (!isRead(notification)) {
+            setLocalReadIds((prev) => new Set(prev).add(notification.id));
+            markAsRead(notification.id);
+        }
+
+        // Navigate to the action URL if it exists
+        if (notification.data.action_url) {
+            router.visit(notification.data.action_url);
+        }
+    };
+
+    const handleMarkAllAsReadLocal = () => {
+        // Mark all as read locally for instant feedback
+        const allIds = new Set(notifications.data.map((n) => n.id));
+        setLocalReadIds(allIds);
         markAllAsRead();
     };
 
@@ -88,12 +112,17 @@ function NotificationsContent({ notifications }: NotificationsProps) {
         switch (type) {
             case 'App\\Notifications\\OrderStatusUpdated':
                 return <Bell className="h-5 w-5 text-amber-700" />;
+            case 'App\\Notifications\\ProductRatingReplyReceived':
+                return <Bell className="h-5 w-5 text-blue-600" />;
+            case 'App\\Notifications\\SellerRatingReplyReceived':
+                return <Bell className="h-5 w-5 text-yellow-600" />;
             default:
                 return <Bell className="h-5 w-5 text-gray-600" />;
         }
     };
 
-    const unreadCount = notifications.data.filter((n) => !n.read_at).length;
+    // Calculate unread count considering local state
+    const unreadCount = notifications.data.filter((n) => !isRead(n)).length;
 
     return (
         <BuyerLayout>
@@ -126,7 +155,7 @@ function NotificationsContent({ notifications }: NotificationsProps) {
                                     </button>
                                 )}
                                 {unreadCount > 0 && (
-                                    <button onClick={handleMarkAllAsRead} className="text-sm font-medium text-amber-700 hover:text-amber-900">
+                                    <button onClick={handleMarkAllAsReadLocal} className="text-sm font-medium text-amber-700 hover:text-amber-900">
                                         Mark all as read
                                     </button>
                                 )}
@@ -148,11 +177,12 @@ function NotificationsContent({ notifications }: NotificationsProps) {
                             notifications.data.map((notification) => (
                                 <div
                                     key={notification.id}
-                                    className={`px-6 py-4 hover:bg-gray-50 dark:hover:bg-gray-700 ${
-                                        !notification.read_at
+                                    className={`px-6 py-4 transition-all duration-200 ${
+                                        !isRead(notification)
                                             ? 'border-l-4 border-amber-400 bg-gradient-to-r from-amber-50 to-orange-50 dark:bg-amber-900/20'
-                                            : ''
-                                    }`}
+                                            : 'border-l-4 border-transparent'
+                                    } ${notification.data.action_url ? 'cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700' : 'hover:bg-gray-50 dark:hover:bg-gray-700'}`}
+                                    onClick={() => notification.data.action_url && handleNotificationClick(notification)}
                                 >
                                     <div className="flex items-start space-x-3">
                                         <div className="mt-1 flex-shrink-0">{getNotificationIcon(notification.type)}</div>
@@ -184,22 +214,28 @@ function NotificationsContent({ notifications }: NotificationsProps) {
 
                                                 <div className="flex items-center space-x-2">
                                                     <button
-                                                        onClick={() => setShowDeleteConfirm(notification.id)}
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            setShowDeleteConfirm(notification.id);
+                                                        }}
                                                         disabled={deletingId === notification.id}
                                                         className="rounded-full p-1 text-red-500 transition-colors hover:bg-red-50 hover:text-red-700 disabled:opacity-50"
                                                         title="Delete notification"
                                                     >
                                                         <X className="h-4 w-4" />
                                                     </button>
-                                                    {!notification.read_at && (
+                                                    {!isRead(notification) && (
                                                         <button
-                                                            onClick={() => handleMarkAsRead(notification.id)}
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                handleMarkAsRead(notification.id);
+                                                            }}
                                                             className="text-xs font-medium text-amber-700 hover:text-amber-900"
                                                         >
                                                             Mark as read
                                                         </button>
                                                     )}
-                                                    {notification.read_at && (
+                                                    {isRead(notification) && (
                                                         <span className="flex items-center text-xs text-green-600">
                                                             <Check className="mr-1 h-3 w-3" />
                                                             Read

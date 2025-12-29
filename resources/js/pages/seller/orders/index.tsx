@@ -31,6 +31,8 @@ interface OrderItem {
 
 interface Order {
     id: number;
+    subtotal: number;
+    shipping_fee: number;
     total_amount: number;
     status: string;
     payment_method: string;
@@ -295,6 +297,9 @@ export default function Orders({ orders }: OrdersProps) {
                                                     <p className="text-xl font-bold text-gray-900">{formatPeso(order.total_amount)}</p>
                                                     <p className="text-xs font-medium tracking-wide text-gray-500 uppercase">
                                                         {order.payment_method}
+                                                    </p>
+                                                    <p className="text-xs text-gray-400">
+                                                        {formatPeso(order.subtotal)} + {formatPeso(order.shipping_fee || 0)} shipping
                                                     </p>
                                                 </div>
                                             </div>

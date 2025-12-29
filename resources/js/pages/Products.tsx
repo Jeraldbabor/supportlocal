@@ -1,9 +1,10 @@
 import { Product as GlobalProduct } from '@/types';
 import { Head, Link, router, usePage } from '@inertiajs/react';
-import { Eye, Filter, Grid, Info, List, Package, Search, ShoppingCart, Star, User } from 'lucide-react';
+import { Eye, Filter, Grid, Info, List, MessageSquare, Package, Search, ShoppingCart, Star, User } from 'lucide-react';
 import React, { useState } from 'react';
 import AddToCartModal from '../components/AddToCartModal';
 import AuthRequiredModal from '../components/AuthRequiredModal';
+import StartChatButton from '../components/StartChatButton';
 import Toast from '../components/Toast';
 import WishlistButton from '../components/WishlistButton';
 import { useCart } from '../contexts/CartContext';
@@ -74,8 +75,8 @@ export default function Products({ products, categories = [], wishlistProductIds
     const [showAuthModal, setShowAuthModal] = useState(false);
     const [authModalAction, setAuthModalAction] = useState<'cart' | 'buy'>('cart');
     const [authModalProduct, setAuthModalProduct] = useState<string>('');
-    const { props } = usePage<{ auth?: { user?: unknown } }>();
-    const isAuthenticated = !!props?.auth?.user;
+    const { auth } = usePage<{ auth: { user?: { id: number; role: string } } }>().props;
+    const isAuthenticated = !!auth?.user;
 
     const productList = products?.data || [];
 
@@ -223,7 +224,7 @@ export default function Products({ products, categories = [], wishlistProductIds
                 </div>
 
                 <div className="mb-8">
-                    <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
+                    <div className="grid grid-cols-1 gap-4 md:grid-cols-5">
                         <form onSubmit={handleSearch} className="col-span-1 md:col-span-2">
                             <div className="relative">
                                 <Search className="absolute top-3 left-3 h-4 w-4 text-gray-400" />
@@ -248,6 +249,18 @@ export default function Products({ products, categories = [], wishlistProductIds
                                     {category.name}
                                 </option>
                             ))}
+                        </select>
+
+                        <select
+                            onChange={(e) => handleFilter('sort', e.target.value)}
+                            value={filters.sort || 'name'}
+                            className="rounded-lg border border-gray-300 px-3 py-2 focus:border-primary focus:ring-primary"
+                        >
+                            <option value="name">Sort by Name</option>
+                            <option value="price-low">Price: Low to High</option>
+                            <option value="price-high">Price: High to Low</option>
+                            <option value="rating">Highest Rated</option>
+                            <option value="newest">Newest</option>
                         </select>
 
                         <div className="flex items-center gap-2">
@@ -467,6 +480,21 @@ export default function Products({ products, categories = [], wishlistProductIds
                                                     Buy Now
                                                 </button>
                                             </div>
+                                            
+                                            {/* Contact Seller Button */}
+                                            {auth?.user && product.seller && auth.user.id !== product.seller.id && (
+                                                <div onClick={(e) => e.stopPropagation()}>
+                                                    <StartChatButton
+                                                        userId={product.seller.id}
+                                                        productId={product.id}
+                                                        variant="outline"
+                                                        className="w-full text-sm"
+                                                    >
+                                                        <MessageSquare className="mr-1 h-4 w-4" />
+                                                        Contact Seller
+                                                    </StartChatButton>
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
                                 </div>

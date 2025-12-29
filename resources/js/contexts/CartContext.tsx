@@ -14,6 +14,7 @@ export interface CartItem {
     };
     max_quantity: number;
     stock_quantity: number;
+    shipping_cost?: number;
 }
 
 interface CartContextType {

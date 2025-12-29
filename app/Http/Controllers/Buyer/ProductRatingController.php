@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Buyer;
 use App\Http\Controllers\Controller;
 use App\Models\Product;
 use App\Models\ProductRating;
+use App\Notifications\NewProductRatingReceived;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -81,6 +82,12 @@ class ProductRatingController extends Controller
 
         // Load user relationship
         $rating->load('user:id,name,profile_picture');
+
+        // Notify the seller
+        $rating->load('product.seller');
+        if ($rating->product->seller) {
+            $rating->product->seller->notify(new NewProductRatingReceived($rating));
+        }
 
         return response()->json([
             'message' => 'Rating submitted successfully!',

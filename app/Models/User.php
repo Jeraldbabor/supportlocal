@@ -2,12 +2,12 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-class User extends Authenticatable
+class User extends Authenticatable implements MustVerifyEmail
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
@@ -234,6 +234,41 @@ class User extends Authenticatable
     public function sellerApplication()
     {
         return $this->hasOne(SellerApplication::class);
+    }
+
+    /**
+     * Get conversations where user is the buyer.
+     */
+    public function buyerConversations()
+    {
+        return $this->hasMany(Conversation::class, 'buyer_id');
+    }
+
+    /**
+     * Get conversations where user is the seller.
+     */
+    public function sellerConversations()
+    {
+        return $this->hasMany(Conversation::class, 'seller_id');
+    }
+
+    /**
+     * Get all conversations for the user (both buyer and seller).
+     */
+    public function conversations()
+    {
+        return Conversation::where('buyer_id', $this->id)
+            ->orWhere('seller_id', $this->id)
+            ->orderBy('last_message_at', 'desc')
+            ->get();
+    }
+
+    /**
+     * Get messages sent by the user.
+     */
+    public function sentMessages()
+    {
+        return $this->hasMany(Message::class, 'sender_id');
     }
 
     /**

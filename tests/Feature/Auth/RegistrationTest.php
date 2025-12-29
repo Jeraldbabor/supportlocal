@@ -17,6 +17,6 @@ test('new users can register', function () {
     ]);
 
     $this->assertAuthenticated();
-    // New users are registered as buyers and redirected to buyer dashboard
-    $response->assertRedirect('/buyer/dashboard');
+    // New users are registered as buyers and redirected to email verification
+    $response->assertRedirect(route('verification.notice'));
 });

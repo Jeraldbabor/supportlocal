@@ -1,6 +1,7 @@
-import { Link } from '@inertiajs/react';
+import { Link, usePage } from '@inertiajs/react';
 import { ArrowLeft, Minus, Plus, Shield, ShoppingCart, Star, Truck } from 'lucide-react';
 import { useState } from 'react';
+import StartChatButton from '../components/StartChatButton';
 import WishlistButton from '../components/WishlistButton';
 import MainLayout from '../layouts/MainLayout';
 
@@ -40,6 +41,8 @@ interface Review {
     id: number;
     rating: number;
     review: string;
+    seller_reply?: string;
+    seller_replied_at?: string;
     created_at: string;
     buyer_name: string;
     buyer_avatar: string;
@@ -55,6 +58,7 @@ interface ProductDetailProps {
 export default function ProductDetail({ product, relatedProducts = [], reviews = [], inWishlist = false }: ProductDetailProps) {
     const [selectedImage, setSelectedImage] = useState(0);
     const [quantity, setQuantity] = useState(1);
+    const { auth } = usePage<{ auth: { user?: { id: number; role: string } } }>().props;
 
     if (!product) {
         return (
@@ -203,16 +207,28 @@ export default function ProductDetail({ product, relatedProducts = [], reviews =
                                 <span className="text-sm text-gray-600">{product.stockCount} available</span>
                             </div>
 
-                            <div className="flex space-x-4">
-                                <button
-                                    onClick={() => addToCart()}
-                                    disabled={!product.inStock}
-                                    className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-amber-600 to-orange-600 px-6 py-3 font-semibold text-white shadow-md transition-all duration-200 hover:scale-105 hover:from-amber-700 hover:to-orange-700 hover:shadow-lg active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:scale-100"
-                                >
-                                    <ShoppingCart className="h-5 w-5" />
-                                    {product.inStock ? 'Add to Cart' : 'Out of Stock'}
-                                </button>
-                                <WishlistButton productId={product.id} initialInWishlist={inWishlist} variant="button" size="lg" />
+                            <div className="flex flex-col space-y-3">
+                                <div className="flex space-x-4">
+                                    <button
+                                        onClick={() => addToCart()}
+                                        disabled={!product.inStock}
+                                        className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-amber-600 to-orange-600 px-6 py-3 font-semibold text-white shadow-md transition-all duration-200 hover:scale-105 hover:from-amber-700 hover:to-orange-700 hover:shadow-lg active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:scale-100"
+                                    >
+                                        <ShoppingCart className="h-5 w-5" />
+                                        {product.inStock ? 'Add to Cart' : 'Out of Stock'}
+                                    </button>
+                                    <WishlistButton productId={product.id} initialInWishlist={inWishlist} variant="button" size="lg" />
+                                </div>
+                                {auth?.user && auth.user.id !== product.artisan_id && (
+                                    <StartChatButton
+                                        userId={product.artisan_id}
+                                        productId={product.id}
+                                        variant="outline"
+                                        className="w-full"
+                                    >
+                                        Contact Seller
+                                    </StartChatButton>
+                                )}
                             </div>
                         </div>
 
@@ -284,6 +300,22 @@ export default function ProductDetail({ product, relatedProducts = [], reviews =
                                         </div>
                                     </div>
                                     {review.review && <p className="leading-relaxed text-gray-700">{review.review}</p>}
+                                    
+                                    {/* Seller Reply */}
+                                    {review.seller_reply && (
+                                        <div className="mt-4 ml-14 rounded-lg border border-blue-200 bg-blue-50 p-4">
+                                            <div className="mb-2 flex items-center gap-2">
+                                                <ShoppingCart className="h-4 w-4 text-blue-600" />
+                                                <span className="text-sm font-semibold text-blue-900">Seller's Reply</span>
+                                                {review.seller_replied_at && (
+                                                    <span className="ml-auto text-xs text-blue-600">
+                                                        {new Date(review.seller_replied_at).toLocaleDateString()}
+                                                    </span>
+                                                )}
+                                            </div>
+                                            <p className="text-sm text-blue-900">{review.seller_reply}</p>
+                                        </div>
+                                    )}
                                 </div>
                             ))}
                         </div>

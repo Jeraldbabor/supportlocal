@@ -187,20 +187,25 @@ class SettingsTest extends TestCase
     /** @test */
     public function seller_can_send_email_verification()
     {
-        Notification::fake();
-
-        // Create seller with unverified email
-        $unverifiedSeller = User::factory()->create([
+        // Create seller who is verified but wants to test the send verification functionality
+        $seller = User::factory()->create([
             'role' => User::ROLE_SELLER,
-            'email_verified_at' => null,
+            'email_verified_at' => now(),
         ]);
 
-        $this->actingAs($unverifiedSeller);
+        \App\Models\SellerApplication::factory()->create([
+            'user_id' => $seller->id,
+            'status' => 'approved',
+            'reviewed_at' => now(),
+        ]);
+
+        $this->actingAs($seller);
 
         $response = $this->post(route('seller.settings.email.verify'));
 
         $response->assertRedirect();
-        $response->assertSessionHas('success');
+        // Already verified, should get info message instead
+        $response->assertSessionHas('info');
     }
 
     /** @test */

@@ -1,11 +1,13 @@
 import { Product as GlobalProduct } from '@/types';
-import { Head, Link, router } from '@inertiajs/react';
+import { Head, Link, router, usePage } from '@inertiajs/react';
 import axios from 'axios';
 import { ArrowLeft, Calendar, Eye, Mail, MapPin, MessageSquare, Package, Phone, ShoppingCart, Star, Trash2, User } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import AddToCartModal from '../../../components/AddToCartModal';
 import SellerRatingModal from '../../../components/SellerRatingModal';
+import StartChatButton from '../../../components/StartChatButton';
 import Toast from '../../../components/Toast';
+import WishlistButton from '../../../components/WishlistButton';
 import { useCart } from '../../../contexts/CartContext';
 import BuyerLayout from '../../../layouts/BuyerLayout';
 
@@ -46,6 +48,8 @@ interface SellerRating {
     id: number;
     rating: number;
     review: string | null;
+    seller_reply?: string | null;
+    seller_replied_at?: string | null;
     created_at: string;
     user: {
         id: number;
@@ -69,13 +73,15 @@ interface SellerShowProps {
         direction: string;
     };
     userRating?: SellerRating | null;
+    wishlistProductIds?: number[];
 }
 
-export default function Show({ seller, products, filters, userRating: initialUserRating }: SellerShowProps) {
+export default function Show({ seller, products, filters, userRating: initialUserRating, wishlistProductIds = [] }: SellerShowProps) {
     const [searchTerm, setSearchTerm] = useState(filters.search || '');
     const [showToast, setShowToast] = useState(false);
     const [toastMessage, setToastMessage] = useState('');
     const { addToCart, isLoading } = useCart();
+    const { auth } = usePage<{ auth: { user?: { id: number; role: string } } }>().props;
     const [modalProduct, setModalProduct] = useState<Product | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [modalMode, setModalMode] = useState<'cart' | 'buy'>('cart');
@@ -115,10 +121,8 @@ export default function Show({ seller, products, filters, userRating: initialUse
         e.stopPropagation();
         if (product.stock_status === 'out_of_stock') return;
 
-        // Open modal for quantity selection
-        setModalProduct(product);
-        setModalMode('buy');
-        setIsModalOpen(true);
+        // Redirect directly to checkout with this product only (no cart)
+        router.visit(`/buyer/checkout?buy_now=true&product_id=${product.id}&quantity=1`);
     };
 
     const handleModalAddToCart = async (quantity: number) => {
@@ -290,6 +294,19 @@ export default function Show({ seller, products, filters, userRating: initialUse
                                         <div className="mt-2 flex items-center text-sm text-gray-500">
                                             <MapPin className="mr-1 h-4 w-4" />
                                             {seller.location}
+                                        </div>
+                                    )}
+                                    
+                                    {auth?.user && auth.user.id !== seller.id && (
+                                        <div className="mt-3">
+                                            <StartChatButton
+                                                userId={seller.id}
+                                                variant="default"
+                                                className=""
+                                            >
+                                                <MessageSquare className="mr-1 h-4 w-4" />
+                                                Contact Seller
+                                            </StartChatButton>
                                         </div>
                                     )}
                                 </div>
@@ -469,6 +486,22 @@ export default function Show({ seller, products, filters, userRating: initialUse
                                             </div>
                                         </div>
                                         {rating.review && <p className="ml-13 text-sm text-gray-700">{rating.review}</p>}
+                                        
+                                        {/* Seller Reply */}
+                                        {rating.seller_reply && (
+                                            <div className="mt-3 ml-13 rounded-lg border border-blue-200 bg-blue-50 p-3">
+                                                <div className="mb-2 flex items-center gap-2">
+                                                    <Package className="h-4 w-4 text-blue-600" />
+                                                    <span className="text-sm font-semibold text-blue-900">Seller's Reply</span>
+                                                    {rating.seller_replied_at && (
+                                                        <span className="ml-auto text-xs text-blue-600">
+                                                            {new Date(rating.seller_replied_at).toLocaleDateString()}
+                                                        </span>
+                                                    )}
+                                                </div>
+                                                <p className="text-sm text-blue-900">{rating.seller_reply}</p>
+                                            </div>
+                                        )}
                                     </div>
                                 ))}
                             </div>
@@ -526,71 +559,129 @@ export default function Show({ seller, products, filters, userRating: initialUse
 
                     {products.data.length > 0 ? (
                         <>
-                            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                            <div className="mb-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                                 {products.data.map((product) => (
                                     <div
                                         key={product.id}
-                                        onClick={() => handleProductClick(product.id)}
-                                        className="group cursor-pointer overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm transition-all hover:shadow-lg"
+                                        className="group relative cursor-pointer overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm transition-all hover:border-primary/20 hover:shadow-xl"
                                     >
-                                        <div className="relative aspect-square overflow-hidden bg-gray-100">
+                                        {/* Product Image */}
+                                        <div className="relative aspect-square overflow-hidden rounded-t-xl bg-gray-100">
                                             {product.primary_image ? (
                                                 <img
                                                     src={`/storage/${product.primary_image}`}
                                                     alt={product.name}
-                                                    className="h-full w-full object-cover transition-transform group-hover:scale-105"
+                                                    className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-110"
+                                                    onClick={() => handleProductClick(product.id)}
                                                 />
                                             ) : (
-                                                <div className="flex h-full w-full items-center justify-center bg-gray-200">
-                                                    <Package className="h-12 w-12 text-gray-400" />
+                                                <div
+                                                    className="flex h-full w-full items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200"
+                                                    onClick={() => handleProductClick(product.id)}
+                                                >
+                                                    <Package className="h-16 w-16 text-gray-400" />
                                                 </div>
                                             )}
+
+                                            {/* Stock Status Badge */}
+                                            <div className="absolute top-3 left-3">
+                                                <span
+                                                    className={`rounded-full px-2.5 py-1 text-xs font-medium backdrop-blur-sm ${
+                                                        product.stock_status === 'in_stock'
+                                                            ? 'bg-green-500/90 text-white'
+                                                            : product.stock_status === 'low_stock'
+                                                              ? 'bg-yellow-500/90 text-white'
+                                                              : 'bg-red-500/90 text-white'
+                                                    }`}
+                                                >
+                                                    {product.stock_status === 'in_stock'
+                                                        ? 'Available'
+                                                        : product.stock_status === 'low_stock'
+                                                          ? 'Low Stock'
+                                                          : 'Out of Stock'}
+                                                </span>
+                                            </div>
+
+                                            {/* Wishlist Button */}
+                                            <div className="absolute top-3 right-3 z-10" onClick={(e) => e.stopPropagation()}>
+                                                <WishlistButton
+                                                    productId={product.id}
+                                                    initialInWishlist={wishlistProductIds.includes(product.id)}
+                                                    variant="icon-filled"
+                                                />
+                                            </div>
+
+                                            {/* Quick Actions Overlay */}
+                                            <div className="absolute inset-0 bg-black/0 opacity-0 transition-all duration-300 group-hover:bg-black/10 group-hover:opacity-100" />
                                         </div>
 
-                                        <div className="p-4">
-                                            <h3 className="line-clamp-1 text-lg font-semibold text-gray-900">{product.name}</h3>
+                                        {/* Product Details */}
+                                        <div className="space-y-3 p-4">
+                                            {/* Product Name */}
+                                            <div onClick={() => handleProductClick(product.id)}>
+                                                <h3 className="line-clamp-2 text-lg font-semibold text-gray-900 transition-colors group-hover:text-primary">
+                                                    {product.name}
+                                                </h3>
+                                            </div>
 
-                                            <p className="mt-1 line-clamp-2 text-sm text-gray-600">{product.short_description}</p>
+                                            {/* Description */}
+                                            <p className="line-clamp-2 text-sm leading-relaxed text-gray-600">{product.short_description}</p>
 
-                                            <div className="mt-2 flex items-center justify-between">
-                                                <div className="flex items-center">
-                                                    <Star className="h-4 w-4 fill-current text-yellow-400" />
-                                                    <span className="ml-1 text-sm text-gray-600">
-                                                        {product.average_rating ? Number(product.average_rating).toFixed(1) : '0.0'}
-                                                    </span>
+                                            {/* Views */}
+                                            <div className="flex items-center justify-end text-sm">
+                                                {product.view_count > 0 && (
+                                                    <div className="flex items-center text-gray-500">
+                                                        <Eye className="mr-1 h-3.5 w-3.5" />
+                                                        <span className="text-xs">{product.view_count}</span>
+                                                    </div>
+                                                )}
+                                            </div>
+
+                                            {/* Rating */}
+                                            <div className="flex items-center space-x-1">
+                                                <div className="flex">
+                                                    {[...Array(5)].map((_, i) => (
+                                                        <Star
+                                                            key={i}
+                                                            className={`h-3.5 w-3.5 ${
+                                                                i < Math.floor(Number(product.average_rating) || 0)
+                                                                    ? 'fill-current text-yellow-400'
+                                                                    : 'text-gray-300'
+                                                            }`}
+                                                        />
+                                                    ))}
                                                 </div>
+                                                {product.average_rating > 0 ? (
+                                                    <span className="ml-1 text-xs text-gray-600">({Number(product.average_rating).toFixed(1)})</span>
+                                                ) : (
+                                                    <span className="ml-1 text-xs text-gray-400">(No ratings yet)</span>
+                                                )}
+                                            </div>
 
-                                                <div className="flex items-center">
-                                                    <Eye className="mr-1 h-3 w-3 text-gray-400" />
-                                                    <span className="text-xs text-gray-500">{product.view_count}</span>
+                                            {/* Price */}
+                                            <div className="pt-2">
+                                                <div className="flex items-center gap-2">
+                                                    <span className="text-2xl font-bold text-gray-900">₱{Number(product.price).toLocaleString()}</span>
                                                 </div>
                                             </div>
 
-                                            <div className="mt-3">
-                                                <div className="mb-2 flex items-center justify-between">
-                                                    <span className="text-lg font-bold text-gray-900">₱{product.price}</span>
-                                                    <span
-                                                        className={`rounded-full px-2 py-1 text-xs ${
-                                                            product.stock_status === 'in_stock'
-                                                                ? 'bg-green-100 text-green-800'
-                                                                : product.stock_status === 'low_stock'
-                                                                  ? 'bg-yellow-100 text-yellow-800'
-                                                                  : 'bg-red-100 text-red-800'
-                                                        }`}
-                                                    >
-                                                        {product.stock_status === 'in_stock'
-                                                            ? 'In Stock'
-                                                            : product.stock_status === 'low_stock'
-                                                              ? 'Low Stock'
-                                                              : 'Out of Stock'}
-                                                    </span>
-                                                </div>
+                                            {/* Action Buttons */}
+                                            <div className="space-y-2 pt-3">
+                                                {/* View Details Button */}
+                                                <Link
+                                                    href={`/buyer/product/${product.id}`}
+                                                    className="flex w-full transform items-center justify-center gap-2 rounded-lg border-2 border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-primary hover:bg-primary/5 hover:text-primary hover:shadow-md"
+                                                >
+                                                    <Eye className="h-4 w-4" />
+                                                    View Details
+                                                </Link>
 
+                                                {/* Cart and Buy Buttons */}
                                                 <div className="flex gap-2">
                                                     <button
                                                         onClick={(e) => handleAddToCart(e, product)}
                                                         disabled={product.stock_status === 'out_of_stock' || isLoading}
-                                                        className={`flex flex-1 transform items-center justify-center gap-1 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200 ${
+                                                        className={`flex flex-1 transform items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium transition-all duration-200 ${
                                                             product.stock_status === 'out_of_stock' || isLoading
                                                                 ? 'cursor-not-allowed bg-gray-100 text-gray-400'
                                                                 : 'bg-gradient-to-r from-amber-600 to-orange-600 text-white shadow-md hover:-translate-y-0.5 hover:from-amber-700 hover:to-orange-700 hover:shadow-lg focus:ring-2 focus:ring-amber-200 active:transform-none'
@@ -599,17 +690,18 @@ export default function Show({ seller, products, filters, userRating: initialUse
                                                         <ShoppingCart className="h-4 w-4" />
                                                         {product.stock_status === 'out_of_stock' ? 'Out of Stock' : 'Add to Cart'}
                                                     </button>
+
                                                     <button
                                                         onClick={(e) => handleBuyNow(e, product)}
                                                         disabled={product.stock_status === 'out_of_stock' || isLoading}
-                                                        className={`flex transform items-center justify-center rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200 ${
+                                                        className={`flex transform items-center justify-center rounded-lg px-4 py-2.5 text-sm font-medium transition-all duration-200 ${
                                                             product.stock_status === 'out_of_stock' || isLoading
                                                                 ? 'cursor-not-allowed bg-gray-100 text-gray-400'
                                                                 : 'border-2 border-amber-300 bg-white text-amber-700 shadow-sm hover:-translate-y-0.5 hover:border-amber-400 hover:bg-gradient-to-r hover:from-amber-50 hover:to-orange-50 hover:shadow-md focus:ring-2 focus:ring-amber-200 active:transform-none'
                                                         }`}
                                                         title="Buy Now"
                                                     >
-                                                        <ShoppingCart className="h-4 w-4" />
+                                                        Buy Now
                                                     </button>
                                                 </div>
                                             </div>
@@ -620,7 +712,7 @@ export default function Show({ seller, products, filters, userRating: initialUse
 
                             {/* Pagination */}
                             {products.last_page > 1 && (
-                                <div className="mt-8 flex justify-center">
+                                <div className="flex justify-center">
                                     <div className="flex space-x-2">
                                         {products.links.map((link, index) => (
                                             <Link

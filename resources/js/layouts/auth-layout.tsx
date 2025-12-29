@@ -6,6 +6,7 @@ export default function AuthLayout({
     description,
     sellerCount,
     featuredArtisans,
+    disableLogoLink,
     ...props
 }: {
     children: React.ReactNode;
@@ -17,9 +18,10 @@ export default function AuthLayout({
         name: string;
         avatar_url: string;
     }>;
+    disableLogoLink?: boolean;
 }) {
     return (
-        <AuthLayoutTemplate title={title} description={description} sellerCount={sellerCount} featuredArtisans={featuredArtisans} {...props}>
+        <AuthLayoutTemplate title={title} description={description} sellerCount={sellerCount} featuredArtisans={featuredArtisans} disableLogoLink={disableLogoLink} {...props}>
             {children}
         </AuthLayoutTemplate>
     );

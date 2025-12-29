@@ -103,10 +103,8 @@ export default function Index({ products, categories, filters, wishlistProductId
         e.stopPropagation();
         if (product.stock_status === 'out_of_stock') return;
 
-        // Open modal for quantity selection
-        setModalProduct(product);
-        setModalMode('buy');
-        setIsModalOpen(true);
+        // Redirect directly to checkout with this product only (no cart)
+        router.visit(`/buyer/checkout?buy_now=true&product_id=${product.id}&quantity=1`);
     };
 
     const handleModalAddToCart = async (quantity: number) => {

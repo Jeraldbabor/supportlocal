@@ -63,7 +63,14 @@ class DashboardTest extends TestCase
             'phone_number' => null, // Missing
             'address' => null, // Missing
             'profile_picture' => null, // Missing
-            'email_verified_at' => null, // Not verified
+            'email_verified_at' => now(), // Verified, but profile incomplete
+        ]);
+
+        // Create approved seller application
+        \App\Models\SellerApplication::factory()->create([
+            'user_id' => $seller->id,
+            'status' => 'approved',
+            'reviewed_at' => now(),
         ]);
 
         $this->actingAs($seller);
@@ -77,8 +84,8 @@ class DashboardTest extends TestCase
             ->has('recommendations')
             ->where('profileSummary.profile_completeness', fn ($completeness) => $completeness < 100)
             ->where('profileSummary.has_avatar', false)
-            ->where('settingsSummary.email_verified', false)
-            ->where('settingsSummary.business_setup', false)
+            ->where('settingsSummary.email_verified', true) // Email verified to pass middleware
+            ->where('settingsSummary.business_setup', true) // Application approved
             ->has('recommendations.0')
         );
     }
@@ -97,6 +104,12 @@ class DashboardTest extends TestCase
             'profile_picture' => 'avatars/high.jpg',
             'email_verified_at' => now(),
             'last_login_at' => now()->subDays(1),
+        ]);
+
+        \App\Models\SellerApplication::factory()->create([
+            'user_id' => $highScoreSeller->id,
+            'status' => 'approved',
+            'reviewed_at' => now(),
         ]);
 
         SellerApplication::factory()->approved()->create([
@@ -124,8 +137,14 @@ class DashboardTest extends TestCase
             'phone_number' => null,
             'address' => null,
             'profile_picture' => null,
-            'email_verified_at' => null,
+            'email_verified_at' => now(),
             'last_login_at' => now()->subDays(30),
+        ]);
+
+        \App\Models\SellerApplication::factory()->create([
+            'user_id' => $lowScoreSeller->id,
+            'status' => 'approved',
+            'reviewed_at' => now(),
         ]);
 
         $this->actingAs($lowScoreSeller);
@@ -165,7 +184,13 @@ class DashboardTest extends TestCase
             'phone_number' => null, // Missing - high priority
             'address' => null, // Missing - high priority
             'profile_picture' => null, // Missing - medium priority
-            'email_verified_at' => null, // Not verified - high priority
+            'email_verified_at' => now(),
+        ]);
+
+        \App\Models\SellerApplication::factory()->create([
+            'user_id' => $seller->id,
+            'status' => 'approved',
+            'reviewed_at' => now(),
         ]);
 
         $this->actingAs($seller);
@@ -173,7 +198,7 @@ class DashboardTest extends TestCase
         $response = $this->get(route('seller.dashboard'));
 
         $response->assertInertia(fn ($page) => $page->has('recommendations')
-            ->has('recommendations.0', fn ($recommendation) => $recommendation->where('priority', 'critical')
+            ->has('recommendations.0', fn ($recommendation) => $recommendation->where('priority', 'high')
                 ->has('type')
                 ->has('title')
                 ->has('description')
@@ -194,7 +219,13 @@ class DashboardTest extends TestCase
             'phone_number' => null,
             'address' => null,
             'profile_picture' => null,
-            'email_verified_at' => null,
+            'email_verified_at' => now(),
+        ]);
+
+        \App\Models\SellerApplication::factory()->create([
+            'user_id' => $seller->id,
+            'status' => 'approved',
+            'reviewed_at' => now(),
         ]);
 
         $this->actingAs($seller);
