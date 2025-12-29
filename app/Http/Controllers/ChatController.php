@@ -138,7 +138,8 @@ class ChatController extends Controller
     public function sendMessage(Request $request, $conversationId)
     {
         $request->validate([
-            'message' => 'required|string|max:5000',
+            'message' => 'required_without:image|string|max:5000',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120', // 5MB max
         ]);
 
         $conversation = Conversation::findOrFail($conversationId);
@@ -149,11 +150,18 @@ class ChatController extends Controller
             abort(403, 'Unauthorized access to conversation');
         }
 
+        // Handle image upload
+        $imagePath = null;
+        if ($request->hasFile('image')) {
+            $imagePath = $request->file('image')->store('chat-images', 'public');
+        }
+
         // Create the message
         $message = Message::create([
             'conversation_id' => $conversation->id,
             'sender_id' => $user->id,
-            'message' => $request->message,
+            'message' => $request->message ?? '',
+            'image' => $imagePath,
         ]);
 
         // Restore conversation for recipient if they deleted it

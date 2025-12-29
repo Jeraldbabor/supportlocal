@@ -14,6 +14,7 @@ class Message extends Model
         'conversation_id',
         'sender_id',
         'message',
+        'image',
         'is_read',
         'read_at',
     ];

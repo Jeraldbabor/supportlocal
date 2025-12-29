@@ -38,15 +38,23 @@ function NotificationsPageContent({ notifications }: NotificationsProps) {
     const [isClearing, setIsClearing] = useState(false);
     const [deletingId, setDeletingId] = useState<string | null>(null);
     const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null);
+    const [localReadIds, setLocalReadIds] = useState<Set<string>>(new Set());
+
+    // Check if notification is read (either from server or locally marked)
+    const isRead = (notification: Notification) => {
+        return notification.read_at !== null || localReadIds.has(notification.id);
+    };
 
     const handleMarkAsRead = (notificationId: string) => {
+        // Immediately update local state for instant feedback
+        setLocalReadIds((prev) => new Set(prev).add(notificationId));
         markAsRead(notificationId);
-        router.reload();
     };
 
     const handleNotificationClick = (notification: Notification) => {
-        // Mark as read first
-        if (!notification.read_at) {
+        // Mark as read first (with immediate visual feedback)
+        if (!isRead(notification)) {
+            setLocalReadIds((prev) => new Set(prev).add(notification.id));
             markAsRead(notification.id);
         }
 
@@ -56,9 +64,11 @@ function NotificationsPageContent({ notifications }: NotificationsProps) {
         }
     };
 
-    const handleMarkAllAsRead = () => {
+    const handleMarkAllAsReadLocal = () => {
+        // Mark all as read locally for instant feedback
+        const allIds = new Set(notifications.data.map((n) => n.id));
+        setLocalReadIds(allIds);
         markAllAsRead();
-        router.reload();
     };
 
     const handleClearAllHistory = () => {
@@ -105,7 +115,7 @@ function NotificationsPageContent({ notifications }: NotificationsProps) {
         }
     };
 
-    const unreadCount = notifications.data.filter((n) => !n.read_at).length;
+    const unreadCount = notifications.data.filter((n) => !isRead(n)).length;
 
     return (
         <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8">
@@ -135,7 +145,7 @@ function NotificationsPageContent({ notifications }: NotificationsProps) {
 
                             {unreadCount > 0 && (
                                 <button
-                                    onClick={handleMarkAllAsRead}
+                                    onClick={handleMarkAllAsReadLocal}
                                     className="inline-flex items-center gap-2 rounded-lg border border-blue-300 bg-white px-3 py-1.5 text-sm font-medium text-blue-700 transition-colors hover:bg-blue-50"
                                 >
                                     <Check className="h-4 w-4" />
@@ -160,8 +170,8 @@ function NotificationsPageContent({ notifications }: NotificationsProps) {
                         notifications.data.map((notification) => (
                             <div
                                 key={notification.id}
-                                className={`px-6 py-4 transition-colors ${
-                                    !notification.read_at ? 'bg-blue-50 dark:bg-blue-900/20' : ''
+                                className={`px-6 py-4 transition-all duration-200 ${
+                                    !isRead(notification) ? 'border-l-4 border-blue-400 bg-blue-50 dark:bg-blue-900/20' : 'border-l-4 border-transparent'
                                 } ${notification.data.action_url ? 'cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700' : ''}`}
                             >
                                 <div className="flex items-start space-x-3">
@@ -205,7 +215,7 @@ function NotificationsPageContent({ notifications }: NotificationsProps) {
                                                 >
                                                     <X className="h-4 w-4" />
                                                 </button>
-                                                {!notification.read_at && (
+                                                {!isRead(notification) ? (
                                                     <button
                                                         onClick={(e) => {
                                                             e.stopPropagation();
@@ -215,6 +225,11 @@ function NotificationsPageContent({ notifications }: NotificationsProps) {
                                                     >
                                                         Mark as read
                                                     </button>
+                                                ) : (
+                                                    <span className="flex items-center text-xs text-green-600">
+                                                        <Check className="mr-1 h-3 w-3" />
+                                                        Read
+                                                    </span>
                                                 )}
                                             </div>
                                         </div>

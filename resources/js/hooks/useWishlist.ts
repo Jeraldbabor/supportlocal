@@ -1,4 +1,5 @@
 import { router } from '@inertiajs/react';
+import axios from 'axios';
 import { useCallback, useState } from 'react';
 
 interface WishlistToggleResponse {
@@ -21,21 +22,8 @@ export function useWishlist() {
     const toggleWishlist = useCallback(async (productId: number): Promise<WishlistToggleResponse | null> => {
         setIsLoading(true);
         try {
-            const response = await fetch('/wishlist/toggle', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
-                },
-                body: JSON.stringify({ product_id: productId }),
-            });
-
-            if (!response.ok) {
-                throw new Error('Failed to toggle wishlist');
-            }
-
-            const data: WishlistToggleResponse = await response.json();
-            return data;
+            const response = await axios.post('/wishlist/toggle', { product_id: productId });
+            return response.data;
         } catch (error) {
             console.error('Error toggling wishlist:', error);
             return null;
@@ -89,12 +77,8 @@ export function useWishlist() {
      */
     const getWishlistCount = useCallback(async (): Promise<number> => {
         try {
-            const response = await fetch('/wishlist/count');
-            if (!response.ok) {
-                throw new Error('Failed to get wishlist count');
-            }
-            const data = await response.json();
-            return data.count;
+            const response = await axios.get('/wishlist/count');
+            return response.data.count;
         } catch (error) {
             console.error('Error getting wishlist count:', error);
             return 0;
@@ -106,21 +90,8 @@ export function useWishlist() {
      */
     const checkProducts = useCallback(async (productIds: number[]): Promise<Record<number, boolean>> => {
         try {
-            const response = await fetch('/wishlist/check', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
-                },
-                body: JSON.stringify({ product_ids: productIds }),
-            });
-
-            if (!response.ok) {
-                throw new Error('Failed to check products');
-            }
-
-            const data: WishlistCheckResponse = await response.json();
-            return data.in_wishlist;
+            const response = await axios.post('/wishlist/check', { product_ids: productIds });
+            return response.data.in_wishlist;
         } catch (error) {
             console.error('Error checking products:', error);
             return {};

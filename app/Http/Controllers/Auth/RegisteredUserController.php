@@ -70,12 +70,13 @@ class RegisteredUserController extends Controller
 
         Auth::login($user);
 
-        // Transfer guest cart to authenticated user (if exists in request)
-        $this->transferGuestCart($request, $user);
+        // Store guest cart data in session for transfer after email verification
+        if ($request->has('guestCart')) {
+            session(['pending_guest_cart' => $request->guestCart]);
+        }
 
-        // Redirect to buyer dashboard where they'll see profile completion banner
-        // and can access their cart from there
-        return redirect()->route('buyer.dashboard')->with('success', 'Welcome! Please complete your profile to get started.');
+        // Redirect to email verification page
+        return redirect()->route('verification.notice')->with('success', 'Registration successful! Please check your email to verify your account.');
     }
 
     /**

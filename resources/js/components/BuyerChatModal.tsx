@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import { Send, X, Minimize2 } from 'lucide-react';
+import { Send, X, Minimize2, Image } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -11,6 +11,7 @@ interface Message {
   conversation_id: number;
   sender_id: number;
   message: string;
+  image?: string;
   is_read: boolean;
   created_at: string;
   sender: {
@@ -53,11 +54,14 @@ export default function BuyerChatModal({
 }: BuyerChatModalProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState('');
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [conversation, setConversation] = useState<Conversation | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isOtherUserTyping, setIsOtherUserTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -114,26 +118,64 @@ export default function BuyerChatModal({
       });
   };
 
+  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        alert('Image size must be less than 5MB');
+        return;
+      }
+      
+      const validTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif'];
+      if (!validTypes.includes(file.type)) {
+        alert('Only JPEG, PNG, JPG, and GIF images are allowed');
+        return;
+      }
+      
+      setSelectedImage(file);
+      
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const clearImageSelection = () => {
+    setSelectedImage(null);
+    setImagePreview(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
   const sendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!newMessage.trim()) return;
+    if (!newMessage.trim() && !selectedImage) return;
 
     setIsLoading(true);
     try {
+      const formData = new FormData();
+      formData.append('message', newMessage);
+      if (selectedImage) {
+        formData.append('image', selectedImage);
+      }
+
       const response = await fetch(`/chat/conversation/${conversationId}/message`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
           'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
         },
-        body: JSON.stringify({ message: newMessage }),
+        body: formData,
       });
 
       if (response.ok) {
         const data = await response.json();
         setMessages((prev) => [...prev, data.message]);
         setNewMessage('');
+        clearImageSelection();
       }
     } catch (error) {
       console.error('Failed to send message:', error);
@@ -262,7 +304,25 @@ export default function BuyerChatModal({
                           : 'bg-white border border-gray-200 rounded-bl-sm'
                       }`}
                     >
-                      <p className="text-sm break-words">{message.message}</p>
+                      {message.image && (
+                        <div className="mb-2">
+                          <a
+                            href={`/storage/${message.image}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="block"
+                          >
+                            <img
+                              src={`/storage/${message.image}`}
+                              alt="Uploaded image"
+                              className="rounded-lg max-w-xs max-h-48 object-cover cursor-pointer hover:opacity-90 transition-opacity"
+                            />
+                          </a>
+                        </div>
+                      )}
+                      {message.message && (
+                        <p className="text-sm break-words">{message.message}</p>
+                      )}
                     </div>
                     <span className="mt-1 text-xs text-muted-foreground">
                       {formatDistanceToNow(new Date(message.created_at), { addSuffix: true })}
@@ -291,7 +351,45 @@ export default function BuyerChatModal({
 
           {/* Message Input */}
           <form onSubmit={sendMessage} className="border-t bg-white rounded-b-lg p-3">
+            {/* Image Preview */}
+            {imagePreview && (
+              <div className="mb-2 relative inline-block">
+                <div className="relative rounded-lg overflow-hidden border-2 border-primary/20">
+                  <img
+                    src={imagePreview}
+                    alt="Preview"
+                    className="max-h-24 max-w-full object-cover"
+                  />
+                  <button
+                    type="button"
+                    onClick={clearImageSelection}
+                    className="absolute top-2 right-2 p-1.5 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors shadow-lg"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                </div>
+              </div>
+            )}
+            
             <div className="flex gap-2">
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/jpeg,image/png,image/jpg,image/gif"
+                onChange={handleImageSelect}
+                className="hidden"
+              />
+              <Button
+                type="button"
+                variant="outline"
+                size="icon"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={isLoading}
+                className="rounded-full h-10 w-10 flex-shrink-0"
+                title="Upload image"
+              >
+                <Image className="h-4 w-4" />
+              </Button>
               <Input
                 value={newMessage}
                 onChange={handleInputChange}
@@ -302,7 +400,7 @@ export default function BuyerChatModal({
               <Button 
                 type="submit" 
                 size="icon" 
-                disabled={isLoading || !newMessage.trim()}
+                disabled={isLoading || (!newMessage.trim() && !selectedImage)}
                 className="rounded-full h-10 w-10 flex-shrink-0"
               >
                 <Send className="h-4 w-4" />

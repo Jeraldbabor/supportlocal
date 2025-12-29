@@ -278,6 +278,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
                         ],
                         'max_quantity' => $product->quantity,
                         'stock_quantity' => $product->quantity,
+                        'shipping_cost' => (float) ($product->shipping_cost ?? 50),
                     ];
                 }
             }

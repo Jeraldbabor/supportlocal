@@ -21,11 +21,9 @@ class PublicController extends Controller
             ->where('status', 'active')
             ->where('quantity', '>', 0);
 
-        // Filter by category
-        if ($request->has('category') && $request->category !== 'All') {
-            $query->whereHas('category', function ($q) use ($request) {
-                $q->where('name', $request->category);
-            });
+        // Filter by category (by ID)
+        if ($request->filled('category')) {
+            $query->where('category_id', $request->category);
         }
 
         // Search functionality
@@ -44,10 +42,10 @@ class PublicController extends Controller
         }
 
         // Price range filtering
-        if ($request->has('min_price')) {
+        if ($request->filled('min_price') && is_numeric($request->min_price)) {
             $query->where('price', '>=', $request->min_price);
         }
-        if ($request->has('max_price')) {
+        if ($request->filled('max_price') && is_numeric($request->max_price)) {
             $query->where('price', '<=', $request->max_price);
         }
 
@@ -72,7 +70,7 @@ class PublicController extends Controller
                 break;
         }
 
-        $products = $query->paginate(12)->through(function ($product) {
+        $products = $query->paginate(12)->withQueryString()->through(function ($product) {
             return [
                 'id' => $product->id,
                 'name' => $product->name,
@@ -87,11 +85,17 @@ class PublicController extends Controller
                 'category' => $product->category->name ?? 'Miscellaneous',
                 'description' => $product->description,
                 'stock_quantity' => $product->quantity,
+                'seller' => [
+                    'id' => $product->seller->id ?? 0,
+                    'name' => $product->seller->name ?? 'Unknown Artisan',
+                ],
             ];
         });
 
-        // Get all categories for filtering
-        $categories = ProductCategory::withCount('products')->get();
+        // Get all categories for filtering (only active categories with active products)
+        $categories = ProductCategory::whereHas('products', function ($q) {
+            $q->where('status', 'active')->where('quantity', '>', 0);
+        })->orderBy('name')->get();
 
         // Get wishlist product IDs for current user/guest
         $wishlistProductIds = WishlistHelper::getProductIds();

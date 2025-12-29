@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { router } from '@inertiajs/react';
-import { Send, Trash2 } from 'lucide-react';
+import { Send, Trash2, Image, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -13,6 +13,7 @@ interface Message {
   conversation_id: number;
   sender_id: number;
   message: string;
+  image?: string;
   is_read: boolean;
   created_at: string;
   sender: {
@@ -46,12 +47,15 @@ interface ChatWindowProps {
 export default function ChatWindow({ conversationId, currentUserId }: ChatWindowProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState('');
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [conversation, setConversation] = useState<Conversation | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isOtherUserTyping, setIsOtherUserTyping] = useState(false);
   const [typingUserName, setTypingUserName] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -110,26 +114,67 @@ export default function ChatWindow({ conversationId, currentUserId }: ChatWindow
       });
   };
 
+  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      // Validate file size (5MB max)
+      if (file.size > 5 * 1024 * 1024) {
+        alert('Image size must be less than 5MB');
+        return;
+      }
+      
+      // Validate file type
+      const validTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif'];
+      if (!validTypes.includes(file.type)) {
+        alert('Only JPEG, PNG, JPG, and GIF images are allowed');
+        return;
+      }
+      
+      setSelectedImage(file);
+      
+      // Create preview
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const clearImageSelection = () => {
+    setSelectedImage(null);
+    setImagePreview(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
   const sendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!newMessage.trim()) return;
+    if (!newMessage.trim() && !selectedImage) return;
 
     setIsLoading(true);
     try {
+      const formData = new FormData();
+      formData.append('message', newMessage);
+      if (selectedImage) {
+        formData.append('image', selectedImage);
+      }
+
       const response = await fetch(`/chat/conversation/${conversationId}/message`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
           'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
         },
-        body: JSON.stringify({ message: newMessage }),
+        body: formData,
       });
 
       if (response.ok) {
         const data = await response.json();
         setMessages((prev) => [...prev, data.message]);
         setNewMessage('');
+        clearImageSelection();
       }
     } catch (error) {
       console.error('Failed to send message:', error);
@@ -314,7 +359,25 @@ export default function ChatWindow({ conversationId, currentUserId }: ChatWindow
                         : 'bg-card text-card-foreground border border-border/50 rounded-tl-md'
                     }`}
                   >
-                    <p className="text-sm leading-relaxed whitespace-pre-wrap break-words">{message.message}</p>
+                    {message.image && (
+                      <div className="mb-2">
+                        <a
+                          href={`/storage/${message.image}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="block"
+                        >
+                          <img
+                            src={`/storage/${message.image}`}
+                            alt="Uploaded image"
+                            className="rounded-lg max-w-xs max-h-64 object-cover cursor-pointer hover:opacity-90 transition-opacity"
+                          />
+                        </a>
+                      </div>
+                    )}
+                    {message.message && (
+                      <p className="text-sm leading-relaxed whitespace-pre-wrap break-words">{message.message}</p>
+                    )}
                   </div>
                   <span className={`mt-1.5 text-[11px] text-muted-foreground px-1 ${isOwnMessage ? 'text-right' : 'text-left'}`}>
                     {formatDistanceToNow(new Date(message.created_at), { addSuffix: true })}
@@ -344,22 +407,62 @@ export default function ChatWindow({ conversationId, currentUserId }: ChatWindow
 
       {/* Message Input */}
       <form onSubmit={sendMessage} className="border-t border-border/50 p-4 flex-shrink-0 bg-background/95 backdrop-blur-sm">
-        <div className="flex gap-3 max-w-4xl mx-auto">
-          <Input
-            value={newMessage}
-            onChange={handleInputChange}
-            placeholder="Type your message..."
-            disabled={isLoading}
-            className="flex-1 rounded-full px-5 py-6 bg-muted/50 border-border/50 focus:border-primary/50 focus:bg-background transition-colors"
-          />
-          <Button 
-            type="submit" 
-            size="icon" 
-            disabled={isLoading || !newMessage.trim()}
-            className="h-12 w-12 rounded-full shadow-md hover:shadow-lg transition-all disabled:opacity-50"
-          >
-            <Send className="h-5 w-5" />
-          </Button>
+        <div className="max-w-4xl mx-auto">
+          {/* Image Preview */}
+          {imagePreview && (
+            <div className="mb-3 relative inline-block">
+              <div className="relative rounded-lg overflow-hidden border-2 border-primary/20">
+                <img
+                  src={imagePreview}
+                  alt="Preview"
+                  className="max-h-32 max-w-xs object-cover"
+                />
+                <button
+                  type="button"
+                  onClick={clearImageSelection}
+                  className="absolute top-2 right-2 p-1.5 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors shadow-lg"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+            </div>
+          )}
+          
+          <div className="flex gap-3">
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/jpeg,image/png,image/jpg,image/gif"
+              onChange={handleImageSelect}
+              className="hidden"
+            />
+            <Button
+              type="button"
+              variant="outline"
+              size="icon"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={isLoading}
+              className="h-12 w-12 rounded-full flex-shrink-0"
+              title="Upload image"
+            >
+              <Image className="h-5 w-5" />
+            </Button>
+            <Input
+              value={newMessage}
+              onChange={handleInputChange}
+              placeholder="Type your message..."
+              disabled={isLoading}
+              className="flex-1 rounded-full px-5 py-6 bg-muted/50 border-border/50 focus:border-primary/50 focus:bg-background transition-colors"
+            />
+            <Button 
+              type="submit" 
+              size="icon" 
+              disabled={isLoading || (!newMessage.trim() && !selectedImage)}
+              className="h-12 w-12 rounded-full shadow-md hover:shadow-lg transition-all disabled:opacity-50"
+            >
+              <Send className="h-5 w-5" />
+            </Button>
+          </div>
         </div>
       </form>
     </div>

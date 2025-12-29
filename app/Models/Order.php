@@ -63,6 +63,7 @@ class Order extends Model
         'gcash_reference',
         'special_instructions',
         'subtotal',
+        'shipping_fee',
         'total_amount',
         'status',
         'rejection_reason',
@@ -77,6 +78,7 @@ class Order extends Model
      */
     protected $casts = [
         'subtotal' => 'decimal:2',
+        'shipping_fee' => 'decimal:2',
         'total_amount' => 'decimal:2',
         'seller_confirmed_at' => 'datetime',
         'shipped_at' => 'datetime',

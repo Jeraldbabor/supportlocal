@@ -25,7 +25,7 @@ class UserRolesSeeder extends Seeder
         // Create Seller/Artisan user
         User::create([
             'name' => 'Jerald Babor',
-            'email' => 'jerald@gmail.com',
+            'email' => 'jeraldbabor60@gmail.com',
             'password' => Hash::make('password'),
             'role' => User::ROLE_SELLER,
             'email_verified_at' => now(),
@@ -34,7 +34,7 @@ class UserRolesSeeder extends Seeder
         // Create Buyer user
         User::create([
             'name' => 'Decery Alihid',
-            'email' => 'decery@gmail.com',
+            'email' => 'decsang23@gmail.com',
             'password' => Hash::make('password'),
             'role' => User::ROLE_BUYER,
             'email_verified_at' => now(),

@@ -42,6 +42,7 @@ class CartController extends Controller
                     ],
                     'max_quantity' => $item->product->quantity,
                     'stock_quantity' => $item->product->quantity,
+                    'shipping_cost' => (float) ($item->product->shipping_cost ?? 50),
                 ];
             });
         }
@@ -244,6 +245,7 @@ class CartController extends Controller
                     ],
                     'max_quantity' => $item->product->quantity,
                     'stock_quantity' => $item->product->quantity,
+                    'shipping_cost' => (float) ($item->product->shipping_cost ?? 50),
                 ];
             })->toArray();
         }

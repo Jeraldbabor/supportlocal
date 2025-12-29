@@ -16,6 +16,17 @@ import { Head, useForm, usePage } from '@inertiajs/react';
 import { AlertTriangle, Calendar, Camera, CreditCard, Key, MapPin, Phone, Save, Shield, Trash2, Truck, Upload, User } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
+// Helper function to format date for HTML date input (yyyy-MM-dd)
+const formatDateForInput = (dateString: string | undefined | null): string => {
+    if (!dateString) return '';
+    // If already in correct format, return as-is
+    if (/^\d{4}-\d{2}-\d{2}$/.test(dateString)) return dateString;
+    // Parse ISO timestamp and extract date portion
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) return '';
+    return date.toISOString().split('T')[0];
+};
+
 interface User {
     id: number;
     name: string;
@@ -71,7 +82,7 @@ export default function BuyerProfile({ user }: BuyerProfileProps) {
         email: user.email || '',
         phone_number: user.phone_number || '',
         address: user.address || '',
-        date_of_birth: user.date_of_birth || '',
+        date_of_birth: formatDateForInput(user.date_of_birth),
         delivery_address: user.delivery_address || '',
         delivery_phone: user.delivery_phone || '',
         delivery_notes: user.delivery_notes || '',

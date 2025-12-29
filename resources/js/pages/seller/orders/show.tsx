@@ -31,6 +31,8 @@ interface OrderItem {
 
 interface Order {
     id: number;
+    subtotal: number;
+    shipping_fee: number;
     total_amount: number;
     status: string;
     payment_method: string;
@@ -259,6 +261,9 @@ export default function OrderShow({ order }: OrderShowProps) {
                                                 {order.payment_status}
                                             </span>
                                         </p>
+                                        <p className="text-xs text-gray-400 mt-1">
+                                            {formatPeso(order.subtotal)} + {formatPeso(order.shipping_fee || 0)} shipping
+                                        </p>
                                     </div>
                                 </div>
                             </div>
@@ -416,11 +421,21 @@ export default function OrderShow({ order }: OrderShowProps) {
 
                         {/* Order Total */}
                         <div className="border-t border-gray-100 bg-gradient-to-r from-gray-50 to-blue-50/50 px-6 py-5">
-                            <div className="flex items-center justify-between">
-                                <span className="text-lg font-semibold text-gray-600">Order Total</span>
-                                <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-3xl font-bold text-transparent">
-                                    {formatPeso(order.total_amount)}
-                                </span>
+                            <div className="space-y-2">
+                                <div className="flex items-center justify-between text-sm">
+                                    <span className="text-gray-600">Subtotal</span>
+                                    <span className="font-medium text-gray-900">{formatPeso(order.subtotal)}</span>
+                                </div>
+                                <div className="flex items-center justify-between text-sm">
+                                    <span className="text-gray-600">Shipping Fee</span>
+                                    <span className="font-medium text-gray-900">{formatPeso(order.shipping_fee || 0)}</span>
+                                </div>
+                                <div className="flex items-center justify-between border-t border-gray-200 pt-2">
+                                    <span className="text-lg font-semibold text-gray-600">Order Total</span>
+                                    <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-3xl font-bold text-transparent">
+                                        {formatPeso(order.total_amount)}
+                                    </span>
+                                </div>
                             </div>
                         </div>
                     </div>

@@ -11,6 +11,7 @@ interface AuthLayoutProps {
         name: string;
         avatar_url: string;
     }>;
+    disableLogoLink?: boolean;
 }
 
 export default function AuthSimpleLayout({
@@ -19,6 +20,7 @@ export default function AuthSimpleLayout({
     description,
     sellerCount = 0,
     featuredArtisans = [],
+    disableLogoLink = false,
 }: PropsWithChildren<AuthLayoutProps>) {
     // Format the seller count for display
     const formatSellerCount = (count: number): string => {
@@ -53,10 +55,11 @@ export default function AuthSimpleLayout({
 
     return (
         <div className="flex min-h-screen overflow-hidden">
-            {/* Left Side - Artisan Images Showcase */}
-            <div className="relative hidden overflow-hidden bg-gradient-to-br from-amber-600 via-orange-600 to-amber-800 lg:flex lg:w-1/2 xl:w-3/5">
-                {/* Background pattern */}
-                <div className="absolute inset-0 opacity-10">
+            {/* Left Side - Artisan Images Showcase - Only show when featuredArtisans is provided */}
+            {featuredArtisans && featuredArtisans.length > 0 && (
+                <div className="relative hidden overflow-hidden bg-gradient-to-br from-amber-600 via-orange-600 to-amber-800 lg:flex lg:w-1/2 xl:w-3/5">
+                    {/* Background pattern */}
+                    <div className="absolute inset-0 opacity-10">
                     <div
                         className="absolute inset-0"
                         style={{
@@ -134,7 +137,8 @@ export default function AuthSimpleLayout({
                     style={{ animationDelay: '1s' }}
                 ></div>
                 <div className="absolute top-1/2 left-1/2 h-64 w-64 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gradient-to-r from-amber-300/10 to-orange-300/10 blur-2xl"></div>
-            </div>
+                </div>
+            )}
 
             {/* Right Side - Form */}
             <div className="flex w-full items-center justify-center overflow-y-auto bg-gradient-to-br from-amber-50/50 via-orange-50/30 to-amber-50/50 p-3 sm:p-4 lg:w-1/2 xl:w-2/5 dark:bg-gradient-to-br dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
@@ -144,19 +148,35 @@ export default function AuthSimpleLayout({
                         <div className="flex flex-col gap-3">
                             {/* Logo and Header */}
                             <div className="flex flex-col items-center gap-2">
-                                <Link href="/" className="group flex flex-col items-center gap-1.5 font-medium">
-                                    <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 shadow-lg transition-all duration-300 group-hover:scale-110 group-hover:shadow-xl">
-                                        <svg className="h-8 w-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path
-                                                strokeLinecap="round"
-                                                strokeLinejoin="round"
-                                                strokeWidth="2"
-                                                d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M9 5l8 4"
-                                            />
-                                        </svg>
+                                {disableLogoLink ? (
+                                    <div className="flex flex-col items-center gap-1.5 font-medium">
+                                        <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 shadow-lg">
+                                            <svg className="h-8 w-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path
+                                                    strokeLinecap="round"
+                                                    strokeLinejoin="round"
+                                                    strokeWidth="2"
+                                                    d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M9 5l8 4"
+                                                />
+                                            </svg>
+                                        </div>
+                                        <span className="sr-only">{title}</span>
                                     </div>
-                                    <span className="sr-only">{title}</span>
-                                </Link>
+                                ) : (
+                                    <Link href="/" className="group flex flex-col items-center gap-1.5 font-medium">
+                                        <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 shadow-lg transition-all duration-300 group-hover:scale-110 group-hover:shadow-xl">
+                                            <svg className="h-8 w-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path
+                                                    strokeLinecap="round"
+                                                    strokeLinejoin="round"
+                                                    strokeWidth="2"
+                                                    d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M9 5l8 4"
+                                                />
+                                            </svg>
+                                        </div>
+                                        <span className="sr-only">{title}</span>
+                                    </Link>
+                                )}
 
                                 <div className="space-y-0.5 text-center">
                                     <h1 className="bg-gradient-to-r from-amber-700 via-amber-600 to-orange-600 bg-clip-text text-lg font-extrabold text-transparent dark:from-amber-400 dark:via-amber-300 dark:to-orange-400">

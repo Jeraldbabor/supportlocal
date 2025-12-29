@@ -99,6 +99,20 @@ class OrderController extends Controller
             // Create separate orders for each seller
             foreach ($ordersBySeller as $sellerId => $sellerItems) {
                 $sellerTotal = array_sum(array_column($sellerItems, 'total_price'));
+                
+                // Calculate shipping fee from products (sum each unique product's shipping cost once)
+                $shippingFee = 0;
+                $processedProducts = [];
+                foreach ($sellerItems as $item) {
+                    $productId = $item['product_id'];
+                    // Only add shipping cost once per unique product
+                    if (!in_array($productId, $processedProducts)) {
+                        $product = Product::find($productId);
+                        $shippingFee += $product->shipping_cost ?? 50;
+                        $processedProducts[] = $productId;
+                    }
+                }
+                $totalWithShipping = $sellerTotal + $shippingFee;
 
                 $order = Order::create([
                     'user_id' => auth()->id(), // This is the buyer
@@ -115,7 +129,8 @@ class OrderController extends Controller
                     'gcash_reference' => $request->input('gcash_reference'),
                     'special_instructions' => $request->input('delivery_notes'),
                     'subtotal' => $sellerTotal,
-                    'total_amount' => $sellerTotal,
+                    'shipping_fee' => $shippingFee,
+                    'total_amount' => $totalWithShipping,
                     'status' => Order::STATUS_PENDING,
                 ]);
 

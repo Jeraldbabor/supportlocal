@@ -224,7 +224,7 @@ export default function Products({ products, categories = [], wishlistProductIds
                 </div>
 
                 <div className="mb-8">
-                    <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
+                    <div className="grid grid-cols-1 gap-4 md:grid-cols-5">
                         <form onSubmit={handleSearch} className="col-span-1 md:col-span-2">
                             <div className="relative">
                                 <Search className="absolute top-3 left-3 h-4 w-4 text-gray-400" />
@@ -249,6 +249,18 @@ export default function Products({ products, categories = [], wishlistProductIds
                                     {category.name}
                                 </option>
                             ))}
+                        </select>
+
+                        <select
+                            onChange={(e) => handleFilter('sort', e.target.value)}
+                            value={filters.sort || 'name'}
+                            className="rounded-lg border border-gray-300 px-3 py-2 focus:border-primary focus:ring-primary"
+                        >
+                            <option value="name">Sort by Name</option>
+                            <option value="price-low">Price: Low to High</option>
+                            <option value="price-high">Price: High to Low</option>
+                            <option value="rating">Highest Rated</option>
+                            <option value="newest">Newest</option>
                         </select>
 
                         <div className="flex items-center gap-2">

@@ -148,10 +148,10 @@ export function AppSidebar() {
             <SidebarHeader className="border-b border-sidebar-border/50 py-4">
                 <SidebarMenu>
                     <SidebarMenuItem>
-                        <SidebarMenuButton size="lg" asChild className="px-3 transition-colors duration-200 hover:bg-sidebar-accent/50">
-                            <Link href="/" prefetch className="flex items-center gap-3">
+                        <SidebarMenuButton size="lg" asChild className="px-3 transition-colors duration-200">
+                            <div className="flex items-center gap-3">
                                 <AppLogo />
-                            </Link>
+                            </div>
                         </SidebarMenuButton>
                     </SidebarMenuItem>
                 </SidebarMenu>
