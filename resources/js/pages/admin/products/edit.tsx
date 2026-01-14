@@ -57,7 +57,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 export default function ProductEdit() {
-    const { product, statuses, stockStatuses, conditions, categories } = usePage<SharedData & Props>().props;
+    const { product, statuses, conditions, categories } = usePage<SharedData & Props>().props;
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
@@ -102,7 +102,7 @@ export default function ProductEdit() {
                 <form onSubmit={handleSubmit} className="space-y-6">
                     <div className="grid gap-6 lg:grid-cols-3">
                         {/* Main Form */}
-                        <div className="lg:col-span-2 space-y-6">
+                        <div className="space-y-6 lg:col-span-2">
                             {/* Basic Information */}
                             <Card>
                                 <CardHeader>
@@ -143,14 +143,7 @@ export default function ProductEdit() {
                                     <div className="grid gap-4 md:grid-cols-3">
                                         <div className="space-y-2">
                                             <Label htmlFor="price">Price *</Label>
-                                            <Input
-                                                id="price"
-                                                name="price"
-                                                type="number"
-                                                step="0.01"
-                                                defaultValue={product.price}
-                                                required
-                                            />
+                                            <Input id="price" name="price" type="number" step="0.01" defaultValue={product.price} required />
                                         </div>
                                         <div className="space-y-2">
                                             <Label htmlFor="compare_price">Compare Price</Label>
@@ -185,13 +178,7 @@ export default function ProductEdit() {
                                     <div className="grid gap-4 md:grid-cols-2">
                                         <div className="space-y-2">
                                             <Label htmlFor="quantity">Quantity *</Label>
-                                            <Input
-                                                id="quantity"
-                                                name="quantity"
-                                                type="number"
-                                                defaultValue={product.quantity}
-                                                required
-                                            />
+                                            <Input id="quantity" name="quantity" type="number" defaultValue={product.quantity} required />
                                         </div>
                                         <div className="space-y-2">
                                             <Label htmlFor="low_stock_threshold">Low Stock Threshold</Label>
@@ -204,19 +191,11 @@ export default function ProductEdit() {
                                         </div>
                                     </div>
                                     <div className="flex items-center space-x-2">
-                                        <Switch
-                                            id="track_quantity"
-                                            name="track_quantity"
-                                            defaultChecked={product.track_quantity}
-                                        />
+                                        <Switch id="track_quantity" name="track_quantity" defaultChecked={product.track_quantity} />
                                         <Label htmlFor="track_quantity">Track Quantity</Label>
                                     </div>
                                     <div className="flex items-center space-x-2">
-                                        <Switch
-                                            id="allow_backorders"
-                                            name="allow_backorders"
-                                            defaultChecked={product.allow_backorders}
-                                        />
+                                        <Switch id="allow_backorders" name="allow_backorders" defaultChecked={product.allow_backorders} />
                                         <Label htmlFor="allow_backorders">Allow Backorders</Label>
                                     </div>
                                 </CardContent>
@@ -229,11 +208,7 @@ export default function ProductEdit() {
                                 </CardHeader>
                                 <CardContent className="space-y-4">
                                     <div className="flex items-center space-x-2">
-                                        <Switch
-                                            id="requires_shipping"
-                                            name="requires_shipping"
-                                            defaultChecked={product.requires_shipping}
-                                        />
+                                        <Switch id="requires_shipping" name="requires_shipping" defaultChecked={product.requires_shipping} />
                                         <Label htmlFor="requires_shipping">Requires Shipping</Label>
                                     </div>
                                     <div className="flex items-center space-x-2">

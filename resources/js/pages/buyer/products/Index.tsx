@@ -1,13 +1,13 @@
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Product as GlobalProduct } from '@/types';
 import { Head, Link, router } from '@inertiajs/react';
-import { ChevronDown, ChevronLeft, ChevronRight, Filter, Search, ShoppingCart, Star, ArrowUp, ArrowDown } from 'lucide-react';
+import { ArrowDown, ArrowUp, ChevronDown, ChevronLeft, ChevronRight, Filter, Search, ShoppingCart, Star } from 'lucide-react';
 import React, { useState } from 'react';
 import AddToCartModal from '../../../components/AddToCartModal';
 import Toast from '../../../components/Toast';
 import WishlistButton from '../../../components/WishlistButton';
 import { useCart } from '../../../contexts/CartContext';
 import BuyerLayout from '../../../layouts/BuyerLayout';
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 
 interface Product {
     id: number;
@@ -20,10 +20,13 @@ interface Product {
         id: number;
         name: string;
     };
-    category?: {
-        id: number;
-        name: string;
-    } | string | null;
+    category?:
+        | {
+              id: number;
+              name: string;
+          }
+        | string
+        | null;
     average_rating?: number | null;
     review_count?: number;
     order_count?: number;
@@ -75,14 +78,20 @@ interface ProductsIndexProps {
     };
 }
 
-export default function Index({ products, categories = [], sellers = [], locations = [], wishlistProductIds = [], filters = {} }: ProductsIndexProps) {
+export default function Index({
+    products,
+    categories = [],
+    sellers = [],
+    locations = [],
+    wishlistProductIds = [],
+    filters = {},
+}: ProductsIndexProps) {
     const [searchTerm, setSearchTerm] = useState(filters?.search || '');
     const { addToCart, isLoading } = useCart();
     const [showToast, setShowToast] = useState(false);
     const [toastMessage, setToastMessage] = useState('');
     const [modalProduct, setModalProduct] = useState<Product | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [modalMode, setModalMode] = useState<'cart' | 'buy'>('cart');
 
     // Filter state
     const [showMoreLocations, setShowMoreLocations] = useState(false);
@@ -101,7 +110,7 @@ export default function Index({ products, categories = [], sellers = [], locatio
     const productList = products?.data || [];
     const currentSort = filters?.sort || 'popular';
     const [showPriceDropdown, setShowPriceDropdown] = useState(false);
-    
+
     // Determine if price sorting is active and which direction
     const isPriceSortActive = currentSort === 'price-low' || currentSort === 'price-high';
     const priceSortDirection = currentSort === 'price-low' ? 'low' : currentSort === 'price-high' ? 'high' : null;
@@ -113,7 +122,7 @@ export default function Index({ products, categories = [], sellers = [], locatio
 
     const handleFilter = (key: string, value: string | null) => {
         const newFilters = { ...filters, [key]: value };
-        Object.keys(newFilters).forEach(k => {
+        Object.keys(newFilters).forEach((k) => {
             if (!newFilters[k as keyof typeof newFilters]) {
                 delete newFilters[k as keyof typeof newFilters];
             }
@@ -127,7 +136,7 @@ export default function Index({ products, categories = [], sellers = [], locatio
     };
 
     const handlePriceFilter = () => {
-        const newFilters: any = { ...filters };
+        const newFilters: Record<string, string | boolean | null> = { ...filters };
         if (minPrice) newFilters.min_price = minPrice;
         if (maxPrice) newFilters.max_price = maxPrice;
         if (!minPrice) delete newFilters.min_price;
@@ -149,10 +158,6 @@ export default function Index({ products, categories = [], sellers = [], locatio
 
     const handleProductClick = (productId: number) => {
         router.visit(`/buyer/product/${productId}`);
-    };
-
-    const handleSellerClick = (sellerId: number) => {
-        router.visit(`/buyer/seller/${sellerId}`);
     };
 
     const handleAddToCart = (e: React.MouseEvent, product: Product) => {
@@ -227,7 +232,14 @@ export default function Index({ products, categories = [], sellers = [], locatio
         <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
             <div className="mb-4 flex items-center justify-between">
                 <h2 className="text-lg font-bold text-gray-900">SEARCH FILTER</h2>
-                {(selectedLocation || selectedSeller || selectedCategory || minPrice || maxPrice || freeShippingOnly || codOnly || selectedRating) && (
+                {(selectedLocation ||
+                    selectedSeller ||
+                    selectedCategory ||
+                    minPrice ||
+                    maxPrice ||
+                    freeShippingOnly ||
+                    codOnly ||
+                    selectedRating) && (
                     <button
                         onClick={() => {
                             clearFilters();
@@ -273,9 +285,7 @@ export default function Index({ products, categories = [], sellers = [], locatio
                             <span className="text-sm text-gray-700">
                                 {category.name}
                                 {category.products_count !== undefined && (
-                                    <span className="ml-1 text-xs text-gray-500">
-                                        ({category.products_count})
-                                    </span>
+                                    <span className="ml-1 text-xs text-gray-500">({category.products_count})</span>
                                 )}
                             </span>
                         </label>
@@ -391,12 +401,12 @@ export default function Index({ products, categories = [], sellers = [], locatio
                 <h3 className="mb-3 text-sm font-semibold text-gray-700">Rating</h3>
                 <div className="space-y-2">
                     {/* 5 Stars */}
-                    <label className="flex items-center cursor-pointer">
+                    <label className="flex cursor-pointer items-center">
                         <input
                             type="radio"
                             name="rating"
                             checked={selectedRating === '5'}
-                            onChange={(e) => {
+                            onChange={() => {
                                 const value = selectedRating === '5' ? null : '5';
                                 setSelectedRating(value);
                                 handleFilter('min_rating', value);
@@ -411,12 +421,12 @@ export default function Index({ products, categories = [], sellers = [], locatio
                     </label>
 
                     {/* 4 Stars & Up */}
-                    <label className="flex items-center cursor-pointer">
+                    <label className="flex cursor-pointer items-center">
                         <input
                             type="radio"
                             name="rating"
                             checked={selectedRating === '4'}
-                            onChange={(e) => {
+                            onChange={() => {
                                 const value = selectedRating === '4' ? null : '4';
                                 setSelectedRating(value);
                                 handleFilter('min_rating', value);
@@ -435,12 +445,12 @@ export default function Index({ products, categories = [], sellers = [], locatio
                     </label>
 
                     {/* 3 Stars & Up */}
-                    <label className="flex items-center cursor-pointer">
+                    <label className="flex cursor-pointer items-center">
                         <input
                             type="radio"
                             name="rating"
                             checked={selectedRating === '3'}
-                            onChange={(e) => {
+                            onChange={() => {
                                 const value = selectedRating === '3' ? null : '3';
                                 setSelectedRating(value);
                                 handleFilter('min_rating', value);
@@ -459,12 +469,12 @@ export default function Index({ products, categories = [], sellers = [], locatio
                     </label>
 
                     {/* 2 Stars & Up */}
-                    <label className="flex items-center cursor-pointer">
+                    <label className="flex cursor-pointer items-center">
                         <input
                             type="radio"
                             name="rating"
                             checked={selectedRating === '2'}
-                            onChange={(e) => {
+                            onChange={() => {
                                 const value = selectedRating === '2' ? null : '2';
                                 setSelectedRating(value);
                                 handleFilter('min_rating', value);
@@ -484,12 +494,12 @@ export default function Index({ products, categories = [], sellers = [], locatio
 
                     {/* More ratings (1 Star & Up) - shown when expanded */}
                     {showMoreRatings && (
-                        <label className="flex items-center cursor-pointer">
+                        <label className="flex cursor-pointer items-center">
                             <input
                                 type="radio"
                                 name="rating"
                                 checked={selectedRating === '1'}
-                                onChange={(e) => {
+                                onChange={() => {
                                     const value = selectedRating === '1' ? null : '1';
                                     setSelectedRating(value);
                                     handleFilter('min_rating', value);
@@ -513,7 +523,8 @@ export default function Index({ products, categories = [], sellers = [], locatio
                         onClick={() => setShowMoreRatings(!showMoreRatings)}
                         className="mt-1 flex items-center text-xs text-gray-600 hover:text-orange-500"
                     >
-                        {showMoreRatings ? 'Show Less' : 'More'} <ChevronDown className={`ml-1 h-3 w-3 transition-transform ${showMoreRatings ? 'rotate-180' : ''}`} />
+                        {showMoreRatings ? 'Show Less' : 'More'}{' '}
+                        <ChevronDown className={`ml-1 h-3 w-3 transition-transform ${showMoreRatings ? 'rotate-180' : ''}`} />
                     </button>
                 </div>
             </div>
@@ -561,7 +572,7 @@ export default function Index({ products, categories = [], sellers = [], locatio
                             placeholder="Min"
                             value={minPrice}
                             onChange={(e) => setMinPrice(e.target.value)}
-                            className="w-full rounded border border-gray-300 px-2 py-1.5 text-sm focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-200"
+                            className="w-full rounded border border-gray-300 px-2 py-1.5 text-sm focus:border-orange-500 focus:ring-1 focus:ring-orange-200 focus:outline-none"
                         />
                         <span className="text-gray-500">-</span>
                         <input
@@ -569,7 +580,7 @@ export default function Index({ products, categories = [], sellers = [], locatio
                             placeholder="Max"
                             value={maxPrice}
                             onChange={(e) => setMaxPrice(e.target.value)}
-                            className="w-full rounded border border-gray-300 px-2 py-1.5 text-sm focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-200"
+                            className="w-full rounded border border-gray-300 px-2 py-1.5 text-sm focus:border-orange-500 focus:ring-1 focus:ring-orange-200 focus:outline-none"
                         />
                     </div>
                     <button
@@ -590,23 +601,23 @@ export default function Index({ products, categories = [], sellers = [], locatio
         <BuyerLayout>
             <Head title="Browse Products" />
 
-            <div className="mx-auto max-w-7xl px-2 sm:px-3 md:px-4 py-3 sm:py-4 md:py-6 lg:px-8">
+            <div className="mx-auto max-w-7xl px-2 py-3 sm:px-3 sm:py-4 md:px-4 md:py-6 lg:px-8">
                 {/* Search Bar */}
                 <div className="mb-3 sm:mb-4 md:mb-6">
                     <form onSubmit={handleSearch} className="flex gap-1.5 sm:gap-2 md:gap-3">
                         <div className="relative flex-1">
-                            <Search className="absolute left-2 sm:left-3 top-1/2 h-3.5 w-3.5 sm:h-4 sm:w-4 md:h-5 md:w-5 -translate-y-1/2 text-gray-400" />
+                            <Search className="absolute top-1/2 left-2 h-3.5 w-3.5 -translate-y-1/2 text-gray-400 sm:left-3 sm:h-4 sm:w-4 md:h-5 md:w-5" />
                             <input
                                 type="text"
                                 placeholder="Search products..."
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
-                                className="w-full rounded-lg border border-gray-300 py-1.5 sm:py-2 md:py-3 pl-7 sm:pl-8 md:pl-10 pr-2 sm:pr-3 md:pr-4 text-xs sm:text-sm focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-200"
+                                className="w-full rounded-lg border border-gray-300 py-1.5 pr-2 pl-7 text-xs focus:border-orange-500 focus:ring-2 focus:ring-orange-200 focus:outline-none sm:py-2 sm:pr-3 sm:pl-8 sm:text-sm md:py-3 md:pr-4 md:pl-10"
                             />
                         </div>
                         <button
                             type="submit"
-                            className="rounded-lg bg-orange-500 px-3 sm:px-4 md:px-6 py-1.5 sm:py-2 md:py-3 text-xs sm:text-sm font-medium text-white transition-colors hover:bg-orange-600 active:bg-orange-700 whitespace-nowrap"
+                            className="rounded-lg bg-orange-500 px-3 py-1.5 text-xs font-medium whitespace-nowrap text-white transition-colors hover:bg-orange-600 active:bg-orange-700 sm:px-4 sm:py-2 sm:text-sm md:px-6 md:py-3"
                         >
                             Search
                         </button>
@@ -614,57 +625,62 @@ export default function Index({ products, categories = [], sellers = [], locatio
                 </div>
 
                 {/* Mobile Filter Button */}
-                <div className="mb-2 sm:mb-3 md:mb-4 flex items-center justify-between lg:hidden">
+                <div className="mb-2 flex items-center justify-between sm:mb-3 md:mb-4 lg:hidden">
                     <Sheet open={isFilterOpen} onOpenChange={setIsFilterOpen}>
                         <SheetTrigger asChild>
-                            <button className="flex items-center gap-1.5 sm:gap-2 rounded-lg border border-gray-300 bg-white px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-medium text-gray-700 shadow-sm transition-colors hover:bg-gray-50 active:bg-gray-100">
+                            <button className="flex items-center gap-1.5 rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 shadow-sm transition-colors hover:bg-gray-50 active:bg-gray-100 sm:gap-2 sm:px-4 sm:py-2 sm:text-sm">
                                 <Filter className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                                 Filters
-                                {(selectedLocation || selectedSeller || selectedCategory || minPrice || maxPrice || freeShippingOnly || codOnly || selectedRating) && (
-                                    <span className="ml-1 rounded-full bg-orange-500 px-1 sm:px-1.5 py-0.5 text-[10px] sm:text-xs font-semibold text-white">
-                                        {[
-                                            selectedLocation,
-                                            selectedSeller,
-                                            selectedCategory,
-                                            minPrice,
-                                            maxPrice,
-                                            freeShippingOnly,
-                                            codOnly,
-                                            selectedRating,
-                                        ].filter(Boolean).length}
+                                {(selectedLocation ||
+                                    selectedSeller ||
+                                    selectedCategory ||
+                                    minPrice ||
+                                    maxPrice ||
+                                    freeShippingOnly ||
+                                    codOnly ||
+                                    selectedRating) && (
+                                    <span className="ml-1 rounded-full bg-orange-500 px-1 py-0.5 text-[10px] font-semibold text-white sm:px-1.5 sm:text-xs">
+                                        {
+                                            [
+                                                selectedLocation,
+                                                selectedSeller,
+                                                selectedCategory,
+                                                minPrice,
+                                                maxPrice,
+                                                freeShippingOnly,
+                                                codOnly,
+                                                selectedRating,
+                                            ].filter(Boolean).length
+                                        }
                                     </span>
                                 )}
                             </button>
                         </SheetTrigger>
-                        <SheetContent side="left" className="w-[85vw] sm:w-[400px] overflow-y-auto">
+                        <SheetContent side="left" className="w-[85vw] overflow-y-auto sm:w-[400px]">
                             <SheetHeader>
                                 <SheetTitle className="text-lg font-bold text-gray-900">SEARCH FILTER</SheetTitle>
                                 <SheetDescription className="sr-only">
                                     Filter products by category, location, seller, rating, price, and more
                                 </SheetDescription>
                             </SheetHeader>
-                            <div className="mt-4">
-                                {renderFilterContent()}
-                            </div>
+                            <div className="mt-4">{renderFilterContent()}</div>
                         </SheetContent>
                     </Sheet>
                 </div>
 
                 <div className="flex gap-4 sm:gap-6">
                     {/* Left Sidebar - Filters (Desktop) */}
-                    <div className="hidden lg:block w-64 flex-shrink-0">
-                        {renderFilterContent()}
-                    </div>
+                    <div className="hidden w-64 flex-shrink-0 lg:block">{renderFilterContent()}</div>
 
                     {/* Right Content Area */}
-                    <div className="flex-1 min-w-0">
+                    <div className="min-w-0 flex-1">
                         {/* Sorting Bar */}
-                        <div className="mb-2 sm:mb-3 md:mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1.5 sm:gap-2 md:gap-0 rounded-lg border border-gray-200 bg-white px-2 sm:px-3 md:px-4 py-2 sm:py-2.5 md:py-3">
-                            <div className="flex items-center gap-1 sm:gap-1.5 md:gap-2 flex-wrap">
-                                <span className="text-[10px] sm:text-xs md:text-sm font-medium text-gray-700">Sort by:</span>
+                        <div className="mb-2 flex flex-col gap-1.5 rounded-lg border border-gray-200 bg-white px-2 py-2 sm:mb-3 sm:flex-row sm:items-center sm:justify-between sm:gap-2 sm:px-3 sm:py-2.5 md:mb-4 md:gap-0 md:px-4 md:py-3">
+                            <div className="flex flex-wrap items-center gap-1 sm:gap-1.5 md:gap-2">
+                                <span className="text-[10px] font-medium text-gray-700 sm:text-xs md:text-sm">Sort by:</span>
                                 <button
                                     onClick={() => handleSort('popular')}
-                                    className={`rounded px-1.5 sm:px-2 md:px-3 py-0.5 sm:py-1 md:py-1.5 text-[10px] sm:text-xs md:text-sm font-medium transition-colors active:scale-95 ${
+                                    className={`rounded px-1.5 py-0.5 text-[10px] font-medium transition-colors active:scale-95 sm:px-2 sm:py-1 sm:text-xs md:px-3 md:py-1.5 md:text-sm ${
                                         currentSort === 'popular'
                                             ? 'bg-orange-500 text-white'
                                             : 'bg-gray-100 text-gray-700 hover:bg-gray-200 active:bg-gray-300'
@@ -674,7 +690,7 @@ export default function Index({ products, categories = [], sellers = [], locatio
                                 </button>
                                 <button
                                     onClick={() => handleSort('latest')}
-                                    className={`rounded px-1.5 sm:px-2 md:px-3 py-0.5 sm:py-1 md:py-1.5 text-[10px] sm:text-xs md:text-sm font-medium transition-colors active:scale-95 ${
+                                    className={`rounded px-1.5 py-0.5 text-[10px] font-medium transition-colors active:scale-95 sm:px-2 sm:py-1 sm:text-xs md:px-3 md:py-1.5 md:text-sm ${
                                         currentSort === 'latest'
                                             ? 'bg-orange-500 text-white'
                                             : 'bg-gray-100 text-gray-700 hover:bg-gray-200 active:bg-gray-300'
@@ -684,7 +700,7 @@ export default function Index({ products, categories = [], sellers = [], locatio
                                 </button>
                                 <button
                                     onClick={() => handleSort('top_sales')}
-                                    className={`rounded px-1.5 sm:px-2 md:px-3 py-0.5 sm:py-1 md:py-1.5 text-[10px] sm:text-xs md:text-sm font-medium transition-colors active:scale-95 ${
+                                    className={`rounded px-1.5 py-0.5 text-[10px] font-medium transition-colors active:scale-95 sm:px-2 sm:py-1 sm:text-xs md:px-3 md:py-1.5 md:text-sm ${
                                         currentSort === 'top_sales'
                                             ? 'bg-orange-500 text-white'
                                             : 'bg-gray-100 text-gray-700 hover:bg-gray-200 active:bg-gray-300'
@@ -695,7 +711,7 @@ export default function Index({ products, categories = [], sellers = [], locatio
                                 <div className="relative">
                                     <button
                                         onClick={() => setShowPriceDropdown(!showPriceDropdown)}
-                                        className={`flex items-center gap-0.5 sm:gap-1 rounded px-1.5 sm:px-2 md:px-3 py-0.5 sm:py-1 md:py-1.5 text-[10px] sm:text-xs md:text-sm font-medium transition-colors active:scale-95 ${
+                                        className={`flex items-center gap-0.5 rounded px-1.5 py-0.5 text-[10px] font-medium transition-colors active:scale-95 sm:gap-1 sm:px-2 sm:py-1 sm:text-xs md:px-3 md:py-1.5 md:text-sm ${
                                             isPriceSortActive
                                                 ? 'bg-orange-500 text-white'
                                                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200 active:bg-gray-300'
@@ -713,15 +729,12 @@ export default function Index({ products, categories = [], sellers = [], locatio
                                         )}
                                         {!isPriceSortActive && <ChevronDown className="h-2.5 w-2.5 sm:h-3 sm:w-3" />}
                                     </button>
-                                    
+
                                     {/* Price Dropdown */}
                                     {showPriceDropdown && (
                                         <>
-                                            <div 
-                                                className="fixed inset-0 z-10" 
-                                                onClick={() => setShowPriceDropdown(false)}
-                                            />
-                                            <div className="absolute left-0 top-full z-20 mt-1 w-48 rounded-lg border border-gray-200 bg-white shadow-lg">
+                                            <div className="fixed inset-0 z-10" onClick={() => setShowPriceDropdown(false)} />
+                                            <div className="absolute top-full left-0 z-20 mt-1 w-48 rounded-lg border border-gray-200 bg-white shadow-lg">
                                                 <button
                                                     onClick={() => {
                                                         handleSort('price-low');
@@ -729,14 +742,12 @@ export default function Index({ products, categories = [], sellers = [], locatio
                                                     }}
                                                     className={`flex w-full items-center justify-between px-4 py-2.5 text-left text-sm transition-colors first:rounded-t-lg ${
                                                         currentSort === 'price-low'
-                                                            ? 'bg-orange-50 text-orange-600 font-medium'
+                                                            ? 'bg-orange-50 font-medium text-orange-600'
                                                             : 'text-gray-700 hover:bg-gray-50'
                                                     }`}
                                                 >
                                                     <span>Price: Low to High</span>
-                                                    {currentSort === 'price-low' && (
-                                                        <ArrowUp className="h-4 w-4 text-orange-600" />
-                                                    )}
+                                                    {currentSort === 'price-low' && <ArrowUp className="h-4 w-4 text-orange-600" />}
                                                 </button>
                                                 <button
                                                     onClick={() => {
@@ -745,14 +756,12 @@ export default function Index({ products, categories = [], sellers = [], locatio
                                                     }}
                                                     className={`flex w-full items-center justify-between px-4 py-2.5 text-left text-sm transition-colors last:rounded-b-lg ${
                                                         currentSort === 'price-high'
-                                                            ? 'bg-orange-50 text-orange-600 font-medium'
+                                                            ? 'bg-orange-50 font-medium text-orange-600'
                                                             : 'text-gray-700 hover:bg-gray-50'
                                                     }`}
                                                 >
                                                     <span>Price: High to Low</span>
-                                                    {currentSort === 'price-high' && (
-                                                        <ArrowDown className="h-4 w-4 text-orange-600" />
-                                                    )}
+                                                    {currentSort === 'price-high' && <ArrowDown className="h-4 w-4 text-orange-600" />}
                                                 </button>
                                             </div>
                                         </>
@@ -763,13 +772,13 @@ export default function Index({ products, categories = [], sellers = [], locatio
                             {/* Pagination Info */}
                             {products && products.last_page > 1 && (
                                 <div className="flex items-center gap-1.5 sm:gap-2">
-                                    <span className="text-xs sm:text-sm text-gray-600">
+                                    <span className="text-xs text-gray-600 sm:text-sm">
                                         {products.current_page}/{products.last_page}
                                     </span>
                                     <div className="flex gap-0.5 sm:gap-1">
                                         <Link
                                             href={products.links.find((l) => l.label === '&laquo; Previous')?.url || '#'}
-                                            className={`rounded px-1.5 sm:px-2 py-1 text-xs sm:text-sm ${
+                                            className={`rounded px-1.5 py-1 text-xs sm:px-2 sm:text-sm ${
                                                 products.current_page === 1
                                                     ? 'cursor-not-allowed bg-gray-100 text-gray-400'
                                                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
@@ -779,7 +788,7 @@ export default function Index({ products, categories = [], sellers = [], locatio
                                         </Link>
                                         <Link
                                             href={products.links.find((l) => l.label === 'Next &raquo;')?.url || '#'}
-                                            className={`rounded px-1.5 sm:px-2 py-1 text-xs sm:text-sm ${
+                                            className={`rounded px-1.5 py-1 text-xs sm:px-2 sm:text-sm ${
                                                 products.current_page === products.last_page
                                                     ? 'cursor-not-allowed bg-gray-100 text-gray-400'
                                                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
@@ -808,7 +817,7 @@ export default function Index({ products, categories = [], sellers = [], locatio
                                                 onClick={() => handleProductClick(product.id)}
                                             >
                                                 {/* Product Image */}
-                                                <div className="relative aspect-square overflow-hidden bg-gray-100 w-full">
+                                                <div className="relative aspect-square w-full overflow-hidden bg-gray-100">
                                                     {product.primary_image || product.image ? (
                                                         <img
                                                             src={product.primary_image ? `/storage/${product.primary_image}` : product.image}
@@ -826,21 +835,24 @@ export default function Index({ products, categories = [], sellers = [], locatio
                                                     )}
 
                                                     {/* Product Badges */}
-                                                    <div className="absolute left-1.5 sm:left-2 top-1.5 sm:top-2 flex flex-col gap-0.5 sm:gap-1">
+                                                    <div className="absolute top-1.5 left-1.5 flex flex-col gap-0.5 sm:top-2 sm:left-2 sm:gap-1">
                                                         {discount && (
-                                                            <div className="rounded bg-red-500 px-1 sm:px-1.5 py-0.5 text-[10px] sm:text-xs font-bold text-white shadow-md">
+                                                            <div className="rounded bg-red-500 px-1 py-0.5 text-[10px] font-bold text-white shadow-md sm:px-1.5 sm:text-xs">
                                                                 -{discount}%
                                                             </div>
                                                         )}
                                                         {product.free_shipping && (
-                                                            <div className="rounded bg-blue-500 px-1 sm:px-1.5 py-0.5 text-[9px] sm:text-xs font-bold text-white shadow-md">
+                                                            <div className="rounded bg-blue-500 px-1 py-0.5 text-[9px] font-bold text-white shadow-md sm:px-1.5 sm:text-xs">
                                                                 FREE SHIPPING
                                                             </div>
                                                         )}
                                                     </div>
 
                                                     {/* Wishlist Button */}
-                                                    <div className="absolute right-1.5 sm:right-2 top-1.5 sm:top-2 z-10" onClick={(e) => e.stopPropagation()}>
+                                                    <div
+                                                        className="absolute top-1.5 right-1.5 z-10 sm:top-2 sm:right-2"
+                                                        onClick={(e) => e.stopPropagation()}
+                                                    >
                                                         <WishlistButton
                                                             productId={product.id}
                                                             initialInWishlist={wishlistProductIds.includes(product.id)}
@@ -853,24 +865,24 @@ export default function Index({ products, categories = [], sellers = [], locatio
                                                 <div className="p-1.5 sm:p-2 md:p-3">
                                                     {/* Store Name */}
                                                     {product.seller && (
-                                                        <div className="mb-0.5 sm:mb-1 text-[10px] sm:text-xs text-gray-500 line-clamp-1">
+                                                        <div className="mb-0.5 line-clamp-1 text-[10px] text-gray-500 sm:mb-1 sm:text-xs">
                                                             {product.seller.name}
                                                         </div>
                                                     )}
 
                                                     {/* Product Title */}
-                                                    <h3 className="mb-1 sm:mb-1.5 md:mb-2 line-clamp-2 text-[11px] sm:text-xs md:text-sm font-medium text-gray-900 group-hover:text-orange-600 leading-tight">
+                                                    <h3 className="mb-1 line-clamp-2 text-[11px] leading-tight font-medium text-gray-900 group-hover:text-orange-600 sm:mb-1.5 sm:text-xs md:mb-2 md:text-sm">
                                                         {product.name}
                                                     </h3>
 
                                                     {/* Price */}
                                                     <div className="mb-1 sm:mb-1.5 md:mb-2">
-                                                        <div className="flex items-baseline gap-1 sm:gap-1.5 md:gap-2 flex-wrap">
-                                                            <span className="text-sm sm:text-base md:text-lg font-bold text-orange-500">
+                                                        <div className="flex flex-wrap items-baseline gap-1 sm:gap-1.5 md:gap-2">
+                                                            <span className="text-sm font-bold text-orange-500 sm:text-base md:text-lg">
                                                                 ₱{Number(product.price).toLocaleString()}
                                                             </span>
                                                             {product.compare_price && product.compare_price > product.price && (
-                                                                <span className="text-[9px] sm:text-[10px] md:text-xs text-gray-400 line-through">
+                                                                <span className="text-[9px] text-gray-400 line-through sm:text-[10px] md:text-xs">
                                                                     ₱{Number(product.compare_price).toLocaleString()}
                                                                 </span>
                                                             )}
@@ -878,30 +890,28 @@ export default function Index({ products, categories = [], sellers = [], locatio
                                                     </div>
 
                                                     {/* Rating and Sales */}
-                                                    <div className="mb-1 sm:mb-1.5 md:mb-2 flex items-center gap-1 sm:gap-1.5 md:gap-2 text-[10px] sm:text-xs flex-wrap">
+                                                    <div className="mb-1 flex flex-wrap items-center gap-1 text-[10px] sm:mb-1.5 sm:gap-1.5 sm:text-xs md:mb-2 md:gap-2">
                                                         {product.average_rating && Number(product.average_rating) > 0 ? (
                                                             <>
                                                                 <div className="flex items-center">
-                                                                    <Star className="h-2.5 w-2.5 sm:h-3 sm:w-3 fill-yellow-400 text-yellow-400" />
+                                                                    <Star className="h-2.5 w-2.5 fill-yellow-400 text-yellow-400 sm:h-3 sm:w-3" />
                                                                     <span className="ml-0.5 font-medium">
                                                                         {Number(product.average_rating).toFixed(1)}
                                                                     </span>
                                                                 </div>
                                                                 {salesCount && (
-                                                                    <span className="text-gray-500 hidden sm:inline">
-                                                                        {salesCount} Sold/Month
-                                                                    </span>
+                                                                    <span className="hidden text-gray-500 sm:inline">{salesCount} Sold/Month</span>
                                                                 )}
                                                             </>
                                                         ) : (
                                                             <span className="text-gray-400">No ratings yet</span>
                                                         )}
                                                     </div>
-                                                    
+
                                                     {/* Category Badge */}
                                                     {categoryName && (
                                                         <div className="mb-1 sm:mb-1.5 md:mb-2">
-                                                            <span className="inline-block rounded bg-orange-100 px-1.5 sm:px-2 py-0.5 text-[9px] sm:text-[10px] md:text-xs text-orange-700 line-clamp-1">
+                                                            <span className="line-clamp-1 inline-block rounded bg-orange-100 px-1.5 py-0.5 text-[9px] text-orange-700 sm:px-2 sm:text-[10px] md:text-xs">
                                                                 {categoryName}
                                                             </span>
                                                         </div>
@@ -909,28 +919,33 @@ export default function Index({ products, categories = [], sellers = [], locatio
 
                                                     {/* Location - Hidden on mobile to save space */}
                                                     {product.location && (
-                                                        <div className="text-[9px] sm:text-xs text-gray-500 hidden sm:block line-clamp-1">{product.location}</div>
+                                                        <div className="line-clamp-1 hidden text-[9px] text-gray-500 sm:block sm:text-xs">
+                                                            {product.location}
+                                                        </div>
                                                     )}
 
                                                     {/* Action Buttons */}
-                                                    <div className="mt-1.5 sm:mt-2 md:mt-3 flex gap-1 sm:gap-1.5 md:gap-2" onClick={(e) => e.stopPropagation()}>
+                                                    <div
+                                                        className="mt-1.5 flex gap-1 sm:mt-2 sm:gap-1.5 md:mt-3 md:gap-2"
+                                                        onClick={(e) => e.stopPropagation()}
+                                                    >
                                                         <button
                                                             onClick={(e) => handleAddToCart(e, product)}
                                                             disabled={isOutOfStock(product) || isLoading}
-                                                            className={`flex-1 rounded bg-orange-500 px-1.5 sm:px-2 md:px-3 py-1 sm:py-1.5 text-[9px] sm:text-[10px] md:text-xs font-medium text-white transition-colors flex items-center justify-center gap-0.5 sm:gap-1 min-w-0 ${
+                                                            className={`flex min-w-0 flex-1 items-center justify-center gap-0.5 rounded bg-orange-500 px-1.5 py-1 text-[9px] font-medium text-white transition-colors sm:gap-1 sm:px-2 sm:py-1.5 sm:text-[10px] md:px-3 md:text-xs ${
                                                                 isOutOfStock(product) || isLoading
                                                                     ? 'cursor-not-allowed bg-gray-300'
                                                                     : 'hover:bg-orange-600 active:bg-orange-700'
                                                             }`}
                                                         >
-                                                            <ShoppingCart className="h-3 w-3 sm:h-3.5 sm:w-3.5 md:h-4 md:w-4 flex-shrink-0" />
-                                                            <span className="hidden sm:inline md:hidden whitespace-nowrap">Add</span>
-                                                            <span className="hidden md:inline whitespace-nowrap">Add to Cart</span>
+                                                            <ShoppingCart className="h-3 w-3 flex-shrink-0 sm:h-3.5 sm:w-3.5 md:h-4 md:w-4" />
+                                                            <span className="hidden whitespace-nowrap sm:inline md:hidden">Add</span>
+                                                            <span className="hidden whitespace-nowrap md:inline">Add to Cart</span>
                                                         </button>
                                                         <button
                                                             onClick={(e) => handleBuyNow(e, product)}
                                                             disabled={isOutOfStock(product) || isLoading}
-                                                            className={`rounded border border-orange-500 px-1.5 sm:px-2 md:px-3 py-1 sm:py-1.5 text-[9px] sm:text-[10px] md:text-xs font-medium text-orange-500 transition-colors whitespace-nowrap ${
+                                                            className={`rounded border border-orange-500 px-1.5 py-1 text-[9px] font-medium whitespace-nowrap text-orange-500 transition-colors sm:px-2 sm:py-1.5 sm:text-[10px] md:px-3 md:text-xs ${
                                                                 isOutOfStock(product) || isLoading
                                                                     ? 'cursor-not-allowed border-gray-300 text-gray-300'
                                                                     : 'hover:bg-orange-50 active:bg-orange-100'
@@ -947,16 +962,14 @@ export default function Index({ products, categories = [], sellers = [], locatio
 
                                 {/* Bottom Pagination */}
                                 {products && products.last_page > 1 && (
-                                    <div className="mt-4 sm:mt-6 flex justify-center">
-                                        <div className="flex gap-1 sm:gap-2 flex-wrap justify-center">
+                                    <div className="mt-4 flex justify-center sm:mt-6">
+                                        <div className="flex flex-wrap justify-center gap-1 sm:gap-2">
                                             {products.links.map((link, index) => (
                                                 <Link
                                                     key={index}
                                                     href={link.url || '#'}
-                                                    className={`rounded-md px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm ${
-                                                        link.active
-                                                            ? 'bg-orange-500 text-white'
-                                                            : 'bg-white text-gray-700 hover:bg-gray-100'
+                                                    className={`rounded-md px-2 py-1.5 text-xs sm:px-3 sm:py-2 sm:text-sm ${
+                                                        link.active ? 'bg-orange-500 text-white' : 'bg-white text-gray-700 hover:bg-gray-100'
                                                     } ${!link.url ? 'cursor-not-allowed opacity-50' : ''}`}
                                                     dangerouslySetInnerHTML={{ __html: link.label }}
                                                 />
@@ -980,12 +993,7 @@ export default function Index({ products, categories = [], sellers = [], locatio
             {showToast && <Toast message={toastMessage} type="success" onClose={() => setShowToast(false)} />}
 
             {/* Add to Cart Modal */}
-            <AddToCartModal
-                isOpen={isModalOpen}
-                onClose={() => setIsModalOpen(false)}
-                product={modalProduct}
-                onAddToCart={handleModalAddToCart}
-            />
+            <AddToCartModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} product={modalProduct} onAddToCart={handleModalAddToCart} />
         </BuyerLayout>
     );
 }

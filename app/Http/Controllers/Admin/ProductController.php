@@ -138,6 +138,7 @@ class ProductController extends Controller
                     if (str_starts_with($img, '/')) {
                         return $img;
                     }
+
                     return asset('storage/'.$img);
                 }, $product->images) : null,
                 'featured_image' => $product->featured_image ? (str_starts_with($product->featured_image, 'http') || str_starts_with($product->featured_image, '/') ? $product->featured_image : asset('storage/'.$product->featured_image)) : null,

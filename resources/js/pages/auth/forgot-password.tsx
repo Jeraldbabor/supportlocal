@@ -22,8 +22,8 @@ interface ForgotPasswordProps {
 
 export default function ForgotPassword({ status, sellerCount, featuredArtisans }: ForgotPasswordProps) {
     return (
-        <AuthLayout 
-            title="Forgot password?" 
+        <AuthLayout
+            title="Forgot password?"
             description="Enter your email and we'll send you a link to reset your password"
             sellerCount={sellerCount}
             featuredArtisans={featuredArtisans}
@@ -36,11 +36,7 @@ export default function ForgotPassword({ status, sellerCount, featuredArtisans }
                 </div>
             )}
 
-            <Form
-                action={PasswordResetLinkController.store().url}
-                method={PasswordResetLinkController.store().method}
-                className="space-y-4"
-            >
+            <Form action={PasswordResetLinkController.store().url} method={PasswordResetLinkController.store().method} className="space-y-4">
                 {({ processing, errors }) => (
                     <>
                         <div className="group space-y-2">

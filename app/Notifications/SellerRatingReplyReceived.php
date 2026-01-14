@@ -37,14 +37,14 @@ class SellerRatingReplyReceived extends Notification
     public function toMail(object $notifiable): MailMessage
     {
         $sellerName = $this->rating->seller->name;
-        
+
         return (new MailMessage)
             ->subject('Seller Replied to Your Rating')
             ->greeting('Hello '.$notifiable->name.'!')
             ->line('The seller has replied to your rating!')
-            ->line('Seller: ' . $sellerName)
-            ->line('Reply: "' . $this->rating->seller_reply . '"')
-            ->action('View Reply', url('/buyer/seller/' . $this->rating->seller_id))
+            ->line('Seller: '.$sellerName)
+            ->line('Reply: "'.$this->rating->seller_reply.'"')
+            ->action('View Reply', url('/buyer/seller/'.$this->rating->seller_id))
             ->line('Thank you for your feedback!');
     }
 
@@ -57,12 +57,12 @@ class SellerRatingReplyReceived extends Notification
     {
         return [
             'title' => 'Seller Replied to Your Rating',
-            'message' => $this->rating->seller->name . ' replied to your seller rating.',
+            'message' => $this->rating->seller->name.' replied to your seller rating.',
             'rating_id' => $this->rating->id,
             'seller_id' => $this->rating->seller_id,
             'seller_name' => $this->rating->seller->name,
             'seller_reply' => $this->rating->seller_reply,
-            'action_url' => '/buyer/seller/' . $this->rating->seller_id,
+            'action_url' => '/buyer/seller/'.$this->rating->seller_id,
         ];
     }
 }

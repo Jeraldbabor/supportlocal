@@ -20,7 +20,7 @@ export default function VerifyEmail({ status, sellerCount, featuredArtisans }: V
     useEffect(() => {
         // Prevent back button navigation
         window.history.pushState(null, '', window.location.href);
-        
+
         const handlePopState = () => {
             window.history.pushState(null, '', window.location.href);
         };
@@ -56,9 +56,7 @@ export default function VerifyEmail({ status, sellerCount, featuredArtisans }: V
                             <Mail className="h-5 w-5 text-amber-600 dark:text-amber-400" />
                         </div>
                         <div className="flex-1">
-                            <p className="text-sm font-medium text-amber-900 dark:text-amber-300">
-                                Check your inbox
-                            </p>
+                            <p className="text-sm font-medium text-amber-900 dark:text-amber-300">Check your inbox</p>
                             <p className="mt-1 text-xs text-amber-700 dark:text-amber-400">
                                 We sent you a verification link. If you don't see it, check your spam folder.
                             </p>

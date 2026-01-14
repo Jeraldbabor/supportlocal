@@ -619,7 +619,9 @@ export default function ProductsIndex() {
                                                                 className="flex items-center gap-1 text-sm hover:text-blue-600"
                                                             >
                                                                 <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
-                                                                <span className="font-medium">{product.average_rating ? Number(product.average_rating).toFixed(1) : '0.0'}</span>
+                                                                <span className="font-medium">
+                                                                    {product.average_rating ? Number(product.average_rating).toFixed(1) : '0.0'}
+                                                                </span>
                                                                 <span className="text-gray-500">({product.review_count})</span>
                                                             </Link>
                                                         ) : (

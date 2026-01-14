@@ -5,19 +5,7 @@ import { Separator } from '@/components/ui/separator';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem, type SharedData } from '@/types';
 import { Head, Link, router, usePage } from '@inertiajs/react';
-import {
-    ArrowLeft,
-    Edit,
-    Package,
-    Star,
-    TrendingDown,
-    TrendingUp,
-    Trash2,
-    User,
-    ShoppingCart,
-    Eye,
-    DollarSign,
-} from 'lucide-react';
+import { ArrowLeft, Edit, Package, Star, Trash2, TrendingDown, TrendingUp, User } from 'lucide-react';
 
 interface Product {
     id: number;
@@ -102,10 +90,6 @@ export default function ProductShow() {
         router.post(`/admin/products/${product.id}/toggle-status`, {}, { preserveScroll: true });
     };
 
-    const handleToggleFeatured = () => {
-        router.post(`/admin/products/${product.id}/toggle-featured`, {}, { preserveScroll: true });
-    };
-
     const handleDelete = () => {
         if (confirm('Are you sure you want to delete this product? This action cannot be undone.')) {
             router.delete(`/admin/products/${product.id}`, {
@@ -184,7 +168,7 @@ export default function ProductShow() {
 
                 <div className="grid gap-6 lg:grid-cols-3">
                     {/* Main Content */}
-                    <div className="lg:col-span-2 space-y-6">
+                    <div className="space-y-6 lg:col-span-2">
                         {/* Product Images */}
                         <Card>
                             <CardHeader>
@@ -280,9 +264,7 @@ export default function ProductShow() {
                                                                     <Star
                                                                         key={i}
                                                                         className={`h-4 w-4 ${
-                                                                            i < rating.rating
-                                                                                ? 'fill-yellow-400 text-yellow-400'
-                                                                                : 'text-gray-300'
+                                                                            i < rating.rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'
                                                                         }`}
                                                                     />
                                                                 ))}

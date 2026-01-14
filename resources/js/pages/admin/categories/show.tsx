@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem, type SharedData } from '@/types';
 import { Head, Link, router, usePage } from '@inertiajs/react';
-import { ArrowLeft, Edit, FolderTree, Package, Trash2 } from 'lucide-react';
+import { ArrowLeft, Edit, FolderTree, Trash2 } from 'lucide-react';
 
 interface Category {
     id: number;
@@ -87,7 +87,7 @@ export default function CategoryShow() {
 
                 <div className="grid gap-6 lg:grid-cols-3">
                     {/* Main Content */}
-                    <div className="lg:col-span-2 space-y-6">
+                    <div className="space-y-6 lg:col-span-2">
                         {/* Category Info */}
                         <Card>
                             <CardHeader>

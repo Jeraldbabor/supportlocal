@@ -8,7 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem, type SharedData } from '@/types';
 import { Head, router, usePage } from '@inertiajs/react';
-import { Settings as SettingsIcon, Trash2 } from 'lucide-react';
+import { Trash2 } from 'lucide-react';
 import { FormEvent, useState } from 'react';
 
 interface Settings {
@@ -106,10 +106,7 @@ export default function SettingsIndex() {
                                     onSubmit={(e: FormEvent<HTMLFormElement>) => {
                                         e.preventDefault();
                                         const formData = new FormData(e.currentTarget);
-                                        handleSubmit(
-                                            'general',
-                                            Object.fromEntries(formData.entries()) as Record<string, unknown>,
-                                        );
+                                        handleSubmit('general', Object.fromEntries(formData.entries()) as Record<string, unknown>);
                                     }}
                                     className="space-y-4"
                                 >
@@ -139,11 +136,7 @@ export default function SettingsIndex() {
                                         <Textarea id="site_address" name="site_address" defaultValue={settings.general.site_address} rows={2} />
                                     </div>
                                     <div className="flex items-center space-x-2">
-                                        <Switch
-                                            id="maintenance_mode"
-                                            name="maintenance_mode"
-                                            defaultChecked={settings.general.maintenance_mode}
-                                        />
+                                        <Switch id="maintenance_mode" name="maintenance_mode" defaultChecked={settings.general.maintenance_mode} />
                                         <Label htmlFor="maintenance_mode">Maintenance Mode</Label>
                                     </div>
                                     <Button type="submit" disabled={isSubmitting}>
@@ -166,10 +159,7 @@ export default function SettingsIndex() {
                                     onSubmit={(e: FormEvent<HTMLFormElement>) => {
                                         e.preventDefault();
                                         const formData = new FormData(e.currentTarget);
-                                        handleSubmit(
-                                            'ecommerce',
-                                            Object.fromEntries(formData.entries()) as Record<string, unknown>,
-                                        );
+                                        handleSubmit('ecommerce', Object.fromEntries(formData.entries()) as Record<string, unknown>);
                                     }}
                                     className="space-y-4"
                                 >
@@ -180,25 +170,20 @@ export default function SettingsIndex() {
                                         </div>
                                         <div className="space-y-2">
                                             <Label htmlFor="currency_symbol">Currency Symbol</Label>
-                                            <Input id="currency_symbol" name="currency_symbol" defaultValue={settings.ecommerce.currency_symbol} required />
+                                            <Input
+                                                id="currency_symbol"
+                                                name="currency_symbol"
+                                                defaultValue={settings.ecommerce.currency_symbol}
+                                                required
+                                            />
                                         </div>
                                     </div>
                                     <div className="space-y-2">
                                         <Label htmlFor="tax_rate">Tax Rate (%)</Label>
-                                        <Input
-                                            id="tax_rate"
-                                            name="tax_rate"
-                                            type="number"
-                                            step="0.01"
-                                            defaultValue={settings.ecommerce.tax_rate}
-                                        />
+                                        <Input id="tax_rate" name="tax_rate" type="number" step="0.01" defaultValue={settings.ecommerce.tax_rate} />
                                     </div>
                                     <div className="flex items-center space-x-2">
-                                        <Switch
-                                            id="shipping_enabled"
-                                            name="shipping_enabled"
-                                            defaultChecked={settings.ecommerce.shipping_enabled}
-                                        />
+                                        <Switch id="shipping_enabled" name="shipping_enabled" defaultChecked={settings.ecommerce.shipping_enabled} />
                                         <Label htmlFor="shipping_enabled">Enable Shipping</Label>
                                     </div>
                                     <div className="grid gap-4 md:grid-cols-2">
@@ -302,10 +287,7 @@ export default function SettingsIndex() {
                                     onSubmit={(e: FormEvent<HTMLFormElement>) => {
                                         e.preventDefault();
                                         const formData = new FormData(e.currentTarget);
-                                        handleSubmit(
-                                            'notifications',
-                                            Object.fromEntries(formData.entries()) as Record<string, unknown>,
-                                        );
+                                        handleSubmit('notifications', Object.fromEntries(formData.entries()) as Record<string, unknown>);
                                     }}
                                     className="space-y-4"
                                 >
@@ -381,7 +363,12 @@ export default function SettingsIndex() {
                                     </div>
                                     <div className="space-y-2">
                                         <Label htmlFor="meta_description">Meta Description</Label>
-                                        <Textarea id="meta_description" name="meta_description" defaultValue={settings.seo.meta_description} rows={3} />
+                                        <Textarea
+                                            id="meta_description"
+                                            name="meta_description"
+                                            defaultValue={settings.seo.meta_description}
+                                            rows={3}
+                                        />
                                     </div>
                                     <div className="space-y-2">
                                         <Label htmlFor="meta_keywords">Meta Keywords</Label>

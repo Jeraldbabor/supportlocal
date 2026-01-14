@@ -99,14 +99,14 @@ class OrderController extends Controller
             // Create separate orders for each seller
             foreach ($ordersBySeller as $sellerId => $sellerItems) {
                 $sellerTotal = array_sum(array_column($sellerItems, 'total_price'));
-                
+
                 // Calculate shipping fee from products (sum each unique product's shipping cost once)
                 $shippingFee = 0;
                 $processedProducts = [];
                 foreach ($sellerItems as $item) {
                     $productId = $item['product_id'];
                     // Only add shipping cost once per unique product
-                    if (!in_array($productId, $processedProducts)) {
+                    if (! in_array($productId, $processedProducts)) {
                         $product = Product::find($productId);
                         $shippingFee += $product->shipping_cost ?? 50;
                         $processedProducts[] = $productId;

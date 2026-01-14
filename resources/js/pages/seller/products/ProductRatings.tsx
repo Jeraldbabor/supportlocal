@@ -1,15 +1,15 @@
-import AppLayout from '@/layouts/app-layout';
-import { type BreadcrumbItem, type SharedData } from '@/types';
-import { Head, Link, router } from '@inertiajs/react';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Textarea } from '@/components/ui/textarea';
-import { ArrowLeft, Star, MessageSquare, TrendingUp, Reply, Send, Trash2 } from 'lucide-react';
+import AppLayout from '@/layouts/app-layout';
+import { type BreadcrumbItem, type SharedData } from '@/types';
+import { Head, Link, router } from '@inertiajs/react';
+import axios from 'axios';
+import { ArrowLeft, MessageSquare, Reply, Send, Star, Trash2, TrendingUp } from 'lucide-react';
 import { useState } from 'react';
 import Swal from 'sweetalert2';
-import axios from 'axios';
 
 interface User {
     id: number;
@@ -88,12 +88,7 @@ export default function ProductRatings({ product, ratings, distribution, summary
         return (
             <div className="flex items-center gap-0.5">
                 {[1, 2, 3, 4, 5].map((star) => (
-                    <Star
-                        key={star}
-                        className={`${sizeClasses[size]} ${
-                            star <= rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'
-                        }`}
-                    />
+                    <Star key={star} className={`${sizeClasses[size]} ${star <= rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} />
                 ))}
             </div>
         );
@@ -127,12 +122,9 @@ export default function ProductRatings({ product, ratings, distribution, summary
         if (!replyText.trim()) return;
 
         setSubmitting(true);
-        
+
         try {
-            await axios.post(
-                `/seller/products/${product.id}/ratings/${ratingId}/reply`,
-                { seller_reply: replyText }
-            );
+            await axios.post(`/seller/products/${product.id}/ratings/${ratingId}/reply`, { seller_reply: replyText });
 
             setReplyText('');
             setReplyingToId(null);
@@ -252,12 +244,8 @@ export default function ProductRatings({ product, ratings, distribution, summary
                             <TrendingUp className="h-4 w-4 text-green-500" />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold">
-                                {distribution.find((d) => d.rating === 5)?.count || 0}
-                            </div>
-                            <p className="text-xs text-muted-foreground">
-                                {distribution.find((d) => d.rating === 5)?.percentage || 0}% of total
-                            </p>
+                            <div className="text-2xl font-bold">{distribution.find((d) => d.rating === 5)?.count || 0}</div>
+                            <p className="text-xs text-muted-foreground">{distribution.find((d) => d.rating === 5)?.percentage || 0}% of total</p>
                         </CardContent>
                     </Card>
                 </div>
@@ -278,10 +266,7 @@ export default function ProductRatings({ product, ratings, distribution, summary
                                     </div>
                                     <div className="flex-1">
                                         <div className="h-2 overflow-hidden rounded-full bg-gray-200">
-                                            <div
-                                                className="h-full bg-yellow-400 transition-all"
-                                                style={{ width: `${dist.percentage}%` }}
-                                            />
+                                            <div className="h-full bg-yellow-400 transition-all" style={{ width: `${dist.percentage}%` }} />
                                         </div>
                                     </div>
                                     <div className="flex w-24 items-center justify-between text-sm">
@@ -307,9 +292,7 @@ export default function ProductRatings({ product, ratings, distribution, summary
                             <div className="py-12 text-center">
                                 <MessageSquare className="mx-auto h-12 w-12 text-muted-foreground" />
                                 <h3 className="mt-4 text-lg font-semibold">No reviews yet</h3>
-                                <p className="mt-2 text-sm text-muted-foreground">
-                                    This product has not received any reviews from customers yet.
-                                </p>
+                                <p className="mt-2 text-sm text-muted-foreground">This product has not received any reviews from customers yet.</p>
                             </div>
                         ) : (
                             <div className="space-y-6">
@@ -317,10 +300,7 @@ export default function ProductRatings({ product, ratings, distribution, summary
                                     <div key={rating.id} className="border-b pb-6 last:border-b-0 last:pb-0">
                                         <div className="flex items-start gap-4">
                                             <Avatar className="h-10 w-10">
-                                                <AvatarImage
-                                                    src={rating.user.avatar_url || rating.user.profile_picture}
-                                                    alt={rating.user.name}
-                                                />
+                                                <AvatarImage src={rating.user.avatar_url || rating.user.profile_picture} alt={rating.user.name} />
                                                 <AvatarFallback>{getInitials(rating.user.name)}</AvatarFallback>
                                             </Avatar>
                                             <div className="flex-1">
@@ -329,16 +309,12 @@ export default function ProductRatings({ product, ratings, distribution, summary
                                                         <h4 className="font-semibold">{rating.user.name}</h4>
                                                         <div className="mt-1 flex items-center gap-2">
                                                             {renderStars(rating.rating, 'sm')}
-                                                            <span className="text-sm text-muted-foreground">
-                                                                {formatDate(rating.created_at)}
-                                                            </span>
+                                                            <span className="text-sm text-muted-foreground">{formatDate(rating.created_at)}</span>
                                                         </div>
                                                     </div>
                                                 </div>
-                                                {rating.review && (
-                                                    <p className="mt-3 text-sm text-gray-700">{rating.review}</p>
-                                                )}
-                                                
+                                                {rating.review && <p className="mt-3 text-sm text-gray-700">{rating.review}</p>}
+
                                                 {/* Seller Reply Section */}
                                                 {rating.seller_reply ? (
                                                     <div className="mt-4 rounded-lg bg-blue-50 p-3 dark:bg-blue-950/20">
@@ -398,11 +374,7 @@ export default function ProductRatings({ product, ratings, distribution, summary
                                                                 </div>
                                                             </div>
                                                         ) : (
-                                                            <Button
-                                                                variant="outline"
-                                                                size="sm"
-                                                                onClick={() => setReplyingToId(rating.id)}
-                                                            >
+                                                            <Button variant="outline" size="sm" onClick={() => setReplyingToId(rating.id)}>
                                                                 <Reply className="mr-2 h-4 w-4" />
                                                                 Reply to Customer
                                                             </Button>

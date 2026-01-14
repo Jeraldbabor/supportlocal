@@ -54,15 +54,15 @@ export default function Checkout({ user, buyNowItem }: CheckoutProps) {
     // Use buyNowItem if available, otherwise use cart
     const checkoutItems = buyNowItem ? [buyNowItem] : cart;
     const checkoutTotal = buyNowItem ? buyNowItem.price * buyNowItem.quantity : getCartTotal();
-    
+
     // Calculate shipping fee from product's shipping_cost (once per unique product)
-    const shippingFee = buyNowItem 
-        ? (buyNowItem.shipping_cost || 50)
+    const shippingFee = buyNowItem
+        ? buyNowItem.shipping_cost || 50
         : cart.reduce((total, item, index, array) => {
-            // Only add shipping cost for the first occurrence of each unique product
-            const isFirstOccurrence = array.findIndex(i => i.product_id === item.product_id) === index;
-            return isFirstOccurrence ? total + (item.shipping_cost || 50) : total;
-        }, 0);
+              // Only add shipping cost for the first occurrence of each unique product
+              const isFirstOccurrence = array.findIndex((i) => i.product_id === item.product_id) === index;
+              return isFirstOccurrence ? total + (item.shipping_cost || 50) : total;
+          }, 0);
     const totalWithShipping = checkoutTotal + shippingFee;
 
     const { data, setData, processing, errors } = useForm({

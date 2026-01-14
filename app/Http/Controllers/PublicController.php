@@ -77,7 +77,7 @@ class PublicController extends Controller
                         'Ilocos Norte', 'Ilocos Sur', 'La Union', 'Pangasinan',
                         'Batanes', 'Cagayan', 'Isabela', 'Nueva Vizcaya', 'Quirino',
                         'Abra', 'Benguet', 'Ifugao', 'Kalinga', 'Mountain Province', 'Apayao',
-                        'Aurora', 'Bataan', 'Bulacan', 'Nueva Ecija', 'Pampanga', 'Tarlac', 'Zambales'
+                        'Aurora', 'Bataan', 'Bulacan', 'Nueva Ecija', 'Pampanga', 'Tarlac', 'Zambales',
                     ]);
                 });
             } else {
@@ -118,7 +118,7 @@ class PublicController extends Controller
         // Sorting
         $sortBy = $request->get('sort', 'popular');
         $monthStart = Carbon::now()->startOfMonth();
-        
+
         switch ($sortBy) {
             case 'price-low':
                 $query->orderBy('price', 'asc');
@@ -142,17 +142,17 @@ class PublicController extends Controller
                     $q->where('status', \App\Models\Order::STATUS_COMPLETED)
                         ->where('created_at', '>=', $monthStart);
                 })
-                ->select('product_id', DB::raw('SUM(quantity) as monthly_sales'))
-                ->groupBy('product_id');
+                    ->select('product_id', DB::raw('SUM(quantity) as monthly_sales'))
+                    ->groupBy('product_id');
 
                 $query->leftJoinSub($monthlySalesSubquery, 'monthly_sales_data', function ($join) {
                     $join->on('products.id', '=', 'monthly_sales_data.product_id');
                 })
-                ->select('products.*')
-                ->orderByRaw('COALESCE(monthly_sales_data.monthly_sales, 0) DESC')
-                ->orderByDesc('products.order_count')
-                ->orderByDesc('products.average_rating')
-                ->orderByDesc('products.view_count');
+                    ->select('products.*')
+                    ->orderByRaw('COALESCE(monthly_sales_data.monthly_sales, 0) DESC')
+                    ->orderByDesc('products.order_count')
+                    ->orderByDesc('products.average_rating')
+                    ->orderByDesc('products.view_count');
                 break;
             case 'rating':
                 $query->where('review_count', '>', 0)
@@ -197,8 +197,8 @@ class PublicController extends Controller
                     'id' => $product->seller->id ?? 0,
                     'name' => $product->seller->name ?? 'Unknown Artisan',
                 ],
-                'location' => $product->seller ? 
-                    trim(($product->seller->delivery_city ?? '') . ', ' . ($product->seller->delivery_province ?? ''), ', ') 
+                'location' => $product->seller ?
+                    trim(($product->seller->delivery_city ?? '').', '.($product->seller->delivery_province ?? ''), ', ')
                     : null,
             ];
         });
@@ -232,7 +232,7 @@ class PublicController extends Controller
             ->distinct()
             ->get()
             ->map(function ($user) {
-                return trim(($user->delivery_city ?? '') . ', ' . ($user->delivery_province ?? ''), ', ');
+                return trim(($user->delivery_city ?? '').', '.($user->delivery_province ?? ''), ', ');
             })
             ->filter()
             ->unique()
@@ -389,7 +389,7 @@ class PublicController extends Controller
                     'Ilocos Norte', 'Ilocos Sur', 'La Union', 'Pangasinan',
                     'Batanes', 'Cagayan', 'Isabela', 'Nueva Vizcaya', 'Quirino',
                     'Abra', 'Benguet', 'Ifugao', 'Kalinga', 'Mountain Province', 'Apayao',
-                    'Aurora', 'Bataan', 'Bulacan', 'Nueva Ecija', 'Pampanga', 'Tarlac', 'Zambales'
+                    'Aurora', 'Bataan', 'Bulacan', 'Nueva Ecija', 'Pampanga', 'Tarlac', 'Zambales',
                 ]);
             } else {
                 $query->where(function ($q) use ($location) {
@@ -420,7 +420,7 @@ class PublicController extends Controller
 
         // Sorting
         $sortBy = $request->get('sort', 'popular');
-        
+
         switch ($sortBy) {
             case 'popular':
                 // Popular = combination of rating, products, and sales
@@ -444,7 +444,7 @@ class PublicController extends Controller
                 $query->withCount(['orders' => function ($q) {
                     $q->whereIn('status', ['completed', 'delivered']);
                 }])
-                ->orderBy('orders_count', 'desc');
+                    ->orderBy('orders_count', 'desc');
                 break;
             case 'latest':
             case 'newest':
@@ -466,7 +466,7 @@ class PublicController extends Controller
             // Extract location from delivery fields or address
             $location = 'Local Area';
             if ($artisan->delivery_city || $artisan->delivery_province) {
-                $location = trim(($artisan->delivery_city ?? '') . ', ' . ($artisan->delivery_province ?? ''), ', ');
+                $location = trim(($artisan->delivery_city ?? '').', '.($artisan->delivery_province ?? ''), ', ');
             } elseif ($artisan->address) {
                 $addressParts = explode(',', $artisan->address);
                 $location = trim(end($addressParts));
@@ -512,7 +512,7 @@ class PublicController extends Controller
             ->distinct()
             ->get()
             ->map(function ($user) {
-                return trim(($user->delivery_city ?? '') . ', ' . ($user->delivery_province ?? ''), ', ');
+                return trim(($user->delivery_city ?? '').', '.($user->delivery_province ?? ''), ', ');
             })
             ->filter()
             ->unique()

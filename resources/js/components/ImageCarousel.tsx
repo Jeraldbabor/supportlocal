@@ -1,4 +1,4 @@
-import { Link, router, usePage } from '@inertiajs/react';
+import { router, usePage } from '@inertiajs/react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
@@ -32,10 +32,6 @@ export default function ImageCarousel({ products, title, autoPlay = true, interv
         return `/product/${productId}`;
     };
 
-    if (products.length === 0) {
-        return null;
-    }
-
     useEffect(() => {
         if (!autoPlay || isPaused || products.length <= 1) return;
 
@@ -58,6 +54,10 @@ export default function ImageCarousel({ products, title, autoPlay = true, interv
         setCurrentIndex((prevIndex) => (prevIndex + 1) % products.length);
     };
 
+    if (products.length === 0) {
+        return null;
+    }
+
     return (
         <section
             className="relative h-[280px] w-full overflow-hidden rounded-2xl sm:h-[320px] md:h-[360px]"
@@ -71,12 +71,10 @@ export default function ImageCarousel({ products, title, autoPlay = true, interv
                 {products.map((product, index) => (
                     <div
                         key={product.id}
-                        className={`absolute inset-0 transition-opacity duration-1000 ${
-                            index === currentIndex ? 'opacity-100' : 'opacity-0'
-                        }`}
+                        className={`absolute inset-0 transition-opacity duration-1000 ${index === currentIndex ? 'opacity-100' : 'opacity-0'}`}
                     >
                         <div
-                            className="h-full w-full bg-cover bg-center bg-gray-200 cursor-pointer"
+                            className="h-full w-full cursor-pointer bg-gray-200 bg-cover bg-center"
                             style={{
                                 backgroundImage: `url(${product.image})`,
                                 backgroundSize: 'cover',
@@ -93,20 +91,20 @@ export default function ImageCarousel({ products, title, autoPlay = true, interv
                                 <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-12">
                                     <div className="max-w-xl">
                                         {title && (
-                                            <p className="mb-1.5 sm:mb-2 text-[10px] sm:text-xs lg:text-sm font-semibold uppercase tracking-wider text-amber-300">
+                                            <p className="mb-1.5 text-[10px] font-semibold tracking-wider text-amber-300 uppercase sm:mb-2 sm:text-xs lg:text-sm">
                                                 {title}
                                             </p>
                                         )}
-                                        <h2 className="mb-2 sm:mb-3 text-lg sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold text-white leading-tight">
+                                        <h2 className="mb-2 text-lg leading-tight font-bold text-white sm:mb-3 sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl">
                                             {product.name}
                                         </h2>
                                         {product.artisan && (
-                                            <p className="mb-3 sm:mb-4 text-xs sm:text-sm lg:text-base text-white/90">
+                                            <p className="mb-3 text-xs text-white/90 sm:mb-4 sm:text-sm lg:text-base">
                                                 by <span className="font-semibold text-amber-300">{product.artisan}</span>
                                             </p>
                                         )}
-                                        <div className="mb-3 sm:mb-4 flex items-baseline gap-2 sm:gap-3">
-                                            <span className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-white">
+                                        <div className="mb-3 flex items-baseline gap-2 sm:mb-4 sm:gap-3">
+                                            <span className="text-xl font-bold text-white sm:text-2xl md:text-3xl lg:text-4xl">
                                                 ₱{product.price.toLocaleString('en-PH', { minimumFractionDigits: 2 })}
                                             </span>
                                         </div>
@@ -115,10 +113,10 @@ export default function ImageCarousel({ products, title, autoPlay = true, interv
                                                 e.stopPropagation();
                                                 router.visit(getProductUrl(product.id));
                                             }}
-                                            className="group inline-flex items-center rounded-lg bg-white px-4 sm:px-6 py-2 sm:py-2.5 text-xs sm:text-sm font-semibold text-gray-900 shadow-lg transition-all duration-200 hover:scale-105 hover:bg-gray-50 hover:shadow-xl"
+                                            className="group inline-flex items-center rounded-lg bg-white px-4 py-2 text-xs font-semibold text-gray-900 shadow-lg transition-all duration-200 hover:scale-105 hover:bg-gray-50 hover:shadow-xl sm:px-6 sm:py-2.5 sm:text-sm"
                                         >
                                             Shop Now
-                                            <ChevronRight className="ml-1.5 sm:ml-2 h-3.5 w-3.5 sm:h-4 sm:w-4 transition-transform group-hover:translate-x-1" />
+                                            <ChevronRight className="ml-1.5 h-3.5 w-3.5 transition-transform group-hover:translate-x-1 sm:ml-2 sm:h-4 sm:w-4" />
                                         </button>
                                     </div>
                                 </div>
@@ -133,32 +131,30 @@ export default function ImageCarousel({ products, title, autoPlay = true, interv
                 <>
                     <button
                         onClick={goToPrevious}
-                        className="absolute left-2 sm:left-3 lg:left-4 top-1/2 z-20 -translate-y-1/2 rounded-full bg-white/95 p-1.5 sm:p-2 lg:p-2.5 shadow-lg backdrop-blur-sm transition-all hover:bg-white hover:scale-110"
+                        className="absolute top-1/2 left-2 z-20 -translate-y-1/2 rounded-full bg-white/95 p-1.5 shadow-lg backdrop-blur-sm transition-all hover:scale-110 hover:bg-white sm:left-3 sm:p-2 lg:left-4 lg:p-2.5"
                         aria-label="Previous slide"
                     >
-                        <ChevronLeft className="h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6 text-gray-800" />
+                        <ChevronLeft className="h-4 w-4 text-gray-800 sm:h-5 sm:w-5 lg:h-6 lg:w-6" />
                     </button>
                     <button
                         onClick={goToNext}
-                        className="absolute right-2 sm:right-3 lg:right-4 top-1/2 z-20 -translate-y-1/2 rounded-full bg-white/95 p-1.5 sm:p-2 lg:p-2.5 shadow-lg backdrop-blur-sm transition-all hover:bg-white hover:scale-110"
+                        className="absolute top-1/2 right-2 z-20 -translate-y-1/2 rounded-full bg-white/95 p-1.5 shadow-lg backdrop-blur-sm transition-all hover:scale-110 hover:bg-white sm:right-3 sm:p-2 lg:right-4 lg:p-2.5"
                         aria-label="Next slide"
                     >
-                        <ChevronRight className="h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6 text-gray-800" />
+                        <ChevronRight className="h-4 w-4 text-gray-800 sm:h-5 sm:w-5 lg:h-6 lg:w-6" />
                     </button>
                 </>
             )}
 
             {/* Enhanced Dots Indicator */}
             {products.length > 1 && (
-                <div className="absolute bottom-2 sm:bottom-4 left-1/2 z-20 flex -translate-x-1/2 gap-1.5 sm:gap-2">
+                <div className="absolute bottom-2 left-1/2 z-20 flex -translate-x-1/2 gap-1.5 sm:bottom-4 sm:gap-2">
                     {products.map((_, index) => (
                         <button
                             key={index}
                             onClick={() => goToSlide(index)}
-                            className={`h-1.5 w-1.5 sm:h-2 sm:w-2 rounded-full transition-all duration-300 ${
-                                index === currentIndex
-                                    ? 'bg-white w-6 sm:w-8 shadow-md'
-                                    : 'bg-white/50 hover:bg-white/70'
+                            className={`h-1.5 w-1.5 rounded-full transition-all duration-300 sm:h-2 sm:w-2 ${
+                                index === currentIndex ? 'w-6 bg-white shadow-md sm:w-8' : 'bg-white/50 hover:bg-white/70'
                             }`}
                             aria-label={`Go to slide ${index + 1}`}
                         />

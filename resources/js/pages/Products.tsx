@@ -1,11 +1,10 @@
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Product as GlobalProduct } from '@/types';
 import { Head, Link, router, usePage } from '@inertiajs/react';
-import { ChevronDown, ChevronLeft, ChevronRight, Filter, Search, ShoppingCart, Star, ArrowUp, ArrowDown } from 'lucide-react';
+import { ChevronDown, ChevronLeft, ChevronRight, Filter, Search, ShoppingCart, Star } from 'lucide-react';
 import React, { useState } from 'react';
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import AddToCartModal from '../components/AddToCartModal';
 import AuthRequiredModal from '../components/AuthRequiredModal';
-import StartChatButton from '../components/StartChatButton';
 import Toast from '../components/Toast';
 import WishlistButton from '../components/WishlistButton';
 import { useCart } from '../contexts/CartContext';
@@ -22,10 +21,13 @@ interface Product {
         id: number;
         name: string;
     };
-    category?: {
-        id: number;
-        name: string;
-    } | string | null;
+    category?:
+        | {
+              id: number;
+              name: string;
+          }
+        | string
+        | null;
     average_rating?: number | null;
     review_count?: number;
     order_count?: number;
@@ -107,7 +109,7 @@ export default function Products({ products, categories = [], sellers = [], loca
     const productList = products?.data || [];
     const currentSort = filters?.sort || 'popular';
     const [showPriceDropdown, setShowPriceDropdown] = useState(false);
-    
+
     // Determine if price sorting is active and which direction
     const isPriceSortActive = currentSort === 'price-low' || currentSort === 'price-high';
     const priceSortDirection = currentSort === 'price-low' ? 'low' : currentSort === 'price-high' ? 'high' : null;
@@ -120,7 +122,7 @@ export default function Products({ products, categories = [], sellers = [], loca
     const handleFilter = (key: string, value: string | null) => {
         const newFilters = { ...filters, [key]: value };
         // Remove null/empty filters
-        Object.keys(newFilters).forEach(k => {
+        Object.keys(newFilters).forEach((k) => {
             if (!newFilters[k as keyof typeof newFilters]) {
                 delete newFilters[k as keyof typeof newFilters];
             }
@@ -134,7 +136,7 @@ export default function Products({ products, categories = [], sellers = [], loca
     };
 
     const handlePriceFilter = () => {
-        const newFilters: any = { ...filters };
+        const newFilters: Record<string, string | boolean | null> = { ...filters };
         if (minPrice) newFilters.min_price = minPrice;
         if (maxPrice) newFilters.max_price = maxPrice;
         if (!minPrice) delete newFilters.min_price;
@@ -155,10 +157,6 @@ export default function Products({ products, categories = [], sellers = [], loca
 
     const handleProductClick = (productId: number) => {
         router.visit(`/product/${productId}`);
-    };
-
-    const handleSellerClick = (sellerId: number) => {
-        router.visit(`/seller/${sellerId}`);
     };
 
     const handleAddToCart = (e: React.MouseEvent, product: Product) => {
@@ -290,360 +288,363 @@ export default function Products({ products, categories = [], sellers = [], loca
 
     // Render filter content (reusable for both mobile drawer and desktop sidebar)
     const renderFilterContent = () => (
-        <div className="rounded-lg border border-gray-200 bg-white p-3 sm:p-4 shadow-sm">
-                            <div className="mb-4 flex items-center justify-between">
-                                <h2 className="text-lg font-bold text-gray-900">SEARCH FILTER</h2>
-                                {(selectedLocation || selectedSeller || selectedCategory || minPrice || maxPrice || freeShippingOnly || codOnly || selectedRating) && (
-                                    <button
-                                        onClick={clearFilters}
-                                        className="text-xs text-orange-500 hover:text-orange-600"
-                                    >
-                                        Clear
-                                    </button>
+        <div className="rounded-lg border border-gray-200 bg-white p-3 shadow-sm sm:p-4">
+            <div className="mb-4 flex items-center justify-between">
+                <h2 className="text-lg font-bold text-gray-900">SEARCH FILTER</h2>
+                {(selectedLocation ||
+                    selectedSeller ||
+                    selectedCategory ||
+                    minPrice ||
+                    maxPrice ||
+                    freeShippingOnly ||
+                    codOnly ||
+                    selectedRating) && (
+                    <button onClick={clearFilters} className="text-xs text-orange-500 hover:text-orange-600">
+                        Clear
+                    </button>
+                )}
+            </div>
+
+            {/* Category Filter */}
+            <div className="mb-6 border-b border-gray-200 pb-4">
+                <h3 className="mb-3 text-sm font-semibold text-gray-700">Category</h3>
+                <div className="space-y-2">
+                    <label className="flex items-center">
+                        <input
+                            type="checkbox"
+                            checked={!selectedCategory}
+                            onChange={(e) => {
+                                if (e.target.checked) {
+                                    setSelectedCategory(null);
+                                    handleFilter('category', null);
+                                }
+                            }}
+                            className="mr-2 h-4 w-4 rounded border-gray-300 text-orange-500 focus:ring-orange-500"
+                        />
+                        <span className="text-sm text-gray-700">All Categories</span>
+                    </label>
+                    {categories.map((category) => (
+                        <label key={category.id} className="flex items-center">
+                            <input
+                                type="checkbox"
+                                checked={selectedCategory === category.id.toString()}
+                                onChange={(e) => {
+                                    const value = e.target.checked ? category.id.toString() : null;
+                                    setSelectedCategory(value);
+                                    handleFilter('category', value);
+                                }}
+                                className="mr-2 h-4 w-4 rounded border-gray-300 text-orange-500 focus:ring-orange-500"
+                            />
+                            <span className="text-sm text-gray-700">
+                                {category.name}
+                                {category.products_count !== undefined && (
+                                    <span className="ml-1 text-xs text-gray-500">({category.products_count})</span>
                                 )}
-                            </div>
+                            </span>
+                        </label>
+                    ))}
+                </div>
+            </div>
 
-                            {/* Category Filter */}
-                            <div className="mb-6 border-b border-gray-200 pb-4">
-                                <h3 className="mb-3 text-sm font-semibold text-gray-700">Category</h3>
-                                <div className="space-y-2">
-                                    <label className="flex items-center">
-                                        <input
-                                            type="checkbox"
-                                            checked={!selectedCategory}
-                                            onChange={(e) => {
-                                                if (e.target.checked) {
-                                                    setSelectedCategory(null);
-                                                    handleFilter('category', null);
-                                                }
-                                            }}
-                                            className="mr-2 h-4 w-4 rounded border-gray-300 text-orange-500 focus:ring-orange-500"
-                                        />
-                                        <span className="text-sm text-gray-700">All Categories</span>
-                                    </label>
-                                    {categories.map((category) => (
-                                        <label key={category.id} className="flex items-center">
-                                            <input
-                                                type="checkbox"
-                                                checked={selectedCategory === category.id.toString()}
-                                                onChange={(e) => {
-                                                    const value = e.target.checked ? category.id.toString() : null;
-                                                    setSelectedCategory(value);
-                                                    handleFilter('category', value);
-                                                }}
-                                                className="mr-2 h-4 w-4 rounded border-gray-300 text-orange-500 focus:ring-orange-500"
-                                            />
-                                            <span className="text-sm text-gray-700">
-                                                {category.name}
-                                                {category.products_count !== undefined && (
-                                                    <span className="ml-1 text-xs text-gray-500">
-                                                        ({category.products_count})
-                                                    </span>
-                                                )}
-                                            </span>
-                                        </label>
-                                    ))}
-                                </div>
-                            </div>
+            {/* Shipped From */}
+            <div className="mb-6 border-b border-gray-200 pb-4">
+                <h3 className="mb-3 text-sm font-semibold text-gray-700">Shipped From</h3>
+                <div className="space-y-2">
+                    <label className="flex items-center">
+                        <input
+                            type="checkbox"
+                            checked={selectedLocation === 'domestic'}
+                            onChange={(e) => {
+                                const value = e.target.checked ? 'domestic' : null;
+                                setSelectedLocation(value);
+                                handleFilter('location', value);
+                            }}
+                            className="mr-2 h-4 w-4 rounded border-gray-300 text-orange-500 focus:ring-orange-500"
+                        />
+                        <span className="text-sm text-gray-700">Domestic</span>
+                    </label>
+                    <label className="flex items-center">
+                        <input
+                            type="checkbox"
+                            checked={selectedLocation === 'metro_manila'}
+                            onChange={(e) => {
+                                const value = e.target.checked ? 'metro_manila' : null;
+                                setSelectedLocation(value);
+                                handleFilter('location', value);
+                            }}
+                            className="mr-2 h-4 w-4 rounded border-gray-300 text-orange-500 focus:ring-orange-500"
+                        />
+                        <span className="text-sm text-gray-700">Metro Manila</span>
+                    </label>
+                    <label className="flex items-center">
+                        <input
+                            type="checkbox"
+                            checked={selectedLocation === 'north_luzon'}
+                            onChange={(e) => {
+                                const value = e.target.checked ? 'north_luzon' : null;
+                                setSelectedLocation(value);
+                                handleFilter('location', value);
+                            }}
+                            className="mr-2 h-4 w-4 rounded border-gray-300 text-orange-500 focus:ring-orange-500"
+                        />
+                        <span className="text-sm text-gray-700">North Luzon</span>
+                    </label>
+                    {displayedLocations.length > 0 && (
+                        <>
+                            {displayedLocations.map((location) => (
+                                <label key={location} className="flex items-center">
+                                    <input
+                                        type="checkbox"
+                                        checked={selectedLocation === location}
+                                        onChange={(e) => {
+                                            const value = e.target.checked ? location : null;
+                                            setSelectedLocation(value);
+                                            handleFilter('location', value);
+                                        }}
+                                        className="mr-2 h-4 w-4 rounded border-gray-300 text-orange-500 focus:ring-orange-500"
+                                    />
+                                    <span className="text-sm text-gray-700">{location}</span>
+                                </label>
+                            ))}
+                            {locations.length > 4 && (
+                                <button
+                                    onClick={() => setShowMoreLocations(!showMoreLocations)}
+                                    className="mt-1 flex items-center text-xs text-gray-600 hover:text-orange-500"
+                                >
+                                    {showMoreLocations ? 'Show Less' : 'More'} <ChevronDown className="ml-1 h-3 w-3" />
+                                </button>
+                            )}
+                        </>
+                    )}
+                </div>
+            </div>
 
-                            {/* Shipped From */}
-                            <div className="mb-6 border-b border-gray-200 pb-4">
-                                <h3 className="mb-3 text-sm font-semibold text-gray-700">Shipped From</h3>
-                                <div className="space-y-2">
-                                    <label className="flex items-center">
-                                        <input
-                                            type="checkbox"
-                                            checked={selectedLocation === 'domestic'}
-                                            onChange={(e) => {
-                                                const value = e.target.checked ? 'domestic' : null;
-                                                setSelectedLocation(value);
-                                                handleFilter('location', value);
-                                            }}
-                                            className="mr-2 h-4 w-4 rounded border-gray-300 text-orange-500 focus:ring-orange-500"
-                                        />
-                                        <span className="text-sm text-gray-700">Domestic</span>
-                                    </label>
-                                    <label className="flex items-center">
-                                        <input
-                                            type="checkbox"
-                                            checked={selectedLocation === 'metro_manila'}
-                                            onChange={(e) => {
-                                                const value = e.target.checked ? 'metro_manila' : null;
-                                                setSelectedLocation(value);
-                                                handleFilter('location', value);
-                                            }}
-                                            className="mr-2 h-4 w-4 rounded border-gray-300 text-orange-500 focus:ring-orange-500"
-                                        />
-                                        <span className="text-sm text-gray-700">Metro Manila</span>
-                                    </label>
-                                    <label className="flex items-center">
-                                        <input
-                                            type="checkbox"
-                                            checked={selectedLocation === 'north_luzon'}
-                                            onChange={(e) => {
-                                                const value = e.target.checked ? 'north_luzon' : null;
-                                                setSelectedLocation(value);
-                                                handleFilter('location', value);
-                                            }}
-                                            className="mr-2 h-4 w-4 rounded border-gray-300 text-orange-500 focus:ring-orange-500"
-                                        />
-                                        <span className="text-sm text-gray-700">North Luzon</span>
-                                    </label>
-                                    {displayedLocations.length > 0 && (
-                                        <>
-                                            {displayedLocations.map((location) => (
-                                                <label key={location} className="flex items-center">
-                                                    <input
-                                                        type="checkbox"
-                                                        checked={selectedLocation === location}
-                                                        onChange={(e) => {
-                                                            const value = e.target.checked ? location : null;
-                                                            setSelectedLocation(value);
-                                                            handleFilter('location', value);
-                                                        }}
-                                                        className="mr-2 h-4 w-4 rounded border-gray-300 text-orange-500 focus:ring-orange-500"
-                                                    />
-                                                    <span className="text-sm text-gray-700">{location}</span>
-                                                </label>
-                                            ))}
-                                            {locations.length > 4 && (
-                                                <button
-                                                    onClick={() => setShowMoreLocations(!showMoreLocations)}
-                                                    className="mt-1 flex items-center text-xs text-gray-600 hover:text-orange-500"
-                                                >
-                                                    {showMoreLocations ? 'Show Less' : 'More'} <ChevronDown className="ml-1 h-3 w-3" />
-                                                </button>
-                                            )}
-                                        </>
-                                    )}
-                                </div>
-                            </div>
+            {/* Brand/Seller */}
+            <div className="mb-6 border-b border-gray-200 pb-4">
+                <h3 className="mb-3 text-sm font-semibold text-gray-700">Brand</h3>
+                <div className="space-y-2">
+                    {displayedSellers.map((seller) => (
+                        <label key={seller.id} className="flex items-center">
+                            <input
+                                type="checkbox"
+                                checked={selectedSeller === seller.id.toString()}
+                                onChange={(e) => {
+                                    const value = e.target.checked ? seller.id.toString() : null;
+                                    setSelectedSeller(value);
+                                    handleFilter('seller', value);
+                                }}
+                                className="mr-2 h-4 w-4 rounded border-gray-300 text-orange-500 focus:ring-orange-500"
+                            />
+                            <span className="text-sm text-gray-700">{seller.name}</span>
+                        </label>
+                    ))}
+                    {sellers.length > 4 && (
+                        <button
+                            onClick={() => setShowMoreSellers(!showMoreSellers)}
+                            className="mt-1 flex items-center text-xs text-gray-600 hover:text-orange-500"
+                        >
+                            {showMoreSellers ? 'Show Less' : 'More'} <ChevronDown className="ml-1 h-3 w-3" />
+                        </button>
+                    )}
+                </div>
+            </div>
 
-                            {/* Brand/Seller */}
-                            <div className="mb-6 border-b border-gray-200 pb-4">
-                                <h3 className="mb-3 text-sm font-semibold text-gray-700">Brand</h3>
-                                <div className="space-y-2">
-                                    {displayedSellers.map((seller) => (
-                                        <label key={seller.id} className="flex items-center">
-                                            <input
-                                                type="checkbox"
-                                                checked={selectedSeller === seller.id.toString()}
-                                                onChange={(e) => {
-                                                    const value = e.target.checked ? seller.id.toString() : null;
-                                                    setSelectedSeller(value);
-                                                    handleFilter('seller', value);
-                                                }}
-                                                className="mr-2 h-4 w-4 rounded border-gray-300 text-orange-500 focus:ring-orange-500"
-                                            />
-                                            <span className="text-sm text-gray-700">{seller.name}</span>
-                                        </label>
-                                    ))}
-                                    {sellers.length > 4 && (
-                                        <button
-                                            onClick={() => setShowMoreSellers(!showMoreSellers)}
-                                            className="mt-1 flex items-center text-xs text-gray-600 hover:text-orange-500"
-                                        >
-                                            {showMoreSellers ? 'Show Less' : 'More'} <ChevronDown className="ml-1 h-3 w-3" />
-                                        </button>
-                                    )}
-                                </div>
-                            </div>
-
-                            {/* Rating Filter */}
-                            <div className="mb-6 border-b border-gray-200 pb-4">
-                                <h3 className="mb-3 text-sm font-semibold text-gray-700">Rating</h3>
-                                <div className="space-y-2">
-                                    {/* 5 Stars */}
-                                    <label className="flex items-center cursor-pointer">
-                                        <input
-                                            type="radio"
-                                            name="rating"
-                                            checked={selectedRating === '5'}
-                                            onChange={(e) => {
-                                                const value = selectedRating === '5' ? null : '5';
-                                                setSelectedRating(value);
-                                                handleFilter('min_rating', value);
-                                            }}
-                                            className="mr-2 h-4 w-4 border-gray-300 text-orange-500 focus:ring-orange-500"
-                                        />
-                                        <div className="flex items-center gap-1">
-                                            {[...Array(5)].map((_, i) => (
-                                                <Star key={i} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                                            ))}
-                                        </div>
-                                    </label>
-
-                                    {/* 4 Stars & Up */}
-                                    <label className="flex items-center cursor-pointer">
-                                        <input
-                                            type="radio"
-                                            name="rating"
-                                            checked={selectedRating === '4'}
-                                            onChange={(e) => {
-                                                const value = selectedRating === '4' ? null : '4';
-                                                setSelectedRating(value);
-                                                handleFilter('min_rating', value);
-                                            }}
-                                            className="mr-2 h-4 w-4 border-gray-300 text-orange-500 focus:ring-orange-500"
-                                        />
-                                        <div className="flex items-center gap-1">
-                                            {[...Array(4)].map((_, i) => (
-                                                <Star key={i} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                                            ))}
-                                            {[...Array(1)].map((_, i) => (
-                                                <Star key={i} className="h-4 w-4 text-gray-300" />
-                                            ))}
-                                            <span className="ml-1 text-sm text-gray-700">& Up</span>
-                                        </div>
-                                    </label>
-
-                                    {/* 3 Stars & Up */}
-                                    <label className="flex items-center cursor-pointer">
-                                        <input
-                                            type="radio"
-                                            name="rating"
-                                            checked={selectedRating === '3'}
-                                            onChange={(e) => {
-                                                const value = selectedRating === '3' ? null : '3';
-                                                setSelectedRating(value);
-                                                handleFilter('min_rating', value);
-                                            }}
-                                            className="mr-2 h-4 w-4 border-gray-300 text-orange-500 focus:ring-orange-500"
-                                        />
-                                        <div className="flex items-center gap-1">
-                                            {[...Array(3)].map((_, i) => (
-                                                <Star key={i} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                                            ))}
-                                            {[...Array(2)].map((_, i) => (
-                                                <Star key={i} className="h-4 w-4 text-gray-300" />
-                                            ))}
-                                            <span className="ml-1 text-sm text-gray-700">& Up</span>
-                                        </div>
-                                    </label>
-
-                                    {/* 2 Stars & Up */}
-                                    <label className="flex items-center cursor-pointer">
-                                        <input
-                                            type="radio"
-                                            name="rating"
-                                            checked={selectedRating === '2'}
-                                            onChange={(e) => {
-                                                const value = selectedRating === '2' ? null : '2';
-                                                setSelectedRating(value);
-                                                handleFilter('min_rating', value);
-                                            }}
-                                            className="mr-2 h-4 w-4 border-gray-300 text-orange-500 focus:ring-orange-500"
-                                        />
-                                        <div className="flex items-center gap-1">
-                                            {[...Array(2)].map((_, i) => (
-                                                <Star key={i} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                                            ))}
-                                            {[...Array(3)].map((_, i) => (
-                                                <Star key={i} className="h-4 w-4 text-gray-300" />
-                                            ))}
-                                            <span className="ml-1 text-sm text-gray-700">& Up</span>
-                                        </div>
-                                    </label>
-
-                                    {/* More ratings (1 Star & Up) - shown when expanded */}
-                                    {showMoreRatings && (
-                                        <label className="flex items-center cursor-pointer">
-                                            <input
-                                                type="radio"
-                                                name="rating"
-                                                checked={selectedRating === '1'}
-                                                onChange={(e) => {
-                                                    const value = selectedRating === '1' ? null : '1';
-                                                    setSelectedRating(value);
-                                                    handleFilter('min_rating', value);
-                                                }}
-                                                className="mr-2 h-4 w-4 border-gray-300 text-orange-500 focus:ring-orange-500"
-                                            />
-                                            <div className="flex items-center gap-1">
-                                                {[...Array(1)].map((_, i) => (
-                                                    <Star key={i} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                                                ))}
-                                                {[...Array(4)].map((_, i) => (
-                                                    <Star key={i} className="h-4 w-4 text-gray-300" />
-                                                ))}
-                                                <span className="ml-1 text-sm text-gray-700">& Up</span>
-                                            </div>
-                                        </label>
-                                    )}
-
-                                    {/* More/Less toggle */}
-                                    <button
-                                        onClick={() => setShowMoreRatings(!showMoreRatings)}
-                                        className="mt-1 flex items-center text-xs text-gray-600 hover:text-orange-500"
-                                    >
-                                        {showMoreRatings ? 'Show Less' : 'More'} <ChevronDown className={`ml-1 h-3 w-3 transition-transform ${showMoreRatings ? 'rotate-180' : ''}`} />
-                                    </button>
-                                </div>
-                            </div>
-
-                            {/* Shops & Promos */}
-                            <div className="mb-6 border-b border-gray-200 pb-4">
-                                <h3 className="mb-3 text-sm font-semibold text-gray-700">Shops & Promos</h3>
-                                <div className="space-y-2">
-                                    <label className="flex items-center">
-                                        <input
-                                            type="checkbox"
-                                            checked={freeShippingOnly}
-                                            onChange={(e) => {
-                                                const value = e.target.checked;
-                                                setFreeShippingOnly(value);
-                                                handleFilter('free_shipping', value ? 'true' : null);
-                                            }}
-                                            className="mr-2 h-4 w-4 rounded border-gray-300 text-orange-500 focus:ring-orange-500"
-                                        />
-                                        <span className="text-sm text-gray-700">Free Shipping</span>
-                                    </label>
-                                    <label className="flex items-center">
-                                        <input
-                                            type="checkbox"
-                                            checked={codOnly}
-                                            onChange={(e) => {
-                                                const value = e.target.checked;
-                                                setCodOnly(value);
-                                                handleFilter('cod', value ? 'true' : null);
-                                            }}
-                                            className="mr-2 h-4 w-4 rounded border-gray-300 text-orange-500 focus:ring-orange-500"
-                                        />
-                                        <span className="text-sm text-gray-700">Cash on Delivery (COD)</span>
-                                    </label>
-                                </div>
-                            </div>
-
-                            {/* Price Range */}
-                            <div className="mb-6">
-                                <h3 className="mb-3 text-sm font-semibold text-gray-700">Price Range</h3>
-                                <div className="space-y-2">
-                                    <div className="flex items-center gap-2">
-                                        <input
-                                            type="number"
-                                            placeholder="Min"
-                                            value={minPrice}
-                                            onChange={(e) => setMinPrice(e.target.value)}
-                                            className="w-full rounded border border-gray-300 px-2 py-1.5 text-sm focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-200"
-                                        />
-                                        <span className="text-gray-500">-</span>
-                                        <input
-                                            type="number"
-                                            placeholder="Max"
-                                            value={maxPrice}
-                                            onChange={(e) => setMaxPrice(e.target.value)}
-                                            className="w-full rounded border border-gray-300 px-2 py-1.5 text-sm focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-200"
-                                        />
-                                    </div>
-                                    <button
-                                        onClick={handlePriceFilter}
-                                        className="w-full rounded bg-orange-500 px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-orange-600"
-                                    >
-                                        Apply
-                                    </button>
-                                </div>
-                            </div>
+            {/* Rating Filter */}
+            <div className="mb-6 border-b border-gray-200 pb-4">
+                <h3 className="mb-3 text-sm font-semibold text-gray-700">Rating</h3>
+                <div className="space-y-2">
+                    {/* 5 Stars */}
+                    <label className="flex cursor-pointer items-center">
+                        <input
+                            type="radio"
+                            name="rating"
+                            checked={selectedRating === '5'}
+                            onChange={() => {
+                                const value = selectedRating === '5' ? null : '5';
+                                setSelectedRating(value);
+                                handleFilter('min_rating', value);
+                            }}
+                            className="mr-2 h-4 w-4 border-gray-300 text-orange-500 focus:ring-orange-500"
+                        />
+                        <div className="flex items-center gap-1">
+                            {[...Array(5)].map((_, i) => (
+                                <Star key={i} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                            ))}
                         </div>
+                    </label>
+
+                    {/* 4 Stars & Up */}
+                    <label className="flex cursor-pointer items-center">
+                        <input
+                            type="radio"
+                            name="rating"
+                            checked={selectedRating === '4'}
+                            onChange={() => {
+                                const value = selectedRating === '4' ? null : '4';
+                                setSelectedRating(value);
+                                handleFilter('min_rating', value);
+                            }}
+                            className="mr-2 h-4 w-4 border-gray-300 text-orange-500 focus:ring-orange-500"
+                        />
+                        <div className="flex items-center gap-1">
+                            {[...Array(4)].map((_, i) => (
+                                <Star key={i} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                            ))}
+                            {[...Array(1)].map((_, i) => (
+                                <Star key={i} className="h-4 w-4 text-gray-300" />
+                            ))}
+                            <span className="ml-1 text-sm text-gray-700">& Up</span>
+                        </div>
+                    </label>
+
+                    {/* 3 Stars & Up */}
+                    <label className="flex cursor-pointer items-center">
+                        <input
+                            type="radio"
+                            name="rating"
+                            checked={selectedRating === '3'}
+                            onChange={() => {
+                                const value = selectedRating === '3' ? null : '3';
+                                setSelectedRating(value);
+                                handleFilter('min_rating', value);
+                            }}
+                            className="mr-2 h-4 w-4 border-gray-300 text-orange-500 focus:ring-orange-500"
+                        />
+                        <div className="flex items-center gap-1">
+                            {[...Array(3)].map((_, i) => (
+                                <Star key={i} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                            ))}
+                            {[...Array(2)].map((_, i) => (
+                                <Star key={i} className="h-4 w-4 text-gray-300" />
+                            ))}
+                            <span className="ml-1 text-sm text-gray-700">& Up</span>
+                        </div>
+                    </label>
+
+                    {/* 2 Stars & Up */}
+                    <label className="flex cursor-pointer items-center">
+                        <input
+                            type="radio"
+                            name="rating"
+                            checked={selectedRating === '2'}
+                            onChange={() => {
+                                const value = selectedRating === '2' ? null : '2';
+                                setSelectedRating(value);
+                                handleFilter('min_rating', value);
+                            }}
+                            className="mr-2 h-4 w-4 border-gray-300 text-orange-500 focus:ring-orange-500"
+                        />
+                        <div className="flex items-center gap-1">
+                            {[...Array(2)].map((_, i) => (
+                                <Star key={i} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                            ))}
+                            {[...Array(3)].map((_, i) => (
+                                <Star key={i} className="h-4 w-4 text-gray-300" />
+                            ))}
+                            <span className="ml-1 text-sm text-gray-700">& Up</span>
+                        </div>
+                    </label>
+
+                    {/* More ratings (1 Star & Up) - shown when expanded */}
+                    {showMoreRatings && (
+                        <label className="flex cursor-pointer items-center">
+                            <input
+                                type="radio"
+                                name="rating"
+                                checked={selectedRating === '1'}
+                                onChange={() => {
+                                    const value = selectedRating === '1' ? null : '1';
+                                    setSelectedRating(value);
+                                    handleFilter('min_rating', value);
+                                }}
+                                className="mr-2 h-4 w-4 border-gray-300 text-orange-500 focus:ring-orange-500"
+                            />
+                            <div className="flex items-center gap-1">
+                                {[...Array(1)].map((_, i) => (
+                                    <Star key={i} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                                ))}
+                                {[...Array(4)].map((_, i) => (
+                                    <Star key={i} className="h-4 w-4 text-gray-300" />
+                                ))}
+                                <span className="ml-1 text-sm text-gray-700">& Up</span>
+                            </div>
+                        </label>
+                    )}
+
+                    {/* More/Less toggle */}
+                    <button
+                        onClick={() => setShowMoreRatings(!showMoreRatings)}
+                        className="mt-1 flex items-center text-xs text-gray-600 hover:text-orange-500"
+                    >
+                        {showMoreRatings ? 'Show Less' : 'More'}{' '}
+                        <ChevronDown className={`ml-1 h-3 w-3 transition-transform ${showMoreRatings ? 'rotate-180' : ''}`} />
+                    </button>
+                </div>
+            </div>
+
+            {/* Shops & Promos */}
+            <div className="mb-6 border-b border-gray-200 pb-4">
+                <h3 className="mb-3 text-sm font-semibold text-gray-700">Shops & Promos</h3>
+                <div className="space-y-2">
+                    <label className="flex items-center">
+                        <input
+                            type="checkbox"
+                            checked={freeShippingOnly}
+                            onChange={(e) => {
+                                const value = e.target.checked;
+                                setFreeShippingOnly(value);
+                                handleFilter('free_shipping', value ? 'true' : null);
+                            }}
+                            className="mr-2 h-4 w-4 rounded border-gray-300 text-orange-500 focus:ring-orange-500"
+                        />
+                        <span className="text-sm text-gray-700">Free Shipping</span>
+                    </label>
+                    <label className="flex items-center">
+                        <input
+                            type="checkbox"
+                            checked={codOnly}
+                            onChange={(e) => {
+                                const value = e.target.checked;
+                                setCodOnly(value);
+                                handleFilter('cod', value ? 'true' : null);
+                            }}
+                            className="mr-2 h-4 w-4 rounded border-gray-300 text-orange-500 focus:ring-orange-500"
+                        />
+                        <span className="text-sm text-gray-700">Cash on Delivery (COD)</span>
+                    </label>
+                </div>
+            </div>
+
+            {/* Price Range */}
+            <div className="mb-6">
+                <h3 className="mb-3 text-sm font-semibold text-gray-700">Price Range</h3>
+                <div className="space-y-2">
+                    <div className="flex items-center gap-2">
+                        <input
+                            type="number"
+                            placeholder="Min"
+                            value={minPrice}
+                            onChange={(e) => setMinPrice(e.target.value)}
+                            className="w-full rounded border border-gray-300 px-2 py-1.5 text-sm focus:border-orange-500 focus:ring-1 focus:ring-orange-200 focus:outline-none"
+                        />
+                        <span className="text-gray-500">-</span>
+                        <input
+                            type="number"
+                            placeholder="Max"
+                            value={maxPrice}
+                            onChange={(e) => setMaxPrice(e.target.value)}
+                            className="w-full rounded border border-gray-300 px-2 py-1.5 text-sm focus:border-orange-500 focus:ring-1 focus:ring-orange-200 focus:outline-none"
+                        />
+                    </div>
+                    <button
+                        onClick={handlePriceFilter}
+                        className="w-full rounded bg-orange-500 px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-orange-600"
+                    >
+                        Apply
+                    </button>
+                </div>
+            </div>
+        </div>
     );
 
     const [isFilterOpen, setIsFilterOpen] = useState(false);
@@ -652,23 +653,23 @@ export default function Products({ products, categories = [], sellers = [], loca
         <MainLayout>
             <Head title="Browse Products" />
 
-            <div className="mx-auto max-w-7xl px-3 sm:px-4 py-4 sm:py-6 lg:px-8">
+            <div className="mx-auto max-w-7xl px-3 py-4 sm:px-4 sm:py-6 lg:px-8">
                 {/* Search Bar */}
                 <div className="mb-4 sm:mb-6">
                     <form onSubmit={handleSearch} className="flex gap-2 sm:gap-3">
-                        <div className="relative flex-1 min-w-0">
-                            <Search className="absolute left-2 sm:left-3 top-1/2 h-4 w-4 sm:h-5 sm:w-5 -translate-y-1/2 text-gray-400" />
+                        <div className="relative min-w-0 flex-1">
+                            <Search className="absolute top-1/2 left-2 h-4 w-4 -translate-y-1/2 text-gray-400 sm:left-3 sm:h-5 sm:w-5" />
                             <input
                                 type="text"
                                 placeholder="Search products..."
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
-                                className="w-full rounded-lg border border-gray-300 py-2 sm:py-3 pl-8 sm:pl-10 pr-3 sm:pr-4 text-xs sm:text-sm focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-200"
+                                className="w-full rounded-lg border border-gray-300 py-2 pr-3 pl-8 text-xs focus:border-orange-500 focus:ring-2 focus:ring-orange-200 focus:outline-none sm:py-3 sm:pr-4 sm:pl-10 sm:text-sm"
                             />
                         </div>
                         <button
                             type="submit"
-                            className="rounded-lg bg-orange-500 px-3 sm:px-6 py-2 sm:py-3 text-xs sm:text-sm font-medium text-white transition-colors hover:bg-orange-600 whitespace-nowrap flex-shrink-0"
+                            className="flex-shrink-0 rounded-lg bg-orange-500 px-3 py-2 text-xs font-medium whitespace-nowrap text-white transition-colors hover:bg-orange-600 sm:px-6 sm:py-3 sm:text-sm"
                         >
                             Search
                         </button>
@@ -676,81 +677,80 @@ export default function Products({ products, categories = [], sellers = [], loca
                 </div>
 
                 {/* Mobile Filter Button */}
-                <div className="mb-2 sm:mb-3 md:mb-4 flex items-center justify-between lg:hidden">
+                <div className="mb-2 flex items-center justify-between sm:mb-3 md:mb-4 lg:hidden">
                     <Sheet open={isFilterOpen} onOpenChange={setIsFilterOpen}>
                         <SheetTrigger asChild>
-                            <button className="flex items-center gap-1.5 sm:gap-2 rounded-lg border border-gray-300 bg-white px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-medium text-gray-700 shadow-sm transition-colors hover:bg-gray-50 active:bg-gray-100">
+                            <button className="flex items-center gap-1.5 rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 shadow-sm transition-colors hover:bg-gray-50 active:bg-gray-100 sm:gap-2 sm:px-4 sm:py-2 sm:text-sm">
                                 <Filter className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                                 Filters
-                                {(selectedLocation || selectedSeller || selectedCategory || minPrice || maxPrice || freeShippingOnly || codOnly || selectedRating) && (
-                                    <span className="ml-1 rounded-full bg-orange-500 px-1 sm:px-1.5 py-0.5 text-[10px] sm:text-xs font-semibold text-white">
-                                        {[
-                                            selectedLocation,
-                                            selectedSeller,
-                                            selectedCategory,
-                                            minPrice,
-                                            maxPrice,
-                                            freeShippingOnly,
-                                            codOnly,
-                                            selectedRating,
-                                        ].filter(Boolean).length}
+                                {(selectedLocation ||
+                                    selectedSeller ||
+                                    selectedCategory ||
+                                    minPrice ||
+                                    maxPrice ||
+                                    freeShippingOnly ||
+                                    codOnly ||
+                                    selectedRating) && (
+                                    <span className="ml-1 rounded-full bg-orange-500 px-1 py-0.5 text-[10px] font-semibold text-white sm:px-1.5 sm:text-xs">
+                                        {
+                                            [
+                                                selectedLocation,
+                                                selectedSeller,
+                                                selectedCategory,
+                                                minPrice,
+                                                maxPrice,
+                                                freeShippingOnly,
+                                                codOnly,
+                                                selectedRating,
+                                            ].filter(Boolean).length
+                                        }
                                     </span>
                                 )}
                             </button>
                         </SheetTrigger>
-                        <SheetContent side="left" className="w-[85vw] sm:w-[400px] overflow-y-auto">
+                        <SheetContent side="left" className="w-[85vw] overflow-y-auto sm:w-[400px]">
                             <SheetHeader>
                                 <SheetTitle className="text-lg font-bold text-gray-900">SEARCH FILTER</SheetTitle>
                                 <SheetDescription className="sr-only">
                                     Filter products by category, location, seller, rating, price, and more
                                 </SheetDescription>
                             </SheetHeader>
-                            <div className="mt-4">
-                                {renderFilterContent()}
-                            </div>
+                            <div className="mt-4">{renderFilterContent()}</div>
                         </SheetContent>
                     </Sheet>
                 </div>
 
                 <div className="flex gap-3 sm:gap-4 md:gap-6">
                     {/* Left Sidebar - Filters (Desktop) */}
-                    <div className="hidden lg:block w-64 flex-shrink-0">
-                        {renderFilterContent()}
-                    </div>
+                    <div className="hidden w-64 flex-shrink-0 lg:block">{renderFilterContent()}</div>
 
                     {/* Right Content Area */}
-                    <div className="flex-1 min-w-0">
+                    <div className="min-w-0 flex-1">
                         {/* Sorting Bar */}
-                        <div className="mb-3 sm:mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0 rounded-lg border border-gray-200 bg-white px-2 sm:px-3 md:px-4 py-2 sm:py-2.5 md:py-3">
-                            <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto scrollbar-hide -mx-2 sm:mx-0 px-2 sm:px-0">
-                                <span className="text-xs sm:text-sm font-medium text-gray-700 whitespace-nowrap flex-shrink-0">Sort by:</span>
-                                <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
+                        <div className="mb-3 flex flex-col gap-2 rounded-lg border border-gray-200 bg-white px-2 py-2 sm:mb-4 sm:flex-row sm:items-center sm:justify-between sm:gap-0 sm:px-3 sm:py-2.5 md:px-4 md:py-3">
+                            <div className="scrollbar-hide -mx-2 flex items-center gap-1.5 overflow-x-auto px-2 sm:mx-0 sm:gap-2 sm:px-0">
+                                <span className="flex-shrink-0 text-xs font-medium whitespace-nowrap text-gray-700 sm:text-sm">Sort by:</span>
+                                <div className="flex flex-shrink-0 items-center gap-1.5 sm:gap-2">
                                     <button
                                         onClick={() => handleSort('popular')}
-                                        className={`rounded px-2 sm:px-3 py-1 sm:py-1.5 text-xs sm:text-sm font-medium transition-colors whitespace-nowrap ${
-                                            currentSort === 'popular'
-                                                ? 'bg-orange-500 text-white'
-                                                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                        className={`rounded px-2 py-1 text-xs font-medium whitespace-nowrap transition-colors sm:px-3 sm:py-1.5 sm:text-sm ${
+                                            currentSort === 'popular' ? 'bg-orange-500 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                                         }`}
                                     >
                                         Popular
                                     </button>
                                     <button
                                         onClick={() => handleSort('latest')}
-                                        className={`rounded px-2 sm:px-3 py-1 sm:py-1.5 text-xs sm:text-sm font-medium transition-colors whitespace-nowrap ${
-                                            currentSort === 'latest'
-                                                ? 'bg-orange-500 text-white'
-                                                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                        className={`rounded px-2 py-1 text-xs font-medium whitespace-nowrap transition-colors sm:px-3 sm:py-1.5 sm:text-sm ${
+                                            currentSort === 'latest' ? 'bg-orange-500 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                                         }`}
                                     >
                                         Latest
                                     </button>
                                     <button
                                         onClick={() => handleSort('top_sales')}
-                                        className={`rounded px-2 sm:px-3 py-1 sm:py-1.5 text-xs sm:text-sm font-medium transition-colors whitespace-nowrap ${
-                                            currentSort === 'top_sales'
-                                                ? 'bg-orange-500 text-white'
-                                                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                        className={`rounded px-2 py-1 text-xs font-medium whitespace-nowrap transition-colors sm:px-3 sm:py-1.5 sm:text-sm ${
+                                            currentSort === 'top_sales' ? 'bg-orange-500 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                                         }`}
                                     >
                                         Top Sales
@@ -758,10 +758,8 @@ export default function Products({ products, categories = [], sellers = [], loca
                                     <div className="relative">
                                         <button
                                             onClick={() => setShowPriceDropdown(!showPriceDropdown)}
-                                            className={`flex items-center gap-1 rounded px-2 sm:px-3 py-1 sm:py-1.5 text-xs sm:text-sm font-medium transition-colors whitespace-nowrap ${
-                                                isPriceSortActive
-                                                    ? 'bg-orange-500 text-white'
-                                                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                            className={`flex items-center gap-1 rounded px-2 py-1 text-xs font-medium whitespace-nowrap transition-colors sm:px-3 sm:py-1.5 sm:text-sm ${
+                                                isPriceSortActive ? 'bg-orange-500 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                                             }`}
                                         >
                                             Price
@@ -776,15 +774,12 @@ export default function Products({ products, categories = [], sellers = [], loca
                                             )}
                                             {!isPriceSortActive && <ChevronDown className="h-3 w-3" />}
                                         </button>
-                                        
+
                                         {/* Price Dropdown */}
                                         {showPriceDropdown && (
                                             <>
-                                                <div 
-                                                    className="fixed inset-0 z-10" 
-                                                    onClick={() => setShowPriceDropdown(false)}
-                                                />
-                                                <div className="absolute left-0 top-full z-20 mt-1 w-48 rounded-lg border border-gray-200 bg-white shadow-lg">
+                                                <div className="fixed inset-0 z-10" onClick={() => setShowPriceDropdown(false)} />
+                                                <div className="absolute top-full left-0 z-20 mt-1 w-48 rounded-lg border border-gray-200 bg-white shadow-lg">
                                                     <button
                                                         onClick={() => {
                                                             handleSort('price-low');
@@ -792,14 +787,12 @@ export default function Products({ products, categories = [], sellers = [], loca
                                                         }}
                                                         className={`flex w-full items-center justify-between px-4 py-2.5 text-left text-sm transition-colors first:rounded-t-lg ${
                                                             currentSort === 'price-low'
-                                                                ? 'bg-orange-50 text-orange-600 font-medium'
+                                                                ? 'bg-orange-50 font-medium text-orange-600'
                                                                 : 'text-gray-700 hover:bg-gray-50'
                                                         }`}
                                                     >
                                                         <span>Price: Low to High</span>
-                                                        {currentSort === 'price-low' && (
-                                                            <ArrowUp className="h-4 w-4 text-orange-600" />
-                                                        )}
+                                                        {currentSort === 'price-low' && <ArrowUp className="h-4 w-4 text-orange-600" />}
                                                     </button>
                                                     <button
                                                         onClick={() => {
@@ -808,14 +801,12 @@ export default function Products({ products, categories = [], sellers = [], loca
                                                         }}
                                                         className={`flex w-full items-center justify-between px-4 py-2.5 text-left text-sm transition-colors last:rounded-b-lg ${
                                                             currentSort === 'price-high'
-                                                                ? 'bg-orange-50 text-orange-600 font-medium'
+                                                                ? 'bg-orange-50 font-medium text-orange-600'
                                                                 : 'text-gray-700 hover:bg-gray-50'
                                                         }`}
                                                     >
                                                         <span>Price: High to Low</span>
-                                                        {currentSort === 'price-high' && (
-                                                            <ArrowDown className="h-4 w-4 text-orange-600" />
-                                                        )}
+                                                        {currentSort === 'price-high' && <ArrowDown className="h-4 w-4 text-orange-600" />}
                                                     </button>
                                                 </div>
                                             </>
@@ -859,7 +850,7 @@ export default function Products({ products, categories = [], sellers = [], loca
                         {/* Product Grid */}
                         {productList.length > 0 ? (
                             <>
-                                <div className="grid grid-cols-2 gap-2 sm:gap-3 md:gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+                                <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-3 md:gap-4 lg:grid-cols-4 xl:grid-cols-5">
                                     {productList.map((product) => {
                                         const discount = discountPercentage(product);
                                         // Use monthly_sales if available, otherwise fall back to order_count
@@ -891,7 +882,7 @@ export default function Products({ products, categories = [], sellers = [], loca
                                                     )}
 
                                                     {/* Product Badges */}
-                                                    <div className="absolute left-2 top-2 flex flex-col gap-1">
+                                                    <div className="absolute top-2 left-2 flex flex-col gap-1">
                                                         {discount && (
                                                             <div className="rounded bg-red-500 px-1.5 py-0.5 text-xs font-bold text-white shadow-md">
                                                                 -{discount}%
@@ -905,7 +896,7 @@ export default function Products({ products, categories = [], sellers = [], loca
                                                     </div>
 
                                                     {/* Wishlist Button */}
-                                                    <div className="absolute right-2 top-2 z-10" onClick={(e) => e.stopPropagation()}>
+                                                    <div className="absolute top-2 right-2 z-10" onClick={(e) => e.stopPropagation()}>
                                                         <WishlistButton
                                                             productId={product.id}
                                                             initialInWishlist={wishlistProductIds.includes(product.id)}
@@ -917,11 +908,7 @@ export default function Products({ products, categories = [], sellers = [], loca
                                                 {/* Product Info */}
                                                 <div className="p-3">
                                                     {/* Store Name */}
-                                                    {product.seller && (
-                                                        <div className="mb-1 text-xs text-gray-500">
-                                                            {product.seller.name}
-                                                        </div>
-                                                    )}
+                                                    {product.seller && <div className="mb-1 text-xs text-gray-500">{product.seller.name}</div>}
 
                                                     {/* Product Title */}
                                                     <h3 className="mb-2 line-clamp-2 text-sm font-medium text-gray-900 group-hover:text-orange-600">
@@ -952,17 +939,13 @@ export default function Products({ products, categories = [], sellers = [], loca
                                                                         {Number(product.average_rating).toFixed(1)}
                                                                     </span>
                                                                 </div>
-                                                                {salesCount && (
-                                                                    <span className="text-gray-500">
-                                                                        {salesCount} Sold/Month
-                                                                    </span>
-                                                                )}
+                                                                {salesCount && <span className="text-gray-500">{salesCount} Sold/Month</span>}
                                                             </>
                                                         ) : (
                                                             <span className="text-gray-400">No ratings yet</span>
                                                         )}
                                                     </div>
-                                                    
+
                                                     {/* Category Badge */}
                                                     {categoryName && (
                                                         <div className="mb-2">
@@ -973,9 +956,7 @@ export default function Products({ products, categories = [], sellers = [], loca
                                                     )}
 
                                                     {/* Location */}
-                                                    {product.location && (
-                                                        <div className="text-xs text-gray-500">{product.location}</div>
-                                                    )}
+                                                    {product.location && <div className="text-xs text-gray-500">{product.location}</div>}
 
                                                     {/* Action Buttons */}
                                                     <div className="mt-3 flex gap-2" onClick={(e) => e.stopPropagation()}>
@@ -1017,9 +998,7 @@ export default function Products({ products, categories = [], sellers = [], loca
                                                     key={index}
                                                     href={link.url || '#'}
                                                     className={`rounded-md px-3 py-2 text-sm ${
-                                                        link.active
-                                                            ? 'bg-orange-500 text-white'
-                                                            : 'bg-white text-gray-700 hover:bg-gray-100'
+                                                        link.active ? 'bg-orange-500 text-white' : 'bg-white text-gray-700 hover:bg-gray-100'
                                                     } ${!link.url ? 'cursor-not-allowed opacity-50' : ''}`}
                                                     dangerouslySetInnerHTML={{ __html: link.label }}
                                                 />

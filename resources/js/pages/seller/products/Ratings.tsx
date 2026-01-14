@@ -1,16 +1,16 @@
-import AppLayout from '@/layouts/app-layout';
-import { type BreadcrumbItem } from '@/types';
-import { Head, Link, router } from '@inertiajs/react';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Textarea } from '@/components/ui/textarea';
-import { Search, Star, MessageSquare, Filter, TrendingUp, Package, Reply, Send, Trash2 } from 'lucide-react';
+import AppLayout from '@/layouts/app-layout';
+import { type BreadcrumbItem } from '@/types';
+import { Head, Link, router } from '@inertiajs/react';
+import axios from 'axios';
+import { Filter, MessageSquare, Package, Reply, Search, Send, Star, Trash2, TrendingUp } from 'lucide-react';
 import { useState } from 'react';
 import Swal from 'sweetalert2';
-import axios from 'axios';
 
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Seller Dashboard', href: '/seller/dashboard' },
@@ -109,7 +109,7 @@ export default function Ratings({ ratings, sellerProducts, statistics, filters }
             {
                 preserveState: true,
                 preserveScroll: true,
-            }
+            },
         );
     };
 
@@ -129,12 +129,7 @@ export default function Ratings({ ratings, sellerProducts, statistics, filters }
         return (
             <div className="flex items-center gap-0.5">
                 {[1, 2, 3, 4, 5].map((star) => (
-                    <Star
-                        key={star}
-                        className={`${sizeClasses[size]} ${
-                            star <= rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'
-                        }`}
-                    />
+                    <Star key={star} className={`${sizeClasses[size]} ${star <= rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} />
                 ))}
             </div>
         );
@@ -162,12 +157,9 @@ export default function Ratings({ ratings, sellerProducts, statistics, filters }
         if (!replyText.trim()) return;
 
         setSubmitting(true);
-        
+
         try {
-            await axios.post(
-                `/seller/products/${productId}/ratings/${ratingId}/reply`,
-                { seller_reply: replyText }
-            );
+            await axios.post(`/seller/products/${productId}/ratings/${ratingId}/reply`, { seller_reply: replyText });
 
             setReplyText('');
             setReplyingToId(null);
@@ -245,9 +237,7 @@ export default function Ratings({ ratings, sellerProducts, statistics, filters }
                         </CardHeader>
                         <CardContent>
                             <div className="text-2xl font-bold">{statistics.total_reviews}</div>
-                            <p className="text-xs text-muted-foreground">
-                                {statistics.recent_reviews_count} in last 30 days
-                            </p>
+                            <p className="text-xs text-muted-foreground">{statistics.recent_reviews_count} in last 30 days</p>
                         </CardContent>
                     </Card>
 
@@ -271,9 +261,7 @@ export default function Ratings({ ratings, sellerProducts, statistics, filters }
                             <TrendingUp className="h-4 w-4 text-green-500" />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold">
-                                {statistics.distribution.find((d) => d.rating === 5)?.count || 0}
-                            </div>
+                            <div className="text-2xl font-bold">{statistics.distribution.find((d) => d.rating === 5)?.count || 0}</div>
                             <p className="text-xs text-muted-foreground">
                                 {statistics.distribution.find((d) => d.rating === 5)?.percentage || 0}% of total
                             </p>
@@ -308,10 +296,7 @@ export default function Ratings({ ratings, sellerProducts, statistics, filters }
                                     </div>
                                     <div className="flex-1">
                                         <div className="h-2 overflow-hidden rounded-full bg-gray-200">
-                                            <div
-                                                className="h-full bg-yellow-400 transition-all"
-                                                style={{ width: `${dist.percentage}%` }}
-                                            />
+                                            <div className="h-full bg-yellow-400 transition-all" style={{ width: `${dist.percentage}%` }} />
                                         </div>
                                     </div>
                                     <div className="flex w-24 items-center justify-between text-sm">
@@ -333,7 +318,7 @@ export default function Ratings({ ratings, sellerProducts, statistics, filters }
                         <form onSubmit={handleSearch} className="space-y-4">
                             <div className="grid gap-4 md:grid-cols-3">
                                 <div className="relative">
-                                    <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                                    <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                                     <Input
                                         placeholder="Search reviews, customers, products..."
                                         value={searchTerm}
@@ -410,10 +395,7 @@ export default function Ratings({ ratings, sellerProducts, statistics, filters }
                                         <div className="flex items-start justify-between gap-4">
                                             <div className="flex gap-4">
                                                 <Avatar className="h-10 w-10">
-                                                    <AvatarImage
-                                                        src={rating.user.avatar_url || rating.user.profile_picture}
-                                                        alt={rating.user.name}
-                                                    />
+                                                    <AvatarImage src={rating.user.avatar_url || rating.user.profile_picture} alt={rating.user.name} />
                                                     <AvatarFallback>{getInitials(rating.user.name)}</AvatarFallback>
                                                 </Avatar>
                                                 <div className="flex-1">
@@ -421,9 +403,7 @@ export default function Ratings({ ratings, sellerProducts, statistics, filters }
                                                         <h4 className="font-semibold">{rating.user.name}</h4>
                                                         {renderStars(rating.rating, 'sm')}
                                                     </div>
-                                                    <p className="text-sm text-muted-foreground">
-                                                        {formatDate(rating.created_at)}
-                                                    </p>
+                                                    <p className="text-sm text-muted-foreground">{formatDate(rating.created_at)}</p>
                                                     <Link
                                                         href={`/seller/products/${rating.product.id}`}
                                                         className="mt-1 inline-flex items-center text-sm text-primary hover:underline"
@@ -433,10 +413,8 @@ export default function Ratings({ ratings, sellerProducts, statistics, filters }
                                                 </div>
                                             </div>
                                         </div>
-                                        {rating.review && (
-                                            <p className="mt-3 pl-14 text-sm text-gray-700">{rating.review}</p>
-                                        )}
-                                        
+                                        {rating.review && <p className="mt-3 pl-14 text-sm text-gray-700">{rating.review}</p>}
+
                                         {/* Seller Reply Section */}
                                         <div className="mt-3 pl-14">
                                             {rating.seller_reply ? (
@@ -497,11 +475,7 @@ export default function Ratings({ ratings, sellerProducts, statistics, filters }
                                                             </div>
                                                         </div>
                                                     ) : (
-                                                        <Button
-                                                            variant="outline"
-                                                            size="sm"
-                                                            onClick={() => setReplyingToId(rating.id)}
-                                                        >
+                                                        <Button variant="outline" size="sm" onClick={() => setReplyingToId(rating.id)}>
                                                             <Reply className="mr-2 h-4 w-4" />
                                                             Reply to Customer
                                                         </Button>

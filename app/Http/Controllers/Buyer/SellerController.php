@@ -59,7 +59,7 @@ class SellerController extends Controller
                     'Ilocos Norte', 'Ilocos Sur', 'La Union', 'Pangasinan',
                     'Batanes', 'Cagayan', 'Isabela', 'Nueva Vizcaya', 'Quirino',
                     'Abra', 'Benguet', 'Ifugao', 'Kalinga', 'Mountain Province', 'Apayao',
-                    'Aurora', 'Bataan', 'Bulacan', 'Nueva Ecija', 'Pampanga', 'Tarlac', 'Zambales'
+                    'Aurora', 'Bataan', 'Bulacan', 'Nueva Ecija', 'Pampanga', 'Tarlac', 'Zambales',
                 ]);
             } else {
                 $query->where(function ($q) use ($location) {
@@ -99,7 +99,7 @@ class SellerController extends Controller
 
         // Apply sorting
         $sortBy = $request->get('sort', 'popular');
-        
+
         switch ($sortBy) {
             case 'popular':
                 // Popular = combination of rating, products, and sales
@@ -122,7 +122,7 @@ class SellerController extends Controller
                 $query->withCount(['orders' => function ($q) {
                     $q->whereIn('status', ['completed', 'delivered']);
                 }])
-                ->orderBy('orders_count', 'desc');
+                    ->orderBy('orders_count', 'desc');
                 break;
             case 'latest':
             case 'newest':
@@ -150,7 +150,7 @@ class SellerController extends Controller
             ->distinct()
             ->get()
             ->map(function ($user) {
-                return trim(($user->delivery_city ?? '') . ', ' . ($user->delivery_province ?? ''), ', ');
+                return trim(($user->delivery_city ?? '').', '.($user->delivery_province ?? ''), ', ');
             })
             ->filter()
             ->unique()
@@ -170,13 +170,13 @@ class SellerController extends Controller
             // Extract location from delivery fields or address
             $location = 'Local Area';
             if ($seller->delivery_city || $seller->delivery_province) {
-                $location = trim(($seller->delivery_city ?? '') . ', ' . ($seller->delivery_province ?? ''), ', ');
+                $location = trim(($seller->delivery_city ?? '').', '.($seller->delivery_province ?? ''), ', ');
             } elseif ($seller->address) {
                 $addressParts = explode(',', $seller->address);
                 $location = trim(end($addressParts));
             }
             $seller->location = $location;
-            
+
             $seller->business_description = $seller->sellerApplication->business_description ?? null;
             $seller->business_name = $seller->sellerApplication->business_name ?? null;
             $seller->profile_image = $seller->profile_picture;

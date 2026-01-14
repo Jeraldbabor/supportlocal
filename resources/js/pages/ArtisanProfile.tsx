@@ -232,14 +232,10 @@ export default function ArtisanProfile({ artisan, products, ratings, filters }: 
                                             {artisan.location}
                                         </div>
                                     )}
-                                    
+
                                     {auth?.user && auth.user.id !== artisan.id && (
                                         <div className="mt-3">
-                                            <StartChatButton
-                                                userId={artisan.id}
-                                                variant="default"
-                                                className=""
-                                            >
+                                            <StartChatButton userId={artisan.id} variant="default" className="">
                                                 Contact Seller
                                             </StartChatButton>
                                         </div>

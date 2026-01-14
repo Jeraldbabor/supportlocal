@@ -132,16 +132,16 @@ class HomeController extends Controller
         $categories = ProductCategory::whereHas('products', function ($q) {
             $q->where('status', 'active')->where('quantity', '>', 0);
         })
-        ->orderBy('name')
-        ->take(10) // Limit to 10 categories for the home page
-        ->get()
-        ->map(function ($category) {
-            return [
-                'id' => $category->id,
-                'name' => $category->name,
-                'slug' => $category->slug ?? null,
-            ];
-        });
+            ->orderBy('name')
+            ->take(10) // Limit to 10 categories for the home page
+            ->get()
+            ->map(function ($category) {
+                return [
+                    'id' => $category->id,
+                    'name' => $category->name,
+                    'slug' => $category->slug ?? null,
+                ];
+            });
 
         return Inertia::render('Home', [
             'featuredProducts' => $featuredProducts ?? [],

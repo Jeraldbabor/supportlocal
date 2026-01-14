@@ -14,18 +14,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem, type SharedData } from '@/types';
 import { Head, Link, router, usePage } from '@inertiajs/react';
-import {
-    Edit,
-    Eye,
-    Filter,
-    MoreHorizontal,
-    Package,
-    Search,
-    Star,
-    Trash2,
-    TrendingDown,
-    TrendingUp,
-} from 'lucide-react';
+import { Edit, Eye, Filter, MoreHorizontal, Package, Search, Star, Trash2, TrendingDown, TrendingUp } from 'lucide-react';
 import { ChangeEvent, KeyboardEvent, useState } from 'react';
 
 interface Product {
@@ -92,7 +81,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 export default function ProductsIndex() {
-    const { products, filters, statuses, stockStatuses, categories, stats } = usePage<SharedData & Props>().props;
+    const { products, filters, statuses, stockStatuses, stats } = usePage<SharedData & Props>().props;
 
     const [searchTerm, setSearchTerm] = useState(filters.search || '');
     const [selectedStatus, setSelectedStatus] = useState(filters.status || 'all');
@@ -384,9 +373,7 @@ export default function ProductsIndex() {
                                                 </div>
                                             </td>
                                             <td className="px-6 py-4">
-                                                <Badge className={getStatusColor(product.status)}>
-                                                    {statuses[product.status] || product.status}
-                                                </Badge>
+                                                <Badge className={getStatusColor(product.status)}>{statuses[product.status] || product.status}</Badge>
                                             </td>
                                             <td className="px-6 py-4">
                                                 <div className="flex items-center gap-1">

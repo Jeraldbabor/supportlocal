@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem, type SharedData } from '@/types';
 import { Head, usePage } from '@inertiajs/react';
-import { BarChart3, Package, TrendingUp, Users } from 'lucide-react';
+import { BarChart3, TrendingUp, Users } from 'lucide-react';
 
 interface Props {
     dateRange: {
@@ -69,8 +69,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 export default function ReportsIndex() {
-    const { salesReport, userGrowthReport, productPerformanceReport, sellerPerformanceReport, categoryPerformanceReport, dateRange } =
-        usePage<SharedData & Props>().props;
+    const { salesReport, userGrowthReport, productPerformanceReport, sellerPerformanceReport, dateRange } = usePage<SharedData & Props>().props;
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>

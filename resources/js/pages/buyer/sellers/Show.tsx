@@ -296,14 +296,10 @@ export default function Show({ seller, products, filters, userRating: initialUse
                                             {seller.location}
                                         </div>
                                     )}
-                                    
+
                                     {auth?.user && auth.user.id !== seller.id && (
                                         <div className="mt-3">
-                                            <StartChatButton
-                                                userId={seller.id}
-                                                variant="default"
-                                                className=""
-                                            >
+                                            <StartChatButton userId={seller.id} variant="default" className="">
                                                 <MessageSquare className="mr-1 h-4 w-4" />
                                                 Contact Seller
                                             </StartChatButton>
@@ -486,7 +482,7 @@ export default function Show({ seller, products, filters, userRating: initialUse
                                             </div>
                                         </div>
                                         {rating.review && <p className="ml-13 text-sm text-gray-700">{rating.review}</p>}
-                                        
+
                                         {/* Seller Reply */}
                                         {rating.seller_reply && (
                                             <div className="mt-3 ml-13 rounded-lg border border-blue-200 bg-blue-50 p-3">
@@ -661,7 +657,9 @@ export default function Show({ seller, products, filters, userRating: initialUse
                                             {/* Price */}
                                             <div className="pt-2">
                                                 <div className="flex items-center gap-2">
-                                                    <span className="text-2xl font-bold text-gray-900">₱{Number(product.price).toLocaleString()}</span>
+                                                    <span className="text-2xl font-bold text-gray-900">
+                                                        ₱{Number(product.price).toLocaleString()}
+                                                    </span>
                                                 </div>
                                             </div>
 

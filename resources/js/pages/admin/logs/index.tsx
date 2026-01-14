@@ -5,16 +5,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem, type SharedData } from '@/types';
 import { Head, Link, router, usePage } from '@inertiajs/react';
-import {
-    AlertCircle,
-    AlertTriangle,
-    Download,
-    FileSearch,
-    Info,
-    RefreshCw,
-    Trash2,
-    XCircle,
-} from 'lucide-react';
+import { AlertCircle, AlertTriangle, Download, FileSearch, Info, RefreshCw, Trash2, XCircle } from 'lucide-react';
 import { useState } from 'react';
 
 interface LogEntry {
@@ -151,9 +142,7 @@ export default function LogsIndex() {
                         </CardHeader>
                         <CardContent>
                             <div className="text-2xl font-bold">{stats.file_size}</div>
-                            <p className="text-xs text-muted-foreground">
-                                {stats.file_exists ? 'File exists' : 'File not found'}
-                            </p>
+                            <p className="text-xs text-muted-foreground">{stats.file_exists ? 'File exists' : 'File not found'}</p>
                         </CardContent>
                     </Card>
 
@@ -239,32 +228,25 @@ export default function LogsIndex() {
                             {logs.length > 0 ? (
                                 <div className="divide-y">
                                     {logs.map((log, index) => (
-                                        <div
-                                            key={index}
-                                            className="p-4 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
-                                        >
+                                        <div key={index} className="p-4 transition-colors hover:bg-gray-50 dark:hover:bg-gray-800">
                                             <div className="flex items-start gap-3">
                                                 <div className="mt-1">{getLevelIcon(log.level)}</div>
-                                                <div className="flex-1 min-w-0">
-                                                    <div className="flex items-center gap-2 mb-1">
-                                                        <Badge className={getLevelColor(log.level)}>
-                                                            {log.level.toUpperCase()}
-                                                        </Badge>
+                                                <div className="min-w-0 flex-1">
+                                                    <div className="mb-1 flex items-center gap-2">
+                                                        <Badge className={getLevelColor(log.level)}>{log.level.toUpperCase()}</Badge>
                                                         {log.timestamp && (
-                                                            <span className="text-xs text-muted-foreground">
-                                                                {formatTimestamp(log.timestamp)}
-                                                            </span>
+                                                            <span className="text-xs text-muted-foreground">{formatTimestamp(log.timestamp)}</span>
                                                         )}
                                                     </div>
-                                                    <div className="text-sm font-mono text-gray-700 dark:text-gray-300 whitespace-pre-wrap break-words">
+                                                    <div className="font-mono text-sm break-words whitespace-pre-wrap text-gray-700 dark:text-gray-300">
                                                         {log.message}
                                                     </div>
                                                     {log.stack_trace && (
                                                         <details className="mt-2">
-                                                            <summary className="text-xs text-muted-foreground cursor-pointer hover:text-foreground">
+                                                            <summary className="cursor-pointer text-xs text-muted-foreground hover:text-foreground">
                                                                 Show Stack Trace
                                                             </summary>
-                                                            <pre className="mt-2 text-xs bg-gray-100 dark:bg-gray-900 p-3 rounded overflow-x-auto">
+                                                            <pre className="mt-2 overflow-x-auto rounded bg-gray-100 p-3 text-xs dark:bg-gray-900">
                                                                 {log.stack_trace}
                                                             </pre>
                                                         </details>
@@ -279,9 +261,7 @@ export default function LogsIndex() {
                                     <FileSearch className="mb-4 h-12 w-12 text-muted-foreground" />
                                     <h3 className="text-lg font-medium">No logs found</h3>
                                     <p className="text-muted-foreground">
-                                        {selectedFilter !== 'all'
-                                            ? `No ${selectedFilter} level logs found`
-                                            : 'Log file is empty or does not exist'}
+                                        {selectedFilter !== 'all' ? `No ${selectedFilter} level logs found` : 'Log file is empty or does not exist'}
                                     </p>
                                 </div>
                             )}

@@ -18,7 +18,7 @@ class SellerRatingController extends Controller
     public function index(Request $request): Response
     {
         $seller = auth()->user();
-        
+
         $query = $seller->sellerRatings()
             ->with(['user' => function ($query) {
                 $query->select('id', 'name', 'profile_picture');
@@ -51,6 +51,7 @@ class SellerRatingController extends Controller
         // Transform ratings to include avatar_url
         $ratings->getCollection()->transform(function ($rating) {
             $rating->user->append('avatar_url');
+
             return $rating;
         });
 

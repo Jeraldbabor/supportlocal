@@ -38,21 +38,21 @@ class VerifyEmailController extends Controller
     private function transferGuestCart(EmailVerificationRequest $request): void
     {
         $guestCart = session('pending_guest_cart');
-        
-        if (!$guestCart || !is_array($guestCart)) {
+
+        if (! $guestCart || ! is_array($guestCart)) {
             return;
         }
 
         $user = $request->user();
 
         foreach ($guestCart as $item) {
-            if (!isset($item['product_id'], $item['quantity'])) {
+            if (! isset($item['product_id'], $item['quantity'])) {
                 continue;
             }
 
             // Check if product exists and is active
             $product = Product::find($item['product_id']);
-            if (!$product || !$product->is_active) {
+            if (! $product || ! $product->is_active) {
                 continue;
             }
 
@@ -70,6 +70,7 @@ class VerifyEmailController extends Controller
                     // Update quantity
                     $existingItem->quantity += $item['quantity'];
                     $existingItem->save();
+
                     continue;
                 }
             } else {

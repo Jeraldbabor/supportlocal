@@ -220,12 +220,7 @@ export default function ProductDetail({ product, relatedProducts = [], reviews =
                                     <WishlistButton productId={product.id} initialInWishlist={inWishlist} variant="button" size="lg" />
                                 </div>
                                 {auth?.user && auth.user.id !== product.artisan_id && (
-                                    <StartChatButton
-                                        userId={product.artisan_id}
-                                        productId={product.id}
-                                        variant="outline"
-                                        className="w-full"
-                                    >
+                                    <StartChatButton userId={product.artisan_id} productId={product.id} variant="outline" className="w-full">
                                         Contact Seller
                                     </StartChatButton>
                                 )}
@@ -300,7 +295,7 @@ export default function ProductDetail({ product, relatedProducts = [], reviews =
                                         </div>
                                     </div>
                                     {review.review && <p className="leading-relaxed text-gray-700">{review.review}</p>}
-                                    
+
                                     {/* Seller Reply */}
                                     {review.seller_reply && (
                                         <div className="mt-4 ml-14 rounded-lg border border-blue-200 bg-blue-50 p-4">

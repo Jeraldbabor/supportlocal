@@ -6,18 +6,7 @@ import { Separator } from '@/components/ui/separator';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem, type SharedData } from '@/types';
 import { Head, Link, router, usePage } from '@inertiajs/react';
-import {
-    ArrowLeft,
-    Calendar,
-    CreditCard,
-    MapPin,
-    Package,
-    Phone,
-    Save,
-    ShoppingBag,
-    Truck,
-    User,
-} from 'lucide-react';
+import { ArrowLeft, Calendar, Package, Save, ShoppingBag, Truck, User } from 'lucide-react';
 import { FormEvent, useState } from 'react';
 
 interface OrderItem {
@@ -142,7 +131,7 @@ export default function OrderShow() {
 
                 <div className="grid gap-6 lg:grid-cols-3">
                     {/* Main Content */}
-                    <div className="lg:col-span-2 space-y-6">
+                    <div className="space-y-6 lg:col-span-2">
                         {/* Order Items */}
                         <Card>
                             <CardHeader>
@@ -175,7 +164,9 @@ export default function OrderShow() {
                                             </div>
                                             <div className="text-right">
                                                 <div className="font-medium">₱{(item.price || 0).toLocaleString()}</div>
-                                                <div className="text-sm text-muted-foreground">Subtotal: ₱{(item.subtotal || 0).toLocaleString()}</div>
+                                                <div className="text-sm text-muted-foreground">
+                                                    Subtotal: ₱{(item.subtotal || 0).toLocaleString()}
+                                                </div>
                                             </div>
                                         </div>
                                     ))}

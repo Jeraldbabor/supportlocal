@@ -435,8 +435,8 @@ Route::get('/images/{path}', function ($path) {
         // Security: prevent directory traversal
         $resolvedPath = realpath($fullPath);
         $storagePath = realpath(storage_path('app/public'));
-        
-        if (!$resolvedPath || !$storagePath || strpos($resolvedPath, $storagePath) !== 0) {
+
+        if (! $resolvedPath || ! $storagePath || strpos($resolvedPath, $storagePath) !== 0) {
             \Log::warning('Image path security check failed', ['path' => $decodedPath, 'resolved' => $resolvedPath]);
             abort(404);
         }
@@ -455,7 +455,7 @@ Route::get('/images/{path}', function ($path) {
                     default => 'application/octet-stream',
                 };
             }
-            
+
             return response()->file($resolvedPath, [
                 'Content-Type' => $mimeType ?: 'image/jpeg',
                 'Cache-Control' => 'public, max-age=31536000',

@@ -118,7 +118,7 @@ export default function ProductCarousel({
                     {canScrollLeft && (
                         <button
                             onClick={() => scroll('left')}
-                            className="absolute left-0 top-1/2 z-10 -translate-y-1/2 rounded-full bg-white p-2 shadow-lg backdrop-blur-sm transition-all hover:scale-110 hover:shadow-xl sm:p-2.5"
+                            className="absolute top-1/2 left-0 z-10 -translate-y-1/2 rounded-full bg-white p-2 shadow-lg backdrop-blur-sm transition-all hover:scale-110 hover:shadow-xl sm:p-2.5"
                             aria-label="Scroll left"
                         >
                             <ChevronLeft className="h-5 w-5 text-gray-800 sm:h-6 sm:w-6" />
@@ -129,14 +129,14 @@ export default function ProductCarousel({
                     <div
                         ref={scrollContainerRef}
                         onScroll={checkScrollability}
-                        className="product-carousel-scroll flex gap-3 sm:gap-4 lg:gap-6 overflow-x-auto pb-4"
+                        className="product-carousel-scroll flex gap-3 overflow-x-auto pb-4 sm:gap-4 lg:gap-6"
                         style={{
                             scrollbarWidth: 'none',
                             msOverflowStyle: 'none',
                         }}
                     >
                         {products.map((product, index) => (
-                            <div key={product.id} className="flex h-full min-w-[240px] sm:min-w-[280px] lg:min-w-[300px] flex-shrink-0">
+                            <div key={product.id} className="flex h-full min-w-[240px] flex-shrink-0 sm:min-w-[280px] lg:min-w-[300px]">
                                 <ProductCard
                                     product={product}
                                     isInWishlist={wishlistProductIds.includes(product.id)}
@@ -153,7 +153,7 @@ export default function ProductCarousel({
                     {canScrollRight && (
                         <button
                             onClick={() => scroll('right')}
-                            className="absolute right-0 top-1/2 z-10 -translate-y-1/2 rounded-full bg-white p-2 shadow-lg backdrop-blur-sm transition-all hover:scale-110 hover:shadow-xl sm:p-2.5"
+                            className="absolute top-1/2 right-0 z-10 -translate-y-1/2 rounded-full bg-white p-2 shadow-lg backdrop-blur-sm transition-all hover:scale-110 hover:shadow-xl sm:p-2.5"
                             aria-label="Scroll right"
                         >
                             <ChevronRight className="h-5 w-5 text-gray-800 sm:h-6 sm:w-6" />
