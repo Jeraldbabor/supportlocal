@@ -179,13 +179,53 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         Route::get('/admin/dashboard', [App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('admin.dashboard');
 
-        Route::get('/admin/reports', function () {
-            return Inertia::render('admin/reports');
-        })->name('admin.reports');
+        // Product Management Routes
+        Route::resource('admin/products', App\Http\Controllers\Admin\ProductController::class, [
+            'names' => [
+                'index' => 'admin.products.index',
+                'show' => 'admin.products.show',
+                'edit' => 'admin.products.edit',
+                'update' => 'admin.products.update',
+                'destroy' => 'admin.products.destroy',
+            ],
+        ]);
+        Route::post('/admin/products/{product}/toggle-status', [App\Http\Controllers\Admin\ProductController::class, 'toggleStatus'])->name('admin.products.toggle-status');
+        Route::post('/admin/products/{product}/toggle-featured', [App\Http\Controllers\Admin\ProductController::class, 'toggleFeatured'])->name('admin.products.toggle-featured');
+        Route::post('/admin/products/bulk-update', [App\Http\Controllers\Admin\ProductController::class, 'bulkUpdate'])->name('admin.products.bulk-update');
+        Route::post('/admin/products/bulk-delete', [App\Http\Controllers\Admin\ProductController::class, 'bulkDelete'])->name('admin.products.bulk-delete');
 
-        Route::get('/admin/settings', function () {
-            return Inertia::render('admin/settings');
-        })->name('admin.settings');
+        // Order Management Routes
+        Route::get('/admin/orders', [App\Http\Controllers\Admin\OrderController::class, 'index'])->name('admin.orders.index');
+        Route::get('/admin/orders/{order}', [App\Http\Controllers\Admin\OrderController::class, 'show'])->name('admin.orders.show');
+        Route::post('/admin/orders/{order}/update-status', [App\Http\Controllers\Admin\OrderController::class, 'updateStatus'])->name('admin.orders.update-status');
+        Route::post('/admin/orders/{order}/cancel', [App\Http\Controllers\Admin\OrderController::class, 'cancel'])->name('admin.orders.cancel');
+
+        // Category Management Routes
+        Route::resource('admin/categories', App\Http\Controllers\Admin\CategoryController::class, [
+            'names' => [
+                'index' => 'admin.categories.index',
+                'create' => 'admin.categories.create',
+                'store' => 'admin.categories.store',
+                'show' => 'admin.categories.show',
+                'edit' => 'admin.categories.edit',
+                'update' => 'admin.categories.update',
+                'destroy' => 'admin.categories.destroy',
+            ],
+        ]);
+        Route::post('/admin/categories/{category}/toggle-status', [App\Http\Controllers\Admin\CategoryController::class, 'toggleStatus'])->name('admin.categories.toggle-status');
+
+        // Reports Routes
+        Route::get('/admin/reports', [App\Http\Controllers\Admin\ReportsController::class, 'index'])->name('admin.reports.index');
+        Route::get('/admin/reports/export', [App\Http\Controllers\Admin\ReportsController::class, 'export'])->name('admin.reports.export');
+
+        // Settings Routes
+        Route::get('/admin/settings', [App\Http\Controllers\Admin\SettingsController::class, 'index'])->name('admin.settings.index');
+        Route::post('/admin/settings/general', [App\Http\Controllers\Admin\SettingsController::class, 'updateGeneral'])->name('admin.settings.general');
+        Route::post('/admin/settings/ecommerce', [App\Http\Controllers\Admin\SettingsController::class, 'updateEcommerce'])->name('admin.settings.ecommerce');
+        Route::post('/admin/settings/seller', [App\Http\Controllers\Admin\SettingsController::class, 'updateSeller'])->name('admin.settings.seller');
+        Route::post('/admin/settings/notifications', [App\Http\Controllers\Admin\SettingsController::class, 'updateNotifications'])->name('admin.settings.notifications');
+        Route::post('/admin/settings/seo', [App\Http\Controllers\Admin\SettingsController::class, 'updateSeo'])->name('admin.settings.seo');
+        Route::post('/admin/settings/clear-cache', [App\Http\Controllers\Admin\SettingsController::class, 'clearCache'])->name('admin.settings.clear-cache');
 
         // Seller application management routes
         Route::get('/admin/seller-applications', [App\Http\Controllers\SellerApplicationController::class, 'index'])->name('admin.seller-applications.index');
@@ -200,6 +240,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::delete('/admin/notifications/{id}', [App\Http\Controllers\Admin\NotificationController::class, 'destroy'])->name('admin.notifications.destroy');
         Route::post('/admin/notifications/read-all', [App\Http\Controllers\Admin\NotificationController::class, 'markAllAsRead'])->name('admin.notifications.read-all');
         Route::post('/admin/notifications/clear-all', [App\Http\Controllers\Admin\NotificationController::class, 'clearAllHistory'])->name('admin.notifications.clear-all');
+
+        // Admin logs routes
+        Route::get('/admin/logs', [App\Http\Controllers\Admin\LogsController::class, 'index'])->name('admin.logs.index');
+        Route::get('/admin/logs/download', [App\Http\Controllers\Admin\LogsController::class, 'download'])->name('admin.logs.download');
+        Route::post('/admin/logs/clear', [App\Http\Controllers\Admin\LogsController::class, 'clear'])->name('admin.logs.clear');
+        Route::get('/admin/logs/show', [App\Http\Controllers\Admin\LogsController::class, 'show'])->name('admin.logs.show');
     });
 
     Route::middleware(['role:buyer'])->group(function () {
@@ -381,14 +427,52 @@ require __DIR__.'/auth.php';
 
 // Image serving route for when storage symlink doesn't work
 Route::get('/images/{path}', function ($path) {
-    $fullPath = storage_path('app/public/'.$path);
+    try {
+        // Decode the path in case it's URL encoded
+        $decodedPath = urldecode($path);
+        $fullPath = storage_path('app/public/'.$decodedPath);
 
-    if (file_exists($fullPath)) {
-        return response()->file($fullPath);
+        // Security: prevent directory traversal
+        $resolvedPath = realpath($fullPath);
+        $storagePath = realpath(storage_path('app/public'));
+        
+        if (!$resolvedPath || !$storagePath || strpos($resolvedPath, $storagePath) !== 0) {
+            \Log::warning('Image path security check failed', ['path' => $decodedPath, 'resolved' => $resolvedPath]);
+            abort(404);
+        }
+
+        if (file_exists($resolvedPath) && is_file($resolvedPath)) {
+            try {
+                $mimeType = mime_content_type($resolvedPath);
+            } catch (\Exception $e) {
+                // Fallback mime type based on extension
+                $extension = strtolower(pathinfo($resolvedPath, PATHINFO_EXTENSION));
+                $mimeType = match ($extension) {
+                    'jpg', 'jpeg' => 'image/jpeg',
+                    'png' => 'image/png',
+                    'gif' => 'image/gif',
+                    'webp' => 'image/webp',
+                    default => 'application/octet-stream',
+                };
+            }
+            
+            return response()->file($resolvedPath, [
+                'Content-Type' => $mimeType ?: 'image/jpeg',
+                'Cache-Control' => 'public, max-age=31536000',
+            ]);
+        }
+
+        // Return 404 if file doesn't exist
+        abort(404);
+    } catch (\Illuminate\Http\Exceptions\HttpResponseException $e) {
+        throw $e;
+    } catch (\Exception $e) {
+        \Log::error('Image serving error: '.$e->getMessage(), [
+            'path' => $path ?? 'unknown',
+            'trace' => $e->getTraceAsString(),
+        ]);
+        abort(404);
     }
-
-    // Return placeholder if file doesn't exist
-    abort(404);
 })->where('path', '.*');
 
 // API placeholder image route

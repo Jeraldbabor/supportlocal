@@ -304,7 +304,15 @@ export default function UsersIndex() {
                                         <tr key={user.id} className="hover:bg-gray-50 dark:hover:bg-gray-800">
                                             <td className="px-6 py-4">
                                                 <div className="flex items-center gap-3">
-                                                    <img src={user.avatar_url} alt={user.name} className="h-8 w-8 rounded-full" />
+                                                    <img
+                                                        src={user.avatar_url}
+                                                        alt={user.name}
+                                                        className="h-8 w-8 rounded-full"
+                                                        onError={(e) => {
+                                                            const target = e.target as HTMLImageElement;
+                                                            target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&color=7F9CF5&background=EBF4FF`;
+                                                        }}
+                                                    />
                                                     <div>
                                                         <div className="font-medium">{user.name}</div>
                                                         <div className="text-sm text-muted-foreground">{user.email}</div>

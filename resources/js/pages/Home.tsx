@@ -1,10 +1,12 @@
 import { Product as GlobalProduct } from '@/types';
 import { Link, router, usePage } from '@inertiajs/react';
-import { ArrowRight, Heart, ShoppingCart, Star, Truck } from 'lucide-react';
+import { ArrowRight, CheckCircle, Package, Shield, Truck, Zap } from 'lucide-react';
 import { useState } from 'react';
 import AddToCartModal from '../components/AddToCartModal';
+import ImageCarousel from '../components/ImageCarousel';
+import ProductCard from '../components/ProductCard';
+import ProductCarousel from '../components/ProductCarousel';
 import Toast from '../components/Toast';
-import WishlistButton from '../components/WishlistButton';
 import { useCart } from '../contexts/CartContext';
 import MainLayout from '../layouts/MainLayout';
 
@@ -12,24 +14,46 @@ interface Product {
     id: number;
     name: string;
     price: number;
+    compare_price?: number | null;
     image: string;
     artisan: string;
-    artisan_image?: string;
+    artisan_image?: string | null;
     rating: number;
+    review_count?: number;
+    category?: string;
+    order_count?: number;
+    view_count?: number;
+}
+
+interface Category {
+    id: number;
+    name: string;
+    slug?: string | null;
 }
 
 interface HomeProps {
     featuredProducts: Product[];
+    topProducts: Product[];
+    topSales: Product[];
+    trendingProducts: Product[];
     wishlistProductIds: number[];
+    categories?: Category[];
 }
 
-export default function Home({ featuredProducts = [], wishlistProductIds = [] }: HomeProps) {
+export default function Home({ 
+    featuredProducts = [], 
+    topProducts = [], 
+    topSales = [], 
+    trendingProducts = [],
+    wishlistProductIds = [],
+    categories = []
+}: HomeProps) {
     const [modalProduct, setModalProduct] = useState<Product | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [showToast, setShowToast] = useState(false);
     const [toastMessage, setToastMessage] = useState('');
     const { addToCart } = useCart();
-    const { props } = usePage<{ auth?: { user?: unknown } }>();
+    const { props } = usePage<{ auth?: { user?: { role?: string } } }>();
     const isAuthenticated = !!props?.auth?.user;
 
     const handleAddToCart = (e: React.MouseEvent, product: Product) => {
@@ -137,200 +161,368 @@ export default function Home({ featuredProducts = [], wishlistProductIds = [] }:
 
     return (
         <MainLayout>
-            {/* Hero Section */}
-            <section className="relative border-b-2 border-amber-200/50 bg-gradient-to-r from-amber-50 via-orange-50 to-amber-100 py-20">
-                <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                    <div className="text-center">
-                        <h1 className="mb-6 text-4xl font-bold text-gray-900 md:text-6xl">
-                            Discover Local
-                            <span className="block bg-gradient-to-r from-amber-700 to-orange-700 bg-clip-text text-transparent">
-                                Artisan Crafts in Hinoba-an
-                            </span>
-                        </h1>
-                        <p className="mx-auto mb-8 max-w-3xl text-xl text-gray-700">
-                            Support local craftsmen and women by purchasing unique, handmade items created with passion and skill in your community.
-                        </p>
-                        <div className="flex flex-col justify-center gap-4 sm:flex-row">
+            {/* Hero Banner Carousel Section */}
+            {trendingProducts.length > 0 && (
+                <section className="relative overflow-hidden bg-white">
+                    <div className="mx-auto max-w-7xl px-2 sm:px-4 py-4 sm:py-6 md:px-6 lg:px-8">
+                        <ImageCarousel
+                            products={trendingProducts.slice(0, 5).map((product) => ({
+                                id: product.id,
+                                name: product.name,
+                                price: product.price,
+                                image: product.image,
+                                artisan: product.artisan,
+                            }))}
+                            title="Trending Now"
+                            autoPlay={true}
+                            interval={5000}
+                        />
+                    </div>
+                </section>
+            )}
+
+            {/* Trust Badges / Benefits Section */}
+            <section className="border-b border-gray-100 bg-white py-4 sm:py-6">
+                <div className="mx-auto max-w-7xl px-2 sm:px-4 md:px-6 lg:px-8">
+                    <div className="grid grid-cols-2 gap-2 sm:gap-3 md:gap-4 sm:grid-cols-4">
+                        <div className="flex items-center gap-2 sm:gap-3 rounded-lg bg-gray-50 p-3 sm:p-4">
+                            <div className="flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-lg bg-green-100 flex-shrink-0">
+                                <Truck className="h-4 w-4 sm:h-5 sm:w-5 text-green-600" />
+                            </div>
+                            <div className="min-w-0">
+                                <p className="text-[10px] sm:text-xs font-semibold text-gray-900 leading-tight">Free Shipping</p>
+                                <p className="text-[10px] sm:text-xs text-gray-500 leading-tight">On orders ₱500+</p>
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-2 sm:gap-3 rounded-lg bg-gray-50 p-3 sm:p-4">
+                            <div className="flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-lg bg-blue-100 flex-shrink-0">
+                                <Shield className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600" />
+                            </div>
+                            <div className="min-w-0">
+                                <p className="text-[10px] sm:text-xs font-semibold text-gray-900 leading-tight">Secure Payment</p>
+                                <p className="text-[10px] sm:text-xs text-gray-500 leading-tight">100% Protected</p>
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-2 sm:gap-3 rounded-lg bg-gray-50 p-3 sm:p-4">
+                            <div className="flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-lg bg-amber-100 flex-shrink-0">
+                                <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-amber-600" />
+                            </div>
+                            <div className="min-w-0">
+                                <p className="text-[10px] sm:text-xs font-semibold text-gray-900 leading-tight">Quality Assured</p>
+                                <p className="text-[10px] sm:text-xs text-gray-500 leading-tight">Handcrafted Items</p>
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-2 sm:gap-3 rounded-lg bg-gray-50 p-3 sm:p-4">
+                            <div className="flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-lg bg-purple-100 flex-shrink-0">
+                                <Package className="h-4 w-4 sm:h-5 sm:w-5 text-purple-600" />
+                            </div>
+                            <div className="min-w-0">
+                                <p className="text-[10px] sm:text-xs font-semibold text-gray-900 leading-tight">Easy Returns</p>
+                                <p className="text-[10px] sm:text-xs text-gray-500 leading-tight">7-Day Policy</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* Category Quick Links */}
+            {categories.length > 0 && (
+                <section className="border-b border-gray-100 bg-gray-50 py-6 sm:py-8">
+                    <div className="mx-auto max-w-7xl px-2 sm:px-4 md:px-6 lg:px-8">
+                        <h3 className="mb-3 sm:mb-4 text-base sm:text-lg font-bold text-gray-900 px-1">Shop by Category</h3>
+                        <div className="grid grid-cols-3 gap-2 sm:gap-3 sm:grid-cols-5 md:grid-cols-10">
+                            {categories.map((category) => {
+                                // Map category names to emojis with comprehensive matching
+                                const getCategoryIcon = (name: string): string => {
+                                    const nameLower = name.toLowerCase();
+                                    
+                                    // Pottery & Ceramics
+                                    if (nameLower.includes('pottery') || nameLower.includes('ceramic') || nameLower.includes('clay') || nameLower.includes('vase')) return '🏺';
+                                    
+                                    // Woodworking & Carpentry
+                                    if (nameLower.includes('wood') || nameLower.includes('carpentry') || nameLower.includes('furniture') || nameLower.includes('carving')) return '🪵';
+                                    
+                                    // Textiles & Weaving
+                                    if (nameLower.includes('textile') || nameLower.includes('weaving') || nameLower.includes('fabric') || nameLower.includes('woven')) return '🧵';
+                                    
+                                    // Metalwork & Jewelry
+                                    if (nameLower.includes('metal') || nameLower.includes('jewelry') || nameLower.includes('jewellery') || nameLower.includes('silver') || nameLower.includes('gold')) return '💍';
+                                    
+                                    // Food & Beverages
+                                    if (nameLower.includes('food') || nameLower.includes('beverage') || nameLower.includes('drink') || nameLower.includes('coffee') || nameLower.includes('tea')) return '🍔';
+                                    
+                                    // Clothing & Fashion
+                                    if (nameLower.includes('clothing') || nameLower.includes('fashion') || nameLower.includes('apparel') || nameLower.includes('wear') || nameLower.includes('garment')) return '👕';
+                                    
+                                    // Art & Design
+                                    if (nameLower.includes('art') || nameLower.includes('design') || nameLower.includes('painting') || nameLower.includes('drawing') || nameLower.includes('canvas')) return '🎨';
+                                    
+                                    // Home & Garden
+                                    if (nameLower.includes('home') || nameLower.includes('garden') || nameLower.includes('decor') || nameLower.includes('decoration') || nameLower.includes('interior')) return '🏠';
+                                    
+                                    // Electronics & Tech
+                                    if (nameLower.includes('electronic') || nameLower.includes('tech') || nameLower.includes('gadget') || nameLower.includes('device') || nameLower.includes('digital')) return '📱';
+                                    
+                                    // Beauty & Personal Care
+                                    if (nameLower.includes('beauty') || nameLower.includes('personal') || nameLower.includes('care') || nameLower.includes('cosmetic') || nameLower.includes('skincare')) return '💄';
+                                    
+                                    // Books & Media
+                                    if (nameLower.includes('book') || nameLower.includes('media') || nameLower.includes('reading') || nameLower.includes('literature')) return '📚';
+                                    
+                                    // Sports & Recreation
+                                    if (nameLower.includes('sport') || nameLower.includes('recreation') || nameLower.includes('fitness') || nameLower.includes('outdoor')) return '⚽';
+                                    
+                                    // Musical Instruments
+                                    if (nameLower.includes('instrument') || nameLower.includes('music') || nameLower.includes('guitar') || nameLower.includes('piano') || nameLower.includes('drum')) return '🎵';
+                                    
+                                    // Basketry & Wicker
+                                    if (nameLower.includes('basket') || nameLower.includes('wicker') || nameLower.includes('woven')) return '🧺';
+                                    
+                                    // Leather Goods
+                                    if (nameLower.includes('leather') || nameLower.includes('bag') || nameLower.includes('wallet') || nameLower.includes('belt')) return '👜';
+                                    
+                                    // Glass & Crystal
+                                    if (nameLower.includes('glass') || nameLower.includes('crystal') || nameLower.includes('lamp')) return '💎';
+                                    
+                                    // Toys & Games
+                                    if (nameLower.includes('toy') || nameLower.includes('game') || nameLower.includes('puzzle')) return '🧸';
+                                    
+                                    // Plants & Flowers
+                                    if (nameLower.includes('plant') || nameLower.includes('flower') || nameLower.includes('herb') || nameLower.includes('seed')) return '🌱';
+                                    
+                                    // Kitchen & Cooking
+                                    if (nameLower.includes('kitchen') || nameLower.includes('cooking') || nameLower.includes('utensil') || nameLower.includes('cutlery')) return '🍳';
+                                    
+                                    // Candles & Soaps
+                                    if (nameLower.includes('candle') || nameLower.includes('soap') || nameLower.includes('wax')) return '🕯️';
+                                    
+                                    // Stationery & Office
+                                    if (nameLower.includes('stationery') || nameLower.includes('office') || nameLower.includes('pen') || nameLower.includes('notebook')) return '✏️';
+                                    
+                                    // Pet Supplies
+                                    if (nameLower.includes('pet') || nameLower.includes('dog') || nameLower.includes('cat') || nameLower.includes('animal')) return '🐾';
+                                    
+                                    // Default icon
+                                    return '📦';
+                                };
+
+                                return (
+                                    <Link
+                                        key={category.id}
+                                        href={`/products?category=${category.id}`}
+                                        className="group flex flex-col items-center gap-1.5 sm:gap-2 rounded-lg sm:rounded-xl bg-white p-2.5 sm:p-4 text-center shadow-sm transition-all duration-200 hover:shadow-md hover:-translate-y-1"
+                                    >
+                                        <span className="text-2xl sm:text-3xl">{getCategoryIcon(category.name)}</span>
+                                        <span className="text-[10px] sm:text-xs font-medium text-gray-700 group-hover:text-amber-600 line-clamp-2 leading-tight">
+                                            {category.name}
+                                        </span>
+                                    </Link>
+                                );
+                            })}
+                            {/* Always show "View All" link */}
                             <Link
                                 href="/products"
-                                className="inline-flex items-center rounded-lg bg-gradient-to-r from-amber-600 via-amber-700 to-orange-600 px-8 py-3 font-semibold text-white shadow-lg transition-all duration-200 hover:scale-[1.02] hover:from-amber-700 hover:via-amber-800 hover:to-orange-700 hover:shadow-xl active:scale-[0.98]"
+                                className="group flex flex-col items-center gap-1.5 sm:gap-2 rounded-lg sm:rounded-xl bg-white p-2.5 sm:p-4 text-center shadow-sm transition-all duration-200 hover:shadow-md hover:-translate-y-1"
                             >
-                                Shop Now
-                                <ArrowRight className="ml-2 h-5 w-5" />
+                                <span className="text-2xl sm:text-3xl">✨</span>
+                                <span className="text-[10px] sm:text-xs font-medium text-gray-700 group-hover:text-amber-600">View All</span>
                             </Link>
+                        </div>
+                    </div>
+                </section>
+            )}
+
+            {/* Flash Deals / Special Offers Banner */}
+            <section className="border-b border-gray-100 bg-gradient-to-r from-red-500 via-orange-500 to-amber-500 py-3 sm:py-4">
+                <div className="mx-auto max-w-7xl px-2 sm:px-4 md:px-6 lg:px-8">
+                    <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3 text-white">
+                        <div className="flex items-center gap-2">
+                            <Zap className="h-4 w-4 sm:h-5 sm:w-5 animate-pulse flex-shrink-0" />
+                            <p className="text-xs sm:text-sm font-semibold text-center sm:text-left">
+                                🎉 Flash Sale: Up to 50% OFF - Limited Time!
+                            </p>
+                        </div>
+                        <Link
+                            href="/products?sort=trending"
+                            className="rounded-full bg-white px-3 sm:px-4 py-1.5 sm:py-1 text-[10px] sm:text-xs font-bold text-orange-600 transition-all hover:scale-105 whitespace-nowrap"
+                        >
+                            Shop Now
+                        </Link>
+                    </div>
+                </div>
+            </section>
+
+            {/* Trending Products Section */}
+            {trendingProducts.length > 0 && (
+                <section className="border-b border-gray-100 bg-white py-12">
+                    <div className="mx-auto max-w-7xl px-2 sm:px-4 md:px-6 lg:px-8">
+                        <div className="mb-6 flex items-center justify-between">
+                            <div>
+                                <h2 className="text-2xl font-bold text-gray-900 sm:text-3xl">Trending Now</h2>
+                                <p className="mt-1 text-sm text-gray-600">Hot products everyone's talking about</p>
+                            </div>
                             <Link
-                                href="/about"
-                                className="inline-flex items-center rounded-lg border-2 border-amber-300 bg-white px-8 py-3 font-semibold text-amber-700 shadow-md transition-all duration-200 hover:scale-[1.02] hover:border-amber-400 hover:bg-gradient-to-r hover:from-amber-50 hover:to-orange-50 hover:shadow-lg active:scale-[0.98]"
+                                href="/products?sort=trending"
+                                className="hidden items-center gap-1 text-sm font-medium text-amber-600 transition-colors hover:text-amber-700 sm:flex"
                             >
-                                Learn More
+                                View All
+                                <ArrowRight className="h-4 w-4" />
                             </Link>
                         </div>
+                        <ProductCarousel
+                            title=""
+                            subtitle=""
+                            products={trendingProducts}
+                            badge="trending"
+                            wishlistProductIds={wishlistProductIds}
+                            onAddToCart={handleAddToCart}
+                            onBuyNow={handleBuyNow}
+                            viewAllLink="/products?sort=trending"
+                        />
                     </div>
-                </div>
-            </section>
+                </section>
+            )}
 
-            {/* Features Section */}
-            <section className="bg-white py-16">
-                <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                    <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
-                        <div className="text-center">
-                            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
-                                <Heart className="h-8 w-8 text-primary" />
+            {/* Top Rated Products Section */}
+            {topProducts.length > 0 && (
+                <section className="border-b border-gray-100 bg-gray-50 py-12">
+                    <div className="mx-auto max-w-7xl px-2 sm:px-4 md:px-6 lg:px-8">
+                        <div className="mb-6 flex items-center justify-between">
+                            <div>
+                                <h2 className="text-2xl font-bold text-gray-900 sm:text-3xl">Top Rated</h2>
+                                <p className="mt-1 text-sm text-gray-600">Highest rated by our community</p>
                             </div>
-                            <h3 className="mb-2 text-xl font-semibold">Handmade with Love</h3>
-                            <p className="text-gray-600">Every item is crafted by skilled artisans who pour their passion into their work.</p>
-                        </div>
-                        <div className="text-center">
-                            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
-                                <Star className="h-8 w-8 text-primary" />
-                            </div>
-                            <h3 className="mb-2 text-xl font-semibold">Premium Quality</h3>
-                            <p className="text-gray-600">We curate only the finest handcrafted items that meet our high standards.</p>
-                        </div>
-                        <div className="text-center">
-                            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
-                                <Truck className="h-8 w-8 text-primary" />
-                            </div>
-                            <h3 className="mb-2 text-xl font-semibold">Fast Shipping</h3>
-                            <p className="text-gray-600">Quick and secure delivery to get your handmade treasures to you safely.</p>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            {/* Featured Products */}
-            <section className="bg-gray-50 py-16">
-                <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                    <div className="mb-12 text-center">
-                        <h2 className="mb-4 text-3xl font-bold text-gray-900 md:text-4xl">Featured Products</h2>
-                        <p className="text-xl text-gray-600">Discover our handpicked selection of exceptional artisan crafts</p>
-                    </div>
-
-                    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-                        {featuredProducts.map((product) => (
-                            <div
-                                key={product.id}
-                                className="relative overflow-hidden rounded-lg bg-white shadow-sm transition-shadow duration-200 hover:shadow-md"
+                            <Link
+                                href="/products?sort=rating"
+                                className="hidden items-center gap-1 text-sm font-medium text-amber-600 transition-colors hover:text-amber-700 sm:flex"
                             >
-                                {/* Wishlist Button */}
-                                <div className="absolute top-2 right-2 z-10">
-                                    <WishlistButton
-                                        productId={product.id}
-                                        initialInWishlist={wishlistProductIds.includes(product.id)}
-                                        variant="icon-filled"
-                                        size="md"
+                                View All
+                                <ArrowRight className="h-4 w-4" />
+                            </Link>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                            {topProducts.slice(0, 4).map((product, index) => (
+                                <div key={product.id} className="flex h-full">
+                                    <ProductCard
+                                        product={product}
+                                        isInWishlist={wishlistProductIds.includes(product.id)}
+                                        onAddToCart={handleAddToCart}
+                                        onBuyNow={handleBuyNow}
+                                        badge="top-rated"
+                                        rank={index + 1}
                                     />
                                 </div>
+                            ))}
+                        </div>
 
-                                <Link href={`/product/${product.id}`}>
-                                    <img src={product.image} alt={product.name} className="h-48 w-full cursor-pointer object-cover" />
-                                </Link>
-                                <div className="p-4">
-                                    <Link href={`/product/${product.id}`}>
-                                        <h3 className="mb-1 cursor-pointer text-lg font-semibold text-gray-900 hover:text-primary">{product.name}</h3>
-                                    </Link>
-                                    <div className="mb-2 flex items-center gap-2">
-                                        {product.artisan_image && (
-                                            <img src={product.artisan_image} alt={product.artisan} className="h-5 w-5 rounded-full object-cover" />
-                                        )}
-                                        <p className="text-sm text-gray-600">by {product.artisan}</p>
-                                    </div>
-                                    <div className="mb-3 flex items-center">
-                                        <div className="flex items-center">
-                                            {[...Array(5)].map((_, i) => (
-                                                <Star
-                                                    key={i}
-                                                    className={`h-4 w-4 ${
-                                                        i < Math.floor(product.rating || 0) ? 'fill-current text-yellow-400' : 'text-gray-300'
-                                                    }`}
-                                                />
-                                            ))}
-                                        </div>
-                                        {product.rating && product.rating > 0 ? (
-                                            <span className="ml-1 text-sm text-gray-600">({Number(product.rating).toFixed(1)})</span>
-                                        ) : (
-                                            <span className="ml-1 text-sm text-gray-400">(No ratings yet)</span>
-                                        )}
-                                    </div>
-                                    <div className="mb-3">
-                                        <span className="text-xl font-bold text-gray-900">₱{product.price.toFixed(2)}</span>
-                                    </div>
-                                    <div className="flex gap-2">
-                                        <button
-                                            onClick={(e) => handleAddToCart(e, product)}
-                                            className="flex flex-1 items-center justify-center gap-1 rounded-md bg-gradient-to-r from-amber-600 to-orange-600 px-3 py-2 text-sm font-medium text-white shadow-md transition-all duration-200 hover:scale-105 hover:from-amber-700 hover:to-orange-700 hover:shadow-lg active:scale-95"
-                                        >
-                                            <ShoppingCart className="h-4 w-4" />
-                                            Add to Cart
-                                        </button>
-                                        <button
-                                            onClick={(e) => handleBuyNow(e, product)}
-                                            className="flex-1 rounded-md border-2 border-amber-600 bg-white px-3 py-2 text-sm font-medium text-amber-700 shadow-sm transition-all duration-200 hover:scale-105 hover:bg-amber-50 hover:shadow-md active:scale-95"
-                                        >
-                                            Buy Now
-                                        </button>
-                                    </div>
-                                </div>
+                        <div className="mt-6 text-center sm:hidden">
+                            <Link
+                                href="/products?sort=rating"
+                                className="inline-flex items-center gap-2 rounded-lg bg-amber-600 px-6 py-2.5 text-sm font-semibold text-white transition-all hover:bg-amber-700"
+                            >
+                                View All Top Rated
+                                <ArrowRight className="h-4 w-4" />
+                            </Link>
+                        </div>
+                    </div>
+                </section>
+            )}
+
+            {/* Best Sellers Section */}
+            {topSales.length > 0 && (
+                <section className="border-b border-gray-100 bg-white py-12">
+                    <div className="mx-auto max-w-7xl px-2 sm:px-4 md:px-6 lg:px-8">
+                        <div className="mb-6 flex items-center justify-between">
+                            <div>
+                                <h2 className="text-2xl font-bold text-gray-900 sm:text-3xl">Best Sellers</h2>
+                                <p className="mt-1 text-sm text-gray-600">Most purchased products</p>
+                            </div>
+                            <Link
+                                href="/products?sort=sales"
+                                className="hidden items-center gap-1 text-sm font-medium text-amber-600 transition-colors hover:text-amber-700 sm:flex"
+                            >
+                                View All
+                                <ArrowRight className="h-4 w-4" />
+                            </Link>
+                        </div>
+                        <ProductCarousel
+                            title=""
+                            subtitle=""
+                            products={topSales}
+                            badge="best-seller"
+                            wishlistProductIds={wishlistProductIds}
+                            onAddToCart={handleAddToCart}
+                            onBuyNow={handleBuyNow}
+                            viewAllLink="/products?sort=sales"
+                        />
+                    </div>
+                </section>
+            )}
+
+            {/* Featured Products / New Arrivals */}
+            <section className="border-b border-gray-100 bg-gray-50 py-12">
+                <div className="mx-auto max-w-7xl px-2 sm:px-4 md:px-6 lg:px-8">
+                    <div className="mb-6 flex items-center justify-between">
+                        <div>
+                            <h2 className="text-2xl font-bold text-gray-900 sm:text-3xl">New Arrivals</h2>
+                            <p className="mt-1 text-sm text-gray-600">Discover our latest handpicked artisan crafts</p>
+                        </div>
+                        <Link
+                            href="/products"
+                            className="hidden items-center gap-1 text-sm font-medium text-amber-600 transition-colors hover:text-amber-700 sm:flex"
+                        >
+                            View All
+                            <ArrowRight className="h-4 w-4" />
+                        </Link>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                        {featuredProducts.map((product) => (
+                            <div key={product.id} className="flex h-full">
+                                <ProductCard
+                                    product={product}
+                                    isInWishlist={wishlistProductIds.includes(product.id)}
+                                    onAddToCart={handleAddToCart}
+                                    onBuyNow={handleBuyNow}
+                                />
                             </div>
                         ))}
                     </div>
 
-                    <div className="mt-12 text-center">
+                    <div className="mt-6 text-center sm:hidden">
                         <Link
                             href="/products"
-                            className="inline-flex items-center rounded-lg bg-gradient-to-r from-amber-600 via-amber-700 to-orange-600 px-6 py-3 font-semibold text-white shadow-lg transition-all duration-200 hover:scale-105 hover:from-amber-700 hover:via-amber-800 hover:to-orange-700 hover:shadow-xl active:scale-95"
+                            className="inline-flex items-center gap-2 rounded-lg bg-amber-600 px-6 py-2.5 text-sm font-semibold text-white transition-all hover:bg-amber-700"
                         >
                             View All Products
-                            <ArrowRight className="ml-2 h-5 w-5" />
+                            <ArrowRight className="h-4 w-4" />
                         </Link>
                     </div>
                 </div>
             </section>
 
             {/* Newsletter Section */}
-            <section className="relative overflow-hidden bg-white py-20">
-                {/* Background Pattern */}
-                <div className="absolute inset-0 bg-gradient-to-br from-amber-50 via-orange-50 to-amber-100 opacity-50"></div>
-
-                <div className="relative mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
-                    <div className="rounded-3xl bg-gradient-to-r from-amber-600 via-amber-700 to-orange-600 p-8 shadow-2xl md:p-12">
+            <section className="bg-white py-8 sm:py-12">
+                <div className="mx-auto max-w-4xl px-3 sm:px-4 lg:px-8">
+                    <div className="rounded-xl sm:rounded-2xl border border-gray-200 bg-gradient-to-br from-amber-50 to-orange-50 p-6 sm:p-8 md:p-12 shadow-sm">
                         <div className="text-center">
-                            {/* Icon */}
-                            <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm">
-                                <svg className="h-8 w-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth="2"
-                                        d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                                    />
-                                </svg>
-                            </div>
-
-                            {/* Heading */}
-                            <h2 className="mb-3 text-3xl font-bold text-white md:text-4xl">Stay Connected with Local Artisans</h2>
-                            <p className="mb-8 text-lg text-amber-50 md:text-xl">
-                                Subscribe to receive updates on new handcrafted products, exclusive deals, and stories from our talented craftsmen
+                            <h2 className="mb-2 text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900">Stay Updated</h2>
+                            <p className="mb-4 sm:mb-6 text-xs sm:text-sm lg:text-base text-gray-600">
+                                Get the latest updates on new products and exclusive deals
                             </p>
-
-                            {/* Email Form */}
-                            <div className="mx-auto max-w-xl">
-                                <div className="flex flex-col gap-3 sm:flex-row">
+                            <div className="mx-auto max-w-md">
+                                <div className="flex flex-col gap-2 sm:gap-3">
                                     <input
                                         type="email"
-                                        placeholder="Enter your email address"
-                                        className="flex-1 rounded-xl border-2 border-white/20 bg-white/10 px-6 py-4 text-white placeholder-amber-100 backdrop-blur-sm transition-all focus:border-white focus:bg-white/20 focus:ring-4 focus:ring-white/30 focus:outline-none"
+                                        placeholder="Enter your email"
+                                        className="w-full rounded-lg border border-gray-300 bg-white px-3 sm:px-4 py-2.5 sm:py-3 text-sm focus:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-500/20"
                                     />
-                                    <button className="group rounded-xl bg-white px-8 py-4 font-bold text-amber-700 shadow-xl transition-all duration-300 hover:scale-105 hover:bg-amber-50 hover:shadow-2xl active:scale-95">
-                                        <span className="flex items-center justify-center gap-2">
-                                            Subscribe
-                                            <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
-                                        </span>
+                                    <button className="w-full sm:w-auto rounded-lg bg-amber-600 px-5 sm:px-6 py-2.5 sm:py-3 text-sm font-semibold text-white transition-colors hover:bg-amber-700">
+                                        Subscribe
                                     </button>
                                 </div>
-
-                                {/* Privacy Note */}
-                                <p className="mt-4 text-sm text-amber-100">🔒 We respect your privacy. Unsubscribe at any time.</p>
+                                <p className="mt-2 sm:mt-3 text-[10px] sm:text-xs text-gray-500">We respect your privacy. Unsubscribe at any time.</p>
                             </div>
                         </div>
                     </div>

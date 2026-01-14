@@ -8,6 +8,7 @@ use App\Models\Product;
 use App\Models\SellerApplication;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Schema;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -18,30 +19,73 @@ class SellerController extends Controller
      */
     public function index(Request $request): Response
     {
-        $search = $request->get('search');
-        $sort = $request->get('sort', 'name');
-        $direction = $request->get('direction', 'asc');
-        $verified = $request->get('verified');
-
         $query = User::where('role', User::ROLE_SELLER)
             ->where('is_active', true)
             ->with(['sellerApplication'])
             ->withCount(['products' => function ($q) {
-                $q->where('status', Product::STATUS_ACTIVE);
+                $q->where('status', Product::STATUS_ACTIVE)->where('quantity', '>', 0);
             }]);
 
         // Apply search filter
-        if ($search) {
+        if ($request->has('search') && $request->search) {
+            $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                    ->orWhere('business_name', 'like', "%{$search}%")
-                    ->orWhere('bio', 'like', "%{$search}%");
+                    ->orWhere('email', 'like', "%{$search}%")
+                    ->orWhere('address', 'like', "%{$search}%")
+                    ->orWhereHas('sellerApplication', function ($appQuery) use ($search) {
+                        $appQuery->where('business_name', 'like', "%{$search}%")
+                            ->orWhere('business_description', 'like', "%{$search}%");
+                    });
             });
         }
 
+        // Filter by location
+        if ($request->filled('location')) {
+            $location = $request->location;
+            if ($location === 'domestic') {
+                $query->where(function ($q) {
+                    $q->whereNotNull('delivery_city')
+                        ->orWhereNotNull('delivery_province');
+                });
+            } elseif ($location === 'metro_manila') {
+                $query->where(function ($q) {
+                    $q->where('delivery_city', 'like', '%Manila%')
+                        ->orWhere('delivery_province', 'like', '%Metro Manila%')
+                        ->orWhere('delivery_province', 'like', '%NCR%');
+                });
+            } elseif ($location === 'north_luzon') {
+                $query->whereIn('delivery_province', [
+                    'Ilocos Norte', 'Ilocos Sur', 'La Union', 'Pangasinan',
+                    'Batanes', 'Cagayan', 'Isabela', 'Nueva Vizcaya', 'Quirino',
+                    'Abra', 'Benguet', 'Ifugao', 'Kalinga', 'Mountain Province', 'Apayao',
+                    'Aurora', 'Bataan', 'Bulacan', 'Nueva Ecija', 'Pampanga', 'Tarlac', 'Zambales'
+                ]);
+            } else {
+                $query->where(function ($q) use ($location) {
+                    $q->where('delivery_city', 'like', "%{$location}%")
+                        ->orWhere('delivery_province', 'like', "%{$location}%");
+                });
+            }
+        }
+
+        // Filter by minimum rating
+        if ($request->filled('min_rating') && is_numeric($request->min_rating)) {
+            $minRating = (float) $request->min_rating;
+            if (Schema::hasColumn('users', 'average_rating')) {
+                $query->where('average_rating', '>=', $minRating)
+                    ->where('review_count', '>', 0);
+            }
+        }
+
+        // Filter by minimum products count
+        if ($request->filled('min_products') && is_numeric($request->min_products)) {
+            $query->havingRaw('products_count >= ?', [$request->min_products]);
+        }
+
         // Apply verified filter
-        if ($verified !== null && $verified !== '') {
-            $isVerified = filter_var($verified, FILTER_VALIDATE_BOOLEAN);
+        if ($request->has('verified') && $request->verified !== null && $request->verified !== '') {
+            $isVerified = filter_var($request->verified, FILTER_VALIDATE_BOOLEAN);
             if ($isVerified) {
                 $query->whereHas('sellerApplication', function ($q) {
                     $q->where('status', SellerApplication::STATUS_APPROVED);
@@ -54,18 +98,66 @@ class SellerController extends Controller
         }
 
         // Apply sorting
-        $validSorts = ['name', 'business_name', 'created_at', 'products_count'];
-        if (in_array($sort, $validSorts)) {
-            if ($sort === 'products_count') {
-                $query->orderBy('products_count', $direction);
-            } else {
-                $query->orderBy($sort, $direction);
-            }
+        $sortBy = $request->get('sort', 'popular');
+        
+        switch ($sortBy) {
+            case 'popular':
+                // Popular = combination of rating, products, and sales
+                $query->orderByRaw('(COALESCE(users.average_rating, 0) * 100 + (SELECT COUNT(*) FROM products WHERE products.seller_id = users.id AND products.status = \'active\' AND products.quantity > 0) * 10 + (SELECT COUNT(*) FROM orders WHERE orders.seller_id = users.id AND orders.status IN (\'completed\', \'delivered\')) * 5) DESC')
+                    ->orderByDesc('users.created_at');
+                break;
+            case 'products_count':
+                $query->orderBy('products_count', 'desc');
+                break;
+            case 'rating':
+                if (Schema::hasColumn('users', 'average_rating')) {
+                    $query->where('review_count', '>', 0)
+                        ->orderBy('average_rating', 'desc')
+                        ->orderBy('review_count', 'desc');
+                } else {
+                    $query->orderBy('name', 'asc');
+                }
+                break;
+            case 'total_sales':
+                $query->withCount(['orders' => function ($q) {
+                    $q->whereIn('status', ['completed', 'delivered']);
+                }])
+                ->orderBy('orders_count', 'desc');
+                break;
+            case 'latest':
+            case 'newest':
+                $query->orderBy('created_at', 'desc');
+                break;
+            case 'name':
+            default:
+                $query->orderBy('name', 'asc');
+                break;
         }
 
         $sellers = $query->paginate(12)->withQueryString();
 
-        // Add is_verified computed property to each seller
+        // Get unique locations for filtering
+        $locations = User::where('role', User::ROLE_SELLER)
+            ->where('is_active', true)
+            ->whereHas('products', function ($q) {
+                $q->where('status', Product::STATUS_ACTIVE)->where('quantity', '>', 0);
+            })
+            ->where(function ($q) {
+                $q->whereNotNull('delivery_city')
+                    ->orWhereNotNull('delivery_province');
+            })
+            ->select('delivery_city', 'delivery_province')
+            ->distinct()
+            ->get()
+            ->map(function ($user) {
+                return trim(($user->delivery_city ?? '') . ', ' . ($user->delivery_province ?? ''), ', ');
+            })
+            ->filter()
+            ->unique()
+            ->sort()
+            ->values();
+
+        // Transform sellers data
         $sellers->getCollection()->transform(function ($seller) {
             $seller->is_verified = $seller->sellerApplication &&
                                   $seller->sellerApplication->status === SellerApplication::STATUS_APPROVED;
@@ -75,22 +167,34 @@ class SellerController extends Controller
                 ->whereIn('status', ['completed', 'delivered'])
                 ->count();
 
-            $seller->location = $seller->address ?? null;
+            // Extract location from delivery fields or address
+            $location = 'Local Area';
+            if ($seller->delivery_city || $seller->delivery_province) {
+                $location = trim(($seller->delivery_city ?? '') . ', ' . ($seller->delivery_province ?? ''), ', ');
+            } elseif ($seller->address) {
+                $addressParts = explode(',', $seller->address);
+                $location = trim(end($addressParts));
+            }
+            $seller->location = $location;
+            
             $seller->business_description = $seller->sellerApplication->business_description ?? null;
             $seller->business_name = $seller->sellerApplication->business_name ?? null;
-            $seller->profile_image = $seller->profile_picture; // Map profile_picture to profile_image
+            $seller->profile_image = $seller->profile_picture;
 
             return $seller;
         });
 
         return Inertia::render('buyer/sellers/Index', [
             'sellers' => $sellers,
-            'filters' => [
-                'search' => $search,
-                'sort' => $sort,
-                'direction' => $direction,
-                'verified' => $verified === null ? null : filter_var($verified, FILTER_VALIDATE_BOOLEAN),
-            ],
+            'locations' => $locations,
+            'filters' => array_merge([
+                'search' => null,
+                'location' => null,
+                'min_rating' => null,
+                'min_products' => null,
+                'verified' => null,
+                'sort' => 'popular',
+            ], $request->only(['search', 'location', 'min_rating', 'min_products', 'verified', 'sort'])),
         ]);
     }
 

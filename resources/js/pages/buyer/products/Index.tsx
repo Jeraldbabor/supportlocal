@@ -1,38 +1,45 @@
 import { Product as GlobalProduct } from '@/types';
 import { Head, Link, router } from '@inertiajs/react';
-import { Eye, Filter, Grid, Info, List, Package, Search, ShoppingCart, Star, User } from 'lucide-react';
+import { ChevronDown, ChevronLeft, ChevronRight, Filter, Search, ShoppingCart, Star, ArrowUp, ArrowDown } from 'lucide-react';
 import React, { useState } from 'react';
 import AddToCartModal from '../../../components/AddToCartModal';
 import Toast from '../../../components/Toast';
 import WishlistButton from '../../../components/WishlistButton';
 import { useCart } from '../../../contexts/CartContext';
 import BuyerLayout from '../../../layouts/BuyerLayout';
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 
 interface Product {
     id: number;
     name: string;
     price: number;
     compare_price?: number | null;
-    primary_image: string;
-    seller: {
-        id: number;
-        name: string;
-        avatar_url?: string;
-    };
-    category: {
+    primary_image?: string;
+    image?: string;
+    seller?: {
         id: number;
         name: string;
     };
-    average_rating: number;
-    short_description: string;
-    stock_status: string;
-    view_count: number;
-    quantity: number;
+    category?: {
+        id: number;
+        name: string;
+    } | string | null;
+    average_rating?: number | null;
+    review_count?: number;
+    order_count?: number;
+    monthly_sales?: number;
+    stock_status?: string;
+    stock_quantity?: number;
+    view_count?: number;
+    quantity?: number;
+    location?: string | null;
+    free_shipping?: boolean;
 }
 
 interface Category {
     id: number;
     name: string;
+    products_count?: number;
 }
 
 interface Seller {
@@ -41,30 +48,35 @@ interface Seller {
 }
 
 interface ProductsIndexProps {
-    products: {
+    products?: {
         data: Product[];
         links: { url: string | null; label: string; active: boolean }[];
         current_page: number;
         last_page: number;
         total: number;
+        meta?: Record<string, unknown>;
     };
-    categories: Category[];
-    sellers: Seller[];
+    categories?: Category[];
+    sellers?: Seller[];
+    locations?: string[];
     wishlistProductIds?: number[];
-    filters: {
-        search: string | null;
-        category: string | null;
-        seller: string | null;
-        sort: string;
-        direction: string;
-        min_price: string | null;
-        max_price: string | null;
+    filters?: {
+        category?: string;
+        search?: string;
+        min_price?: number;
+        max_price?: number;
+        location?: string;
+        seller?: string;
+        free_shipping?: string;
+        cod?: string;
+        min_rating?: string;
+        sort?: string;
+        direction?: string;
     };
 }
 
-export default function Index({ products, categories, filters, wishlistProductIds = [] }: ProductsIndexProps) {
-    const [searchTerm, setSearchTerm] = useState(filters.search || '');
-    const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+export default function Index({ products, categories = [], sellers = [], locations = [], wishlistProductIds = [], filters = {} }: ProductsIndexProps) {
+    const [searchTerm, setSearchTerm] = useState(filters?.search || '');
     const { addToCart, isLoading } = useCart();
     const [showToast, setShowToast] = useState(false);
     const [toastMessage, setToastMessage] = useState('');
@@ -72,13 +84,67 @@ export default function Index({ products, categories, filters, wishlistProductId
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [modalMode, setModalMode] = useState<'cart' | 'buy'>('cart');
 
+    // Filter state
+    const [showMoreLocations, setShowMoreLocations] = useState(false);
+    const [showMoreSellers, setShowMoreSellers] = useState(false);
+    const [minPrice, setMinPrice] = useState(filters?.min_price?.toString() || '');
+    const [maxPrice, setMaxPrice] = useState(filters?.max_price?.toString() || '');
+    const [selectedLocation, setSelectedLocation] = useState<string | null>(filters?.location || null);
+    const [selectedSeller, setSelectedSeller] = useState<string | null>(filters?.seller || null);
+    const [selectedCategory, setSelectedCategory] = useState<string | null>(filters?.category || null);
+    const [freeShippingOnly, setFreeShippingOnly] = useState<boolean>(filters?.free_shipping === 'true');
+    const [codOnly, setCodOnly] = useState<boolean>(filters?.cod === 'true');
+    const [selectedRating, setSelectedRating] = useState<string | null>(filters?.min_rating || null);
+    const [showMoreRatings, setShowMoreRatings] = useState(false);
+    const [isFilterOpen, setIsFilterOpen] = useState(false);
+
+    const productList = products?.data || [];
+    const currentSort = filters?.sort || 'popular';
+    const [showPriceDropdown, setShowPriceDropdown] = useState(false);
+    
+    // Determine if price sorting is active and which direction
+    const isPriceSortActive = currentSort === 'price-low' || currentSort === 'price-high';
+    const priceSortDirection = currentSort === 'price-low' ? 'low' : currentSort === 'price-high' ? 'high' : null;
+
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
         router.get('/buyer/products', { ...filters, search: searchTerm }, { preserveState: true });
     };
 
-    const handleFilter = (key: string, value: string) => {
-        router.get('/buyer/products', { ...filters, [key]: value }, { preserveState: true });
+    const handleFilter = (key: string, value: string | null) => {
+        const newFilters = { ...filters, [key]: value };
+        Object.keys(newFilters).forEach(k => {
+            if (!newFilters[k as keyof typeof newFilters]) {
+                delete newFilters[k as keyof typeof newFilters];
+            }
+        });
+        router.get('/buyer/products', newFilters, { preserveState: true });
+    };
+
+    const handleSort = (sort: string) => {
+        setShowPriceDropdown(false);
+        router.get('/buyer/products', { ...filters, sort }, { preserveState: true });
+    };
+
+    const handlePriceFilter = () => {
+        const newFilters: any = { ...filters };
+        if (minPrice) newFilters.min_price = minPrice;
+        if (maxPrice) newFilters.max_price = maxPrice;
+        if (!minPrice) delete newFilters.min_price;
+        if (!maxPrice) delete newFilters.max_price;
+        router.get('/buyer/products', newFilters, { preserveState: true });
+    };
+
+    const clearFilters = () => {
+        setSelectedLocation(null);
+        setSelectedSeller(null);
+        setSelectedCategory(null);
+        setMinPrice('');
+        setMaxPrice('');
+        setFreeShippingOnly(false);
+        setCodOnly(false);
+        setSelectedRating(null);
+        router.get('/buyer/products', { sort: currentSort }, { preserveState: true });
     };
 
     const handleProductClick = (productId: number) => {
@@ -91,9 +157,8 @@ export default function Index({ products, categories, filters, wishlistProductId
 
     const handleAddToCart = (e: React.MouseEvent, product: Product) => {
         e.stopPropagation();
-        if (product.stock_status === 'out_of_stock') return;
+        if (product.stock_status === 'out_of_stock' || product.stock_quantity === 0) return;
 
-        // Open modal for quantity selection
         setModalProduct(product);
         setModalMode('cart');
         setIsModalOpen(true);
@@ -101,333 +166,814 @@ export default function Index({ products, categories, filters, wishlistProductId
 
     const handleBuyNow = (e: React.MouseEvent, product: Product) => {
         e.stopPropagation();
-        if (product.stock_status === 'out_of_stock') return;
+        if (product.stock_status === 'out_of_stock' || product.stock_quantity === 0) return;
 
-        // Redirect directly to checkout with this product only (no cart)
         router.visit(`/buyer/checkout?buy_now=true&product_id=${product.id}&quantity=1`);
     };
 
     const handleModalAddToCart = async (quantity: number) => {
         if (!modalProduct) return;
 
-        console.log('[BuyerProducts] Adding to cart:', { product: modalProduct.name, quantity });
-
         const cartProduct: GlobalProduct = {
             id: modalProduct.id,
             name: modalProduct.name,
             price: modalProduct.price,
-            quantity: modalProduct.quantity,
-            primary_image: modalProduct.primary_image,
-            seller: modalProduct.seller,
+            quantity: modalProduct.quantity || modalProduct.stock_quantity || 0,
+            primary_image: modalProduct.primary_image || modalProduct.image || '',
+            seller: modalProduct.seller || {
+                id: 0,
+                name: 'Unknown Seller',
+            },
         };
 
         try {
             await addToCart(cartProduct, quantity);
-            console.log('[BuyerProducts] Successfully added to cart');
-            // Close modal first
             setIsModalOpen(false);
-            // Then show success message
             setTimeout(() => {
                 setToastMessage(`✅ ${quantity} × ${modalProduct.name} added to cart successfully!`);
                 setShowToast(true);
-                console.log('[BuyerProducts] Toast notification shown');
             }, 100);
         } catch (error) {
-            console.error('[BuyerProducts] Error adding to cart:', error);
-            setIsModalOpen(false);
-            setTimeout(() => {
-                setToastMessage('❌ Failed to add item to cart. Please try again.');
-                setShowToast(true);
-            }, 100);
+            console.error('Error adding to cart:', error);
+            setToastMessage('❌ Failed to add item to cart. Please try again.');
+            setShowToast(true);
         }
     };
 
-    const handleModalBuyNow = async (quantity: number) => {
-        if (!modalProduct) return;
-
-        console.log('[BuyerProducts] Buy Now clicked:', { product: modalProduct.name, quantity });
-
-        setIsModalOpen(false);
-
-        // Redirect to checkout with buy_now parameter containing product info
-        // This tells checkout to only process this specific item
-        router.visit('/buyer/checkout', {
-            data: {
-                buy_now: 'true',
-                product_id: modalProduct.id,
-                quantity: quantity,
-            },
-        });
+    const isOutOfStock = (product: Product) => {
+        return product.stock_status === 'out_of_stock' || product.stock_quantity === 0;
     };
+
+    const discountPercentage = (product: Product) => {
+        if (product.compare_price && product.compare_price > product.price) {
+            return Math.round(((product.compare_price - product.price) / product.compare_price) * 100);
+        }
+        return null;
+    };
+
+    const formatSalesCount = (count?: number) => {
+        if (!count || count === 0) return null;
+        if (count >= 1000) {
+            return `${(count / 1000).toFixed(1)}K+`;
+        }
+        return `${count}+`;
+    };
+
+    const displayedLocations = showMoreLocations ? locations : locations.slice(0, 4);
+    const displayedSellers = showMoreSellers ? sellers : sellers.slice(0, 4);
+
+    // Render filter content (used in both desktop sidebar and mobile sheet)
+    const renderFilterContent = () => (
+        <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
+            <div className="mb-4 flex items-center justify-between">
+                <h2 className="text-lg font-bold text-gray-900">SEARCH FILTER</h2>
+                {(selectedLocation || selectedSeller || selectedCategory || minPrice || maxPrice || freeShippingOnly || codOnly || selectedRating) && (
+                    <button
+                        onClick={() => {
+                            clearFilters();
+                            setIsFilterOpen(false);
+                        }}
+                        className="text-xs text-orange-500 hover:text-orange-600"
+                    >
+                        Clear
+                    </button>
+                )}
+            </div>
+
+            {/* Category Filter */}
+            <div className="mb-6 border-b border-gray-200 pb-4">
+                <h3 className="mb-3 text-sm font-semibold text-gray-700">Category</h3>
+                <div className="space-y-2">
+                    <label className="flex items-center">
+                        <input
+                            type="checkbox"
+                            checked={!selectedCategory}
+                            onChange={(e) => {
+                                if (e.target.checked) {
+                                    setSelectedCategory(null);
+                                    handleFilter('category', null);
+                                }
+                            }}
+                            className="mr-2 h-4 w-4 rounded border-gray-300 text-orange-500 focus:ring-orange-500"
+                        />
+                        <span className="text-sm text-gray-700">All Categories</span>
+                    </label>
+                    {categories.map((category) => (
+                        <label key={category.id} className="flex items-center">
+                            <input
+                                type="checkbox"
+                                checked={selectedCategory === category.id.toString()}
+                                onChange={(e) => {
+                                    const value = e.target.checked ? category.id.toString() : null;
+                                    setSelectedCategory(value);
+                                    handleFilter('category', value);
+                                }}
+                                className="mr-2 h-4 w-4 rounded border-gray-300 text-orange-500 focus:ring-orange-500"
+                            />
+                            <span className="text-sm text-gray-700">
+                                {category.name}
+                                {category.products_count !== undefined && (
+                                    <span className="ml-1 text-xs text-gray-500">
+                                        ({category.products_count})
+                                    </span>
+                                )}
+                            </span>
+                        </label>
+                    ))}
+                </div>
+            </div>
+
+            {/* Shipped From */}
+            <div className="mb-6 border-b border-gray-200 pb-4">
+                <h3 className="mb-3 text-sm font-semibold text-gray-700">Shipped From</h3>
+                <div className="space-y-2">
+                    <label className="flex items-center">
+                        <input
+                            type="checkbox"
+                            checked={selectedLocation === 'domestic'}
+                            onChange={(e) => {
+                                const value = e.target.checked ? 'domestic' : null;
+                                setSelectedLocation(value);
+                                handleFilter('location', value);
+                            }}
+                            className="mr-2 h-4 w-4 rounded border-gray-300 text-orange-500 focus:ring-orange-500"
+                        />
+                        <span className="text-sm text-gray-700">Domestic</span>
+                    </label>
+                    <label className="flex items-center">
+                        <input
+                            type="checkbox"
+                            checked={selectedLocation === 'metro_manila'}
+                            onChange={(e) => {
+                                const value = e.target.checked ? 'metro_manila' : null;
+                                setSelectedLocation(value);
+                                handleFilter('location', value);
+                            }}
+                            className="mr-2 h-4 w-4 rounded border-gray-300 text-orange-500 focus:ring-orange-500"
+                        />
+                        <span className="text-sm text-gray-700">Metro Manila</span>
+                    </label>
+                    <label className="flex items-center">
+                        <input
+                            type="checkbox"
+                            checked={selectedLocation === 'north_luzon'}
+                            onChange={(e) => {
+                                const value = e.target.checked ? 'north_luzon' : null;
+                                setSelectedLocation(value);
+                                handleFilter('location', value);
+                            }}
+                            className="mr-2 h-4 w-4 rounded border-gray-300 text-orange-500 focus:ring-orange-500"
+                        />
+                        <span className="text-sm text-gray-700">North Luzon</span>
+                    </label>
+                    {displayedLocations.length > 0 && (
+                        <>
+                            {displayedLocations.map((location) => (
+                                <label key={location} className="flex items-center">
+                                    <input
+                                        type="checkbox"
+                                        checked={selectedLocation === location}
+                                        onChange={(e) => {
+                                            const value = e.target.checked ? location : null;
+                                            setSelectedLocation(value);
+                                            handleFilter('location', value);
+                                        }}
+                                        className="mr-2 h-4 w-4 rounded border-gray-300 text-orange-500 focus:ring-orange-500"
+                                    />
+                                    <span className="text-sm text-gray-700">{location}</span>
+                                </label>
+                            ))}
+                            {locations.length > 4 && (
+                                <button
+                                    onClick={() => setShowMoreLocations(!showMoreLocations)}
+                                    className="mt-1 flex items-center text-xs text-gray-600 hover:text-orange-500"
+                                >
+                                    {showMoreLocations ? 'Show Less' : 'More'} <ChevronDown className="ml-1 h-3 w-3" />
+                                </button>
+                            )}
+                        </>
+                    )}
+                </div>
+            </div>
+
+            {/* Brand/Seller */}
+            <div className="mb-6 border-b border-gray-200 pb-4">
+                <h3 className="mb-3 text-sm font-semibold text-gray-700">Brand</h3>
+                <div className="space-y-2">
+                    {displayedSellers.map((seller) => (
+                        <label key={seller.id} className="flex items-center">
+                            <input
+                                type="checkbox"
+                                checked={selectedSeller === seller.id.toString()}
+                                onChange={(e) => {
+                                    const value = e.target.checked ? seller.id.toString() : null;
+                                    setSelectedSeller(value);
+                                    handleFilter('seller', value);
+                                }}
+                                className="mr-2 h-4 w-4 rounded border-gray-300 text-orange-500 focus:ring-orange-500"
+                            />
+                            <span className="text-sm text-gray-700">{seller.name}</span>
+                        </label>
+                    ))}
+                    {sellers.length > 4 && (
+                        <button
+                            onClick={() => setShowMoreSellers(!showMoreSellers)}
+                            className="mt-1 flex items-center text-xs text-gray-600 hover:text-orange-500"
+                        >
+                            {showMoreSellers ? 'Show Less' : 'More'} <ChevronDown className="ml-1 h-3 w-3" />
+                        </button>
+                    )}
+                </div>
+            </div>
+
+            {/* Rating Filter */}
+            <div className="mb-6 border-b border-gray-200 pb-4">
+                <h3 className="mb-3 text-sm font-semibold text-gray-700">Rating</h3>
+                <div className="space-y-2">
+                    {/* 5 Stars */}
+                    <label className="flex items-center cursor-pointer">
+                        <input
+                            type="radio"
+                            name="rating"
+                            checked={selectedRating === '5'}
+                            onChange={(e) => {
+                                const value = selectedRating === '5' ? null : '5';
+                                setSelectedRating(value);
+                                handleFilter('min_rating', value);
+                            }}
+                            className="mr-2 h-4 w-4 border-gray-300 text-orange-500 focus:ring-orange-500"
+                        />
+                        <div className="flex items-center gap-1">
+                            {[...Array(5)].map((_, i) => (
+                                <Star key={i} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                            ))}
+                        </div>
+                    </label>
+
+                    {/* 4 Stars & Up */}
+                    <label className="flex items-center cursor-pointer">
+                        <input
+                            type="radio"
+                            name="rating"
+                            checked={selectedRating === '4'}
+                            onChange={(e) => {
+                                const value = selectedRating === '4' ? null : '4';
+                                setSelectedRating(value);
+                                handleFilter('min_rating', value);
+                            }}
+                            className="mr-2 h-4 w-4 border-gray-300 text-orange-500 focus:ring-orange-500"
+                        />
+                        <div className="flex items-center gap-1">
+                            {[...Array(4)].map((_, i) => (
+                                <Star key={i} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                            ))}
+                            {[...Array(1)].map((_, i) => (
+                                <Star key={i} className="h-4 w-4 text-gray-300" />
+                            ))}
+                            <span className="ml-1 text-sm text-gray-700">& Up</span>
+                        </div>
+                    </label>
+
+                    {/* 3 Stars & Up */}
+                    <label className="flex items-center cursor-pointer">
+                        <input
+                            type="radio"
+                            name="rating"
+                            checked={selectedRating === '3'}
+                            onChange={(e) => {
+                                const value = selectedRating === '3' ? null : '3';
+                                setSelectedRating(value);
+                                handleFilter('min_rating', value);
+                            }}
+                            className="mr-2 h-4 w-4 border-gray-300 text-orange-500 focus:ring-orange-500"
+                        />
+                        <div className="flex items-center gap-1">
+                            {[...Array(3)].map((_, i) => (
+                                <Star key={i} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                            ))}
+                            {[...Array(2)].map((_, i) => (
+                                <Star key={i} className="h-4 w-4 text-gray-300" />
+                            ))}
+                            <span className="ml-1 text-sm text-gray-700">& Up</span>
+                        </div>
+                    </label>
+
+                    {/* 2 Stars & Up */}
+                    <label className="flex items-center cursor-pointer">
+                        <input
+                            type="radio"
+                            name="rating"
+                            checked={selectedRating === '2'}
+                            onChange={(e) => {
+                                const value = selectedRating === '2' ? null : '2';
+                                setSelectedRating(value);
+                                handleFilter('min_rating', value);
+                            }}
+                            className="mr-2 h-4 w-4 border-gray-300 text-orange-500 focus:ring-orange-500"
+                        />
+                        <div className="flex items-center gap-1">
+                            {[...Array(2)].map((_, i) => (
+                                <Star key={i} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                            ))}
+                            {[...Array(3)].map((_, i) => (
+                                <Star key={i} className="h-4 w-4 text-gray-300" />
+                            ))}
+                            <span className="ml-1 text-sm text-gray-700">& Up</span>
+                        </div>
+                    </label>
+
+                    {/* More ratings (1 Star & Up) - shown when expanded */}
+                    {showMoreRatings && (
+                        <label className="flex items-center cursor-pointer">
+                            <input
+                                type="radio"
+                                name="rating"
+                                checked={selectedRating === '1'}
+                                onChange={(e) => {
+                                    const value = selectedRating === '1' ? null : '1';
+                                    setSelectedRating(value);
+                                    handleFilter('min_rating', value);
+                                }}
+                                className="mr-2 h-4 w-4 border-gray-300 text-orange-500 focus:ring-orange-500"
+                            />
+                            <div className="flex items-center gap-1">
+                                {[...Array(1)].map((_, i) => (
+                                    <Star key={i} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                                ))}
+                                {[...Array(4)].map((_, i) => (
+                                    <Star key={i} className="h-4 w-4 text-gray-300" />
+                                ))}
+                                <span className="ml-1 text-sm text-gray-700">& Up</span>
+                            </div>
+                        </label>
+                    )}
+
+                    {/* More/Less toggle */}
+                    <button
+                        onClick={() => setShowMoreRatings(!showMoreRatings)}
+                        className="mt-1 flex items-center text-xs text-gray-600 hover:text-orange-500"
+                    >
+                        {showMoreRatings ? 'Show Less' : 'More'} <ChevronDown className={`ml-1 h-3 w-3 transition-transform ${showMoreRatings ? 'rotate-180' : ''}`} />
+                    </button>
+                </div>
+            </div>
+
+            {/* Shops & Promos */}
+            <div className="mb-6 border-b border-gray-200 pb-4">
+                <h3 className="mb-3 text-sm font-semibold text-gray-700">Shops & Promos</h3>
+                <div className="space-y-2">
+                    <label className="flex items-center">
+                        <input
+                            type="checkbox"
+                            checked={freeShippingOnly}
+                            onChange={(e) => {
+                                const value = e.target.checked;
+                                setFreeShippingOnly(value);
+                                handleFilter('free_shipping', value ? 'true' : null);
+                            }}
+                            className="mr-2 h-4 w-4 rounded border-gray-300 text-orange-500 focus:ring-orange-500"
+                        />
+                        <span className="text-sm text-gray-700">Free Shipping</span>
+                    </label>
+                    <label className="flex items-center">
+                        <input
+                            type="checkbox"
+                            checked={codOnly}
+                            onChange={(e) => {
+                                const value = e.target.checked;
+                                setCodOnly(value);
+                                handleFilter('cod', value ? 'true' : null);
+                            }}
+                            className="mr-2 h-4 w-4 rounded border-gray-300 text-orange-500 focus:ring-orange-500"
+                        />
+                        <span className="text-sm text-gray-700">Cash on Delivery (COD)</span>
+                    </label>
+                </div>
+            </div>
+
+            {/* Price Range */}
+            <div className="mb-6">
+                <h3 className="mb-3 text-sm font-semibold text-gray-700">Price Range</h3>
+                <div className="space-y-2">
+                    <div className="flex items-center gap-2">
+                        <input
+                            type="number"
+                            placeholder="Min"
+                            value={minPrice}
+                            onChange={(e) => setMinPrice(e.target.value)}
+                            className="w-full rounded border border-gray-300 px-2 py-1.5 text-sm focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-200"
+                        />
+                        <span className="text-gray-500">-</span>
+                        <input
+                            type="number"
+                            placeholder="Max"
+                            value={maxPrice}
+                            onChange={(e) => setMaxPrice(e.target.value)}
+                            className="w-full rounded border border-gray-300 px-2 py-1.5 text-sm focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-200"
+                        />
+                    </div>
+                    <button
+                        onClick={() => {
+                            handlePriceFilter();
+                            setIsFilterOpen(false);
+                        }}
+                        className="w-full rounded bg-orange-500 px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-orange-600"
+                    >
+                        Apply
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
 
     return (
         <BuyerLayout>
             <Head title="Browse Products" />
 
-            <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-                <div className="mb-8">
-                    <h1 className="mb-2 text-3xl font-bold text-gray-900">Browse Products</h1>
-                    <p className="text-gray-600">Discover unique handmade products from local artisans</p>
+            <div className="mx-auto max-w-7xl px-2 sm:px-3 md:px-4 py-3 sm:py-4 md:py-6 lg:px-8">
+                {/* Search Bar */}
+                <div className="mb-3 sm:mb-4 md:mb-6">
+                    <form onSubmit={handleSearch} className="flex gap-1.5 sm:gap-2 md:gap-3">
+                        <div className="relative flex-1">
+                            <Search className="absolute left-2 sm:left-3 top-1/2 h-3.5 w-3.5 sm:h-4 sm:w-4 md:h-5 md:w-5 -translate-y-1/2 text-gray-400" />
+                            <input
+                                type="text"
+                                placeholder="Search products..."
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                                className="w-full rounded-lg border border-gray-300 py-1.5 sm:py-2 md:py-3 pl-7 sm:pl-8 md:pl-10 pr-2 sm:pr-3 md:pr-4 text-xs sm:text-sm focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-200"
+                            />
+                        </div>
+                        <button
+                            type="submit"
+                            className="rounded-lg bg-orange-500 px-3 sm:px-4 md:px-6 py-1.5 sm:py-2 md:py-3 text-xs sm:text-sm font-medium text-white transition-colors hover:bg-orange-600 active:bg-orange-700 whitespace-nowrap"
+                        >
+                            Search
+                        </button>
+                    </form>
                 </div>
 
-                <div className="mb-8">
-                    <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
-                        <form onSubmit={handleSearch} className="col-span-1 md:col-span-2">
-                            <div className="relative">
-                                <Search className="absolute top-3 left-3 h-4 w-4 text-gray-400" />
-                                <input
-                                    type="text"
-                                    placeholder="Search products..."
-                                    value={searchTerm}
-                                    onChange={(e) => setSearchTerm(e.target.value)}
-                                    className="w-full rounded-lg border border-gray-300 py-2 pr-4 pl-10 focus:border-primary focus:ring-primary"
-                                />
+                {/* Mobile Filter Button */}
+                <div className="mb-2 sm:mb-3 md:mb-4 flex items-center justify-between lg:hidden">
+                    <Sheet open={isFilterOpen} onOpenChange={setIsFilterOpen}>
+                        <SheetTrigger asChild>
+                            <button className="flex items-center gap-1.5 sm:gap-2 rounded-lg border border-gray-300 bg-white px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-medium text-gray-700 shadow-sm transition-colors hover:bg-gray-50 active:bg-gray-100">
+                                <Filter className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                                Filters
+                                {(selectedLocation || selectedSeller || selectedCategory || minPrice || maxPrice || freeShippingOnly || codOnly || selectedRating) && (
+                                    <span className="ml-1 rounded-full bg-orange-500 px-1 sm:px-1.5 py-0.5 text-[10px] sm:text-xs font-semibold text-white">
+                                        {[
+                                            selectedLocation,
+                                            selectedSeller,
+                                            selectedCategory,
+                                            minPrice,
+                                            maxPrice,
+                                            freeShippingOnly,
+                                            codOnly,
+                                            selectedRating,
+                                        ].filter(Boolean).length}
+                                    </span>
+                                )}
+                            </button>
+                        </SheetTrigger>
+                        <SheetContent side="left" className="w-[85vw] sm:w-[400px] overflow-y-auto">
+                            <SheetHeader>
+                                <SheetTitle className="text-lg font-bold text-gray-900">SEARCH FILTER</SheetTitle>
+                                <SheetDescription className="sr-only">
+                                    Filter products by category, location, seller, rating, price, and more
+                                </SheetDescription>
+                            </SheetHeader>
+                            <div className="mt-4">
+                                {renderFilterContent()}
                             </div>
-                        </form>
-
-                        <select
-                            onChange={(e) => handleFilter('category', e.target.value)}
-                            value={filters.category || ''}
-                            className="rounded-lg border border-gray-300 px-3 py-2 focus:border-primary focus:ring-primary"
-                        >
-                            <option value="">All Categories</option>
-                            {categories.map((category) => (
-                                <option key={category.id} value={category.id}>
-                                    {category.name}
-                                </option>
-                            ))}
-                        </select>
-
-                        <div className="flex items-center gap-2">
-                            <button
-                                onClick={() => setViewMode('grid')}
-                                className={`rounded-md p-2 ${viewMode === 'grid' ? 'bg-primary text-white' : 'bg-gray-100 text-gray-600'}`}
-                            >
-                                <Grid className="h-4 w-4" />
-                            </button>
-                            <button
-                                onClick={() => setViewMode('list')}
-                                className={`rounded-md p-2 ${viewMode === 'list' ? 'bg-primary text-white' : 'bg-gray-100 text-gray-600'}`}
-                            >
-                                <List className="h-4 w-4" />
-                            </button>
-                        </div>
-                    </div>
+                        </SheetContent>
+                    </Sheet>
                 </div>
 
-                {products.data.length > 0 ? (
-                    <>
-                        <div
-                            className={`mb-8 ${viewMode === 'grid' ? 'grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4' : 'space-y-4'}`}
-                        >
-                            {products.data.map((product) => (
-                                <div
-                                    key={product.id}
-                                    className="group relative cursor-pointer overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm transition-all hover:border-primary/20 hover:shadow-xl"
+                <div className="flex gap-4 sm:gap-6">
+                    {/* Left Sidebar - Filters (Desktop) */}
+                    <div className="hidden lg:block w-64 flex-shrink-0">
+                        {renderFilterContent()}
+                    </div>
+
+                    {/* Right Content Area */}
+                    <div className="flex-1 min-w-0">
+                        {/* Sorting Bar */}
+                        <div className="mb-2 sm:mb-3 md:mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1.5 sm:gap-2 md:gap-0 rounded-lg border border-gray-200 bg-white px-2 sm:px-3 md:px-4 py-2 sm:py-2.5 md:py-3">
+                            <div className="flex items-center gap-1 sm:gap-1.5 md:gap-2 flex-wrap">
+                                <span className="text-[10px] sm:text-xs md:text-sm font-medium text-gray-700">Sort by:</span>
+                                <button
+                                    onClick={() => handleSort('popular')}
+                                    className={`rounded px-1.5 sm:px-2 md:px-3 py-0.5 sm:py-1 md:py-1.5 text-[10px] sm:text-xs md:text-sm font-medium transition-colors active:scale-95 ${
+                                        currentSort === 'popular'
+                                            ? 'bg-orange-500 text-white'
+                                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200 active:bg-gray-300'
+                                    }`}
                                 >
-                                    {/* Product Image with Wishlist Button */}
-                                    <div className="relative aspect-square overflow-hidden rounded-t-xl bg-gray-100">
-                                        {product.primary_image ? (
-                                            <img
-                                                src={`/storage/${product.primary_image}`}
-                                                alt={product.name}
-                                                className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-110"
-                                                onClick={() => handleProductClick(product.id)}
-                                            />
-                                        ) : (
-                                            <div
-                                                className="flex h-full w-full items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200"
-                                                onClick={() => handleProductClick(product.id)}
-                                            >
-                                                <Package className="h-16 w-16 text-gray-400" />
-                                            </div>
-                                        )}
-
-                                        {/* Stock Status Badge */}
-                                        <div className="absolute top-3 left-3">
-                                            <span
-                                                className={`rounded-full px-2.5 py-1 text-xs font-medium backdrop-blur-sm ${
-                                                    product.stock_status === 'in_stock'
-                                                        ? 'bg-green-500/90 text-white'
-                                                        : product.stock_status === 'low_stock'
-                                                          ? 'bg-yellow-500/90 text-white'
-                                                          : 'bg-red-500/90 text-white'
-                                                }`}
-                                            >
-                                                {product.stock_status === 'in_stock'
-                                                    ? 'Available'
-                                                    : product.stock_status === 'low_stock'
-                                                      ? 'Low Stock'
-                                                      : 'Out of Stock'}
-                                            </span>
-                                        </div>
-
-                                        {/* Wishlist Button */}
-                                        <div className="absolute top-3 right-3 z-10" onClick={(e) => e.stopPropagation()}>
-                                            <WishlistButton
-                                                productId={product.id}
-                                                initialInWishlist={wishlistProductIds.includes(product.id)}
-                                                variant="icon-filled"
-                                            />
-                                        </div>
-
-                                        {/* Quick Actions Overlay */}
-                                        <div className="absolute inset-0 bg-black/0 opacity-0 transition-all duration-300 group-hover:bg-black/10 group-hover:opacity-100" />
-                                    </div>
-
-                                    {/* Product Details */}
-                                    <div className="space-y-3 p-4">
-                                        {/* Product Name */}
-                                        <div onClick={() => handleProductClick(product.id)}>
-                                            <h3 className="line-clamp-2 text-lg font-semibold text-gray-900 transition-colors group-hover:text-primary">
-                                                {product.name}
-                                            </h3>
-                                        </div>
-
-                                        {/* Description */}
-                                        <p className="line-clamp-2 text-sm leading-relaxed text-gray-600">{product.short_description}</p>
-
-                                        {/* Seller and Views */}
-                                        <div className="flex items-center justify-between text-sm">
-                                            <button
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    handleSellerClick(product.seller.id);
-                                                }}
-                                                className="hover:text-primary-dark flex items-center gap-1.5 font-medium text-primary transition-colors"
-                                            >
-                                                {product.seller.avatar_url ? (
-                                                    <img
-                                                        src={product.seller.avatar_url}
-                                                        alt={product.seller.name}
-                                                        className="h-5 w-5 rounded-full object-cover ring-1 ring-gray-200"
-                                                    />
+                                    Popular
+                                </button>
+                                <button
+                                    onClick={() => handleSort('latest')}
+                                    className={`rounded px-1.5 sm:px-2 md:px-3 py-0.5 sm:py-1 md:py-1.5 text-[10px] sm:text-xs md:text-sm font-medium transition-colors active:scale-95 ${
+                                        currentSort === 'latest'
+                                            ? 'bg-orange-500 text-white'
+                                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200 active:bg-gray-300'
+                                    }`}
+                                >
+                                    Latest
+                                </button>
+                                <button
+                                    onClick={() => handleSort('top_sales')}
+                                    className={`rounded px-1.5 sm:px-2 md:px-3 py-0.5 sm:py-1 md:py-1.5 text-[10px] sm:text-xs md:text-sm font-medium transition-colors active:scale-95 ${
+                                        currentSort === 'top_sales'
+                                            ? 'bg-orange-500 text-white'
+                                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200 active:bg-gray-300'
+                                    }`}
+                                >
+                                    Top Sales
+                                </button>
+                                <div className="relative">
+                                    <button
+                                        onClick={() => setShowPriceDropdown(!showPriceDropdown)}
+                                        className={`flex items-center gap-0.5 sm:gap-1 rounded px-1.5 sm:px-2 md:px-3 py-0.5 sm:py-1 md:py-1.5 text-[10px] sm:text-xs md:text-sm font-medium transition-colors active:scale-95 ${
+                                            isPriceSortActive
+                                                ? 'bg-orange-500 text-white'
+                                                : 'bg-gray-100 text-gray-700 hover:bg-gray-200 active:bg-gray-300'
+                                        }`}
+                                    >
+                                        Price
+                                        {isPriceSortActive && (
+                                            <span className="ml-0.5 sm:ml-1">
+                                                {priceSortDirection === 'low' ? (
+                                                    <ArrowUp className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
                                                 ) : (
-                                                    <User className="h-3.5 w-3.5" />
+                                                    <ArrowDown className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
                                                 )}
-                                                {product.seller.name}
-                                            </button>
-
-                                            {product.view_count > 0 && (
-                                                <div className="flex items-center text-gray-500">
-                                                    <Eye className="mr-1 h-3.5 w-3.5" />
-                                                    <span className="text-xs">{product.view_count}</span>
-                                                </div>
-                                            )}
-                                        </div>
-
-                                        {/* Rating */}
-                                        <div className="flex items-center space-x-1">
-                                            <div className="flex">
-                                                {[...Array(5)].map((_, i) => (
-                                                    <Star
-                                                        key={i}
-                                                        className={`h-3.5 w-3.5 ${
-                                                            i < Math.floor(Number(product.average_rating) || 0)
-                                                                ? 'fill-current text-yellow-400'
-                                                                : 'text-gray-300'
-                                                        }`}
-                                                    />
-                                                ))}
-                                            </div>
-                                            {product.average_rating > 0 ? (
-                                                <span className="ml-1 text-xs text-gray-600">({Number(product.average_rating).toFixed(1)})</span>
-                                            ) : (
-                                                <span className="ml-1 text-xs text-gray-400">(No ratings yet)</span>
-                                            )}
-                                        </div>
-
-                                        {/* Price */}
-                                        <div className="pt-2">
-                                            <div className="flex items-center gap-2">
-                                                <span className="text-2xl font-bold text-gray-900">₱{Number(product.price).toLocaleString()}</span>
-                                                {product.compare_price && product.compare_price > product.price && (
-                                                    <span className="rounded-md bg-red-100 px-2 py-0.5 text-xs font-semibold text-red-600">
-                                                        -{Math.round(((product.compare_price - product.price) / product.compare_price) * 100)}%
-                                                    </span>
-                                                )}
-                                            </div>
-                                            {product.compare_price && product.compare_price > product.price && (
-                                                <div className="mt-1">
-                                                    <span className="text-sm text-gray-500 line-through">
-                                                        ₱{Number(product.compare_price).toLocaleString()}
-                                                    </span>
-                                                </div>
-                                            )}
-                                        </div>
-
-                                        {/* Action Buttons */}
-                                        <div className="space-y-2 pt-3">
-                                            {/* View Details Button */}
-                                            <Link
-                                                href={`/buyer/product/${product.id}`}
-                                                className="flex w-full transform items-center justify-center gap-2 rounded-lg border-2 border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-primary hover:bg-primary/5 hover:text-primary hover:shadow-md"
-                                            >
-                                                <Info className="h-4 w-4" />
-                                                View Details
-                                            </Link>
-
-                                            {/* Cart and Buy Buttons */}
-                                            <div className="flex gap-2">
+                                            </span>
+                                        )}
+                                        {!isPriceSortActive && <ChevronDown className="h-2.5 w-2.5 sm:h-3 sm:w-3" />}
+                                    </button>
+                                    
+                                    {/* Price Dropdown */}
+                                    {showPriceDropdown && (
+                                        <>
+                                            <div 
+                                                className="fixed inset-0 z-10" 
+                                                onClick={() => setShowPriceDropdown(false)}
+                                            />
+                                            <div className="absolute left-0 top-full z-20 mt-1 w-48 rounded-lg border border-gray-200 bg-white shadow-lg">
                                                 <button
-                                                    onClick={(e) => handleAddToCart(e, product)}
-                                                    disabled={product.stock_status === 'out_of_stock' || isLoading}
-                                                    className={`flex flex-1 transform items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium transition-all duration-200 ${
-                                                        product.stock_status === 'out_of_stock' || isLoading
-                                                            ? 'cursor-not-allowed bg-gray-100 text-gray-400'
-                                                            : 'bg-gradient-to-r from-amber-600 to-orange-600 text-white shadow-md hover:-translate-y-0.5 hover:from-amber-700 hover:to-orange-700 hover:shadow-lg focus:ring-2 focus:ring-amber-200 active:transform-none'
+                                                    onClick={() => {
+                                                        handleSort('price-low');
+                                                        setShowPriceDropdown(false);
+                                                    }}
+                                                    className={`flex w-full items-center justify-between px-4 py-2.5 text-left text-sm transition-colors first:rounded-t-lg ${
+                                                        currentSort === 'price-low'
+                                                            ? 'bg-orange-50 text-orange-600 font-medium'
+                                                            : 'text-gray-700 hover:bg-gray-50'
                                                     }`}
                                                 >
-                                                    <ShoppingCart className="h-4 w-4" />
-                                                    {product.stock_status === 'out_of_stock' ? 'Out of Stock' : 'Add to Cart'}
+                                                    <span>Price: Low to High</span>
+                                                    {currentSort === 'price-low' && (
+                                                        <ArrowUp className="h-4 w-4 text-orange-600" />
+                                                    )}
                                                 </button>
-
                                                 <button
-                                                    onClick={(e) => handleBuyNow(e, product)}
-                                                    disabled={product.stock_status === 'out_of_stock' || isLoading}
-                                                    className={`flex transform items-center justify-center rounded-lg px-4 py-2.5 text-sm font-medium transition-all duration-200 ${
-                                                        product.stock_status === 'out_of_stock' || isLoading
-                                                            ? 'cursor-not-allowed bg-gray-100 text-gray-400'
-                                                            : 'border-2 border-amber-300 bg-white text-amber-700 shadow-sm hover:-translate-y-0.5 hover:border-amber-400 hover:bg-gradient-to-r hover:from-amber-50 hover:to-orange-50 hover:shadow-md focus:ring-2 focus:ring-amber-200 active:transform-none'
+                                                    onClick={() => {
+                                                        handleSort('price-high');
+                                                        setShowPriceDropdown(false);
+                                                    }}
+                                                    className={`flex w-full items-center justify-between px-4 py-2.5 text-left text-sm transition-colors last:rounded-b-lg ${
+                                                        currentSort === 'price-high'
+                                                            ? 'bg-orange-50 text-orange-600 font-medium'
+                                                            : 'text-gray-700 hover:bg-gray-50'
                                                     }`}
-                                                    title="Buy Now"
                                                 >
-                                                    Buy Now
+                                                    <span>Price: High to Low</span>
+                                                    {currentSort === 'price-high' && (
+                                                        <ArrowDown className="h-4 w-4 text-orange-600" />
+                                                    )}
                                                 </button>
                                             </div>
-                                        </div>
+                                        </>
+                                    )}
+                                </div>
+                            </div>
+
+                            {/* Pagination Info */}
+                            {products && products.last_page > 1 && (
+                                <div className="flex items-center gap-1.5 sm:gap-2">
+                                    <span className="text-xs sm:text-sm text-gray-600">
+                                        {products.current_page}/{products.last_page}
+                                    </span>
+                                    <div className="flex gap-0.5 sm:gap-1">
+                                        <Link
+                                            href={products.links.find((l) => l.label === '&laquo; Previous')?.url || '#'}
+                                            className={`rounded px-1.5 sm:px-2 py-1 text-xs sm:text-sm ${
+                                                products.current_page === 1
+                                                    ? 'cursor-not-allowed bg-gray-100 text-gray-400'
+                                                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                            }`}
+                                        >
+                                            <ChevronLeft className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                                        </Link>
+                                        <Link
+                                            href={products.links.find((l) => l.label === 'Next &raquo;')?.url || '#'}
+                                            className={`rounded px-1.5 sm:px-2 py-1 text-xs sm:text-sm ${
+                                                products.current_page === products.last_page
+                                                    ? 'cursor-not-allowed bg-gray-100 text-gray-400'
+                                                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                            }`}
+                                        >
+                                            <ChevronRight className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                                        </Link>
                                     </div>
                                 </div>
-                            ))}
+                            )}
                         </div>
 
-                        {/* Pagination */}
-                        {products.last_page > 1 && (
-                            <div className="flex justify-center">
-                                <div className="flex space-x-2">
-                                    {products.links.map((link, index) => (
-                                        <Link
-                                            key={index}
-                                            href={link.url || '#'}
-                                            className={`rounded-md px-3 py-2 text-sm ${
-                                                link.active ? 'bg-primary text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                                            } ${!link.url ? 'cursor-not-allowed opacity-50' : ''}`}
-                                            dangerouslySetInnerHTML={{ __html: link.label }}
-                                        />
-                                    ))}
+                        {/* Product Grid */}
+                        {productList.length > 0 ? (
+                            <>
+                                <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+                                    {productList.map((product) => {
+                                        const discount = discountPercentage(product);
+                                        const salesCount = formatSalesCount(product.monthly_sales ?? product.order_count);
+                                        const categoryName = typeof product.category === 'object' ? product.category?.name : product.category;
+
+                                        return (
+                                            <div
+                                                key={product.id}
+                                                className="group relative cursor-pointer overflow-hidden rounded-lg border border-gray-200 bg-white transition-all hover:border-orange-300 hover:shadow-lg"
+                                                onClick={() => handleProductClick(product.id)}
+                                            >
+                                                {/* Product Image */}
+                                                <div className="relative aspect-square overflow-hidden bg-gray-100 w-full">
+                                                    {product.primary_image || product.image ? (
+                                                        <img
+                                                            src={product.primary_image ? `/storage/${product.primary_image}` : product.image}
+                                                            alt={product.name}
+                                                            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                                                            onError={(e) => {
+                                                                const target = e.target as HTMLImageElement;
+                                                                target.style.display = 'none';
+                                                            }}
+                                                        />
+                                                    ) : (
+                                                        <div className="flex h-full w-full items-center justify-center bg-gray-100">
+                                                            <span className="text-gray-400">No Image</span>
+                                                        </div>
+                                                    )}
+
+                                                    {/* Product Badges */}
+                                                    <div className="absolute left-1.5 sm:left-2 top-1.5 sm:top-2 flex flex-col gap-0.5 sm:gap-1">
+                                                        {discount && (
+                                                            <div className="rounded bg-red-500 px-1 sm:px-1.5 py-0.5 text-[10px] sm:text-xs font-bold text-white shadow-md">
+                                                                -{discount}%
+                                                            </div>
+                                                        )}
+                                                        {product.free_shipping && (
+                                                            <div className="rounded bg-blue-500 px-1 sm:px-1.5 py-0.5 text-[9px] sm:text-xs font-bold text-white shadow-md">
+                                                                FREE SHIPPING
+                                                            </div>
+                                                        )}
+                                                    </div>
+
+                                                    {/* Wishlist Button */}
+                                                    <div className="absolute right-1.5 sm:right-2 top-1.5 sm:top-2 z-10" onClick={(e) => e.stopPropagation()}>
+                                                        <WishlistButton
+                                                            productId={product.id}
+                                                            initialInWishlist={wishlistProductIds.includes(product.id)}
+                                                            variant="icon-filled"
+                                                        />
+                                                    </div>
+                                                </div>
+
+                                                {/* Product Info */}
+                                                <div className="p-1.5 sm:p-2 md:p-3">
+                                                    {/* Store Name */}
+                                                    {product.seller && (
+                                                        <div className="mb-0.5 sm:mb-1 text-[10px] sm:text-xs text-gray-500 line-clamp-1">
+                                                            {product.seller.name}
+                                                        </div>
+                                                    )}
+
+                                                    {/* Product Title */}
+                                                    <h3 className="mb-1 sm:mb-1.5 md:mb-2 line-clamp-2 text-[11px] sm:text-xs md:text-sm font-medium text-gray-900 group-hover:text-orange-600 leading-tight">
+                                                        {product.name}
+                                                    </h3>
+
+                                                    {/* Price */}
+                                                    <div className="mb-1 sm:mb-1.5 md:mb-2">
+                                                        <div className="flex items-baseline gap-1 sm:gap-1.5 md:gap-2 flex-wrap">
+                                                            <span className="text-sm sm:text-base md:text-lg font-bold text-orange-500">
+                                                                ₱{Number(product.price).toLocaleString()}
+                                                            </span>
+                                                            {product.compare_price && product.compare_price > product.price && (
+                                                                <span className="text-[9px] sm:text-[10px] md:text-xs text-gray-400 line-through">
+                                                                    ₱{Number(product.compare_price).toLocaleString()}
+                                                                </span>
+                                                            )}
+                                                        </div>
+                                                    </div>
+
+                                                    {/* Rating and Sales */}
+                                                    <div className="mb-1 sm:mb-1.5 md:mb-2 flex items-center gap-1 sm:gap-1.5 md:gap-2 text-[10px] sm:text-xs flex-wrap">
+                                                        {product.average_rating && Number(product.average_rating) > 0 ? (
+                                                            <>
+                                                                <div className="flex items-center">
+                                                                    <Star className="h-2.5 w-2.5 sm:h-3 sm:w-3 fill-yellow-400 text-yellow-400" />
+                                                                    <span className="ml-0.5 font-medium">
+                                                                        {Number(product.average_rating).toFixed(1)}
+                                                                    </span>
+                                                                </div>
+                                                                {salesCount && (
+                                                                    <span className="text-gray-500 hidden sm:inline">
+                                                                        {salesCount} Sold/Month
+                                                                    </span>
+                                                                )}
+                                                            </>
+                                                        ) : (
+                                                            <span className="text-gray-400">No ratings yet</span>
+                                                        )}
+                                                    </div>
+                                                    
+                                                    {/* Category Badge */}
+                                                    {categoryName && (
+                                                        <div className="mb-1 sm:mb-1.5 md:mb-2">
+                                                            <span className="inline-block rounded bg-orange-100 px-1.5 sm:px-2 py-0.5 text-[9px] sm:text-[10px] md:text-xs text-orange-700 line-clamp-1">
+                                                                {categoryName}
+                                                            </span>
+                                                        </div>
+                                                    )}
+
+                                                    {/* Location - Hidden on mobile to save space */}
+                                                    {product.location && (
+                                                        <div className="text-[9px] sm:text-xs text-gray-500 hidden sm:block line-clamp-1">{product.location}</div>
+                                                    )}
+
+                                                    {/* Action Buttons */}
+                                                    <div className="mt-1.5 sm:mt-2 md:mt-3 flex gap-1 sm:gap-1.5 md:gap-2" onClick={(e) => e.stopPropagation()}>
+                                                        <button
+                                                            onClick={(e) => handleAddToCart(e, product)}
+                                                            disabled={isOutOfStock(product) || isLoading}
+                                                            className={`flex-1 rounded bg-orange-500 px-1.5 sm:px-2 md:px-3 py-1 sm:py-1.5 text-[9px] sm:text-[10px] md:text-xs font-medium text-white transition-colors flex items-center justify-center gap-0.5 sm:gap-1 min-w-0 ${
+                                                                isOutOfStock(product) || isLoading
+                                                                    ? 'cursor-not-allowed bg-gray-300'
+                                                                    : 'hover:bg-orange-600 active:bg-orange-700'
+                                                            }`}
+                                                        >
+                                                            <ShoppingCart className="h-3 w-3 sm:h-3.5 sm:w-3.5 md:h-4 md:w-4 flex-shrink-0" />
+                                                            <span className="hidden sm:inline md:hidden whitespace-nowrap">Add</span>
+                                                            <span className="hidden md:inline whitespace-nowrap">Add to Cart</span>
+                                                        </button>
+                                                        <button
+                                                            onClick={(e) => handleBuyNow(e, product)}
+                                                            disabled={isOutOfStock(product) || isLoading}
+                                                            className={`rounded border border-orange-500 px-1.5 sm:px-2 md:px-3 py-1 sm:py-1.5 text-[9px] sm:text-[10px] md:text-xs font-medium text-orange-500 transition-colors whitespace-nowrap ${
+                                                                isOutOfStock(product) || isLoading
+                                                                    ? 'cursor-not-allowed border-gray-300 text-gray-300'
+                                                                    : 'hover:bg-orange-50 active:bg-orange-100'
+                                                            }`}
+                                                        >
+                                                            Buy
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
                                 </div>
+
+                                {/* Bottom Pagination */}
+                                {products && products.last_page > 1 && (
+                                    <div className="mt-4 sm:mt-6 flex justify-center">
+                                        <div className="flex gap-1 sm:gap-2 flex-wrap justify-center">
+                                            {products.links.map((link, index) => (
+                                                <Link
+                                                    key={index}
+                                                    href={link.url || '#'}
+                                                    className={`rounded-md px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm ${
+                                                        link.active
+                                                            ? 'bg-orange-500 text-white'
+                                                            : 'bg-white text-gray-700 hover:bg-gray-100'
+                                                    } ${!link.url ? 'cursor-not-allowed opacity-50' : ''}`}
+                                                    dangerouslySetInnerHTML={{ __html: link.label }}
+                                                />
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+                            </>
+                        ) : (
+                            <div className="py-12 text-center">
+                                <Filter className="mx-auto mb-4 h-12 w-12 text-gray-400" />
+                                <h3 className="mb-2 text-lg font-medium text-gray-900">No products found</h3>
+                                <p className="text-gray-600">Try adjusting your search or filter criteria.</p>
                             </div>
                         )}
-                    </>
-                ) : (
-                    <div className="py-12 text-center">
-                        <div className="mx-auto mb-4 h-12 w-12 text-gray-400">
-                            <Filter className="h-full w-full" />
-                        </div>
-                        <h3 className="mb-2 text-lg font-medium text-gray-900">No products found</h3>
-                        <p className="text-gray-600">Try adjusting your search or filter criteria.</p>
                     </div>
-                )}
+                </div>
             </div>
 
             {/* Toast Notification */}
@@ -439,7 +985,6 @@ export default function Index({ products, categories, filters, wishlistProductId
                 onClose={() => setIsModalOpen(false)}
                 product={modalProduct}
                 onAddToCart={handleModalAddToCart}
-                onBuyNow={modalMode === 'buy' ? handleModalBuyNow : undefined}
             />
         </BuyerLayout>
     );

@@ -3,6 +3,9 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Order;
+use App\Models\Product;
+use App\Models\ProductCategory;
 use App\Models\SellerApplication;
 use App\Models\User;
 use Carbon\Carbon;
@@ -55,6 +58,49 @@ class DashboardController extends Controller
         // Recent activity
         $recentActivity = $this->getRecentActivity();
 
+        // Product statistics
+        $productStats = [
+            'total' => Product::count(),
+            'active' => Product::where('status', Product::STATUS_ACTIVE)->count(),
+            'inactive' => Product::where('status', Product::STATUS_INACTIVE)->count(),
+            'draft' => Product::where('status', Product::STATUS_DRAFT)->count(),
+            'archived' => Product::where('status', Product::STATUS_ARCHIVED)->count(),
+            'out_of_stock' => Product::where('stock_status', Product::STOCK_OUT_OF_STOCK)->count(),
+            'low_stock' => Product::where('stock_status', Product::STOCK_LOW_STOCK)->count(),
+            'featured' => Product::where('is_featured', true)->count(),
+            'recent' => Product::where('created_at', '>=', Carbon::now()->subDays(7))->count(),
+        ];
+
+        // Order statistics
+        $orderStats = [
+            'total' => Order::count(),
+            'pending' => Order::where('status', Order::STATUS_PENDING)->count(),
+            'confirmed' => Order::where('status', Order::STATUS_CONFIRMED)->count(),
+            'shipped' => Order::where('status', Order::STATUS_SHIPPED)->count(),
+            'delivered' => Order::where('status', Order::STATUS_DELIVERED)->count(),
+            'completed' => Order::where('status', Order::STATUS_COMPLETED)->count(),
+            'cancelled' => Order::where('status', Order::STATUS_CANCELLED)->count(),
+            'today' => Order::whereDate('created_at', today())->count(),
+            'this_week' => Order::where('created_at', '>=', Carbon::now()->startOfWeek())->count(),
+            'this_month' => Order::where('created_at', '>=', Carbon::now()->startOfMonth())->count(),
+            'total_revenue' => Order::where('status', '!=', Order::STATUS_CANCELLED)->sum('total_amount'),
+            'today_revenue' => Order::whereDate('created_at', today())
+                ->where('status', '!=', Order::STATUS_CANCELLED)
+                ->sum('total_amount'),
+            'this_month_revenue' => Order::where('created_at', '>=', Carbon::now()->startOfMonth())
+                ->where('status', '!=', Order::STATUS_CANCELLED)
+                ->sum('total_amount'),
+        ];
+
+        // Category statistics
+        $categoryStats = [
+            'total' => ProductCategory::count(),
+            'active' => ProductCategory::where('is_active', true)->count(),
+            'inactive' => ProductCategory::where('is_active', false)->count(),
+            'root' => ProductCategory::root()->count(),
+            'with_products' => ProductCategory::has('products')->count(),
+        ];
+
         // Growth metrics
         $growthMetrics = [
             'users_this_month' => User::where('created_at', '>=', Carbon::now()->startOfMonth())->count(),
@@ -63,10 +109,19 @@ class DashboardController extends Controller
             'applications_this_week' => SellerApplication::where('created_at', '>=', Carbon::now()->startOfWeek())->count(),
             'applications_last_week' => SellerApplication::where('created_at', '>=', Carbon::now()->subWeek()->startOfWeek())
                 ->where('created_at', '<', Carbon::now()->startOfWeek())->count(),
+            'orders_this_month' => Order::where('created_at', '>=', Carbon::now()->startOfMonth())->count(),
+            'orders_last_month' => Order::where('created_at', '>=', Carbon::now()->subMonth()->startOfMonth())
+                ->where('created_at', '<', Carbon::now()->startOfMonth())->count(),
+            'products_this_month' => Product::where('created_at', '>=', Carbon::now()->startOfMonth())->count(),
+            'products_last_month' => Product::where('created_at', '>=', Carbon::now()->subMonth()->startOfMonth())
+                ->where('created_at', '<', Carbon::now()->startOfMonth())->count(),
         ];
 
         return Inertia::render('admin/dashboard', [
             'userStats' => $userStats,
+            'productStats' => $productStats,
+            'orderStats' => $orderStats,
+            'categoryStats' => $categoryStats,
             'sellerApplicationStats' => $sellerApplicationStats,
             'systemStats' => $systemStats,
             'recentActivity' => $recentActivity,
@@ -169,6 +224,35 @@ class DashboardController extends Controller
                     'color' => 'orange',
                 ];
             }
+        }
+
+        // Recent orders
+        $recentOrders = Order::with('buyer')->latest()->limit(2)->get();
+        foreach ($recentOrders as $order) {
+            if ($order->buyer) {
+                $activities[] = [
+                    'type' => 'new_order',
+                    'title' => 'New order received',
+                    'description' => "Order #{$order->order_number} from {$order->buyer->name}",
+                    'time' => $order->created_at,
+                    'icon' => 'shopping-cart',
+                    'color' => 'green',
+                ];
+            }
+        }
+
+        // Recent products
+        $recentProducts = Product::with('seller')->latest()->limit(2)->get();
+        foreach ($recentProducts as $product) {
+            $sellerName = $product->seller ? $product->seller->name : 'Unknown';
+            $activities[] = [
+                'type' => 'new_product',
+                'title' => 'New product added',
+                'description' => "{$product->name} by {$sellerName}",
+                'time' => $product->created_at,
+                'icon' => 'package',
+                'color' => 'purple',
+            ];
         }
 
         // Sort by time (most recent first)
