@@ -37,15 +37,15 @@ class NewSellerRatingReceived extends Notification
     public function toMail(object $notifiable): MailMessage
     {
         $stars = str_repeat('⭐', $this->rating->rating);
-        
+
         return (new MailMessage)
             ->subject('New Seller Rating Received')
             ->greeting('Hello '.$notifiable->name.'!')
             ->line('You have received a new rating as a seller!')
-            ->line('Rating: ' . $stars . ' (' . $this->rating->rating . '/5)')
+            ->line('Rating: '.$stars.' ('.$this->rating->rating.'/5)')
             ->line('From: '.$this->rating->user->name)
             ->when($this->rating->review, function ($mail) {
-                return $mail->line('Review: "' . $this->rating->review . '"');
+                return $mail->line('Review: "'.$this->rating->review.'"');
             })
             ->action('View Rating & Reply', url('/seller/seller-ratings'))
             ->line('Thank you for using our platform!');
@@ -60,7 +60,7 @@ class NewSellerRatingReceived extends Notification
     {
         return [
             'title' => 'New Seller Rating',
-            'message' => $this->rating->user->name . ' rated you with ' . $this->rating->rating . ' stars' . ($this->rating->review ? ' and left a review.' : '.'),
+            'message' => $this->rating->user->name.' rated you with '.$this->rating->rating.' stars'.($this->rating->review ? ' and left a review.' : '.'),
             'rating_id' => $this->rating->id,
             'rating' => $this->rating->rating,
             'review' => $this->rating->review,

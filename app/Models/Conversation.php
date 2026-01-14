@@ -74,7 +74,7 @@ class Conversation extends Model
         if ($this->buyer_id === $userId) {
             return $this->seller;
         }
-        
+
         if ($this->seller_id === $userId) {
             return $this->buyer;
         }

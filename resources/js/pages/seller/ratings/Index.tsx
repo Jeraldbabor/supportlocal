@@ -1,16 +1,16 @@
-import { Head, router } from '@inertiajs/react';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem } from '@/types';
+import { Head, router } from '@inertiajs/react';
+import axios from 'axios';
 import { Filter, MessageSquare, Reply, Search, Star, Trash2, Users } from 'lucide-react';
 import { FormEvent, useState } from 'react';
 import Swal from 'sweetalert2';
-import axios from 'axios';
 
 interface Rating {
     id: number;
@@ -76,11 +76,7 @@ export default function Index({ ratings, statistics, filters }: SellerRatingsPag
 
     const handleSearch = (e: FormEvent) => {
         e.preventDefault();
-        router.get(
-            '/seller/seller-ratings',
-            { search: searchTerm, rating: selectedRating, has_reply: hasReply },
-            { preserveState: true },
-        );
+        router.get('/seller/seller-ratings', { search: searchTerm, rating: selectedRating, has_reply: hasReply }, { preserveState: true });
     };
 
     const clearFilters = () => {
@@ -193,9 +189,7 @@ export default function Index({ ratings, statistics, filters }: SellerRatingsPag
                         </CardHeader>
                         <CardContent>
                             <div className="text-2xl font-bold">{statistics.total_ratings}</div>
-                            <p className="text-xs text-muted-foreground">
-                                {statistics.ratings_with_review} with comments
-                            </p>
+                            <p className="text-xs text-muted-foreground">{statistics.ratings_with_review} with comments</p>
                         </CardContent>
                     </Card>
 
@@ -256,10 +250,7 @@ export default function Index({ ratings, statistics, filters }: SellerRatingsPag
                                     </div>
                                     <div className="flex-1">
                                         <div className="h-2 overflow-hidden rounded-full bg-muted">
-                                            <div
-                                                className="h-full bg-primary transition-all"
-                                                style={{ width: `${dist.percentage}%` }}
-                                            />
+                                            <div className="h-full bg-primary transition-all" style={{ width: `${dist.percentage}%` }} />
                                         </div>
                                     </div>
                                     <div className="flex w-32 items-center gap-2 text-sm">
@@ -281,7 +272,7 @@ export default function Index({ ratings, statistics, filters }: SellerRatingsPag
                         <form onSubmit={handleSearch} className="space-y-4">
                             <div className="grid gap-4 md:grid-cols-3">
                                 <div className="relative">
-                                    <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                                    <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                                     <Input
                                         placeholder="Search by buyer name or comment..."
                                         value={searchTerm}
@@ -380,9 +371,7 @@ export default function Index({ ratings, statistics, filters }: SellerRatingsPag
                                                         <Reply className="h-4 w-4 text-blue-600" />
                                                         <span className="text-sm font-semibold text-blue-900">Your Reply</span>
                                                         {rating.seller_replied_at && (
-                                                            <span className="text-xs text-blue-600">
-                                                                {formatDate(rating.seller_replied_at)}
-                                                            </span>
+                                                            <span className="text-xs text-blue-600">{formatDate(rating.seller_replied_at)}</span>
                                                         )}
                                                     </div>
                                                     <Button

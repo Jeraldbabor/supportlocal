@@ -38,14 +38,14 @@ class ProductRatingReplyReceived extends Notification
     {
         $productName = $this->rating->product->name;
         $sellerName = $this->rating->product->seller->name;
-        
+
         return (new MailMessage)
             ->subject('Seller Replied to Your Product Review')
             ->greeting('Hello '.$notifiable->name.'!')
-            ->line('The seller has replied to your review on "' . $productName . '"')
-            ->line('Seller: ' . $sellerName)
-            ->line('Reply: "' . $this->rating->seller_reply . '"')
-            ->action('View Reply', url('/buyer/product/' . $this->rating->product_id))
+            ->line('The seller has replied to your review on "'.$productName.'"')
+            ->line('Seller: '.$sellerName)
+            ->line('Reply: "'.$this->rating->seller_reply.'"')
+            ->action('View Reply', url('/buyer/product/'.$this->rating->product_id))
             ->line('Thank you for your feedback!');
     }
 
@@ -58,13 +58,13 @@ class ProductRatingReplyReceived extends Notification
     {
         return [
             'title' => 'Seller Replied to Your Review',
-            'message' => $this->rating->product->seller->name . ' replied to your review on "' . $this->rating->product->name . '"',
+            'message' => $this->rating->product->seller->name.' replied to your review on "'.$this->rating->product->name.'"',
             'rating_id' => $this->rating->id,
             'product_id' => $this->rating->product_id,
             'product_name' => $this->rating->product->name,
             'seller_name' => $this->rating->product->seller->name,
             'seller_reply' => $this->rating->seller_reply,
-            'action_url' => '/buyer/product/' . $this->rating->product_id,
+            'action_url' => '/buyer/product/'.$this->rating->product_id,
         ];
     }
 }

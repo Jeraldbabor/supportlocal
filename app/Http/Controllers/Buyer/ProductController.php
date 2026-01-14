@@ -4,10 +4,13 @@ namespace App\Http\Controllers\Buyer;
 
 use App\Helpers\WishlistHelper;
 use App\Http\Controllers\Controller;
+use App\Models\OrderItem;
 use App\Models\Product;
 use App\Models\ProductCategory;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -18,72 +21,221 @@ class ProductController extends Controller
      */
     public function index(Request $request): Response
     {
-        $search = $request->get('search');
-        $category = $request->get('category');
-        $seller = $request->get('seller');
-        $minPrice = $request->get('min_price');
-        $maxPrice = $request->get('max_price');
-        $sort = $request->get('sort', 'created_at');
-        $direction = $request->get('direction', 'desc');
+        $query = Product::with(['seller', 'category'])
+            ->where('status', 'active')
+            ->where('quantity', '>', 0);
 
-        $query = Product::where('status', Product::STATUS_ACTIVE)
-            ->with(['category', 'seller']);
+        // Filter by category (by ID)
+        if ($request->filled('category')) {
+            $query->where('category_id', $request->category);
+        }
 
-        // Apply search filter
-        if ($search) {
+        // Search functionality
+        if ($request->has('search') && $request->search) {
+            $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
                     ->orWhere('description', 'like', "%{$search}%")
-                    ->orWhere('short_description', 'like', "%{$search}%")
-                    ->orWhere('tags', 'like', "%{$search}%");
+                    ->orWhereHas('seller', function ($userQuery) use ($search) {
+                        $userQuery->where('name', 'like', "%{$search}%");
+                    })
+                    ->orWhereHas('category', function ($catQuery) use ($search) {
+                        $catQuery->where('name', 'like', "%{$search}%");
+                    });
             });
         }
 
-        // Apply category filter
-        if ($category) {
-            $query->where('category_id', $category);
+        // Price range filtering
+        if ($request->filled('min_price') && is_numeric($request->min_price)) {
+            $query->where('price', '>=', $request->min_price);
+        }
+        if ($request->filled('max_price') && is_numeric($request->max_price)) {
+            $query->where('price', '<=', $request->max_price);
         }
 
-        // Apply seller filter
-        if ($seller) {
-            $query->where('seller_id', $seller);
+        // Filter by location (shipped from)
+        if ($request->filled('location')) {
+            $location = $request->location;
+            if ($location === 'domestic') {
+                $query->whereHas('seller', function ($q) {
+                    $q->where(function ($subQ) {
+                        $subQ->whereNotNull('delivery_city')
+                            ->orWhereNotNull('delivery_province');
+                    });
+                });
+            } elseif ($location === 'metro_manila') {
+                $query->whereHas('seller', function ($q) {
+                    $q->where(function ($subQ) {
+                        $subQ->where('delivery_city', 'like', '%Manila%')
+                            ->orWhere('delivery_province', 'like', '%Metro Manila%')
+                            ->orWhere('delivery_province', 'like', '%NCR%');
+                    });
+                });
+            } elseif ($location === 'north_luzon') {
+                $query->whereHas('seller', function ($q) {
+                    $q->whereIn('delivery_province', [
+                        'Ilocos Norte', 'Ilocos Sur', 'La Union', 'Pangasinan',
+                        'Batanes', 'Cagayan', 'Isabela', 'Nueva Vizcaya', 'Quirino',
+                        'Abra', 'Benguet', 'Ifugao', 'Kalinga', 'Mountain Province', 'Apayao',
+                        'Aurora', 'Bataan', 'Bulacan', 'Nueva Ecija', 'Pampanga', 'Tarlac', 'Zambales',
+                    ]);
+                });
+            } else {
+                $query->whereHas('seller', function ($q) use ($location) {
+                    $q->where(function ($subQ) use ($location) {
+                        $subQ->where('delivery_city', 'like', "%{$location}%")
+                            ->orWhere('delivery_province', 'like', "%{$location}%");
+                    });
+                });
+            }
         }
 
-        // Apply price range filter
-        if ($minPrice) {
-            $query->where('price', '>=', $minPrice);
-        }
-        if ($maxPrice) {
-            $query->where('price', '<=', $maxPrice);
+        // Filter by seller/brand
+        if ($request->filled('seller')) {
+            $query->where('seller_id', $request->seller);
         }
 
-        // Apply sorting
-        $validSorts = ['name', 'price', 'created_at', 'average_rating', 'view_count'];
-        if (in_array($sort, $validSorts)) {
-            $query->orderBy($sort, $direction);
+        // Filter by free shipping
+        if ($request->filled('free_shipping') && $request->free_shipping === 'true') {
+            $query->where('free_shipping', true);
         }
 
-        $products = $query->paginate(12)->withQueryString()->through(function ($product) {
-            return array_merge($product->toArray(), [
+        // Filter by COD (sellers that accept COD)
+        if ($request->filled('cod') && $request->cod === 'true') {
+            $query->whereHas('seller', function ($q) {
+                $q->whereNotNull('gcash_number');
+            });
+        }
+
+        // Filter by minimum rating
+        if ($request->filled('min_rating') && is_numeric($request->min_rating)) {
+            $minRating = (float) $request->min_rating;
+            $query->where('average_rating', '>=', $minRating)
+                ->where('review_count', '>', 0); // Only show products with at least one review
+        }
+
+        // Sorting
+        $sortBy = $request->get('sort', 'popular');
+        $monthStart = Carbon::now()->startOfMonth();
+
+        switch ($sortBy) {
+            case 'price-low':
+                $query->orderBy('price', 'asc');
+                break;
+            case 'price-high':
+                $query->orderBy('price', 'desc');
+                break;
+            case 'popular':
+                $query->orderByRaw('(COALESCE(view_count, 0) * 0.1 + COALESCE(order_count, 0) * 10 + COALESCE(average_rating, 0) * 100) DESC')
+                    ->orderByDesc('created_at');
+                break;
+            case 'latest':
+            case 'newest':
+                $query->latest();
+                break;
+            case 'top_sales':
+            case 'sales':
+                $monthlySalesSubquery = OrderItem::whereHas('order', function ($q) use ($monthStart) {
+                    $q->where('status', \App\Models\Order::STATUS_COMPLETED)
+                        ->where('created_at', '>=', $monthStart);
+                })
+                    ->select('product_id', DB::raw('SUM(quantity) as monthly_sales'))
+                    ->groupBy('product_id');
+
+                $query->leftJoinSub($monthlySalesSubquery, 'monthly_sales_data', function ($join) {
+                    $join->on('products.id', '=', 'monthly_sales_data.product_id');
+                })
+                    ->select('products.*')
+                    ->orderByRaw('COALESCE(monthly_sales_data.monthly_sales, 0) DESC')
+                    ->orderByDesc('products.order_count')
+                    ->orderByDesc('products.average_rating')
+                    ->orderByDesc('products.view_count');
+                break;
+            case 'rating':
+                $query->where('review_count', '>', 0)
+                    ->orderByDesc('average_rating')
+                    ->orderByDesc('review_count');
+                break;
+            case 'name':
+            default:
+                $query->orderBy('name', 'asc');
+                break;
+        }
+
+        // Calculate monthly sales for all products (for display in product cards)
+        $monthlySales = OrderItem::whereHas('order', function ($q) use ($monthStart) {
+            $q->where('status', \App\Models\Order::STATUS_COMPLETED)
+                ->where('created_at', '>=', $monthStart);
+        })
+            ->select('product_id', DB::raw('SUM(quantity) as monthly_sales'))
+            ->groupBy('product_id')
+            ->pluck('monthly_sales', 'product_id');
+
+        $products = $query->paginate(12)->withQueryString()->through(function ($product) use ($monthlySales) {
+            return [
+                'id' => $product->id,
+                'name' => $product->name,
+                'price' => (float) $product->price,
                 'compare_price' => $product->compare_price ? (float) $product->compare_price : null,
-            ]);
+                'primary_image' => $product->featured_image,
+                'image' => $product->featured_image ? '/storage/'.$product->featured_image : '/placeholder.jpg',
+                'average_rating' => $product->average_rating ? (float) $product->average_rating : null,
+                'review_count' => $product->review_count ?? 0,
+                'order_count' => (int) ($product->order_count ?? 0),
+                'monthly_sales' => (int) ($monthlySales[$product->id] ?? 0),
+                'view_count' => (int) ($product->view_count ?? 0),
+                'category' => $product->category ? [
+                    'id' => $product->category->id,
+                    'name' => $product->category->name,
+                ] : null,
+                'stock_quantity' => $product->quantity,
+                'stock_status' => $product->quantity > 10 ? 'in_stock' : ($product->quantity > 0 ? 'low_stock' : 'out_of_stock'),
+                'free_shipping' => (bool) ($product->free_shipping ?? false),
+                'seller' => [
+                    'id' => $product->seller->id ?? 0,
+                    'name' => $product->seller->name ?? 'Unknown Artisan',
+                ],
+                'location' => $product->seller ?
+                    trim(($product->seller->delivery_city ?? '').', '.($product->seller->delivery_province ?? ''), ', ')
+                    : null,
+            ];
         });
 
-        // Get categories for filter dropdown
-        $categories = ProductCategory::active()
+        // Get all categories for filtering
+        $categories = ProductCategory::whereHas('products', function ($q) {
+            $q->where('status', 'active')->where('quantity', '>', 0);
+        })->orderBy('name')->get();
+
+        // Get unique sellers/brands for filtering
+        $sellers = User::where('role', User::ROLE_SELLER)
+            ->where('is_active', true)
             ->whereHas('products', function ($q) {
-                $q->where('status', Product::STATUS_ACTIVE);
+                $q->where('status', 'active')->where('quantity', '>', 0);
             })
-            ->orderBy('sort_order')
+            ->select('id', 'name')
+            ->orderBy('name')
             ->get();
 
-        // Get sellers for filter dropdown
-        $sellers = User::where('role', User::ROLE_SELLER)
+        // Get unique locations for filtering
+        $locations = User::where('role', User::ROLE_SELLER)
+            ->where('is_active', true)
             ->whereHas('products', function ($q) {
-                $q->where('status', Product::STATUS_ACTIVE);
+                $q->where('status', 'active')->where('quantity', '>', 0);
             })
-            ->orderBy('name')
-            ->get(['id', 'name']);
+            ->where(function ($q) {
+                $q->whereNotNull('delivery_city')
+                    ->orWhereNotNull('delivery_province');
+            })
+            ->select('delivery_city', 'delivery_province')
+            ->distinct()
+            ->get()
+            ->map(function ($user) {
+                return trim(($user->delivery_city ?? '').', '.($user->delivery_province ?? ''), ', ');
+            })
+            ->filter()
+            ->unique()
+            ->sort()
+            ->values();
 
         // Get wishlist product IDs
         $wishlistProductIds = WishlistHelper::getProductIds();
@@ -92,16 +244,20 @@ class ProductController extends Controller
             'products' => $products,
             'categories' => $categories,
             'sellers' => $sellers,
+            'locations' => $locations,
             'wishlistProductIds' => $wishlistProductIds,
-            'filters' => [
-                'search' => $search,
-                'category' => $category,
-                'seller' => $seller,
-                'min_price' => $minPrice,
-                'max_price' => $maxPrice,
-                'sort' => $sort,
-                'direction' => $direction,
-            ],
+            'filters' => array_merge([
+                'category' => null,
+                'search' => null,
+                'min_price' => null,
+                'max_price' => null,
+                'location' => null,
+                'seller' => null,
+                'free_shipping' => null,
+                'cod' => null,
+                'min_rating' => null,
+                'sort' => 'popular',
+            ], $request->only(['category', 'search', 'min_price', 'max_price', 'location', 'seller', 'free_shipping', 'cod', 'min_rating', 'sort'])),
         ]);
     }
 

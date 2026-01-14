@@ -21,7 +21,14 @@ export default function AuthLayout({
     disableLogoLink?: boolean;
 }) {
     return (
-        <AuthLayoutTemplate title={title} description={description} sellerCount={sellerCount} featuredArtisans={featuredArtisans} disableLogoLink={disableLogoLink} {...props}>
+        <AuthLayoutTemplate
+            title={title}
+            description={description}
+            sellerCount={sellerCount}
+            featuredArtisans={featuredArtisans}
+            disableLogoLink={disableLogoLink}
+            {...props}
+        >
             {children}
         </AuthLayoutTemplate>
     );

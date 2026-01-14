@@ -9,11 +9,11 @@ Broadcast::channel('App.Models.User.{id}', function ($user, $id) {
 
 Broadcast::channel('conversation.{conversationId}', function ($user, $conversationId) {
     $conversation = Conversation::find($conversationId);
-    
-    if (!$conversation) {
+
+    if (! $conversation) {
         return false;
     }
-    
+
     // User can listen to the channel if they're part of the conversation
     return $conversation->buyer_id === $user->id || $conversation->seller_id === $user->id;
 });

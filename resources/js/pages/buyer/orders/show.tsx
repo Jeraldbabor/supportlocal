@@ -161,11 +161,7 @@ export default function OrderShow({ order }: OrderShowProps) {
                             </div>
                             {auth?.user && order.seller && auth.user.id !== order.seller.id && (
                                 <div className="pt-2">
-                                    <StartChatButton
-                                        userId={order.seller.id}
-                                        variant="outline"
-                                        className="w-full"
-                                    >
+                                    <StartChatButton userId={order.seller.id} variant="outline" className="w-full">
                                         <MessageSquare className="mr-2 h-4 w-4" />
                                         Contact Seller
                                     </StartChatButton>

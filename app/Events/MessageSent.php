@@ -3,9 +3,7 @@
 namespace App\Events;
 
 use App\Models\Message;
-use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Broadcasting\PresenceChannel;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
@@ -33,13 +31,13 @@ class MessageSent implements ShouldBroadcast
     public function broadcastOn(): array
     {
         $conversation = $this->message->conversation;
-        $recipientId = $this->message->sender_id === $conversation->buyer_id 
-            ? $conversation->seller_id 
+        $recipientId = $this->message->sender_id === $conversation->buyer_id
+            ? $conversation->seller_id
             : $conversation->buyer_id;
 
         return [
-            new PrivateChannel('conversation.' . $this->message->conversation_id),
-            new PrivateChannel('App.Models.User.' . $recipientId),
+            new PrivateChannel('conversation.'.$this->message->conversation_id),
+            new PrivateChannel('App.Models.User.'.$recipientId),
         ];
     }
 
@@ -59,7 +57,7 @@ class MessageSent implements ShouldBroadcast
         // Ensure sender has avatar_url appended
         $this->message->load(['sender', 'conversation.product']);
         $this->message->sender->append('avatar_url');
-        
+
         return [
             'message' => $this->message,
             'sender' => $this->message->sender,

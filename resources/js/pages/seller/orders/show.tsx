@@ -261,7 +261,7 @@ export default function OrderShow({ order }: OrderShowProps) {
                                                 {order.payment_status}
                                             </span>
                                         </p>
-                                        <p className="text-xs text-gray-400 mt-1">
+                                        <p className="mt-1 text-xs text-gray-400">
                                             {formatPeso(order.subtotal)} + {formatPeso(order.shipping_fee || 0)} shipping
                                         </p>
                                     </div>

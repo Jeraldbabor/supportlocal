@@ -21,7 +21,7 @@ return new class extends Migration
 
             // Ensure unique conversation between buyer and seller
             $table->unique(['buyer_id', 'seller_id']);
-            
+
             // Indexes for faster queries
             $table->index(['buyer_id', 'last_message_at']);
             $table->index(['seller_id', 'last_message_at']);

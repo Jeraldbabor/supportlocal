@@ -38,18 +38,18 @@ class NewProductRatingReceived extends Notification
     {
         $stars = str_repeat('⭐', $this->rating->rating);
         $productName = $this->rating->product->name;
-        
+
         return (new MailMessage)
-            ->subject('New Product Rating - ' . $productName)
+            ->subject('New Product Rating - '.$productName)
             ->greeting('Hello '.$notifiable->name.'!')
             ->line('You have received a new rating on your product!')
-            ->line('Product: ' . $productName)
-            ->line('Rating: ' . $stars . ' (' . $this->rating->rating . '/5)')
+            ->line('Product: '.$productName)
+            ->line('Rating: '.$stars.' ('.$this->rating->rating.'/5)')
             ->line('From: '.$this->rating->user->name)
             ->when($this->rating->review, function ($mail) {
-                return $mail->line('Review: "' . $this->rating->review . '"');
+                return $mail->line('Review: "'.$this->rating->review.'"');
             })
-            ->action('View Rating & Reply', url('/seller/products/' . $this->rating->product_id . '/ratings'))
+            ->action('View Rating & Reply', url('/seller/products/'.$this->rating->product_id.'/ratings'))
             ->line('Thank you for using our platform!');
     }
 
@@ -62,14 +62,14 @@ class NewProductRatingReceived extends Notification
     {
         return [
             'title' => 'New Product Rating',
-            'message' => $this->rating->user->name . ' rated your product "' . $this->rating->product->name . '" with ' . $this->rating->rating . ' stars' . ($this->rating->review ? ' and left a review.' : '.'),
+            'message' => $this->rating->user->name.' rated your product "'.$this->rating->product->name.'" with '.$this->rating->rating.' stars'.($this->rating->review ? ' and left a review.' : '.'),
             'rating_id' => $this->rating->id,
             'product_id' => $this->rating->product_id,
             'product_name' => $this->rating->product->name,
             'rating' => $this->rating->rating,
             'review' => $this->rating->review,
             'customer_name' => $this->rating->user->name,
-            'action_url' => '/seller/products/' . $this->rating->product_id . '/ratings',
+            'action_url' => '/seller/products/'.$this->rating->product_id.'/ratings',
         ];
     }
 }

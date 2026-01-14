@@ -648,7 +648,7 @@ export default function Show({ product, relatedProducts, ratings: initialRatings
                                         </div>
                                     </div>
                                     {rating.review && <p className="mt-3 text-sm text-gray-700">{rating.review}</p>}
-                                    
+
                                     {/* Seller Reply */}
                                     {rating.seller_reply && (
                                         <div className="mt-4 ml-12 rounded-lg border border-blue-200 bg-blue-50 p-3">

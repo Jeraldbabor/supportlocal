@@ -1,3 +1,4 @@
+import MessagesDropdown from '@/components/MessagesDropdown';
 import ProfileCompletionBanner from '@/components/ProfileCompletionBanner';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useCart } from '@/contexts/CartContext';
@@ -6,7 +7,6 @@ import { type SharedData } from '@/types';
 import { Link, router, usePage } from '@inertiajs/react';
 import { Bell, Briefcase, ChevronDown, Contact, Heart, House, LogOut, Menu, Package, Phone, ShoppingCart, User, X } from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react';
-import MessagesDropdown from '@/components/MessagesDropdown';
 
 interface BuyerLayoutProps {
     children: React.ReactNode;

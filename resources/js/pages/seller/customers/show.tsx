@@ -1,9 +1,9 @@
+import StartChatButton from '@/components/StartChatButton';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { formatPeso } from '@/utils/currency';
 import { Head, Link } from '@inertiajs/react';
 import { ArrowLeft, Calendar, DollarSign, Eye, Mail, MapPin, MessageSquare, Phone, ShoppingBag, TrendingUp } from 'lucide-react';
-import StartChatButton from '@/components/StartChatButton';
 
 interface OrderItem {
     id: number;
@@ -136,10 +136,7 @@ export default function CustomerShow({ customer, orders, statistics, favorite_pr
                         </div>
                     </div>
                     <div className="flex space-x-3">
-                        <StartChatButton 
-                            userId={customer.id}
-                            variant="default"
-                        >
+                        <StartChatButton userId={customer.id} variant="default">
                             <MessageSquare className="mr-2 h-4 w-4" />
                             Contact Buyer
                         </StartChatButton>

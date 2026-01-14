@@ -380,55 +380,64 @@ export default function SellerDashboard() {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Seller Dashboard" />
-            <div className="flex h-full flex-1 flex-col gap-6 overflow-x-auto rounded-xl p-4">
+            <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-3 sm:gap-6 sm:p-4">
                 {/* Welcome Section with Account Health */}
-                <div className="rounded-xl border bg-gradient-to-r from-blue-50 to-indigo-50 p-6 dark:from-blue-950/20 dark:to-indigo-950/20">
-                    <div className="flex items-start justify-between">
-                        <div className="flex items-center gap-4">
-                            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900">
-                                <Package className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+                <div className="rounded-xl border bg-gradient-to-r from-blue-50 to-indigo-50 p-4 sm:p-6 dark:from-blue-950/20 dark:to-indigo-950/20">
+                    <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+                        <div className="flex min-w-0 flex-1 items-start gap-3 sm:items-center sm:gap-4">
+                            <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-blue-100 sm:h-12 sm:w-12 dark:bg-blue-900">
+                                <Package className="h-5 w-5 text-blue-600 sm:h-6 sm:w-6 dark:text-blue-400" />
                             </div>
-                            <div>
-                                <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Welcome, {user?.name}!</h1>
-                                <p className="text-gray-600 dark:text-gray-300">
+                            <div className="min-w-0 flex-1">
+                                <h1 className="truncate text-xl font-bold text-gray-900 sm:text-2xl dark:text-gray-100">Welcome, {user?.name}!</h1>
+                                <p className="mt-1 text-sm text-gray-600 sm:text-base dark:text-gray-300">
                                     Role: <span className="font-semibold text-blue-600 dark:text-blue-400">Seller/Artisan</span>
-                                    {stats.days_as_seller > 0 && <span className="ml-2 text-sm">• {stats.days_as_seller} days as seller</span>}
+                                    {stats.days_as_seller > 0 && (
+                                        <span className="ml-1 text-xs sm:ml-2 sm:text-sm">• {stats.days_as_seller} days as seller</span>
+                                    )}
                                 </p>
-                                <p className="text-sm text-gray-500 dark:text-gray-400">Manage your products, orders, and customer relationships</p>
+                                <p className="mt-1 text-xs text-gray-500 sm:text-sm dark:text-gray-400">
+                                    Manage your products, orders, and customer relationships
+                                </p>
                             </div>
                         </div>
 
-                        <div className="flex items-center gap-4">
-                            {/* Last Updated */}
-                            <div className="text-right text-xs text-gray-500 dark:text-gray-400">
-                                <p>Last updated</p>
-                                <p className="font-medium">{formatLastUpdated(lastUpdated)}</p>
+                        <div className="flex flex-shrink-0 flex-col items-start gap-3 sm:flex-row sm:items-center sm:gap-4">
+                            {/* Last Updated & Refresh */}
+                            <div className="flex items-center gap-2 sm:gap-3">
+                                {/* Last Updated */}
+                                <div className="text-left text-xs text-gray-500 sm:text-right dark:text-gray-400">
+                                    <p>Last updated</p>
+                                    <p className="font-medium">{formatLastUpdated(lastUpdated)}</p>
+                                </div>
+
+                                {/* Refresh Button */}
+                                <button
+                                    onClick={handleRefresh}
+                                    disabled={isRefreshing}
+                                    className="flex items-center gap-1.5 rounded-lg bg-white px-2.5 py-1.5 text-xs font-medium whitespace-nowrap text-gray-700 shadow-sm ring-1 ring-gray-300 hover:bg-gray-50 disabled:opacity-50 sm:gap-2 sm:px-3 sm:py-2 sm:text-sm dark:bg-gray-800 dark:text-gray-300 dark:ring-gray-600 dark:hover:bg-gray-700"
+                                    title="Refresh dashboard (Ctrl+R)"
+                                >
+                                    <RefreshCw className={`h-3.5 w-3.5 sm:h-4 sm:w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+                                    <span className="hidden sm:inline">{isRefreshing ? 'Refreshing...' : 'Refresh'}</span>
+                                </button>
                             </div>
 
-                            {/* Refresh Button */}
-                            <button
-                                onClick={handleRefresh}
-                                disabled={isRefreshing}
-                                className="flex items-center gap-2 rounded-lg bg-white px-3 py-2 text-sm font-medium text-gray-700 shadow-sm ring-1 ring-gray-300 hover:bg-gray-50 disabled:opacity-50 dark:bg-gray-800 dark:text-gray-300 dark:ring-gray-600 dark:hover:bg-gray-700"
-                                title="Refresh dashboard (Ctrl+R)"
-                            >
-                                <RefreshCw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
-                                {isRefreshing ? 'Refreshing...' : 'Refresh'}
-                            </button>
-
                             {/* Account Health Score */}
-                            <div className="text-right">
-                                <div className="flex items-center gap-2">
-                                    <span className="text-sm font-medium text-gray-600 dark:text-gray-300">Account Health</span>
+                            <div className="w-full sm:w-auto">
+                                <div className="mb-1.5 flex items-center gap-2">
+                                    <span className="text-xs font-medium whitespace-nowrap text-gray-600 sm:text-sm dark:text-gray-300">
+                                        Account Health
+                                    </span>
                                     <div
-                                        className={`flex h-8 w-8 items-center justify-center rounded-full ${getHealthScoreBg(stats.account_health_score)}`}
+                                        className={`flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full sm:h-8 sm:w-8 ${getHealthScoreBg(stats.account_health_score)}`}
                                     >
-                                        <span className={`text-sm font-bold ${getHealthScoreColor(stats.account_health_score)}`}>
+                                        <span className={`text-xs font-bold sm:text-sm ${getHealthScoreColor(stats.account_health_score)}`}>
                                             {stats.account_health_score}%
                                         </span>
                                     </div>
                                 </div>
-                                <div className="mt-1 h-2 w-24 rounded-full bg-gray-200 dark:bg-gray-700">
+                                <div className="h-2 w-full rounded-full bg-gray-200 sm:w-24 dark:bg-gray-700">
                                     <div
                                         className={`h-2 rounded-full transition-all duration-500 ${
                                             stats.account_health_score >= 80
@@ -448,13 +457,15 @@ export default function SellerDashboard() {
                 {/* Profile & Settings Overview */}
                 <div className="grid gap-4 md:grid-cols-2">
                     {/* Profile Completeness Widget */}
-                    <div className="rounded-xl border bg-white p-6 shadow-sm dark:bg-gray-800">
-                        <div className="mb-4 flex items-center justify-between">
-                            <h3 className="flex items-center gap-2 text-lg font-semibold text-gray-900 dark:text-gray-100">
-                                <User className="h-5 w-5" />
+                    <div className="rounded-xl border bg-white p-4 shadow-sm sm:p-6 dark:bg-gray-800">
+                        <div className="mb-4 flex items-center justify-between gap-2">
+                            <h3 className="flex items-center gap-2 text-base font-semibold text-gray-900 sm:text-lg dark:text-gray-100">
+                                <User className="h-4 w-4 sm:h-5 sm:w-5" />
                                 Profile Completeness
                             </h3>
-                            <span className="text-2xl font-bold text-blue-600 dark:text-blue-400">{profile.profile_completeness}%</span>
+                            <span className="flex-shrink-0 text-xl font-bold text-blue-600 sm:text-2xl dark:text-blue-400">
+                                {profile.profile_completeness}%
+                            </span>
                         </div>
 
                         <div className="mb-4 h-2 w-full rounded-full bg-gray-200 dark:bg-gray-700">
@@ -465,27 +476,27 @@ export default function SellerDashboard() {
                         </div>
 
                         <div className="space-y-2">
-                            <div className="flex items-center gap-2 text-sm">
+                            <div className="flex items-center gap-2 text-xs sm:text-sm">
                                 {profile.has_avatar ? (
-                                    <CheckCircle className="h-4 w-4 text-green-500" />
+                                    <CheckCircle className="h-3.5 w-3.5 flex-shrink-0 text-green-500 sm:h-4 sm:w-4" />
                                 ) : (
-                                    <div className="h-4 w-4 rounded-full border-2 border-gray-300"></div>
+                                    <div className="h-3.5 w-3.5 flex-shrink-0 rounded-full border-2 border-gray-300 sm:h-4 sm:w-4"></div>
                                 )}
                                 <span className="text-gray-600 dark:text-gray-300">Profile Picture</span>
                             </div>
-                            <div className="flex items-center gap-2 text-sm">
+                            <div className="flex items-center gap-2 text-xs sm:text-sm">
                                 {profile.email_verified ? (
-                                    <CheckCircle className="h-4 w-4 text-green-500" />
+                                    <CheckCircle className="h-3.5 w-3.5 flex-shrink-0 text-green-500 sm:h-4 sm:w-4" />
                                 ) : (
-                                    <div className="h-4 w-4 rounded-full border-2 border-gray-300"></div>
+                                    <div className="h-3.5 w-3.5 flex-shrink-0 rounded-full border-2 border-gray-300 sm:h-4 sm:w-4"></div>
                                 )}
                                 <span className="text-gray-600 dark:text-gray-300">Email Verified</span>
                             </div>
-                            <div className="flex items-center gap-2 text-sm">
+                            <div className="flex items-center gap-2 text-xs sm:text-sm">
                                 {profile.business_setup ? (
-                                    <CheckCircle className="h-4 w-4 text-green-500" />
+                                    <CheckCircle className="h-3.5 w-3.5 flex-shrink-0 text-green-500 sm:h-4 sm:w-4" />
                                 ) : (
-                                    <div className="h-4 w-4 rounded-full border-2 border-gray-300"></div>
+                                    <div className="h-3.5 w-3.5 flex-shrink-0 rounded-full border-2 border-gray-300 sm:h-4 sm:w-4"></div>
                                 )}
                                 <span className="text-gray-600 dark:text-gray-300">Business Setup</span>
                             </div>
@@ -499,160 +510,175 @@ export default function SellerDashboard() {
                     </div>
 
                     {/* Account Settings Widget */}
-                    <div className="rounded-xl border bg-white p-6 shadow-sm dark:bg-gray-800">
+                    <div className="rounded-xl border bg-white p-4 shadow-sm sm:p-6 dark:bg-gray-800">
                         <div className="mb-4 flex items-center justify-between">
-                            <h3 className="flex items-center gap-2 text-lg font-semibold text-gray-900 dark:text-gray-100">
-                                <Settings className="h-5 w-5" />
+                            <h3 className="flex items-center gap-2 text-base font-semibold text-gray-900 sm:text-lg dark:text-gray-100">
+                                <Settings className="h-4 w-4 sm:h-5 sm:w-5" />
                                 Account Settings
                             </h3>
                         </div>
 
-                        <div className="space-y-3">
-                            <div className="flex items-center justify-between">
-                                <span className="text-sm text-gray-600 dark:text-gray-300">Notifications</span>
-                                {settings.notifications_enabled ? (
-                                    <CheckCircle className="h-4 w-4 text-green-500" />
-                                ) : (
-                                    <AlertTriangle className="h-4 w-4 text-red-500" />
-                                )}
+                        <div className="space-y-2.5 sm:space-y-3">
+                            <div className="flex items-center justify-between gap-2 pr-1">
+                                <span className="min-w-0 flex-1 text-xs text-gray-600 sm:text-sm dark:text-gray-300">Notifications</span>
+                                <div className="flex-shrink-0">
+                                    {settings.notifications_enabled ? (
+                                        <CheckCircle className="h-4 w-4 text-green-500" />
+                                    ) : (
+                                        <AlertTriangle className="h-4 w-4 text-red-500" />
+                                    )}
+                                </div>
                             </div>
-                            <div className="flex items-center justify-between">
-                                <span className="text-sm text-gray-600 dark:text-gray-300">Two-Factor Auth</span>
-                                {settings.two_factor_enabled ? (
-                                    <CheckCircle className="h-4 w-4 text-green-500" />
-                                ) : (
-                                    <AlertTriangle className="h-4 w-4 text-yellow-500" />
-                                )}
+                            <div className="flex items-center justify-between gap-2 pr-1">
+                                <span className="min-w-0 flex-1 text-xs text-gray-600 sm:text-sm dark:text-gray-300">Two-Factor Auth</span>
+                                <div className="flex-shrink-0">
+                                    {settings.two_factor_enabled ? (
+                                        <CheckCircle className="h-4 w-4 text-green-500" />
+                                    ) : (
+                                        <AlertTriangle className="h-4 w-4 text-yellow-500" />
+                                    )}
+                                </div>
                             </div>
-                            <div className="flex items-center justify-between">
-                                <span className="text-sm text-gray-600 dark:text-gray-300">Privacy Settings</span>
-                                {settings.privacy_settings_configured ? (
-                                    <CheckCircle className="h-4 w-4 text-green-500" />
-                                ) : (
-                                    <AlertTriangle className="h-4 w-4 text-yellow-500" />
-                                )}
+                            <div className="flex items-center justify-between gap-2 pr-1">
+                                <span className="min-w-0 flex-1 text-xs text-gray-600 sm:text-sm dark:text-gray-300">Privacy Settings</span>
+                                <div className="flex-shrink-0">
+                                    {settings.privacy_settings_configured ? (
+                                        <CheckCircle className="h-4 w-4 text-green-500" />
+                                    ) : (
+                                        <AlertTriangle className="h-4 w-4 text-yellow-500" />
+                                    )}
+                                </div>
                             </div>
-                            <div className="flex items-center justify-between">
-                                <span className="text-sm text-gray-600 dark:text-gray-300">Marketing Preferences</span>
-                                {settings.marketing_preferences_set ? (
-                                    <CheckCircle className="h-4 w-4 text-green-500" />
-                                ) : (
-                                    <AlertTriangle className="h-4 w-4 text-yellow-500" />
-                                )}
+                            <div className="flex items-center justify-between gap-2 pr-1">
+                                <span className="min-w-0 flex-1 text-xs text-gray-600 sm:text-sm dark:text-gray-300">Marketing Preferences</span>
+                                <div className="flex-shrink-0">
+                                    {settings.marketing_preferences_set ? (
+                                        <CheckCircle className="h-4 w-4 text-green-500" />
+                                    ) : (
+                                        <AlertTriangle className="h-4 w-4 text-yellow-500" />
+                                    )}
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 {/* Enhanced Quick Stats */}
-                <div className="grid auto-rows-min gap-4 md:grid-cols-2 lg:grid-cols-4">
+                <div className="grid auto-rows-min gap-3 sm:gap-4 md:grid-cols-2 lg:grid-cols-4">
                     {/* Products Card */}
-                    <div className="group rounded-xl border bg-white p-6 shadow-sm transition-all hover:shadow-md dark:bg-gray-800">
+                    <div className="group rounded-xl border bg-white p-4 shadow-sm transition-all hover:shadow-md sm:p-6 dark:bg-gray-800">
                         <div className="flex items-center justify-between">
-                            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900">
-                                <Package className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+                            <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-blue-100 sm:h-12 sm:w-12 dark:bg-blue-900">
+                                <Package className="h-5 w-5 text-blue-600 sm:h-6 sm:w-6 dark:text-blue-400" />
                             </div>
-                            <div className="text-right">
-                                <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{products.total}</p>
-                                <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Products</p>
+                            <div className="min-w-0 text-right">
+                                <p className="text-xl font-bold text-gray-900 sm:text-2xl dark:text-gray-100">{products.total}</p>
+                                <p className="text-xs font-medium text-gray-600 sm:text-sm dark:text-gray-300">Products</p>
                             </div>
                         </div>
-                        <div className="mt-4 flex items-center justify-between text-sm">
-                            <span className="text-green-600 dark:text-green-400" title="Active products visible to customers">
+                        <div className="mt-3 flex items-center justify-between gap-2 text-xs sm:mt-4 sm:text-sm">
+                            <span className="truncate text-green-600 dark:text-green-400" title="Active products visible to customers">
                                 {products.active} Active
                             </span>
-                            <span className="text-yellow-600 dark:text-yellow-400" title="Draft products not yet published">
+                            <span className="truncate text-yellow-600 dark:text-yellow-400" title="Draft products not yet published">
                                 {products.draft} Draft
                             </span>
                         </div>
                         {products.created_this_week > 0 && (
-                            <div className="mt-2 text-xs text-gray-500 dark:text-gray-400">+{products.created_this_week} this week</div>
+                            <div className="mt-2 text-[10px] text-gray-500 sm:text-xs dark:text-gray-400">
+                                +{products.created_this_week} this week
+                            </div>
                         )}
                     </div>
 
                     {/* Orders Card */}
-                    <div className="group rounded-xl border bg-white p-6 shadow-sm transition-all hover:shadow-md dark:bg-gray-800">
+                    <div className="group rounded-xl border bg-white p-4 shadow-sm transition-all hover:shadow-md sm:p-6 dark:bg-gray-800">
                         <div className="flex items-center justify-between">
-                            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-orange-100 dark:bg-orange-900">
-                                <ShoppingBag className="h-6 w-6 text-orange-600 dark:text-orange-400" />
+                            <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-orange-100 sm:h-12 sm:w-12 dark:bg-orange-900">
+                                <ShoppingBag className="h-5 w-5 text-orange-600 sm:h-6 sm:w-6 dark:text-orange-400" />
                             </div>
-                            <div className="text-right">
-                                <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{orders.total}</p>
-                                <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Orders</p>
+                            <div className="min-w-0 text-right">
+                                <p className="text-xl font-bold text-gray-900 sm:text-2xl dark:text-gray-100">{orders.total}</p>
+                                <p className="text-xs font-medium text-gray-600 sm:text-sm dark:text-gray-300">Orders</p>
                             </div>
                         </div>
-                        <div className="mt-4 flex items-center justify-between text-sm">
-                            <span className="text-blue-600 dark:text-blue-400" title="Orders awaiting confirmation">
+                        <div className="mt-3 flex items-center justify-between gap-2 text-xs sm:mt-4 sm:text-sm">
+                            <span className="truncate text-blue-600 dark:text-blue-400" title="Orders awaiting confirmation">
                                 {orders.pending} Pending
                             </span>
-                            <span className="text-green-600 dark:text-green-400" title="Successfully completed orders">
+                            <span className="truncate text-green-600 dark:text-green-400" title="Successfully completed orders">
                                 {orders.completed} Completed
                             </span>
                         </div>
-                        {orders.today > 0 && <div className="mt-2 text-xs text-gray-500 dark:text-gray-400">+{orders.today} today</div>}
+                        {orders.today > 0 && (
+                            <div className="mt-2 text-[10px] text-gray-500 sm:text-xs dark:text-gray-400">+{orders.today} today</div>
+                        )}
                     </div>
 
                     {/* Revenue Card */}
-                    <div className="group rounded-xl border bg-white p-6 shadow-sm transition-all hover:shadow-md dark:bg-gray-800">
+                    <div className="group rounded-xl border bg-white p-4 shadow-sm transition-all hover:shadow-md sm:p-6 dark:bg-gray-800">
                         <div className="flex items-center justify-between">
-                            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-green-100 dark:bg-green-900">
-                                <PesoIcon className="h-6 w-6 text-green-600 dark:text-green-400" />
+                            <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-green-100 sm:h-12 sm:w-12 dark:bg-green-900">
+                                <PesoIcon className="h-5 w-5 text-green-600 sm:h-6 sm:w-6 dark:text-green-400" />
                             </div>
-                            <div className="text-right">
+                            <div className="min-w-0 text-right">
                                 <p
-                                    className="text-2xl font-bold text-gray-900 dark:text-gray-100"
+                                    className="truncate text-lg font-bold text-gray-900 sm:text-xl lg:text-2xl dark:text-gray-100"
                                     title={`Total revenue: ${formatCurrency(revenue.total)}`}
                                 >
                                     {formatCurrency(revenue.total)}
                                 </p>
-                                <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Revenue</p>
+                                <p className="text-xs font-medium text-gray-600 sm:text-sm dark:text-gray-300">Revenue</p>
                             </div>
                         </div>
-                        <div className="mt-4 flex items-center justify-between text-sm">
-                            <span className="text-blue-600 dark:text-blue-400" title="Revenue this month">
+                        <div className="mt-3 flex items-center justify-between gap-2 text-xs sm:mt-4 sm:text-sm">
+                            <span className="truncate text-[10px] text-blue-600 sm:text-xs dark:text-blue-400" title="Revenue this month">
                                 {formatCurrency(revenue.this_month)} MTD
                             </span>
                             {revenue.month_growth_percentage !== 0 && (
                                 <div
-                                    className={`flex items-center gap-1 ${getGrowthColor(revenue.month_growth_percentage)}`}
+                                    className={`flex flex-shrink-0 items-center gap-1 ${getGrowthColor(revenue.month_growth_percentage)}`}
                                     title="Month-over-month growth"
                                 >
                                     {(() => {
                                         const GrowthIcon = getGrowthIcon(revenue.month_growth_percentage);
-                                        return <GrowthIcon className="h-4 w-4" />;
+                                        return <GrowthIcon className="h-3 w-3 sm:h-4 sm:w-4" />;
                                     })()}
-                                    <span className="text-xs font-medium">{formatPercentage(revenue.month_growth_percentage)}</span>
+                                    <span className="text-[10px] font-medium sm:text-xs">{formatPercentage(revenue.month_growth_percentage)}</span>
                                 </div>
                             )}
                         </div>
                         {revenue.pending_amount > 0 && (
-                            <div className="mt-2 text-xs text-yellow-600 dark:text-yellow-400" title="Revenue from pending orders">
+                            <div
+                                className="mt-2 truncate text-[10px] text-yellow-600 sm:text-xs dark:text-yellow-400"
+                                title="Revenue from pending orders"
+                            >
                                 {formatCurrency(revenue.pending_amount)} pending
                             </div>
                         )}
                     </div>
 
                     {/* Customers Card */}
-                    <div className="group rounded-xl border bg-white p-6 shadow-sm transition-all hover:shadow-md dark:bg-gray-800">
+                    <div className="group rounded-xl border bg-white p-4 shadow-sm transition-all hover:shadow-md sm:p-6 dark:bg-gray-800">
                         <div className="flex items-center justify-between">
-                            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-purple-100 dark:bg-purple-900">
-                                <Users className="h-6 w-6 text-purple-600 dark:text-purple-400" />
+                            <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-purple-100 sm:h-12 sm:w-12 dark:bg-purple-900">
+                                <Users className="h-5 w-5 text-purple-600 sm:h-6 sm:w-6 dark:text-purple-400" />
                             </div>
-                            <div className="text-right">
-                                <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{customers.total_unique}</p>
-                                <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Customers</p>
+                            <div className="min-w-0 text-right">
+                                <p className="text-xl font-bold text-gray-900 sm:text-2xl dark:text-gray-100">{customers.total_unique}</p>
+                                <p className="text-xs font-medium text-gray-600 sm:text-sm dark:text-gray-300">Customers</p>
                             </div>
                         </div>
-                        <div className="mt-4 flex items-center justify-between text-sm">
-                            <span className="text-green-600 dark:text-green-400" title="Customers who made multiple purchases">
+                        <div className="mt-3 flex items-center justify-between gap-2 text-xs sm:mt-4 sm:text-sm">
+                            <span className="truncate text-green-600 dark:text-green-400" title="Customers who made multiple purchases">
                                 {customers.returning} Returning
                             </span>
-                            <span className="text-blue-600 dark:text-blue-400" title="Customer retention rate">
+                            <span className="truncate text-blue-600 dark:text-blue-400" title="Customer retention rate">
                                 {customers.retention_rate}% Retention
                             </span>
                         </div>
                         {customers.new_this_month > 0 && (
-                            <div className="mt-2 text-xs text-gray-500 dark:text-gray-400">+{customers.new_this_month} this month</div>
+                            <div className="mt-2 text-[10px] text-gray-500 sm:text-xs dark:text-gray-400">+{customers.new_this_month} this month</div>
                         )}
                     </div>
                 </div>

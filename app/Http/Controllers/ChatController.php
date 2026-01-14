@@ -18,15 +18,15 @@ class ChatController extends Controller
     public function index()
     {
         $user = auth()->user();
-        
+
         // Get all conversations for the current user that haven't been deleted by them
         $conversations = Conversation::where(function ($query) use ($user) {
-                $query->where('buyer_id', $user->id)
-                      ->whereNull('deleted_by_buyer_at');
-            })
+            $query->where('buyer_id', $user->id)
+                ->whereNull('deleted_by_buyer_at');
+        })
             ->orWhere(function ($query) use ($user) {
                 $query->where('seller_id', $user->id)
-                      ->whereNull('deleted_by_seller_at');
+                    ->whereNull('deleted_by_seller_at');
             })
             ->with(['buyer', 'seller', 'product', 'lastMessage'])
             ->orderBy('last_message_at', 'desc')
@@ -35,7 +35,7 @@ class ChatController extends Controller
                 $otherUser = $conversation->getOtherParticipant($user->id);
                 // Ensure avatar_url is included in the serialization
                 $otherUser->append('avatar_url');
-                
+
                 return [
                     'id' => $conversation->id,
                     'other_user' => $otherUser,
@@ -66,20 +66,20 @@ class ChatController extends Controller
 
         // Determine who is buyer and who is seller
         $otherUser = User::findOrFail($otherUserId);
-        
+
         $buyerId = $otherUser->isSeller() ? $currentUser->id : $otherUserId;
         $sellerId = $otherUser->isSeller() ? $otherUserId : $currentUser->id;
 
         // Find or create conversation
         $conversation = Conversation::where(function ($query) use ($buyerId, $sellerId) {
             $query->where('buyer_id', $buyerId)
-                  ->where('seller_id', $sellerId);
+                ->where('seller_id', $sellerId);
         })->orWhere(function ($query) use ($buyerId, $sellerId) {
             $query->where('buyer_id', $sellerId)
-                  ->where('seller_id', $buyerId);
+                ->where('seller_id', $buyerId);
         })->first();
 
-        if (!$conversation) {
+        if (! $conversation) {
             $conversation = Conversation::create([
                 'buyer_id' => $buyerId,
                 'seller_id' => $sellerId,
@@ -176,7 +176,7 @@ class ChatController extends Controller
 
         // Update conversation's last message timestamp and restore if needed
         $conversation->update($updateData);
-        
+
         \Log::info('Conversation updated', [
             'conversation_id' => $conversation->id,
             'deleted_by_buyer_at' => $conversation->fresh()->deleted_by_buyer_at,
@@ -222,11 +222,11 @@ class ChatController extends Controller
 
         $unreadCount = Message::whereHas('conversation', function ($query) use ($user) {
             $query->where('buyer_id', $user->id)
-                  ->orWhere('seller_id', $user->id);
+                ->orWhere('seller_id', $user->id);
         })
-        ->where('sender_id', '!=', $user->id)
-        ->where('is_read', false)
-        ->count();
+            ->where('sender_id', '!=', $user->id)
+            ->where('is_read', false)
+            ->count();
 
         return response()->json(['count' => $unreadCount]);
     }
@@ -237,7 +237,7 @@ class ChatController extends Controller
     public function deleteConversation($conversationId)
     {
         $user = auth()->user();
-        
+
         $conversation = Conversation::findOrFail($conversationId);
 
         // Verify user is part of this conversation
@@ -304,22 +304,22 @@ class ChatController extends Controller
     public function getConversations()
     {
         $user = auth()->user();
-        
+
         \Log::info('Getting conversations for user', ['user_id' => $user->id]);
-        
+
         // Get all conversations for the current user that haven't been deleted by them
         $conversations = Conversation::where(function ($query) use ($user) {
-                // Buyer conversations that aren't deleted by buyer
-                $query->where(function ($q) use ($user) {
-                    $q->where('buyer_id', $user->id)
-                      ->whereNull('deleted_by_buyer_at');
-                })
-                // OR Seller conversations that aren't deleted by seller
+            // Buyer conversations that aren't deleted by buyer
+            $query->where(function ($q) use ($user) {
+                $q->where('buyer_id', $user->id)
+                    ->whereNull('deleted_by_buyer_at');
+            })
+            // OR Seller conversations that aren't deleted by seller
                 ->orWhere(function ($q) use ($user) {
                     $q->where('seller_id', $user->id)
-                      ->whereNull('deleted_by_seller_at');
+                        ->whereNull('deleted_by_seller_at');
                 });
-            })
+        })
             ->with(['buyer', 'seller', 'product', 'lastMessage'])
             ->orderBy('last_message_at', 'desc')
             ->get()
@@ -327,7 +327,7 @@ class ChatController extends Controller
                 $otherUser = $conversation->getOtherParticipant($user->id);
                 // Ensure avatar_url is included in the serialization
                 $otherUser->append('avatar_url');
-                
+
                 return [
                     'id' => $conversation->id,
                     'other_user' => $otherUser,

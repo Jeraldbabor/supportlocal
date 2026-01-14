@@ -150,7 +150,15 @@ export default function ShowUser() {
                     <Card className="lg:col-span-1">
                         <CardHeader className="pb-4 text-center">
                             <div className="mb-4 flex justify-center">
-                                <img src={user.avatar_url} alt={user.name} className="h-24 w-24 rounded-full border-4 border-white shadow-lg" />
+                                <img
+                                    src={user.avatar_url}
+                                    alt={user.name}
+                                    className="h-24 w-24 rounded-full border-4 border-white shadow-lg"
+                                    onError={(e) => {
+                                        const target = e.target as HTMLImageElement;
+                                        target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&color=7F9CF5&background=EBF4FF`;
+                                    }}
+                                />
                             </div>
                             <CardTitle className="text-xl">{user.name}</CardTitle>
                             <div className="flex justify-center">

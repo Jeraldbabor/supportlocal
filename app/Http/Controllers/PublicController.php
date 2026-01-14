@@ -3,10 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\WishlistHelper;
+use App\Models\OrderItem;
 use App\Models\Product;
 use App\Models\ProductCategory;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Inertia\Inertia;
 
@@ -49,8 +52,73 @@ class PublicController extends Controller
             $query->where('price', '<=', $request->max_price);
         }
 
+        // Filter by location (shipped from)
+        if ($request->filled('location')) {
+            $location = $request->location;
+            if ($location === 'domestic') {
+                // All domestic sellers (not overseas)
+                $query->whereHas('seller', function ($q) {
+                    $q->where(function ($subQ) {
+                        $subQ->whereNotNull('delivery_city')
+                            ->orWhereNotNull('delivery_province');
+                    });
+                });
+            } elseif ($location === 'metro_manila') {
+                $query->whereHas('seller', function ($q) {
+                    $q->where(function ($subQ) {
+                        $subQ->where('delivery_city', 'like', '%Manila%')
+                            ->orWhere('delivery_province', 'like', '%Metro Manila%')
+                            ->orWhere('delivery_province', 'like', '%NCR%');
+                    });
+                });
+            } elseif ($location === 'north_luzon') {
+                $query->whereHas('seller', function ($q) {
+                    $q->whereIn('delivery_province', [
+                        'Ilocos Norte', 'Ilocos Sur', 'La Union', 'Pangasinan',
+                        'Batanes', 'Cagayan', 'Isabela', 'Nueva Vizcaya', 'Quirino',
+                        'Abra', 'Benguet', 'Ifugao', 'Kalinga', 'Mountain Province', 'Apayao',
+                        'Aurora', 'Bataan', 'Bulacan', 'Nueva Ecija', 'Pampanga', 'Tarlac', 'Zambales',
+                    ]);
+                });
+            } else {
+                // Specific city or province
+                $query->whereHas('seller', function ($q) use ($location) {
+                    $q->where(function ($subQ) use ($location) {
+                        $subQ->where('delivery_city', 'like', "%{$location}%")
+                            ->orWhere('delivery_province', 'like', "%{$location}%");
+                    });
+                });
+            }
+        }
+
+        // Filter by seller/brand
+        if ($request->filled('seller')) {
+            $query->where('seller_id', $request->seller);
+        }
+
+        // Filter by free shipping
+        if ($request->filled('free_shipping') && $request->free_shipping === 'true') {
+            $query->where('free_shipping', true);
+        }
+
+        // Filter by COD (sellers that accept COD)
+        if ($request->filled('cod') && $request->cod === 'true') {
+            $query->whereHas('seller', function ($q) {
+                $q->whereNotNull('gcash_number');
+            });
+        }
+
+        // Filter by minimum rating
+        if ($request->filled('min_rating') && is_numeric($request->min_rating)) {
+            $minRating = (float) $request->min_rating;
+            $query->where('average_rating', '>=', $minRating)
+                ->where('review_count', '>', 0); // Only show products with at least one review
+        }
+
         // Sorting
-        $sortBy = $request->get('sort', 'name');
+        $sortBy = $request->get('sort', 'popular');
+        $monthStart = Carbon::now()->startOfMonth();
+
         switch ($sortBy) {
             case 'price-low':
                 $query->orderBy('price', 'asc');
@@ -58,11 +126,38 @@ class PublicController extends Controller
             case 'price-high':
                 $query->orderBy('price', 'desc');
                 break;
-            case 'rating':
-                $query->orderByDesc('average_rating');
+            case 'popular':
+                // Popular = combination of views, orders, and ratings
+                $query->orderByRaw('(COALESCE(view_count, 0) * 0.1 + COALESCE(order_count, 0) * 10 + COALESCE(average_rating, 0) * 100) DESC')
+                    ->orderByDesc('created_at');
                 break;
+            case 'latest':
             case 'newest':
                 $query->latest();
+                break;
+            case 'top_sales':
+            case 'sales':
+                // Sort by monthly sales using a subquery, then by order_count
+                $monthlySalesSubquery = OrderItem::whereHas('order', function ($q) use ($monthStart) {
+                    $q->where('status', \App\Models\Order::STATUS_COMPLETED)
+                        ->where('created_at', '>=', $monthStart);
+                })
+                    ->select('product_id', DB::raw('SUM(quantity) as monthly_sales'))
+                    ->groupBy('product_id');
+
+                $query->leftJoinSub($monthlySalesSubquery, 'monthly_sales_data', function ($join) {
+                    $join->on('products.id', '=', 'monthly_sales_data.product_id');
+                })
+                    ->select('products.*')
+                    ->orderByRaw('COALESCE(monthly_sales_data.monthly_sales, 0) DESC')
+                    ->orderByDesc('products.order_count')
+                    ->orderByDesc('products.average_rating')
+                    ->orderByDesc('products.view_count');
+                break;
+            case 'rating':
+                $query->where('review_count', '>', 0)
+                    ->orderByDesc('average_rating')
+                    ->orderByDesc('review_count');
                 break;
             case 'name':
             default:
@@ -70,7 +165,16 @@ class PublicController extends Controller
                 break;
         }
 
-        $products = $query->paginate(12)->withQueryString()->through(function ($product) {
+        // Calculate monthly sales for all products (for display in product cards)
+        $monthlySales = OrderItem::whereHas('order', function ($q) use ($monthStart) {
+            $q->where('status', \App\Models\Order::STATUS_COMPLETED)
+                ->where('created_at', '>=', $monthStart);
+        })
+            ->select('product_id', DB::raw('SUM(quantity) as monthly_sales'))
+            ->groupBy('product_id')
+            ->pluck('monthly_sales', 'product_id');
+
+        $products = $query->paginate(12)->withQueryString()->through(function ($product) use ($monthlySales) {
             return [
                 'id' => $product->id,
                 'name' => $product->name,
@@ -78,17 +182,24 @@ class PublicController extends Controller
                 'compare_price' => $product->compare_price ? (float) $product->compare_price : null,
                 'primary_image' => $product->featured_image,
                 'image' => $product->featured_image ? '/storage/'.$product->featured_image : '/placeholder.jpg',
-                'artisan' => $product->seller->name ?? 'Unknown Artisan',
-                'artisan_image' => $product->seller->avatar_url ?? null,
                 'average_rating' => $product->average_rating ? (float) $product->average_rating : null,
                 'review_count' => $product->review_count ?? 0,
-                'category' => $product->category->name ?? 'Miscellaneous',
-                'description' => $product->description,
+                'order_count' => (int) ($product->order_count ?? 0),
+                'monthly_sales' => (int) ($monthlySales[$product->id] ?? 0),
+                'view_count' => (int) ($product->view_count ?? 0),
+                'category' => $product->category ? [
+                    'id' => $product->category->id,
+                    'name' => $product->category->name,
+                ] : null,
                 'stock_quantity' => $product->quantity,
+                'free_shipping' => (bool) ($product->free_shipping ?? false),
                 'seller' => [
                     'id' => $product->seller->id ?? 0,
                     'name' => $product->seller->name ?? 'Unknown Artisan',
                 ],
+                'location' => $product->seller ?
+                    trim(($product->seller->delivery_city ?? '').', '.($product->seller->delivery_province ?? ''), ', ')
+                    : null,
             ];
         });
 
@@ -97,20 +208,58 @@ class PublicController extends Controller
             $q->where('status', 'active')->where('quantity', '>', 0);
         })->orderBy('name')->get();
 
+        // Get unique sellers/brands for filtering
+        $sellers = User::where('role', User::ROLE_SELLER)
+            ->where('is_active', true)
+            ->whereHas('products', function ($q) {
+                $q->where('status', 'active')->where('quantity', '>', 0);
+            })
+            ->select('id', 'name')
+            ->orderBy('name')
+            ->get();
+
+        // Get unique locations for filtering
+        $locations = User::where('role', User::ROLE_SELLER)
+            ->where('is_active', true)
+            ->whereHas('products', function ($q) {
+                $q->where('status', 'active')->where('quantity', '>', 0);
+            })
+            ->where(function ($q) {
+                $q->whereNotNull('delivery_city')
+                    ->orWhereNotNull('delivery_province');
+            })
+            ->select('delivery_city', 'delivery_province')
+            ->distinct()
+            ->get()
+            ->map(function ($user) {
+                return trim(($user->delivery_city ?? '').', '.($user->delivery_province ?? ''), ', ');
+            })
+            ->filter()
+            ->unique()
+            ->sort()
+            ->values();
+
         // Get wishlist product IDs for current user/guest
         $wishlistProductIds = WishlistHelper::getProductIds();
 
         return Inertia::render('Products', [
             'products' => $products,
             'categories' => $categories ?? [],
+            'sellers' => $sellers ?? [],
+            'locations' => $locations ?? [],
             'wishlistProductIds' => $wishlistProductIds,
             'filters' => array_merge([
                 'category' => null,
                 'search' => null,
                 'min_price' => null,
                 'max_price' => null,
-                'sort' => 'name',
-            ], $request->only(['category', 'search', 'min_price', 'max_price', 'sort'])),
+                'location' => null,
+                'seller' => null,
+                'free_shipping' => null,
+                'cod' => null,
+                'min_rating' => null,
+                'sort' => 'popular',
+            ], $request->only(['category', 'search', 'min_price', 'max_price', 'location', 'seller', 'free_shipping', 'cod', 'min_rating', 'sort'])),
         ]);
     }
 
@@ -208,7 +357,7 @@ class PublicController extends Controller
         $query = User::where('role', User::ROLE_SELLER)
             ->where('is_active', true)
             ->withCount(['products' => function ($q) {
-                $q->where('status', 'active');
+                $q->where('status', 'active')->where('quantity', '>', 0);
             }]);
 
         // Search functionality
@@ -221,39 +370,89 @@ class PublicController extends Controller
             });
         }
 
+        // Filter by location
+        if ($request->filled('location')) {
+            $location = $request->location;
+            if ($location === 'domestic') {
+                $query->where(function ($q) {
+                    $q->whereNotNull('delivery_city')
+                        ->orWhereNotNull('delivery_province');
+                });
+            } elseif ($location === 'metro_manila') {
+                $query->where(function ($q) {
+                    $q->where('delivery_city', 'like', '%Manila%')
+                        ->orWhere('delivery_province', 'like', '%Metro Manila%')
+                        ->orWhere('delivery_province', 'like', '%NCR%');
+                });
+            } elseif ($location === 'north_luzon') {
+                $query->whereIn('delivery_province', [
+                    'Ilocos Norte', 'Ilocos Sur', 'La Union', 'Pangasinan',
+                    'Batanes', 'Cagayan', 'Isabela', 'Nueva Vizcaya', 'Quirino',
+                    'Abra', 'Benguet', 'Ifugao', 'Kalinga', 'Mountain Province', 'Apayao',
+                    'Aurora', 'Bataan', 'Bulacan', 'Nueva Ecija', 'Pampanga', 'Tarlac', 'Zambales',
+                ]);
+            } else {
+                $query->where(function ($q) use ($location) {
+                    $q->where('delivery_city', 'like', "%{$location}%")
+                        ->orWhere('delivery_province', 'like', "%{$location}%");
+                });
+            }
+        }
+
+        // Filter by minimum rating
+        if ($request->filled('min_rating') && is_numeric($request->min_rating)) {
+            $minRating = (float) $request->min_rating;
+            $query->where('average_rating', '>=', $minRating)
+                ->where('review_count', '>', 0);
+        }
+
+        // Filter by minimum products count
+        if ($request->filled('min_products') && is_numeric($request->min_products)) {
+            $query->havingRaw('products_count >= ?', [$request->min_products]);
+        }
+
         // Verified filter (if field exists)
         if ($request->has('verified') && $request->verified !== null && $request->verified !== '') {
-            // Only apply if is_verified column exists
             if (Schema::hasColumn('users', 'is_verified')) {
                 $query->where('is_verified', $request->verified === 'true' || $request->verified === true);
             }
         }
 
         // Sorting
-        $sortBy = $request->get('sort', 'name');
-        $direction = $request->get('direction', 'asc');
+        $sortBy = $request->get('sort', 'popular');
 
         switch ($sortBy) {
+            case 'popular':
+                // Popular = combination of rating, products, and sales
+                // Use subqueries directly for PostgreSQL compatibility
+                $query->orderByRaw('(COALESCE(users.average_rating, 0) * 100 + (SELECT COUNT(*) FROM products WHERE products.seller_id = users.id AND products.status = \'active\' AND products.quantity > 0) * 10 + (SELECT COUNT(*) FROM orders WHERE orders.seller_id = users.id AND orders.status IN (\'completed\', \'delivered\')) * 5) DESC')
+                    ->orderByDesc('users.created_at');
+                break;
             case 'products_count':
                 $query->orderBy('products_count', 'desc');
                 break;
-            case 'average_rating':
-                // Only sort by average_rating if column exists
+            case 'rating':
                 if (Schema::hasColumn('users', 'average_rating')) {
-                    $query->orderBy('average_rating', 'desc');
+                    $query->where('review_count', '>', 0)
+                        ->orderBy('average_rating', 'desc')
+                        ->orderBy('review_count', 'desc');
                 } else {
                     $query->orderBy('name', 'asc');
                 }
                 break;
             case 'total_sales':
-                $query->withCount('orders')->orderBy('orders_count', 'desc');
+                $query->withCount(['orders' => function ($q) {
+                    $q->whereIn('status', ['completed', 'delivered']);
+                }])
+                    ->orderBy('orders_count', 'desc');
                 break;
-            case 'created_at':
+            case 'latest':
+            case 'newest':
                 $query->orderBy('created_at', 'desc');
                 break;
             case 'name':
             default:
-                $query->orderBy('name', $direction);
+                $query->orderBy('name', 'asc');
                 break;
         }
 
@@ -264,9 +463,11 @@ class PublicController extends Controller
                 $imageUrl = 'https://ui-avatars.com/api/?name='.urlencode($artisan->name).'&color=7F9CF5&background=EBF4FF';
             }
 
-            // Extract city from address if exists
+            // Extract location from delivery fields or address
             $location = 'Local Area';
-            if ($artisan->address) {
+            if ($artisan->delivery_city || $artisan->delivery_province) {
+                $location = trim(($artisan->delivery_city ?? '').', '.($artisan->delivery_province ?? ''), ', ');
+            } elseif ($artisan->address) {
                 $addressParts = explode(',', $artisan->address);
                 $location = trim(end($addressParts));
             }
@@ -297,14 +498,38 @@ class PublicController extends Controller
             ];
         });
 
+        // Get unique locations for filtering
+        $locations = User::where('role', User::ROLE_SELLER)
+            ->where('is_active', true)
+            ->whereHas('products', function ($q) {
+                $q->where('status', 'active')->where('quantity', '>', 0);
+            })
+            ->where(function ($q) {
+                $q->whereNotNull('delivery_city')
+                    ->orWhereNotNull('delivery_province');
+            })
+            ->select('delivery_city', 'delivery_province')
+            ->distinct()
+            ->get()
+            ->map(function ($user) {
+                return trim(($user->delivery_city ?? '').', '.($user->delivery_province ?? ''), ', ');
+            })
+            ->filter()
+            ->unique()
+            ->sort()
+            ->values();
+
         return Inertia::render('Artisans', [
             'artisans' => $artisans,
+            'locations' => $locations,
             'filters' => array_merge([
                 'search' => null,
-                'sort' => 'name',
-                'direction' => 'asc',
+                'location' => null,
+                'min_rating' => null,
+                'min_products' => null,
                 'verified' => null,
-            ], $request->only(['search', 'sort', 'direction', 'verified'])),
+                'sort' => 'popular',
+            ], $request->only(['search', 'location', 'min_rating', 'min_products', 'verified', 'sort'])),
         ]);
     }
 

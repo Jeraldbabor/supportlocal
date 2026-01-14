@@ -46,6 +46,16 @@
     background: #a8a8a8;
 }
 
+/* Hide scrollbar but keep functionality */
+.scrollbar-hide {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+    display: none; /* Chrome, Safari and Opera */
+}
+
 @custom-variant dark (&:is(.dark *));
 
 @theme {
@@ -178,5 +188,68 @@
 
     body {
         @apply bg-background text-foreground;
+    }
+}
+
+/* Shopee-like mobile responsiveness - Compact scaling for mobile devices */
+@media (max-width: 640px) {
+    html {
+        font-size: 14px; /* Slightly smaller base font for mobile */
+    }
+
+    /* Make containers more compact on mobile */
+    .container,
+    .mx-auto {
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+    }
+
+    /* Tighter spacing for mobile */
+    .space-y-6 > * + * {
+        margin-top: 1rem;
+    }
+
+    .space-y-8 > * + * {
+        margin-top: 1.25rem;
+    }
+
+    /* Compact product cards on mobile */
+    [class*='grid-cols-2'] {
+        gap: 0.5rem;
+    }
+}
+
+/* Extra small devices - even more compact */
+@media (max-width: 375px) {
+    html {
+        font-size: 13px;
+    }
+
+    /* Ultra-compact spacing */
+    .space-y-4 > * + * {
+        margin-top: 0.75rem;
+    }
+
+    .space-y-6 > * + * {
+        margin-top: 0.875rem;
+    }
+}
+
+/* Prevent text size adjustment on iOS */
+@media screen and (max-width: 768px) {
+    html {
+        -webkit-text-size-adjust: 100%;
+        -moz-text-size-adjust: 100%;
+        -ms-text-size-adjust: 100%;
+        text-size-adjust: 100%;
+    }
+
+    /* Ensure touch targets are adequate but compact */
+    button,
+    a,
+    input,
+    select,
+    textarea {
+        min-height: 2.5rem;
     }
 }

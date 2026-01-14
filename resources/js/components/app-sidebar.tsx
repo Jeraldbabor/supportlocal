@@ -1,11 +1,11 @@
 import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
+import Echo from '@/lib/echo';
 import { type NavItem, type SharedData } from '@/types';
 import { usePage } from '@inertiajs/react';
-import { BarChart3, LayoutGrid, MessageSquare, Package, ShoppingBag, Star, Users } from 'lucide-react';
+import { BarChart3, FileSearch, FileText, FolderTree, LayoutGrid, MessageSquare, Package, ShoppingBag, Star, Users } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import Echo from '@/lib/echo';
 import AppLogo from './app-logo';
 
 // Function to get role-specific navigation items
@@ -63,9 +63,34 @@ function getRoleNavItems(userRole?: string): NavItem[] {
                     icon: Users,
                 },
                 {
+                    title: 'Products',
+                    href: '/admin/products',
+                    icon: Package,
+                },
+                {
+                    title: 'Orders',
+                    href: '/admin/orders',
+                    icon: ShoppingBag,
+                },
+                {
+                    title: 'Categories',
+                    href: '/admin/categories',
+                    icon: FolderTree,
+                },
+                {
+                    title: 'Seller Applications',
+                    href: '/admin/seller-applications',
+                    icon: FileText,
+                },
+                {
                     title: 'System Reports',
                     href: '/admin/reports',
                     icon: BarChart3,
+                },
+                {
+                    title: 'Logs Monitoring',
+                    href: '/admin/logs',
+                    icon: FileSearch,
                 },
             ];
 
