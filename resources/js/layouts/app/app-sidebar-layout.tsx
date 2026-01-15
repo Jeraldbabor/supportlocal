@@ -45,7 +45,7 @@ export default function AppSidebarLayout({ children, breadcrumbs = [] }: PropsWi
                 <AppSidebarHeader breadcrumbs={breadcrumbs} />
                 {/* Profile Completion Banner */}
                 {shouldShowBanner && (
-                    <div className="px-4 pt-4">
+                    <div className="px-3 pt-3 sm:px-4 sm:pt-4">
                         <ProfileCompletionBanner
                             status={profileCompletion.status}
                             recommendation={profileCompletion.recommendation}
@@ -53,7 +53,7 @@ export default function AppSidebarLayout({ children, breadcrumbs = [] }: PropsWi
                         />
                     </div>
                 )}
-                {children}
+                <div className="w-full overflow-x-hidden">{children}</div>
             </AppContent>
         </AppShell>
     );

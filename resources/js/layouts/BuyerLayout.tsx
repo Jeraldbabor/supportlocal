@@ -95,13 +95,13 @@ function BuyerLayoutContent({ children, title }: BuyerLayoutProps) {
     ];
 
     return (
-        <div className="min-h-screen bg-background">
+        <div className="min-h-screen overflow-x-hidden bg-background">
             {/* Buyer Navigation Header */}
-            <header className="sticky top-0 z-50 border-b border-gray-200/80 bg-white/95 shadow-sm backdrop-blur-sm">
-                <nav className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8" role="navigation" aria-label="Main navigation">
+            <header className="sticky top-0 z-50 w-full border-b border-gray-200/80 bg-white/95 shadow-sm backdrop-blur-sm">
+                <nav className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8" role="navigation" aria-label="Main navigation">
                     <div className="flex h-16 items-center justify-between">
                         {/* Logo */}
-                        <div className="flex-shrink-0">
+                        <div className="flex-shrink-0 min-w-0">
                             <Link
                                 href="/buyer/dashboard"
                                 className="flex items-center gap-2 rounded-xl px-2 py-2 transition-all duration-300 hover:scale-105 focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 focus:outline-none active:scale-95"
@@ -124,7 +124,7 @@ function BuyerLayoutContent({ children, title }: BuyerLayoutProps) {
                         </div>
 
                         {/* Desktop Navigation - Buyer Specific */}
-                        <div className="hidden lg:block">
+                        <div className="hidden flex-shrink-0 lg:block">
                             <div className="flex items-center space-x-0.5">
                                 {buyerNavigation.map((item) => {
                                     const Icon = item.icon;
@@ -133,7 +133,7 @@ function BuyerLayoutContent({ children, title }: BuyerLayoutProps) {
                                         <Link
                                             key={item.name}
                                             href={item.href}
-                                            className={`group relative flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium transition-all duration-300 focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 focus:outline-none ${
+                                            className={`group relative flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium transition-all duration-300 focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 focus:outline-none whitespace-nowrap ${
                                                 isActive
                                                     ? 'border border-primary/20 bg-gradient-to-r from-primary/10 to-primary/5 text-primary shadow-inner'
                                                     : 'text-gray-700 hover:bg-gray-50 hover:text-primary hover:shadow-sm'
@@ -141,7 +141,7 @@ function BuyerLayoutContent({ children, title }: BuyerLayoutProps) {
                                             aria-current={isActive ? 'page' : undefined}
                                         >
                                             <Icon
-                                                className={`h-4 w-4 transition-all duration-300 ${
+                                                className={`h-4 w-4 flex-shrink-0 transition-all duration-300 ${
                                                     isActive ? 'text-primary' : 'text-gray-500 group-hover:text-primary'
                                                 }`}
                                             />
@@ -158,7 +158,7 @@ function BuyerLayoutContent({ children, title }: BuyerLayoutProps) {
                         </div>
 
                         {/* Right side - User specific actions */}
-                        <div className="flex items-center space-x-1">
+                        <div className="flex flex-shrink-0 items-center space-x-1">
                             {/* Messages Dropdown */}
                             <MessagesDropdown currentUserId={user.id} />
 
@@ -172,7 +172,7 @@ function BuyerLayoutContent({ children, title }: BuyerLayoutProps) {
                             {/* Wishlist Icon */}
                             <Link
                                 href="/wishlist"
-                                className="group relative rounded-xl p-2 text-gray-600 transition-all duration-300 hover:bg-primary/5 hover:text-primary hover:shadow-sm focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 focus:outline-none"
+                                className="group relative flex-shrink-0 rounded-xl p-2 text-gray-600 transition-all duration-300 hover:bg-primary/5 hover:text-primary hover:shadow-sm focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 focus:outline-none"
                                 aria-label={`Wishlist ${(wishlistCount ?? 0) > 0 ? `(${wishlistCount} items)` : '(empty)'}`}
                             >
                                 <Heart className="h-5 w-5 transition-transform duration-300 group-hover:scale-110" />
@@ -187,7 +187,7 @@ function BuyerLayoutContent({ children, title }: BuyerLayoutProps) {
                             {/* Cart Icon */}
                             <Link
                                 href="/buyer/cart"
-                                className="group relative rounded-xl p-2 text-gray-600 transition-all duration-300 hover:bg-primary/5 hover:text-primary hover:shadow-sm focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 focus:outline-none"
+                                className="group relative flex-shrink-0 rounded-xl p-2 text-gray-600 transition-all duration-300 hover:bg-primary/5 hover:text-primary hover:shadow-sm focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 focus:outline-none"
                                 aria-label={`Shopping cart ${totalItems > 0 ? `(${totalItems} items)` : '(empty)'}`}
                             >
                                 <ShoppingCart className="h-5 w-5 transition-transform duration-300 group-hover:scale-110" />
@@ -200,7 +200,7 @@ function BuyerLayoutContent({ children, title }: BuyerLayoutProps) {
                             </Link>
 
                             {/* User Profile Section with Dropdown */}
-                            <div className="relative hidden md:block" ref={userMenuRef}>
+                            <div className="relative hidden flex-shrink-0 md:block" ref={userMenuRef}>
                                 <button
                                     onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
                                     className={`flex items-center space-x-2 rounded-xl p-2 transition-all duration-300 focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 focus:outline-none ${
@@ -301,7 +301,7 @@ function BuyerLayoutContent({ children, title }: BuyerLayoutProps) {
                             </div>
 
                             {/* Mobile menu button */}
-                            <div className="ml-1 lg:hidden">
+                            <div className="ml-1 flex-shrink-0 lg:hidden">
                                 <button
                                     ref={mobileMenuButtonRef}
                                     onClick={() => setIsMenuOpen(!isMenuOpen)}
