@@ -108,6 +108,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/seller/orders/{order}/confirm', [App\Http\Controllers\Seller\OrderController::class, 'confirm'])->name('seller.orders.confirm');
         Route::post('/seller/orders/{order}/reject', [App\Http\Controllers\Seller\OrderController::class, 'reject'])->name('seller.orders.reject');
         Route::post('/seller/orders/{order}/complete', [App\Http\Controllers\Seller\OrderController::class, 'complete'])->name('seller.orders.complete');
+        Route::post('/seller/orders/{order}/verify-payment', [App\Http\Controllers\Seller\OrderController::class, 'verifyPayment'])->name('seller.orders.verify-payment');
+        Route::post('/seller/orders/{order}/reject-payment', [App\Http\Controllers\Seller\OrderController::class, 'rejectPayment'])->name('seller.orders.reject-payment');
 
         // Customer Management Routes
         Route::get('/seller/customers', [App\Http\Controllers\Seller\CustomerController::class, 'index'])->name('seller.customers');
@@ -116,7 +118,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         // Analytics Routes
         Route::get('/seller/analytics', [App\Http\Controllers\Seller\AnalyticsController::class, 'index'])->name('seller.analytics');
-        Route::post('/seller/analytics/export', [App\Http\Controllers\Seller\AnalyticsController::class, 'export'])->name('seller.analytics.export');
+        Route::get('/seller/analytics/export', [App\Http\Controllers\Seller\AnalyticsController::class, 'export'])->name('seller.analytics.export');
 
         // Seller Profile Routes
         Route::get('/seller/profile', [App\Http\Controllers\Seller\ProfileController::class, 'show'])->name('seller.profile.show');
@@ -140,6 +142,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         // Seller Notification Routes
         Route::get('/seller/notifications', [App\Http\Controllers\Seller\NotificationController::class, 'index'])->name('seller.notifications.index');
+        Route::get('/seller/notifications/recent', [App\Http\Controllers\Seller\NotificationController::class, 'getRecent'])->name('seller.notifications.recent');
         Route::post('/seller/notifications/{id}/read', [App\Http\Controllers\Seller\NotificationController::class, 'markAsRead'])->name('seller.notifications.read');
         Route::delete('/seller/notifications/{id}', [App\Http\Controllers\Seller\NotificationController::class, 'destroy'])->name('seller.notifications.destroy');
         Route::post('/seller/notifications/read-all', [App\Http\Controllers\Seller\NotificationController::class, 'markAllAsRead'])->name('seller.notifications.read-all');
@@ -218,6 +221,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/admin/reports', [App\Http\Controllers\Admin\ReportsController::class, 'index'])->name('admin.reports.index');
         Route::get('/admin/reports/export', [App\Http\Controllers\Admin\ReportsController::class, 'export'])->name('admin.reports.export');
 
+        // Database Backup Routes (Admin only)
+        Route::post('/admin/database/backup', function () {
+            Artisan::call('db:backup', ['--retention' => 7]);
+            return redirect()->back()->with('success', 'Database backup initiated successfully.');
+        })->name('admin.database.backup');
+
         // Settings Routes
         Route::get('/admin/settings', [App\Http\Controllers\Admin\SettingsController::class, 'index'])->name('admin.settings.index');
         Route::post('/admin/settings/general', [App\Http\Controllers\Admin\SettingsController::class, 'updateGeneral'])->name('admin.settings.general');
@@ -232,10 +241,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/admin/seller-applications/{application}', [App\Http\Controllers\SellerApplicationController::class, 'show'])->name('admin.seller-applications.show');
         Route::post('/admin/seller-applications/{application}/approve', [App\Http\Controllers\SellerApplicationController::class, 'approve'])->name('admin.seller-applications.approve');
         Route::post('/admin/seller-applications/{application}/reject', [App\Http\Controllers\SellerApplicationController::class, 'reject'])->name('admin.seller-applications.reject');
+        Route::get('/admin/seller-applications/{application}/preview/{type}', [App\Http\Controllers\SellerApplicationController::class, 'previewDocument'])->name('admin.seller-applications.preview');
+        Route::get('/admin/seller-applications/{application}/preview/{type}/{index}', [App\Http\Controllers\SellerApplicationController::class, 'previewDocument'])->name('admin.seller-applications.preview.index');
         Route::get('/admin/seller-applications/{application}/download/{type}', [App\Http\Controllers\SellerApplicationController::class, 'downloadDocument'])->name('admin.seller-applications.download');
+        Route::get('/admin/seller-applications/{application}/download/{type}/{index}', [App\Http\Controllers\SellerApplicationController::class, 'downloadDocument'])->name('admin.seller-applications.download.index');
 
         // Admin notifications routes
         Route::get('/admin/notifications', [App\Http\Controllers\Admin\NotificationController::class, 'index'])->name('admin.notifications.index');
+        Route::get('/admin/notifications/recent', [App\Http\Controllers\Admin\NotificationController::class, 'getRecent'])->name('admin.notifications.recent');
         Route::post('/admin/notifications/{id}/read', [App\Http\Controllers\Admin\NotificationController::class, 'markAsRead'])->name('admin.notifications.read');
         Route::delete('/admin/notifications/{id}', [App\Http\Controllers\Admin\NotificationController::class, 'destroy'])->name('admin.notifications.destroy');
         Route::post('/admin/notifications/read-all', [App\Http\Controllers\Admin\NotificationController::class, 'markAllAsRead'])->name('admin.notifications.read-all');
@@ -246,6 +259,20 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/admin/logs/download', [App\Http\Controllers\Admin\LogsController::class, 'download'])->name('admin.logs.download');
         Route::post('/admin/logs/clear', [App\Http\Controllers\Admin\LogsController::class, 'clear'])->name('admin.logs.clear');
         Route::get('/admin/logs/show', [App\Http\Controllers\Admin\LogsController::class, 'show'])->name('admin.logs.show');
+
+        // Page Content Management Routes
+        Route::get('/admin/page-content', [App\Http\Controllers\Admin\PageContentController::class, 'index'])->name('admin.page-content.index');
+        Route::get('/admin/page-content/edit', [App\Http\Controllers\Admin\PageContentController::class, 'edit'])->name('admin.page-content.edit');
+        Route::get('/admin/page-content/{id}/edit', [App\Http\Controllers\Admin\PageContentController::class, 'edit'])->name('admin.page-content.edit.id');
+        Route::post('/admin/page-content', [App\Http\Controllers\Admin\PageContentController::class, 'store'])->name('admin.page-content.store');
+        Route::delete('/admin/page-content/{id}', [App\Http\Controllers\Admin\PageContentController::class, 'destroy'])->name('admin.page-content.destroy');
+
+        // Contact Messages Management Routes
+        Route::get('/admin/contact-messages', [App\Http\Controllers\Admin\ContactMessageController::class, 'index'])->name('admin.contact-messages.index');
+        Route::get('/admin/contact-messages/{contactMessage}', [App\Http\Controllers\Admin\ContactMessageController::class, 'show'])->name('admin.contact-messages.show');
+        Route::post('/admin/contact-messages/{contactMessage}/update-status', [App\Http\Controllers\Admin\ContactMessageController::class, 'updateStatus'])->name('admin.contact-messages.update-status');
+        Route::post('/admin/contact-messages/{contactMessage}/reply', [App\Http\Controllers\Admin\ContactMessageController::class, 'reply'])->name('admin.contact-messages.reply');
+        Route::delete('/admin/contact-messages/{contactMessage}', [App\Http\Controllers\Admin\ContactMessageController::class, 'destroy'])->name('admin.contact-messages.destroy');
     });
 
     Route::middleware(['role:buyer'])->group(function () {
@@ -255,7 +282,21 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/buyer/about', [App\Http\Controllers\Buyer\AboutController::class, 'index'])->name('buyer.about');
 
         Route::get('/buyer/contact', function () {
-            return Inertia::render('buyer/Contact');
+            // Get dynamic page content
+            $pageContents = \App\Models\PageContent::getPageContents(\App\Models\PageContent::PAGE_TYPE_CONTACT)
+                ->map(function ($content) {
+                    return [
+                        'section' => $content->section,
+                        'title' => $content->title,
+                        'content' => $content->content,
+                        'metadata' => $content->metadata,
+                    ];
+                })
+                ->keyBy('section');
+
+            return \Inertia\Inertia::render('buyer/Contact', [
+                'pageContents' => $pageContents,
+            ]);
         })->name('buyer.contact');
 
         Route::post('/buyer/contact', [HomeController::class, 'sendContactMessage'])->name('buyer.contact.send');
@@ -362,9 +403,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         // Additional order routes
         Route::post('/buyer/orders/clear-all', [App\Http\Controllers\Buyer\OrderController::class, 'clearAllHistory'])->name('buyer.orders.clear-all');
+        Route::post('/buyer/orders/{order}/upload-payment-proof', [App\Http\Controllers\Buyer\OrderController::class, 'uploadPaymentProof'])->name('buyer.orders.upload-payment-proof');
 
         // Buyer Notification Routes
         Route::get('/buyer/notifications', [App\Http\Controllers\Buyer\NotificationController::class, 'index'])->name('buyer.notifications.index');
+        Route::get('/buyer/notifications/recent', [App\Http\Controllers\Buyer\NotificationController::class, 'getRecent'])->name('buyer.notifications.recent');
         Route::post('/buyer/notifications/{id}/read', [App\Http\Controllers\Buyer\NotificationController::class, 'markAsRead'])->name('buyer.notifications.read');
         Route::delete('/buyer/notifications/{id}', [App\Http\Controllers\Buyer\NotificationController::class, 'destroy'])->name('buyer.notifications.destroy');
         Route::post('/buyer/notifications/read-all', [App\Http\Controllers\Buyer\NotificationController::class, 'markAllAsRead'])->name('buyer.notifications.read-all');
@@ -376,6 +419,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/buyer/profile/delete-picture', [App\Http\Controllers\BuyerProfileController::class, 'deleteProfilePicture'])->name('buyer.profile.delete-picture');
         Route::post('/buyer/profile/change-password', [App\Http\Controllers\BuyerProfileController::class, 'changePassword'])->name('buyer.profile.change-password');
         Route::post('/buyer/profile/delete-account', [App\Http\Controllers\BuyerProfileController::class, 'deleteAccount'])->name('buyer.profile.delete-account');
+
+        // Data export route (GDPR compliance)
+        Route::get('/data-export', [App\Http\Controllers\DataExportController::class, 'exportUserData'])->name('data.export');
 
         // Seller application routes for buyers
         Route::get('/seller/apply', [App\Http\Controllers\SellerApplicationController::class, 'showPreApplicationMessage'])->name('seller.application.confirm');

@@ -8,8 +8,10 @@ use App\Models\OrderItem;
 use App\Models\Product;
 use App\Models\User;
 use App\Notifications\NewOrderReceived;
+use App\Notifications\PaymentProofUploaded;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -114,6 +116,11 @@ class OrderController extends Controller
                 }
                 $totalWithShipping = $sellerTotal + $shippingFee;
 
+                $paymentMethod = $request->input('payment_method');
+                $paymentStatus = $paymentMethod === Order::PAYMENT_COD
+                    ? Order::PAYMENT_PAID
+                    : Order::PAYMENT_PENDING;
+
                 $order = Order::create([
                     'user_id' => auth()->id(), // This is the buyer
                     'seller_id' => $sellerId,
@@ -125,7 +132,8 @@ class OrderController extends Controller
                     'delivery_address' => $request->input('delivery_address'),
                     'delivery_phone' => $request->input('delivery_phone'),
                     'delivery_notes' => $request->input('delivery_notes'),
-                    'payment_method' => $request->input('payment_method'),
+                    'payment_method' => $paymentMethod,
+                    'payment_status' => $paymentStatus,
                     'gcash_reference' => $request->input('gcash_reference'),
                     'special_instructions' => $request->input('delivery_notes'),
                     'subtotal' => $sellerTotal,
@@ -258,6 +266,59 @@ class OrderController extends Controller
             DB::rollback();
 
             return back()->with('error', 'Failed to clear order history. Please try again.');
+        }
+    }
+
+    /**
+     * Upload payment proof for an order.
+     */
+    public function uploadPaymentProof(Request $request, Order $order)
+    {
+        // Check if the order belongs to the authenticated buyer
+        if ($order->user_id !== auth()->id()) {
+            abort(403);
+        }
+
+        // Check if payment proof can be uploaded
+        if (! $order->canUploadPaymentProof()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Payment proof cannot be uploaded for this order.',
+            ], 400);
+        }
+
+        $request->validate([
+            'payment_proof' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:5120', // 5MB max
+        ]);
+
+        try {
+            // Delete old payment proof if exists
+            if ($order->payment_proof) {
+                Storage::disk('public')->delete($order->payment_proof);
+            }
+
+            // Store the new payment proof
+            $path = $request->file('payment_proof')->store('payment-proofs', 'public');
+
+            // Update order with payment proof
+            $order->update([
+                'payment_proof' => $path,
+            ]);
+
+            // Notify seller
+            $order->seller->notify(new PaymentProofUploaded($order));
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Payment proof uploaded successfully! The seller will review it shortly.',
+                'order' => $order->fresh(),
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to upload payment proof: '.$e->getMessage(),
+            ], 500);
         }
     }
 }

@@ -59,6 +59,10 @@ class Order extends Model
         'delivery_phone',
         'delivery_notes',
         'payment_method',
+        'payment_status',
+        'payment_proof',
+        'payment_verification_notes',
+        'payment_verified_at',
         'gcash_number',
         'gcash_reference',
         'special_instructions',
@@ -84,6 +88,7 @@ class Order extends Model
         'shipped_at' => 'datetime',
         'delivered_at' => 'datetime',
         'completed_at' => 'datetime',
+        'payment_verified_at' => 'datetime',
     ];
 
     /**
@@ -183,7 +188,42 @@ class Order extends Model
      */
     public function canBeConfirmed(): bool
     {
-        return $this->status === self::STATUS_PENDING;
+        if ($this->status !== self::STATUS_PENDING) {
+            return false;
+        }
+
+        // For COD orders, payment is automatically considered paid
+        if ($this->payment_method === self::PAYMENT_COD) {
+            return true;
+        }
+
+        // For GCash orders, payment must be verified first
+        if ($this->payment_method === self::PAYMENT_GCASH) {
+            return $this->payment_status === self::PAYMENT_PAID;
+        }
+
+        return false;
+    }
+
+    /**
+     * Check if payment proof can be uploaded.
+     */
+    public function canUploadPaymentProof(): bool
+    {
+        return $this->payment_method === self::PAYMENT_GCASH
+            && $this->status === self::STATUS_PENDING
+            && $this->payment_status === self::PAYMENT_PENDING;
+    }
+
+    /**
+     * Check if payment can be verified.
+     */
+    public function canVerifyPayment(): bool
+    {
+        return $this->payment_method === self::PAYMENT_GCASH
+            && $this->status === self::STATUS_PENDING
+            && $this->payment_proof !== null
+            && $this->payment_status === self::PAYMENT_PENDING;
     }
 
     /**

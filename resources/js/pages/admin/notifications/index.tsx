@@ -1,7 +1,7 @@
 import { useNotifications } from '@/contexts/NotificationsContext';
 import AppLayout from '@/layouts/app-layout';
 import { Head, router } from '@inertiajs/react';
-import { Bell, Check, Clock, FileText, Trash2, User, X } from 'lucide-react';
+import { Bell, Check, Clock, FileText, Mail, Trash2, User, X } from 'lucide-react';
 import { useState } from 'react';
 
 interface Notification {
@@ -17,6 +17,11 @@ interface Notification {
         applicant_email?: string;
         business_type?: string;
         application_id?: number;
+        sender_name?: string;
+        sender_email?: string;
+        subject?: string;
+        contact_message_id?: number;
+        type?: string;
     };
     read_at: string | null;
     created_at: string;
@@ -101,6 +106,8 @@ function NotificationsPageContent({ notifications }: NotificationsProps) {
         switch (type) {
             case 'App\\Notifications\\NewSellerApplicationSubmitted':
                 return <FileText className="h-5 w-5 text-amber-600" />;
+            case 'App\\Notifications\\NewContactMessageReceived':
+                return <Mail className="h-5 w-5 text-blue-600" />;
             default:
                 return <Bell className="h-5 w-5 text-gray-600" />;
         }
@@ -190,6 +197,28 @@ function NotificationsPageContent({ notifications }: NotificationsProps) {
                                                             <div className="flex items-center gap-1">
                                                                 <FileText className="h-3 w-3" />
                                                                 <span>Business: {notification.data.business_type}</span>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                )}
+
+                                                {/* Show sender details for contact messages */}
+                                                {notification.data.sender_name && (
+                                                    <div className="mt-2 space-y-1 text-xs text-gray-600 dark:text-gray-400">
+                                                        <div className="flex items-center gap-1">
+                                                            <User className="h-3 w-3" />
+                                                            <span>From: {notification.data.sender_name}</span>
+                                                        </div>
+                                                        {notification.data.sender_email && (
+                                                            <div className="flex items-center gap-1">
+                                                                <Mail className="h-3 w-3" />
+                                                                <span>{notification.data.sender_email}</span>
+                                                            </div>
+                                                        )}
+                                                        {notification.data.subject && (
+                                                            <div className="flex items-center gap-1">
+                                                                <FileText className="h-3 w-3" />
+                                                                <span>Subject: {notification.data.subject}</span>
                                                             </div>
                                                         )}
                                                     </div>

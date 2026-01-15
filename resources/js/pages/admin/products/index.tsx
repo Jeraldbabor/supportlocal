@@ -148,112 +148,112 @@ export default function ProductsIndex() {
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Product Management" />
 
-            <div className="flex flex-col gap-6">
+            <div className="flex flex-col gap-4 sm:gap-6">
                 {/* Stats Cards */}
-                <div className="grid gap-4 md:grid-cols-4 lg:grid-cols-8">
-                    <Card>
+                <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4 lg:grid-cols-8">
+                    <Card className="transition-all duration-200 hover:shadow-md">
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Total Products</CardTitle>
-                            <Package className="h-4 w-4 text-muted-foreground" />
+                            <CardTitle className="text-xs font-medium sm:text-sm">Total Products</CardTitle>
+                            <Package className="h-3 w-3 text-muted-foreground sm:h-4 sm:w-4" />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold">{stats.total}</div>
+                            <div className="text-xl font-bold sm:text-2xl">{stats.total}</div>
                         </CardContent>
                     </Card>
 
-                    <Card>
+                    <Card className="transition-all duration-200 hover:shadow-md">
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Active</CardTitle>
+                            <CardTitle className="text-xs font-medium sm:text-sm">Active</CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold text-green-600">{stats.active}</div>
+                            <div className="text-xl font-bold text-green-600 sm:text-2xl">{stats.active}</div>
                         </CardContent>
                     </Card>
 
-                    <Card>
+                    <Card className="transition-all duration-200 hover:shadow-md">
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Inactive</CardTitle>
+                            <CardTitle className="text-xs font-medium sm:text-sm">Inactive</CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold text-gray-600">{stats.inactive}</div>
+                            <div className="text-xl font-bold text-gray-600 sm:text-2xl">{stats.inactive}</div>
                         </CardContent>
                     </Card>
 
-                    <Card>
+                    <Card className="transition-all duration-200 hover:shadow-md">
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Draft</CardTitle>
+                            <CardTitle className="text-xs font-medium sm:text-sm">Draft</CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold text-yellow-600">{stats.draft}</div>
+                            <div className="text-xl font-bold text-yellow-600 sm:text-2xl">{stats.draft}</div>
                         </CardContent>
                     </Card>
 
-                    <Card>
+                    <Card className="transition-all duration-200 hover:shadow-md">
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Out of Stock</CardTitle>
+                            <CardTitle className="text-xs font-medium sm:text-sm">Out of Stock</CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold text-red-600">{stats.out_of_stock}</div>
+                            <div className="text-xl font-bold text-red-600 sm:text-2xl">{stats.out_of_stock}</div>
                         </CardContent>
                     </Card>
 
-                    <Card>
+                    <Card className="transition-all duration-200 hover:shadow-md">
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Low Stock</CardTitle>
+                            <CardTitle className="text-xs font-medium sm:text-sm">Low Stock</CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold text-yellow-600">{stats.low_stock}</div>
+                            <div className="text-xl font-bold text-yellow-600 sm:text-2xl">{stats.low_stock}</div>
                         </CardContent>
                     </Card>
 
-                    <Card>
+                    <Card className="transition-all duration-200 hover:shadow-md">
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Featured</CardTitle>
-                            <Star className="h-4 w-4 text-yellow-600" />
+                            <CardTitle className="text-xs font-medium sm:text-sm">Featured</CardTitle>
+                            <Star className="h-3 w-3 text-yellow-600 sm:h-4 sm:w-4" />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold">{stats.featured}</div>
+                            <div className="text-xl font-bold sm:text-2xl">{stats.featured}</div>
                         </CardContent>
                     </Card>
 
-                    <Card>
+                    <Card className="transition-all duration-200 hover:shadow-md">
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Archived</CardTitle>
+                            <CardTitle className="text-xs font-medium sm:text-sm">Archived</CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold text-red-600">{stats.archived}</div>
+                            <div className="text-xl font-bold text-red-600 sm:text-2xl">{stats.archived}</div>
                         </CardContent>
                     </Card>
                 </div>
 
                 {/* Header */}
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                     <div>
-                        <h1 className="text-3xl font-bold tracking-tight">Product Management</h1>
-                        <p className="text-muted-foreground">Manage all products in the system</p>
+                        <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">Product Management</h1>
+                        <p className="mt-1 text-sm text-muted-foreground sm:text-base">Manage all products in the system</p>
                     </div>
                 </div>
 
                 {/* Filters */}
-                <Card>
-                    <CardContent className="pt-6">
-                        <div className="flex flex-col gap-4 md:flex-row md:items-end">
+                <Card className="transition-all duration-200 hover:shadow-md">
+                    <CardContent className="pt-4 sm:pt-6">
+                        <div className="flex flex-col gap-3 sm:gap-4 md:flex-row md:items-end">
                             <div className="flex-1">
-                                <label className="text-sm font-medium">Search</label>
+                                <label className="mb-1.5 block text-xs font-medium sm:text-sm">Search</label>
                                 <div className="relative">
-                                    <Search className="absolute top-3 left-3 h-4 w-4 text-muted-foreground" />
+                                    <Search className="absolute top-1/2 left-2.5 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                                     <Input
                                         placeholder="Search products..."
                                         value={searchTerm}
                                         onChange={(e: ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
-                                        className="pl-10"
+                                        className="pl-9"
                                         onKeyPress={(e: KeyboardEvent<HTMLInputElement>) => e.key === 'Enter' && handleSearch()}
                                     />
                                 </div>
                             </div>
 
-                            <div className="w-48">
-                                <label className="text-sm font-medium">Status</label>
+                            <div className="w-full md:w-48">
+                                <label className="mb-1.5 block text-xs font-medium sm:text-sm">Status</label>
                                 <Select value={selectedStatus} onValueChange={setSelectedStatus}>
                                     <SelectTrigger>
                                         <SelectValue placeholder="All Status" />
@@ -269,8 +269,8 @@ export default function ProductsIndex() {
                                 </Select>
                             </div>
 
-                            <div className="w-48">
-                                <label className="text-sm font-medium">Stock Status</label>
+                            <div className="w-full md:w-48">
+                                <label className="mb-1.5 block text-xs font-medium sm:text-sm">Stock Status</label>
                                 <Select value={selectedStockStatus} onValueChange={setSelectedStockStatus}>
                                     <SelectTrigger>
                                         <SelectValue placeholder="All Stock Status" />
@@ -287,11 +287,11 @@ export default function ProductsIndex() {
                             </div>
 
                             <div className="flex gap-2">
-                                <Button onClick={handleSearch}>
+                                <Button onClick={handleSearch} className="flex-1 sm:flex-initial">
                                     <Filter className="mr-2 h-4 w-4" />
                                     Apply
                                 </Button>
-                                <Button variant="outline" onClick={() => router.get('/admin/products')}>
+                                <Button variant="outline" onClick={() => router.get('/admin/products')} className="flex-1 sm:flex-initial">
                                     Clear
                                 </Button>
                             </div>
@@ -300,31 +300,46 @@ export default function ProductsIndex() {
                 </Card>
 
                 {/* Products Table */}
-                <Card>
+                <Card className="transition-all duration-200 hover:shadow-md">
                     <CardContent className="p-0">
-                        <div className="overflow-x-auto">
+                        {/* Desktop Table View */}
+                        <div className="hidden overflow-x-auto md:block">
                             <table className="w-full">
                                 <thead className="border-b bg-gray-50 dark:bg-gray-800">
                                     <tr>
-                                        <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">Product</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">Seller</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">Price</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">Stock</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">Status</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">Rating</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">Actions</th>
+                                        <th className="px-4 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase lg:px-6">
+                                            Product
+                                        </th>
+                                        <th className="px-4 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase lg:px-6">
+                                            Seller
+                                        </th>
+                                        <th className="px-4 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase lg:px-6">
+                                            Price
+                                        </th>
+                                        <th className="px-4 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase lg:px-6">
+                                            Stock
+                                        </th>
+                                        <th className="px-4 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase lg:px-6">
+                                            Status
+                                        </th>
+                                        <th className="px-4 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase lg:px-6">
+                                            Rating
+                                        </th>
+                                        <th className="px-4 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase lg:px-6">
+                                            Actions
+                                        </th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-gray-200 bg-white dark:divide-gray-700 dark:bg-gray-900">
                                     {products.data.map((product) => (
-                                        <tr key={product.id} className="hover:bg-gray-50 dark:hover:bg-gray-800">
-                                            <td className="px-6 py-4">
+                                        <tr key={product.id} className="transition-colors hover:bg-gray-50 dark:hover:bg-gray-800">
+                                            <td className="px-4 py-4 lg:px-6">
                                                 <div className="flex items-center gap-3">
                                                     {product.primary_image ? (
                                                         <img
                                                             src={product.primary_image}
                                                             alt={product.name}
-                                                            className="h-12 w-12 rounded-lg object-cover"
+                                                            className="h-12 w-12 shrink-0 rounded-lg object-cover"
                                                             onError={(e) => {
                                                                 const target = e.target as HTMLImageElement;
                                                                 target.style.display = 'none';
@@ -335,12 +350,12 @@ export default function ProductsIndex() {
                                                         />
                                                     ) : null}
                                                     {!product.primary_image && (
-                                                        <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-800">
+                                                        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-800">
                                                             <Package className="h-6 w-6 text-gray-400" />
                                                         </div>
                                                     )}
-                                                    <div>
-                                                        <div className="font-medium">{product.name}</div>
+                                                    <div className="min-w-0">
+                                                        <div className="truncate font-medium">{product.name}</div>
                                                         <div className="text-sm text-muted-foreground">SKU: {product.sku}</div>
                                                         {product.is_featured && (
                                                             <Badge variant="outline" className="mt-1 text-xs">
@@ -351,7 +366,7 @@ export default function ProductsIndex() {
                                                     </div>
                                                 </div>
                                             </td>
-                                            <td className="px-6 py-4">
+                                            <td className="px-4 py-4 lg:px-6">
                                                 {product.seller ? (
                                                     <div>
                                                         <div className="text-sm font-medium">{product.seller.name}</div>
@@ -361,10 +376,10 @@ export default function ProductsIndex() {
                                                     <span className="text-sm text-muted-foreground">N/A</span>
                                                 )}
                                             </td>
-                                            <td className="px-6 py-4">
+                                            <td className="px-4 py-4 lg:px-6">
                                                 <div className="font-medium">{product.formatted_price}</div>
                                             </td>
-                                            <td className="px-6 py-4">
+                                            <td className="px-4 py-4 lg:px-6">
                                                 <div className="flex flex-col gap-1">
                                                     <Badge className={getStockStatusColor(product.stock_status)}>
                                                         {stockStatuses[product.stock_status] || product.stock_status}
@@ -372,10 +387,10 @@ export default function ProductsIndex() {
                                                     <span className="text-xs text-muted-foreground">Qty: {product.quantity}</span>
                                                 </div>
                                             </td>
-                                            <td className="px-6 py-4">
+                                            <td className="px-4 py-4 lg:px-6">
                                                 <Badge className={getStatusColor(product.status)}>{statuses[product.status] || product.status}</Badge>
                                             </td>
-                                            <td className="px-6 py-4">
+                                            <td className="px-4 py-4 lg:px-6">
                                                 <div className="flex items-center gap-1">
                                                     <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
                                                     <span className="text-sm">
@@ -386,7 +401,7 @@ export default function ProductsIndex() {
                                                     </span>
                                                 </div>
                                             </td>
-                                            <td className="px-6 py-4">
+                                            <td className="px-4 py-4 lg:px-6">
                                                 <DropdownMenu>
                                                     <DropdownMenuTrigger asChild>
                                                         <Button variant="ghost" className="h-8 w-8 p-0">
@@ -439,11 +454,116 @@ export default function ProductsIndex() {
                             </table>
                         </div>
 
+                        {/* Mobile Card View */}
+                        <div className="space-y-3 p-4 md:hidden">
+                            {products.data.map((product) => (
+                                <div key={product.id} className="rounded-lg border bg-card p-4 shadow-sm transition-all hover:shadow-md">
+                                    <div className="flex items-start justify-between gap-3">
+                                        <div className="flex min-w-0 flex-1 items-start gap-3">
+                                            {product.primary_image ? (
+                                                <img
+                                                    src={product.primary_image}
+                                                    alt={product.name}
+                                                    className="h-16 w-16 shrink-0 rounded-lg object-cover"
+                                                    onError={(e) => {
+                                                        const target = e.target as HTMLImageElement;
+                                                        target.style.display = 'none';
+                                                    }}
+                                                />
+                                            ) : (
+                                                <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-800">
+                                                    <Package className="h-6 w-6 text-gray-400" />
+                                                </div>
+                                            )}
+                                            <div className="min-w-0 flex-1">
+                                                <div className="font-medium">{product.name}</div>
+                                                <div className="mt-0.5 text-sm text-muted-foreground">SKU: {product.sku}</div>
+                                                <div className="mt-2 flex flex-wrap items-center gap-2">
+                                                    {product.is_featured && (
+                                                        <Badge variant="outline" className="text-xs">
+                                                            <Star className="mr-1 h-3 w-3" />
+                                                            Featured
+                                                        </Badge>
+                                                    )}
+                                                    <Badge className={getStatusColor(product.status)}>
+                                                        {statuses[product.status] || product.status}
+                                                    </Badge>
+                                                    <Badge className={getStockStatusColor(product.stock_status)}>
+                                                        {stockStatuses[product.stock_status] || product.stock_status}
+                                                    </Badge>
+                                                </div>
+                                                <div className="mt-2 space-y-1 text-xs text-muted-foreground">
+                                                    <div>Price: {product.formatted_price}</div>
+                                                    <div>Stock: {product.quantity} units</div>
+                                                    {product.seller && <div>Seller: {product.seller.name}</div>}
+                                                    {product.category && <div>Category: {product.category.name}</div>}
+                                                    <div className="flex items-center gap-1">
+                                                        <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
+                                                        <span>
+                                                            {product.average_rating != null && typeof product.average_rating === 'number'
+                                                                ? product.average_rating.toFixed(1)
+                                                                : 'N/A'}{' '}
+                                                            ({product.review_count} reviews)
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <DropdownMenu>
+                                            <DropdownMenuTrigger asChild>
+                                                <Button variant="ghost" className="h-8 w-8 shrink-0 p-0">
+                                                    <MoreHorizontal className="h-4 w-4" />
+                                                </Button>
+                                            </DropdownMenuTrigger>
+                                            <DropdownMenuContent align="end">
+                                                <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                                                <DropdownMenuItem asChild>
+                                                    <Link href={`/admin/products/${product.id}`}>
+                                                        <Eye className="mr-2 h-4 w-4" />
+                                                        View Details
+                                                    </Link>
+                                                </DropdownMenuItem>
+                                                <DropdownMenuItem asChild>
+                                                    <Link href={`/admin/products/${product.id}/edit`}>
+                                                        <Edit className="mr-2 h-4 w-4" />
+                                                        Edit Product
+                                                    </Link>
+                                                </DropdownMenuItem>
+                                                <DropdownMenuSeparator />
+                                                <DropdownMenuItem onClick={() => handleToggleStatus(product.id)}>
+                                                    {product.status === 'active' ? (
+                                                        <>
+                                                            <TrendingDown className="mr-2 h-4 w-4" />
+                                                            Deactivate
+                                                        </>
+                                                    ) : (
+                                                        <>
+                                                            <TrendingUp className="mr-2 h-4 w-4" />
+                                                            Activate
+                                                        </>
+                                                    )}
+                                                </DropdownMenuItem>
+                                                <DropdownMenuItem onClick={() => handleToggleFeatured(product.id)}>
+                                                    <Star className="mr-2 h-4 w-4" />
+                                                    {product.is_featured ? 'Unfeature' : 'Feature'}
+                                                </DropdownMenuItem>
+                                                <DropdownMenuSeparator />
+                                                <DropdownMenuItem onClick={() => handleDelete(product.id)} className="text-red-600">
+                                                    <Trash2 className="mr-2 h-4 w-4" />
+                                                    Delete Product
+                                                </DropdownMenuItem>
+                                            </DropdownMenuContent>
+                                        </DropdownMenu>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+
                         {products.data.length === 0 && (
-                            <div className="flex flex-col items-center justify-center py-12">
+                            <div className="flex flex-col items-center justify-center px-4 py-12">
                                 <Package className="mb-4 h-12 w-12 text-muted-foreground" />
                                 <h3 className="text-lg font-medium">No products found</h3>
-                                <p className="text-muted-foreground">Try adjusting your filters</p>
+                                <p className="mt-1 text-center text-sm text-muted-foreground">Try adjusting your filters</p>
                             </div>
                         )}
                     </CardContent>
@@ -451,14 +571,14 @@ export default function ProductsIndex() {
 
                 {/* Pagination */}
                 {products.links && products.links.length > 3 && (
-                    <div className="flex items-center justify-center gap-2">
+                    <div className="flex flex-wrap items-center justify-center gap-2 px-4">
                         {products.links.map(
                             (link, index) =>
                                 link.url && (
                                     <Link
                                         key={index}
                                         href={link.url}
-                                        className={`rounded-md px-3 py-2 text-sm ${
+                                        className={`rounded-md px-2 py-1.5 text-xs transition-colors sm:px-3 sm:py-2 sm:text-sm ${
                                             link.active ? 'bg-primary text-primary-foreground' : 'border bg-background hover:bg-muted'
                                         }`}
                                         dangerouslySetInnerHTML={{ __html: link.label }}

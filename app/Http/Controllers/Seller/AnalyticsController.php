@@ -544,11 +544,209 @@ class AnalyticsController extends Controller
     }
 
     /**
-     * Export analytics data (future feature).
+     * Export analytics data (CSV/PDF).
      */
     public function export(Request $request)
     {
-        // TODO: Implement export functionality (CSV, PDF, etc.)
-        return response()->json(['message' => 'Export feature coming soon']);
+        $user = Auth::user();
+        $format = $request->input('format', 'csv'); // csv or pdf
+        $dateRange = $request->input('range', '30');
+        $endDate = Carbon::now();
+        $startDate = $this->getStartDate($dateRange, $endDate);
+
+        // Get analytics data
+        $overview = $this->getOverviewStats($user->id, $startDate, $endDate);
+        $revenueData = $this->getRevenueAnalytics($user->id, $startDate, $endDate, $dateRange);
+        $ordersData = $this->getOrdersAnalytics($user->id, $startDate, $endDate, $dateRange);
+        $productsData = $this->getProductsAnalytics($user->id, $startDate, $endDate);
+        $customersData = $this->getCustomersAnalytics($user->id, $startDate, $endDate);
+        $topProducts = $this->getTopProducts($user->id, $startDate, $endDate);
+        $recentOrders = $this->getRecentOrders($user->id, 50);
+
+        if ($format === 'pdf') {
+            return $this->exportPdf($user, $overview, $revenueData, $ordersData, $productsData, $customersData, $topProducts, $recentOrders, $startDate, $endDate);
+        }
+
+        return $this->exportCsv($user, $overview, $revenueData, $ordersData, $productsData, $customersData, $topProducts, $recentOrders, $startDate, $endDate);
+    }
+
+    /**
+     * Export analytics data as CSV.
+     */
+    private function exportCsv($user, $overview, $revenueData, $ordersData, $productsData, $customersData, $topProducts, $recentOrders, $startDate, $endDate)
+    {
+        $filename = 'seller_report_'.$user->id.'_'.now()->format('Y-m-d_His').'.csv';
+        $handle = fopen('php://temp', 'r+');
+
+        // Overview Section
+        fputcsv($handle, ['SELLER ANALYTICS REPORT']);
+        fputcsv($handle, ['Generated:', now()->format('Y-m-d H:i:s')]);
+        fputcsv($handle, ['Period:', $startDate->format('Y-m-d').' to '.$endDate->format('Y-m-d')]);
+        fputcsv($handle, []);
+
+        fputcsv($handle, ['OVERVIEW STATISTICS']);
+        fputcsv($handle, ['Metric', 'Value', 'Growth %']);
+        fputcsv($handle, ['Total Revenue', number_format($overview['total_revenue'], 2), $overview['revenue_growth'].'%']);
+        fputcsv($handle, ['Total Orders', $overview['total_orders'], $overview['orders_growth'].'%']);
+        fputcsv($handle, ['Total Customers', $overview['total_customers'], $overview['customers_growth'].'%']);
+        fputcsv($handle, ['Average Order Value', number_format($overview['avg_order_value'], 2), $overview['avg_order_value_growth'].'%']);
+        fputcsv($handle, ['Conversion Rate', $overview['conversion_rate'].'%', '']);
+        fputcsv($handle, []);
+
+        // Revenue Timeline
+        fputcsv($handle, ['REVENUE TIMELINE']);
+        fputcsv($handle, ['Period', 'Revenue', 'Order Count']);
+        foreach ($revenueData['timeline'] as $period) {
+            fputcsv($handle, [
+                $period['period'],
+                number_format($period['revenue'] ?? 0, 2),
+                $period['order_count'] ?? 0,
+            ]);
+        }
+        fputcsv($handle, []);
+
+        // Orders by Status
+        fputcsv($handle, ['ORDERS BY STATUS']);
+        fputcsv($handle, ['Status', 'Count']);
+        foreach ($ordersData['by_status'] as $status) {
+            fputcsv($handle, [$status['status'], $status['count']]);
+        }
+        fputcsv($handle, []);
+
+        // Top Products by Revenue
+        fputcsv($handle, ['TOP PRODUCTS BY REVENUE']);
+        fputcsv($handle, ['Product Name', 'Quantity Sold', 'Revenue']);
+        foreach ($topProducts['by_revenue'] as $product) {
+            fputcsv($handle, [
+                $product['product']['name'],
+                $product['quantity_sold'],
+                number_format($product['revenue'], 2),
+            ]);
+        }
+        fputcsv($handle, []);
+
+        // Top Customers
+        fputcsv($handle, ['TOP CUSTOMERS']);
+        fputcsv($handle, ['Customer Name', 'Email', 'Order Count', 'Total Spent', 'Avg Order Value']);
+        foreach ($customersData['top_customers'] as $customer) {
+            fputcsv($handle, [
+                $customer['customer']['name'],
+                $customer['customer']['email'],
+                $customer['order_count'],
+                number_format($customer['total_spent'], 2),
+                number_format($customer['avg_order_value'], 2),
+            ]);
+        }
+        fputcsv($handle, []);
+
+        // Recent Orders
+        fputcsv($handle, ['RECENT ORDERS']);
+        fputcsv($handle, ['Order Number', 'Customer', 'Total Amount', 'Status', 'Date']);
+        foreach ($recentOrders as $order) {
+            fputcsv($handle, [
+                $order['order_number'],
+                $order['customer']['name'],
+                number_format($order['total_amount'], 2),
+                $order['status_label'],
+                $order['created_at'],
+            ]);
+        }
+
+        rewind($handle);
+        $csv = stream_get_contents($handle);
+        fclose($handle);
+
+        return response($csv, 200, [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => 'attachment; filename="'.$filename.'"',
+        ]);
+    }
+
+    /**
+     * Export analytics data as PDF.
+     */
+    private function exportPdf($user, $overview, $revenueData, $ordersData, $productsData, $customersData, $topProducts, $recentOrders, $startDate, $endDate)
+    {
+        // For PDF, we'll return a simple HTML that can be printed to PDF
+        // In production, you might want to use a library like dompdf or snappy
+        $html = '<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Seller Analytics Report</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        h1 { color: #333; }
+        h2 { color: #666; margin-top: 30px; }
+        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+        .summary { background-color: #f9f9f9; padding: 15px; margin: 20px 0; }
+    </style>
+</head>
+<body>
+    <h1>Seller Analytics Report</h1>
+    <p><strong>Generated:</strong> '.now()->format('Y-m-d H:i:s').'</p>
+    <p><strong>Period:</strong> '.$startDate->format('Y-m-d').' to '.$endDate->format('Y-m-d').'</p>
+    
+    <div class="summary">
+        <h2>Overview Statistics</h2>
+        <table>
+            <tr><th>Metric</th><th>Value</th><th>Growth %</th></tr>
+            <tr><td>Total Revenue</td><td>₱'.number_format($overview['total_revenue'], 2).'</td><td>'.$overview['revenue_growth'].'%</td></tr>
+            <tr><td>Total Orders</td><td>'.$overview['total_orders'].'</td><td>'.$overview['orders_growth'].'%</td></tr>
+            <tr><td>Total Customers</td><td>'.$overview['total_customers'].'</td><td>'.$overview['customers_growth'].'%</td></tr>
+            <tr><td>Average Order Value</td><td>₱'.number_format($overview['avg_order_value'], 2).'</td><td>'.$overview['avg_order_value_growth'].'%</td></tr>
+            <tr><td>Conversion Rate</td><td>'.$overview['conversion_rate'].'%</td><td>-</td></tr>
+        </table>
+    </div>
+
+    <h2>Top Products by Revenue</h2>
+    <table>
+        <tr><th>Product Name</th><th>Quantity Sold</th><th>Revenue</th></tr>';
+        foreach ($topProducts['by_revenue'] as $product) {
+            $html .= '<tr>
+                <td>'.htmlspecialchars($product['product']['name']).'</td>
+                <td>'.$product['quantity_sold'].'</td>
+                <td>₱'.number_format($product['revenue'], 2).'</td>
+            </tr>';
+        }
+        $html .= '</table>
+
+    <h2>Top Customers</h2>
+    <table>
+        <tr><th>Customer Name</th><th>Email</th><th>Order Count</th><th>Total Spent</th></tr>';
+        foreach (array_slice($customersData['top_customers'], 0, 10) as $customer) {
+            $html .= '<tr>
+                <td>'.htmlspecialchars($customer['customer']['name']).'</td>
+                <td>'.htmlspecialchars($customer['customer']['email']).'</td>
+                <td>'.$customer['order_count'].'</td>
+                <td>₱'.number_format($customer['total_spent'], 2).'</td>
+            </tr>';
+        }
+        $html .= '</table>
+
+    <h2>Recent Orders</h2>
+    <table>
+        <tr><th>Order Number</th><th>Customer</th><th>Total Amount</th><th>Status</th><th>Date</th></tr>';
+        foreach (array_slice($recentOrders, 0, 20) as $order) {
+            $html .= '<tr>
+                <td>'.$order['order_number'].'</td>
+                <td>'.htmlspecialchars($order['customer']['name']).'</td>
+                <td>₱'.number_format($order['total_amount'], 2).'</td>
+                <td>'.$order['status_label'].'</td>
+                <td>'.$order['created_at'].'</td>
+            </tr>';
+        }
+        $html .= '</table>
+</body>
+</html>';
+
+        $filename = 'seller_report_'.$user->id.'_'.now()->format('Y-m-d_His').'.html';
+
+        return response($html, 200, [
+            'Content-Type' => 'text/html',
+            'Content-Disposition' => 'attachment; filename="'.$filename.'"',
+        ]);
     }
 }

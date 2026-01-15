@@ -3,14 +3,22 @@ import { Clock, Mail, MapPin, Phone, Send } from 'lucide-react';
 import React, { useState } from 'react';
 import BuyerLayout from '../../layouts/BuyerLayout';
 
+interface PageContent {
+    section: string;
+    title: string | null;
+    content: string | null;
+    metadata: Record<string, unknown> | null;
+}
+
 interface ContactProps {
     flash?: {
         success?: string;
         error?: string;
     };
+    pageContents?: Record<string, PageContent>;
 }
 
-export default function Contact({ flash }: ContactProps = {}) {
+export default function Contact({ flash, pageContents = {} }: ContactProps = {}) {
     const [formData, setFormData] = useState({
         name: '',
         email: '',
@@ -49,6 +57,37 @@ export default function Contact({ flash }: ContactProps = {}) {
         });
     };
 
+    // Get dynamic content
+    const contactInfoContent = pageContents.contact_info;
+    const faqContent = pageContents.faq;
+
+    // Extract contact information from metadata
+    const contactMetadata = contactInfoContent?.metadata as {
+        email?: { primary?: string; secondary?: string };
+        phone?: { primary?: string; secondary?: string };
+        address?: { line1?: string; line2?: string; line3?: string };
+        business_hours?: { monday_friday?: string; saturday?: string; sunday?: string };
+    } | null;
+
+    // Default values
+    const defaultEmail = { primary: 'hello@supportlocal.com', secondary: 'support@supportlocal.com' };
+    const defaultPhone = { primary: '(555) 123-4567', secondary: 'Toll-free: (800) 123-4567' };
+    const defaultAddress = {
+        line1: '123 Support Local Street',
+        line2: 'Creative District',
+        line3: 'Metro Manila, Philippines 1000',
+    };
+    const defaultHours = {
+        monday_friday: 'Monday - Friday: 9:00 AM - 6:00 PM',
+        saturday: 'Saturday: 10:00 AM - 4:00 PM',
+        sunday: 'Sunday: Closed',
+    };
+
+    const email = contactMetadata?.email || defaultEmail;
+    const phone = contactMetadata?.phone || defaultPhone;
+    const address = contactMetadata?.address || defaultAddress;
+    const businessHours = contactMetadata?.business_hours || defaultHours;
+
     return (
         <BuyerLayout>
             <Head title="Contact Us" />
@@ -57,35 +96,37 @@ export default function Contact({ flash }: ContactProps = {}) {
                 <div className="grid grid-cols-1 gap-12 lg:grid-cols-2">
                     {/* Contact Information */}
                     <div>
-                        <h2 className="mb-6 text-3xl font-bold text-gray-900">Get in Touch</h2>
-                        <p className="mb-8 text-lg text-gray-600">
-                            We'd love to hear from you! Whether you have questions about our artisans, need help with an order, or want to join our
-                            marketplace, we're here to help.
-                        </p>
+                        {contactInfoContent?.title && <h2 className="mb-6 text-3xl font-bold text-gray-900">{contactInfoContent.title}</h2>}
+                        {contactInfoContent?.content && (
+                            <div className="mb-8 text-lg text-gray-600" dangerouslySetInnerHTML={{ __html: contactInfoContent.content }} />
+                        )}
 
                         <div className="space-y-6">
+                            {/* Email */}
                             <div className="flex items-start">
                                 <div className="flex-shrink-0">
                                     <Mail className="mt-1 h-6 w-6 text-primary" />
                                 </div>
                                 <div className="ml-4">
                                     <h3 className="text-lg font-semibold text-gray-900">Email</h3>
-                                    <p className="text-gray-600">hello@supportlocal.com</p>
-                                    <p className="text-gray-600">support@supportlocal.com</p>
+                                    {email.primary && <p className="text-gray-600">{email.primary}</p>}
+                                    {email.secondary && <p className="text-gray-600">{email.secondary}</p>}
                                 </div>
                             </div>
 
+                            {/* Phone */}
                             <div className="flex items-start">
                                 <div className="flex-shrink-0">
                                     <Phone className="mt-1 h-6 w-6 text-primary" />
                                 </div>
                                 <div className="ml-4">
                                     <h3 className="text-lg font-semibold text-gray-900">Phone</h3>
-                                    <p className="text-gray-600">(555) 123-4567</p>
-                                    <p className="text-gray-600">Toll-free: (800) 123-4567</p>
+                                    {phone.primary && <p className="text-gray-600">{phone.primary}</p>}
+                                    {phone.secondary && <p className="text-gray-600">{phone.secondary}</p>}
                                 </div>
                             </div>
 
+                            {/* Address */}
                             <div className="flex items-start">
                                 <div className="flex-shrink-0">
                                     <MapPin className="mt-1 h-6 w-6 text-primary" />
@@ -93,15 +134,24 @@ export default function Contact({ flash }: ContactProps = {}) {
                                 <div className="ml-4">
                                     <h3 className="text-lg font-semibold text-gray-900">Address</h3>
                                     <p className="text-gray-600">
-                                        123 Artisan Street
-                                        <br />
-                                        Creative District
-                                        <br />
-                                        Portland, OR 97201
+                                        {address.line1 && (
+                                            <>
+                                                {address.line1}
+                                                {address.line2 && <br />}
+                                            </>
+                                        )}
+                                        {address.line2 && (
+                                            <>
+                                                {address.line2}
+                                                {address.line3 && <br />}
+                                            </>
+                                        )}
+                                        {address.line3}
                                     </p>
                                 </div>
                             </div>
 
+                            {/* Business Hours */}
                             <div className="flex items-start">
                                 <div className="flex-shrink-0">
                                     <Clock className="mt-1 h-6 w-6 text-primary" />
@@ -109,41 +159,23 @@ export default function Contact({ flash }: ContactProps = {}) {
                                 <div className="ml-4">
                                     <h3 className="text-lg font-semibold text-gray-900">Business Hours</h3>
                                     <div className="text-gray-600">
-                                        <p>Monday - Friday: 9:00 AM - 6:00 PM</p>
-                                        <p>Saturday: 10:00 AM - 4:00 PM</p>
-                                        <p>Sunday: Closed</p>
+                                        {businessHours.monday_friday && <p>{businessHours.monday_friday}</p>}
+                                        {businessHours.saturday && <p>{businessHours.saturday}</p>}
+                                        {businessHours.sunday && <p>{businessHours.sunday}</p>}
                                     </div>
                                 </div>
                             </div>
                         </div>
 
                         {/* FAQ Section */}
-                        <div className="mt-12">
-                            <h3 className="mb-6 text-2xl font-bold text-gray-900">Frequently Asked Questions</h3>
-                            <div className="space-y-4">
-                                <div>
-                                    <h4 className="mb-2 font-semibold text-gray-900">How can I track my order?</h4>
-                                    <p className="text-gray-600">
-                                        You can track your orders by visiting the "My Orders" page in your dashboard. You'll receive email
-                                        notifications for any status updates on your purchases.
-                                    </p>
-                                </div>
-                                <div>
-                                    <h4 className="mb-2 font-semibold text-gray-900">What is your return policy?</h4>
-                                    <p className="text-gray-600">
-                                        We offer a 30-day return policy for most items. Since our products are handmade, please contact the seller
-                                        directly if you have any concerns about your purchase.
-                                    </p>
-                                </div>
-                                <div>
-                                    <h4 className="mb-2 font-semibold text-gray-900">How can I become a seller?</h4>
-                                    <p className="text-gray-600">
-                                        If you're an artisan interested in selling on our platform, you can apply through the "Become a Seller" option
-                                        in your dashboard. We review all applications carefully.
-                                    </p>
-                                </div>
+                        {faqContent && (
+                            <div className="mt-12">
+                                {faqContent.title && <h3 className="mb-6 text-2xl font-bold text-gray-900">{faqContent.title}</h3>}
+                                {faqContent.content && (
+                                    <div className="space-y-4 text-gray-600" dangerouslySetInnerHTML={{ __html: faqContent.content }} />
+                                )}
                             </div>
-                        </div>
+                        )}
                     </div>
 
                     {/* Contact Form */}
