@@ -49,7 +49,7 @@ export default function NotificationsDropdown({ userRole, initialUnreadCount = 0
         }
     };
 
-    const getApiRoute = () => {
+    const getApiRoute = useCallback(() => {
         switch (userRole) {
             case 'seller':
                 return '/seller/notifications/recent';
@@ -60,7 +60,7 @@ export default function NotificationsDropdown({ userRole, initialUnreadCount = 0
             default:
                 return '/notifications/recent';
         }
-    };
+    }, [userRole]);
 
     const loadNotifications = useCallback(async () => {
         setIsLoading(true);
@@ -78,7 +78,7 @@ export default function NotificationsDropdown({ userRole, initialUnreadCount = 0
         } finally {
             setIsLoading(false);
         }
-    }, [userRole]);
+    }, [getApiRoute]);
 
     // Load notifications when dropdown opens
     useEffect(() => {

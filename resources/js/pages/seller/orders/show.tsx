@@ -337,26 +337,26 @@ export default function OrderShow({ order }: OrderShowProps) {
         <AppLayout>
             <Head title={`Order #${order.id}`} />
 
-            <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50">
-                <div className="mx-auto max-w-5xl px-4 py-10 sm:px-6 lg:px-8">
+            <div className="min-h-screen overflow-x-hidden bg-gradient-to-br from-slate-50 via-white to-blue-50">
+                <div className="mx-auto w-full max-w-6xl px-3 py-4 sm:px-4 sm:py-6 md:px-6 md:py-8 lg:px-8 lg:py-10">
                     {/* Back Button */}
-                    <div className="mb-8">
+                    <div className="mb-4 sm:mb-6 md:mb-8">
                         <button
                             onClick={() => router.visit('/seller/orders')}
-                            className="group inline-flex items-center gap-2 rounded-xl bg-white px-5 py-2.5 text-sm font-semibold text-gray-700 shadow-sm ring-1 ring-gray-200 transition-all hover:bg-gray-50 hover:shadow-md hover:ring-gray-300"
+                            className="group inline-flex items-center gap-1.5 rounded-xl bg-white px-3 py-1.5 text-xs font-semibold text-gray-700 shadow-sm ring-1 ring-gray-200 transition-all hover:bg-gray-50 hover:shadow-md hover:ring-gray-300 sm:gap-2 sm:px-4 sm:py-2 sm:text-sm"
                         >
-                            <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-0.5" />
+                            <ArrowLeft className="h-3.5 w-3.5 transition-transform group-hover:-translate-x-0.5 sm:h-4 sm:w-4" />
                             Back to Orders
                         </button>
                     </div>
 
                     {/* Order Header */}
-                    <div className="mb-8 overflow-hidden rounded-2xl bg-white shadow-xl ring-1 shadow-gray-100 ring-gray-100">
-                        <div className="bg-gradient-to-r from-slate-50 to-blue-50/50 p-8">
-                            <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
-                                <div className="flex items-start gap-5">
+                    <div className="mb-6 overflow-hidden rounded-xl bg-white shadow-xl ring-1 shadow-gray-100 ring-gray-100 sm:mb-8 sm:rounded-2xl">
+                        <div className="bg-gradient-to-r from-slate-50 to-blue-50/50 p-4 sm:p-6 md:p-8">
+                            <div className="flex flex-col gap-4 sm:gap-6 lg:flex-row lg:items-center lg:justify-between">
+                                <div className="flex items-start gap-3 sm:gap-4 md:gap-5">
                                     <div
-                                        className={`flex h-16 w-16 items-center justify-center rounded-2xl shadow-lg ${
+                                        className={`flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl shadow-lg sm:h-14 sm:w-14 sm:rounded-2xl md:h-16 md:w-16 ${
                                             order.status === 'pending'
                                                 ? 'bg-gradient-to-br from-amber-400 to-yellow-500'
                                                 : order.status === 'confirmed'
@@ -370,27 +370,27 @@ export default function OrderShow({ order }: OrderShowProps) {
                                                         : 'bg-gradient-to-br from-red-500 to-rose-600'
                                         }`}
                                     >
-                                        {order.status === 'pending' && <Clock className="h-8 w-8 text-white" />}
-                                        {order.status === 'confirmed' && <Truck className="h-8 w-8 text-white" />}
-                                        {order.status === 'shipped' && <Truck className="h-8 w-8 text-white" />}
-                                        {order.status === 'delivered' && <CheckCircle className="h-8 w-8 text-white" />}
-                                        {order.status === 'completed' && <CheckCircle className="h-8 w-8 text-white" />}
-                                        {order.status === 'cancelled' && <XCircle className="h-8 w-8 text-white" />}
+                                        {order.status === 'pending' && <Clock className="h-6 w-6 text-white sm:h-7 sm:w-7 md:h-8 md:w-8" />}
+                                        {order.status === 'confirmed' && <Truck className="h-6 w-6 text-white sm:h-7 sm:w-7 md:h-8 md:w-8" />}
+                                        {order.status === 'shipped' && <Truck className="h-6 w-6 text-white sm:h-7 sm:w-7 md:h-8 md:w-8" />}
+                                        {order.status === 'delivered' && <CheckCircle className="h-6 w-6 text-white sm:h-7 sm:w-7 md:h-8 md:w-8" />}
+                                        {order.status === 'completed' && <CheckCircle className="h-6 w-6 text-white sm:h-7 sm:w-7 md:h-8 md:w-8" />}
+                                        {order.status === 'cancelled' && <XCircle className="h-6 w-6 text-white sm:h-7 sm:w-7 md:h-8 md:w-8" />}
                                     </div>
-                                    <div>
-                                        <div className="flex flex-wrap items-center gap-3">
-                                            <h1 className="bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-3xl font-bold text-transparent">
+                                    <div className="min-w-0 flex-1">
+                                        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+                                            <h1 className="bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-xl font-bold text-transparent sm:text-2xl md:text-3xl">
                                                 Order #{order.id}
                                             </h1>
                                             <span
-                                                className={`rounded-full px-4 py-1.5 text-sm font-bold tracking-wide uppercase shadow-sm ${getStatusColor(order.status)}`}
+                                                className={`rounded-full px-2.5 py-1 text-xs font-bold tracking-wide uppercase shadow-sm sm:px-3 sm:py-1.5 sm:text-sm ${getStatusColor(order.status)}`}
                                             >
                                                 {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
                                             </span>
                                         </div>
-                                        <div className="mt-2 flex flex-wrap items-center gap-4 text-sm text-gray-500">
-                                            <span className="flex items-center gap-1.5">
-                                                <Calendar className="h-4 w-4" />
+                                        <div className="mt-1.5 flex flex-wrap items-center gap-2 text-xs text-gray-500 sm:mt-2 sm:gap-3 sm:text-sm">
+                                            <span className="flex items-center gap-1">
+                                                <Calendar className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                                                 {new Date(order.created_at).toLocaleDateString('en-US', {
                                                     year: 'numeric',
                                                     month: 'long',
@@ -400,7 +400,7 @@ export default function OrderShow({ order }: OrderShowProps) {
                                                 })}
                                             </span>
                                             {order.updated_at !== order.created_at && (
-                                                <span className="flex items-center gap-1.5 text-gray-400">
+                                                <span className="flex items-center gap-1 text-gray-400">
                                                     Updated:{' '}
                                                     {new Date(order.updated_at).toLocaleDateString('en-US', {
                                                         month: 'short',
@@ -413,19 +413,19 @@ export default function OrderShow({ order }: OrderShowProps) {
                                         </div>
                                     </div>
                                 </div>
-                                <div className="flex items-center gap-4 rounded-2xl bg-white p-5 shadow-lg ring-1 ring-gray-100">
-                                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-blue-100 to-indigo-100">
-                                        <CreditCard className="h-6 w-6 text-blue-600" />
+                                <div className="flex items-center gap-3 rounded-xl bg-white p-3 shadow-lg ring-1 ring-gray-100 sm:gap-4 sm:rounded-2xl sm:p-4 md:p-5">
+                                    <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-blue-100 to-indigo-100 sm:h-12 sm:w-12">
+                                        <CreditCard className="h-5 w-5 text-blue-600 sm:h-6 sm:w-6" />
                                     </div>
-                                    <div>
-                                        <p className="text-3xl font-bold text-gray-900">{formatPeso(order.total_amount)}</p>
-                                        <p className="text-sm font-medium tracking-wide text-gray-500 uppercase">
+                                    <div className="min-w-0 flex-1">
+                                        <p className="text-xl font-bold text-gray-900 sm:text-2xl md:text-3xl">{formatPeso(order.total_amount)}</p>
+                                        <p className="text-xs font-medium tracking-wide text-gray-500 uppercase sm:text-sm">
                                             {order.payment_method} •{' '}
                                             <span className={order.payment_status === 'paid' ? 'text-green-600' : 'text-amber-600'}>
                                                 {order.payment_status}
                                             </span>
                                         </p>
-                                        <p className="mt-1 text-xs text-gray-400">
+                                        <p className="mt-0.5 text-[10px] text-gray-400 sm:mt-1 sm:text-xs">
                                             {formatPeso(order.subtotal)} + {formatPeso(order.shipping_fee || 0)} shipping
                                         </p>
                                     </div>
@@ -435,99 +435,99 @@ export default function OrderShow({ order }: OrderShowProps) {
 
                         {/* Rejection Reason */}
                         {order.status === 'cancelled' && order.rejection_reason && (
-                            <div className="border-t border-red-100 bg-gradient-to-r from-red-50 to-rose-50 p-6">
-                                <div className="flex items-start gap-4">
-                                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-red-100">
-                                        <AlertCircle className="h-5 w-5 text-red-600" />
+                            <div className="border-t border-red-100 bg-gradient-to-r from-red-50 to-rose-50 p-4 sm:p-6">
+                                <div className="flex items-start gap-3 sm:gap-4">
+                                    <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-xl bg-red-100 sm:h-10 sm:w-10">
+                                        <AlertCircle className="h-4 w-4 text-red-600 sm:h-5 sm:w-5" />
                                     </div>
-                                    <div>
-                                        <h4 className="font-semibold text-red-800">Cancellation Reason</h4>
-                                        <p className="mt-1 text-red-700">{order.rejection_reason}</p>
+                                    <div className="min-w-0 flex-1">
+                                        <h4 className="text-sm font-semibold text-red-800 sm:text-base">Cancellation Reason</h4>
+                                        <p className="mt-1 text-xs text-red-700 sm:text-sm">{order.rejection_reason}</p>
                                     </div>
                                 </div>
                             </div>
                         )}
                     </div>
 
-                    <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+                    <div className="grid grid-cols-1 gap-4 sm:gap-6 lg:grid-cols-2">
                         {/* Customer Information */}
-                        <div className="overflow-hidden rounded-2xl bg-white shadow-lg ring-1 shadow-gray-100 ring-gray-100">
-                            <div className="border-b border-gray-100 bg-gradient-to-r from-blue-50 to-indigo-50 px-6 py-4">
-                                <h2 className="flex items-center gap-3 text-lg font-bold text-gray-900">
-                                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 shadow-md">
-                                        <User className="h-5 w-5 text-white" />
+                        <div className="overflow-hidden rounded-xl bg-white shadow-lg ring-1 shadow-gray-100 ring-gray-100 sm:rounded-2xl">
+                            <div className="border-b border-gray-100 bg-gradient-to-r from-blue-50 to-indigo-50 px-4 py-3 sm:px-6 sm:py-4">
+                                <h2 className="flex items-center gap-2 text-base font-bold text-gray-900 sm:gap-3 sm:text-lg">
+                                    <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 shadow-md sm:h-10 sm:w-10">
+                                        <User className="h-4 w-4 text-white sm:h-5 sm:w-5" />
                                     </div>
                                     Customer Information
                                 </h2>
                             </div>
-                            <div className="space-y-4 p-6">
-                                <div className="flex items-start gap-4 rounded-xl bg-gray-50 p-4">
-                                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-white shadow-sm">
-                                        <User className="h-5 w-5 text-blue-600" />
-                                    </div>
-                                    <div>
-                                        <p className="text-xs font-medium tracking-wide text-gray-500 uppercase">Full Name</p>
-                                        <p className="mt-0.5 font-semibold text-gray-900">{order.buyer.name}</p>
-                                    </div>
-                                </div>
-                                <div className="flex items-start gap-4 rounded-xl bg-gray-50 p-4">
-                                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-white shadow-sm">
-                                        <Mail className="h-5 w-5 text-blue-600" />
+                            <div className="space-y-3 p-4 sm:space-y-4 sm:p-6">
+                                <div className="flex items-start gap-3 rounded-xl bg-gray-50 p-3 sm:gap-4 sm:p-4">
+                                    <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-white shadow-sm sm:h-10 sm:w-10">
+                                        <User className="h-4 w-4 text-blue-600 sm:h-5 sm:w-5" />
                                     </div>
                                     <div className="min-w-0 flex-1">
-                                        <p className="text-xs font-medium tracking-wide text-gray-500 uppercase">Email Address</p>
-                                        <p className="mt-0.5 truncate font-semibold text-gray-900">{order.buyer.email}</p>
+                                        <p className="text-[10px] font-medium tracking-wide text-gray-500 uppercase sm:text-xs">Full Name</p>
+                                        <p className="mt-0.5 text-sm font-semibold text-gray-900 sm:text-base">{order.buyer.name}</p>
                                     </div>
                                 </div>
-                                <div className="flex items-start gap-4 rounded-xl bg-gray-50 p-4">
-                                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-white shadow-sm">
-                                        <Phone className="h-5 w-5 text-blue-600" />
+                                <div className="flex items-start gap-3 rounded-xl bg-gray-50 p-3 sm:gap-4 sm:p-4">
+                                    <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-white shadow-sm sm:h-10 sm:w-10">
+                                        <Mail className="h-4 w-4 text-blue-600 sm:h-5 sm:w-5" />
                                     </div>
-                                    <div>
-                                        <p className="text-xs font-medium tracking-wide text-gray-500 uppercase">Phone Number</p>
-                                        <p className="mt-0.5 font-semibold text-gray-900">{order.delivery_phone}</p>
+                                    <div className="min-w-0 flex-1">
+                                        <p className="text-[10px] font-medium tracking-wide text-gray-500 uppercase sm:text-xs">Email Address</p>
+                                        <p className="mt-0.5 truncate text-sm font-semibold text-gray-900 sm:text-base">{order.buyer.email}</p>
+                                    </div>
+                                </div>
+                                <div className="flex items-start gap-3 rounded-xl bg-gray-50 p-3 sm:gap-4 sm:p-4">
+                                    <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-white shadow-sm sm:h-10 sm:w-10">
+                                        <Phone className="h-4 w-4 text-blue-600 sm:h-5 sm:w-5" />
+                                    </div>
+                                    <div className="min-w-0 flex-1">
+                                        <p className="text-[10px] font-medium tracking-wide text-gray-500 uppercase sm:text-xs">Phone Number</p>
+                                        <p className="mt-0.5 text-sm font-semibold text-gray-900 sm:text-base">{order.delivery_phone}</p>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
                         {/* Delivery Information */}
-                        <div className="overflow-hidden rounded-2xl bg-white shadow-lg ring-1 shadow-gray-100 ring-gray-100">
-                            <div className="border-b border-gray-100 bg-gradient-to-r from-emerald-50 to-green-50 px-6 py-4">
-                                <h2 className="flex items-center gap-3 text-lg font-bold text-gray-900">
-                                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-green-600 shadow-md">
-                                        <Truck className="h-5 w-5 text-white" />
+                        <div className="overflow-hidden rounded-xl bg-white shadow-lg ring-1 shadow-gray-100 ring-gray-100 sm:rounded-2xl">
+                            <div className="border-b border-gray-100 bg-gradient-to-r from-emerald-50 to-green-50 px-4 py-3 sm:px-6 sm:py-4">
+                                <h2 className="flex items-center gap-2 text-base font-bold text-gray-900 sm:gap-3 sm:text-lg">
+                                    <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-green-600 shadow-md sm:h-10 sm:w-10">
+                                        <Truck className="h-4 w-4 text-white sm:h-5 sm:w-5" />
                                     </div>
                                     Delivery Information
                                 </h2>
                             </div>
-                            <div className="space-y-4 p-6">
-                                <div className="flex items-start gap-4 rounded-xl bg-gray-50 p-4">
-                                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-white shadow-sm">
-                                        <MapPin className="h-5 w-5 text-emerald-600" />
+                            <div className="space-y-3 p-4 sm:space-y-4 sm:p-6">
+                                <div className="flex items-start gap-3 rounded-xl bg-gray-50 p-3 sm:gap-4 sm:p-4">
+                                    <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-white shadow-sm sm:h-10 sm:w-10">
+                                        <MapPin className="h-4 w-4 text-emerald-600 sm:h-5 sm:w-5" />
                                     </div>
-                                    <div>
-                                        <p className="text-xs font-medium tracking-wide text-gray-500 uppercase">Delivery Address</p>
-                                        <p className="mt-0.5 font-semibold text-gray-900">{order.delivery_address}</p>
+                                    <div className="min-w-0 flex-1">
+                                        <p className="text-[10px] font-medium tracking-wide text-gray-500 uppercase sm:text-xs">Delivery Address</p>
+                                        <p className="mt-0.5 break-words text-sm font-semibold text-gray-900 sm:text-base">{order.delivery_address}</p>
                                     </div>
                                 </div>
-                                <div className="flex items-start gap-4 rounded-xl bg-gray-50 p-4">
-                                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-white shadow-sm">
-                                        <Phone className="h-5 w-5 text-emerald-600" />
+                                <div className="flex items-start gap-3 rounded-xl bg-gray-50 p-3 sm:gap-4 sm:p-4">
+                                    <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-white shadow-sm sm:h-10 sm:w-10">
+                                        <Phone className="h-4 w-4 text-emerald-600 sm:h-5 sm:w-5" />
                                     </div>
-                                    <div>
-                                        <p className="text-xs font-medium tracking-wide text-gray-500 uppercase">Contact Number</p>
-                                        <p className="mt-0.5 font-semibold text-gray-900">{order.delivery_phone}</p>
+                                    <div className="min-w-0 flex-1">
+                                        <p className="text-[10px] font-medium tracking-wide text-gray-500 uppercase sm:text-xs">Contact Number</p>
+                                        <p className="mt-0.5 text-sm font-semibold text-gray-900 sm:text-base">{order.delivery_phone}</p>
                                     </div>
                                 </div>
                                 {order.delivery_notes && (
-                                    <div className="flex items-start gap-4 rounded-xl bg-amber-50 p-4 ring-1 ring-amber-100">
-                                        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-white shadow-sm">
-                                            <FileText className="h-5 w-5 text-amber-600" />
+                                    <div className="flex items-start gap-3 rounded-xl bg-amber-50 p-3 ring-1 ring-amber-100 sm:gap-4 sm:p-4">
+                                        <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-white shadow-sm sm:h-10 sm:w-10">
+                                            <FileText className="h-4 w-4 text-amber-600 sm:h-5 sm:w-5" />
                                         </div>
-                                        <div>
-                                            <p className="text-xs font-medium tracking-wide text-amber-700 uppercase">Special Instructions</p>
-                                            <p className="mt-0.5 font-semibold text-amber-900">{order.delivery_notes}</p>
+                                        <div className="min-w-0 flex-1">
+                                            <p className="text-[10px] font-medium tracking-wide text-amber-700 uppercase sm:text-xs">Special Instructions</p>
+                                            <p className="mt-0.5 break-words text-sm font-semibold text-amber-900 sm:text-base">{order.delivery_notes}</p>
                                         </div>
                                     </div>
                                 )}

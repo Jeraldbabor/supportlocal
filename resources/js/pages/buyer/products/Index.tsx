@@ -165,7 +165,6 @@ export default function Index({
         if (product.stock_status === 'out_of_stock' || product.stock_quantity === 0) return;
 
         setModalProduct(product);
-        setModalMode('cart');
         setIsModalOpen(true);
     };
 
