@@ -2,7 +2,7 @@ import { NotificationsProvider, useNotifications } from '@/contexts/Notification
 import BuyerLayout from '@/layouts/BuyerLayout';
 import { Head, router, usePage } from '@inertiajs/react';
 import { Bell, Check, Clock, Filter, Trash2, X } from 'lucide-react';
-import { useState, useMemo } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 interface Notification {
@@ -42,9 +42,9 @@ function NotificationsContent({ notifications }: NotificationsProps) {
     const [filter, setFilter] = useState<'all' | 'unread' | 'read'>('all');
 
     // Check if notification is read (either from server or locally marked)
-    const isRead = (notification: Notification) => {
+    const isRead = useCallback((notification: Notification) => {
         return notification.read_at !== null || localReadIds.has(notification.id);
-    };
+    }, [localReadIds]);
 
     const handleMarkAsRead = (notificationId: string) => {
         // Immediately update local state for instant feedback
@@ -136,7 +136,7 @@ function NotificationsContent({ notifications }: NotificationsProps) {
             default:
                 return notifications.data;
         }
-    }, [notifications.data, filter, localReadIds]);
+    }, [notifications.data, filter, isRead]);
 
     return (
         <BuyerLayout>

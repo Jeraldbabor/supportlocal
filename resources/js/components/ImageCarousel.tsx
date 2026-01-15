@@ -96,7 +96,7 @@ export default function ImageCarousel({ products, title, autoPlay = true, interv
                         transform: `translateX(-${currentIndex * 100}%)`,
                     }}
                 >
-                    {products.map((product, index) => (
+                    {products.map((product) => (
                         <div key={product.id} className="relative h-full w-full flex-shrink-0">
                             <div
                                 className="h-full w-full cursor-pointer bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 bg-cover bg-center transition-transform duration-[8000ms] ease-out group-hover:scale-110"

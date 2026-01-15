@@ -141,7 +141,7 @@ export default function BuyerProfile({ user }: BuyerProfileProps) {
             setData('delivery_city', '');
             setData('delivery_barangay', '');
         }
-    }, [data.delivery_province]);
+    }, [data.delivery_province, data.delivery_city, setData]);
 
     // Update barangays when city changes
     useEffect(() => {
@@ -157,7 +157,7 @@ export default function BuyerProfile({ user }: BuyerProfileProps) {
             setBarangays([]);
             setData('delivery_barangay', '');
         }
-    }, [data.delivery_city, data.delivery_province]);
+    }, [data.delivery_city, data.delivery_province, data.delivery_barangay, setData]);
 
     // Initialize cities and barangays on mount
     useEffect(() => {
@@ -169,7 +169,7 @@ export default function BuyerProfile({ user }: BuyerProfileProps) {
             const availableBarangays = getBarangaysByCity(user.delivery_province, user.delivery_city);
             setBarangays(availableBarangays);
         }
-    }, []);
+    }, [user.delivery_province, user.delivery_city]);
 
     // Handle flash messages
     useEffect(() => {

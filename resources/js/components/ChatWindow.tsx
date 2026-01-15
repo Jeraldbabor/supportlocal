@@ -4,7 +4,7 @@ import { Input } from '@/components/ui/input';
 import { router } from '@inertiajs/react';
 import { formatDistanceToNow } from 'date-fns';
 import { Image, Send, Trash2, X } from 'lucide-react';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import Swal from 'sweetalert2';
 
 interface Message {
@@ -59,24 +59,20 @@ export default function ChatWindow({ conversationId, currentUserId }: ChatWindow
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     };
 
-    useEffect(() => {
-        if (conversationId) {
-            loadMessages();
-            subscribeToChannel();
+    const markAsRead = useCallback(async () => {
+        try {
+            await fetch(`/chat/conversation/${conversationId}/read`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
+                },
+            });
+        } catch (error) {
+            console.error('Failed to mark as read:', error);
         }
-
-        return () => {
-            if (conversationId && window.Echo) {
-                window.Echo.leave(`conversation.${conversationId}`);
-            }
-        };
     }, [conversationId]);
 
-    useEffect(() => {
-        scrollToBottom();
-    }, [messages]);
-
-    const loadMessages = async () => {
+    const loadMessages = useCallback(async () => {
         try {
             const response = await fetch(`/chat/conversation/${conversationId}/messages`);
             const data = await response.json();
@@ -85,9 +81,9 @@ export default function ChatWindow({ conversationId, currentUserId }: ChatWindow
         } catch (error) {
             console.error('Failed to load messages:', error);
         }
-    };
+    }, [conversationId]);
 
-    const subscribeToChannel = () => {
+    const subscribeToChannel = useCallback(() => {
         if (!window.Echo) return;
 
         window.Echo.private(`conversation.${conversationId}`)
@@ -107,10 +103,26 @@ export default function ChatWindow({ conversationId, currentUserId }: ChatWindow
                 // Only show typing indicator for other users
                 if (e.userId !== currentUserId) {
                     setIsOtherUserTyping(e.isTyping);
-                    setTypingUserName(e.userName);
                 }
             });
-    };
+    }, [conversationId, currentUserId, markAsRead]);
+
+    useEffect(() => {
+        if (conversationId) {
+            loadMessages();
+            subscribeToChannel();
+        }
+
+        return () => {
+            if (conversationId && window.Echo) {
+                window.Echo.leave(`conversation.${conversationId}`);
+            }
+        };
+    }, [conversationId, loadMessages, subscribeToChannel]);
+
+    useEffect(() => {
+        scrollToBottom();
+    }, [messages]);
 
     const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -181,18 +193,6 @@ export default function ChatWindow({ conversationId, currentUserId }: ChatWindow
         }
     };
 
-    const markAsRead = async () => {
-        try {
-            await fetch(`/chat/conversation/${conversationId}/read`, {
-                method: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
-                },
-            });
-        } catch (error) {
-            console.error('Failed to mark as read:', error);
-        }
-    };
 
     const handleTyping = () => {
         // Send typing start event

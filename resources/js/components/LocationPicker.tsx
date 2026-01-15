@@ -85,7 +85,7 @@ export default function LocationPicker({ latitude, longitude, onLocationChange, 
             };
             searchLocation();
         }
-    }, [address, centerOnAddress]);
+    }, [address, centerOnAddress, latitude, longitude, onLocationChange]);
 
     // Handle location selection
     const handleLocationSelect = (lat: number, lng: number) => {

@@ -1,5 +1,5 @@
 import { Product } from '@/types';
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
 
 export interface CartItem {
     id: number;
@@ -45,30 +45,52 @@ export function CartProvider({ children, isAuthenticated: authProp }: CartProvid
     const [isAuthenticated, setIsAuthenticated] = useState(authProp || false);
     const [hasTransferredCart, setHasTransferredCart] = useState(false);
 
-    // Update authentication state when prop changes
-    useEffect(() => {
-        const wasAuthenticated = isAuthenticated;
-        const nowAuthenticated = authProp || false;
 
-        setIsAuthenticated(nowAuthenticated);
+    // Load cart from backend (authenticated users)
+    const loadAuthenticatedCart = useCallback(async () => {
+        try {
+            const response = await fetch('/api/buyer/cart', {
+                headers: { Accept: 'application/json' },
+            });
 
-        // If user just logged in, transfer guest cart and clear profile dismissal
-        if (!wasAuthenticated && nowAuthenticated && !hasTransferredCart) {
-            console.log('[CartContext] User just logged in, initiating cart transfer...');
-            // Clear profile completion banner dismissal for new users
-            localStorage.removeItem('profile_completion_banner_dismissed');
-            transferGuestCartToBackend();
-        } else if (nowAuthenticated && !wasAuthenticated) {
-            // Load authenticated cart
-            loadCart();
+            if (response.ok) {
+                const data = await response.json();
+                setItems(data.items || []);
+                updateCartBadge(data.items || []);
+            }
+        } catch (error) {
+            console.error('[CartContext] Error loading authenticated cart:', error);
         }
-    }, [authProp]);
+    }, []);
 
-    useEffect(() => {
-        loadCart();
-    }, [isAuthenticated]);
+    // Load cart from localStorage (guest users)
+    const loadGuestCart = useCallback(() => {
+        const savedCart = localStorage.getItem('guest_cart');
+        if (savedCart) {
+            try {
+                const cartItems = JSON.parse(savedCart);
+                setItems(cartItems);
+                updateCartBadge(cartItems);
+            } catch (error) {
+                console.error('[CartContext] Error parsing guest cart:', error);
+                localStorage.removeItem('guest_cart');
+                setItems([]);
+            }
+        } else {
+            setItems([]);
+        }
+    }, []);
 
-    const transferGuestCartToBackend = async () => {
+    // Load cart based on authentication status
+    const loadCart = useCallback(async () => {
+        if (isAuthenticated) {
+            await loadAuthenticatedCart();
+        } else {
+            loadGuestCart();
+        }
+    }, [isAuthenticated, loadAuthenticatedCart, loadGuestCart]);
+
+    const transferGuestCartToBackend = useCallback(async () => {
         const guestCart = localStorage.getItem('guest_cart');
 
         if (!guestCart) {
@@ -115,51 +137,31 @@ export function CartProvider({ children, isAuthenticated: authProp }: CartProvid
             console.error('[CartContext] Error transferring cart:', error);
             setHasTransferredCart(true);
         }
-    };
+    }, []);
 
-    // Load cart based on authentication status
-    const loadCart = async () => {
-        if (isAuthenticated) {
-            await loadAuthenticatedCart();
-        } else {
-            loadGuestCart();
+    // Update authentication state when prop changes
+    useEffect(() => {
+        const wasAuthenticated = isAuthenticated;
+        const nowAuthenticated = authProp || false;
+
+        setIsAuthenticated(nowAuthenticated);
+
+        // If user just logged in, transfer guest cart and clear profile dismissal
+        if (!wasAuthenticated && nowAuthenticated && !hasTransferredCart) {
+            console.log('[CartContext] User just logged in, initiating cart transfer...');
+            // Clear profile completion banner dismissal for new users
+            localStorage.removeItem('profile_completion_banner_dismissed');
+            transferGuestCartToBackend();
+        } else if (nowAuthenticated && !wasAuthenticated) {
+            // Load authenticated cart
+            loadCart();
         }
-    };
+    }, [authProp, isAuthenticated, hasTransferredCart, transferGuestCartToBackend, loadCart]);
 
-    // Load cart from backend (authenticated users)
-    const loadAuthenticatedCart = async () => {
-        try {
-            const response = await fetch('/api/buyer/cart', {
-                headers: { Accept: 'application/json' },
-            });
+    useEffect(() => {
+        loadCart();
+    }, [isAuthenticated, loadCart]);
 
-            if (response.ok) {
-                const data = await response.json();
-                setItems(data.items || []);
-                updateCartBadge(data.items || []);
-            }
-        } catch (error) {
-            console.error('[CartContext] Error loading authenticated cart:', error);
-        }
-    };
-
-    // Load cart from localStorage (guest users)
-    const loadGuestCart = () => {
-        const savedCart = localStorage.getItem('guest_cart');
-        if (savedCart) {
-            try {
-                const parsedCart = JSON.parse(savedCart);
-                setItems(parsedCart);
-                updateCartBadge(parsedCart);
-            } catch (error) {
-                console.error('[CartContext] Error loading guest cart:', error);
-                localStorage.removeItem('guest_cart');
-            }
-        } else {
-            setItems([]);
-            updateCartBadge([]);
-        }
-    };
 
     // Save guest cart to localStorage
     const saveGuestCart = (cartItems: CartItem[]) => {

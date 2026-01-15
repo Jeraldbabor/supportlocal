@@ -2,7 +2,7 @@ import { Product as GlobalProduct } from '@/types';
 import { Head, Link, router, usePage } from '@inertiajs/react';
 import axios from 'axios';
 import { ArrowLeft, Calendar, Eye, Mail, MapPin, MessageSquare, Package, Phone, ShoppingCart, Star, Trash2, User } from 'lucide-react';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import AddToCartModal from '../../../components/AddToCartModal';
 import SellerRatingModal from '../../../components/SellerRatingModal';
 import StartChatButton from '../../../components/StartChatButton';
@@ -196,7 +196,7 @@ export default function Show({ seller, products, filters, userRating: initialUse
     };
 
     // Fetch seller ratings
-    const fetchRatings = async () => {
+    const fetchRatings = useCallback(async () => {
         setRatingsLoading(true);
         try {
             const response = await axios.get(`/buyer/seller/${seller.id}/ratings`);
@@ -207,7 +207,7 @@ export default function Show({ seller, products, filters, userRating: initialUse
         } finally {
             setRatingsLoading(false);
         }
-    };
+    }, [seller.id]);
 
     // Fetch user's rating
     const fetchUserRating = async () => {
@@ -250,7 +250,7 @@ export default function Show({ seller, products, filters, userRating: initialUse
     // Load ratings on mount
     useEffect(() => {
         fetchRatings();
-    }, [seller.id]);
+    }, [fetchRatings]);
 
     return (
         <BuyerLayout title={seller.business_name || seller.name}>
