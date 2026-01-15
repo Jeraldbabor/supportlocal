@@ -45,6 +45,13 @@ class Order extends Model
     const PAYMENT_GCASH = 'gcash';
 
     /**
+     * Shipping providers
+     */
+    const SHIPPING_JT_EXPRESS = 'jt_express';
+
+    const SHIPPING_OTHER = 'other';
+
+    /**
      * The attributes that are mass assignable.
      */
     protected $fillable = [
@@ -68,6 +75,9 @@ class Order extends Model
         'special_instructions',
         'subtotal',
         'shipping_fee',
+        'shipping_provider',
+        'tracking_number',
+        'waybill_number',
         'total_amount',
         'status',
         'rejection_reason',
@@ -239,7 +249,7 @@ class Order extends Model
      */
     public function canBeCompleted(): bool
     {
-        return $this->status === self::STATUS_CONFIRMED;
+        return in_array($this->status, [self::STATUS_CONFIRMED, self::STATUS_SHIPPED]);
     }
 
     /**

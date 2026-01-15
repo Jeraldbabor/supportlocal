@@ -44,6 +44,9 @@ interface Order {
     delivery_address: string;
     delivery_phone: string;
     delivery_notes: string;
+    shipping_provider?: string | null;
+    tracking_number?: string | null;
+    waybill_number?: string | null;
     rejection_reason?: string;
     created_at: string;
     updated_at: string;
@@ -67,6 +70,13 @@ export default function OrderShow({ order }: OrderShowProps) {
     const [rejectionNotes, setRejectionNotes] = useState('');
     const [verifying, setVerifying] = useState(false);
     const [rejecting, setRejecting] = useState(false);
+    const [showShipModal, setShowShipModal] = useState(false);
+    const [shipping, setShipping] = useState({
+        shipping_provider: 'jt_express',
+        tracking_number: '',
+        waybill_number: '',
+    });
+    const [shippingOrder, setShippingOrder] = useState(false);
 
     const getStatusColor = (status: string) => {
         switch (status) {
@@ -272,6 +282,57 @@ export default function OrderShow({ order }: OrderShowProps) {
         }
     };
 
+    const handleShipOrder = async () => {
+        if (!shipping.tracking_number.trim()) {
+            setToastMessage('Please enter a tracking number.');
+            setToastType('error');
+            setShowToast(true);
+            return;
+        }
+
+        setShippingOrder(true);
+        try {
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+            if (!csrfToken) {
+                throw new Error('Security token not found.');
+            }
+
+            const response = await fetch(`/seller/orders/${order.id}/ship`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken,
+                },
+                body: JSON.stringify(shipping),
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                setToastMessage('Order marked as shipped successfully! Customer has been notified.');
+                setToastType('success');
+                setShowToast(true);
+                setShowShipModal(false);
+                setShipping({
+                    shipping_provider: 'jt_express',
+                    tracking_number: '',
+                    waybill_number: '',
+                });
+                router.reload();
+            } else {
+                setToastMessage(data.message || 'Failed to ship order.');
+                setToastType('error');
+                setShowToast(true);
+            }
+        } catch {
+            setToastMessage('An error occurred while shipping the order.');
+            setToastType('error');
+            setShowToast(true);
+        } finally {
+            setShippingOrder(false);
+        }
+    };
+
     return (
         <AppLayout>
             <Head title={`Order #${order.id}`} />
@@ -300,13 +361,19 @@ export default function OrderShow({ order }: OrderShowProps) {
                                                 ? 'bg-gradient-to-br from-amber-400 to-yellow-500'
                                                 : order.status === 'confirmed'
                                                   ? 'bg-gradient-to-br from-blue-500 to-indigo-600'
-                                                  : order.status === 'completed'
-                                                    ? 'bg-gradient-to-br from-emerald-500 to-green-600'
-                                                    : 'bg-gradient-to-br from-red-500 to-rose-600'
+                                                  : order.status === 'shipped'
+                                                    ? 'bg-gradient-to-br from-purple-500 to-violet-600'
+                                                    : order.status === 'delivered'
+                                                      ? 'bg-gradient-to-br from-emerald-500 to-green-600'
+                                                      : order.status === 'completed'
+                                                        ? 'bg-gradient-to-br from-emerald-500 to-green-600'
+                                                        : 'bg-gradient-to-br from-red-500 to-rose-600'
                                         }`}
                                     >
                                         {order.status === 'pending' && <Clock className="h-8 w-8 text-white" />}
                                         {order.status === 'confirmed' && <Truck className="h-8 w-8 text-white" />}
+                                        {order.status === 'shipped' && <Truck className="h-8 w-8 text-white" />}
+                                        {order.status === 'delivered' && <CheckCircle className="h-8 w-8 text-white" />}
                                         {order.status === 'completed' && <CheckCircle className="h-8 w-8 text-white" />}
                                         {order.status === 'cancelled' && <XCircle className="h-8 w-8 text-white" />}
                                     </div>
@@ -639,6 +706,55 @@ export default function OrderShow({ order }: OrderShowProps) {
                         </div>
                     )}
 
+                    {/* Shipping Information */}
+                    {(order.status === 'shipped' || order.status === 'delivered' || order.status === 'completed') &&
+                        order.shipping_provider &&
+                        order.tracking_number && (
+                            <div className="mt-6 overflow-hidden rounded-2xl bg-white shadow-lg ring-1 shadow-gray-100 ring-gray-100">
+                                <div className="border-b border-gray-100 bg-gradient-to-r from-purple-50 to-violet-50 px-6 py-4">
+                                    <h2 className="flex items-center gap-3 text-lg font-bold text-gray-900">
+                                        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-purple-500 to-violet-600 shadow-md">
+                                            <Truck className="h-5 w-5 text-white" />
+                                        </div>
+                                        Shipping Information
+                                    </h2>
+                                </div>
+                                <div className="space-y-4 p-6">
+                                    <div className="flex items-start gap-4 rounded-xl bg-gray-50 p-4">
+                                        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-white shadow-sm">
+                                            <Truck className="h-5 w-5 text-purple-600" />
+                                        </div>
+                                        <div>
+                                            <p className="text-xs font-medium tracking-wide text-gray-500 uppercase">Shipping Provider</p>
+                                            <p className="mt-0.5 font-semibold text-gray-900">
+                                                {order.shipping_provider === 'jt_express' ? 'J&T Express' : 'Other'}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div className="flex items-start gap-4 rounded-xl bg-gray-50 p-4">
+                                        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-white shadow-sm">
+                                            <Package className="h-5 w-5 text-purple-600" />
+                                        </div>
+                                        <div>
+                                            <p className="text-xs font-medium tracking-wide text-gray-500 uppercase">Tracking Number</p>
+                                            <p className="mt-0.5 font-semibold text-gray-900">{order.tracking_number}</p>
+                                        </div>
+                                    </div>
+                                    {order.waybill_number && (
+                                        <div className="flex items-start gap-4 rounded-xl bg-gray-50 p-4">
+                                            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-white shadow-sm">
+                                                <FileText className="h-5 w-5 text-purple-600" />
+                                            </div>
+                                            <div>
+                                                <p className="text-xs font-medium tracking-wide text-gray-500 uppercase">Waybill Number</p>
+                                                <p className="mt-0.5 font-semibold text-gray-900">{order.waybill_number}</p>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        )}
+
                     {/* Order Actions */}
                     <div className="mt-6 overflow-hidden rounded-2xl bg-white shadow-lg ring-1 shadow-gray-100 ring-gray-100">
                         <div className="border-b border-gray-100 bg-gradient-to-r from-gray-50 to-slate-50 px-6 py-4">
@@ -674,11 +790,11 @@ export default function OrderShow({ order }: OrderShowProps) {
                                 {order.status === 'confirmed' && (
                                     <>
                                         <button
-                                            onClick={handleCompleteOrder}
-                                            className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-8 py-3 text-sm font-bold text-white shadow-lg shadow-blue-200 transition-all hover:from-blue-700 hover:to-indigo-700 hover:shadow-xl hover:shadow-blue-300"
+                                            onClick={() => setShowShipModal(true)}
+                                            className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-purple-600 to-violet-600 px-8 py-3 text-sm font-bold text-white shadow-lg shadow-purple-200 transition-all hover:from-purple-700 hover:to-violet-700 hover:shadow-xl hover:shadow-purple-300"
                                         >
-                                            <Package className="h-5 w-5" />
-                                            Mark as Delivered
+                                            <Truck className="h-5 w-5" />
+                                            Mark as Shipped
                                         </button>
                                         <button
                                             onClick={handleRejectOrder}
@@ -686,6 +802,18 @@ export default function OrderShow({ order }: OrderShowProps) {
                                         >
                                             <XCircle className="h-5 w-5" />
                                             Cancel Order
+                                        </button>
+                                    </>
+                                )}
+
+                                {order.status === 'shipped' && (
+                                    <>
+                                        <button
+                                            onClick={handleCompleteOrder}
+                                            className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-8 py-3 text-sm font-bold text-white shadow-lg shadow-blue-200 transition-all hover:from-blue-700 hover:to-indigo-700 hover:shadow-xl hover:shadow-blue-300"
+                                        >
+                                            <Package className="h-5 w-5" />
+                                            Mark as Delivered
                                         </button>
                                     </>
                                 )}
@@ -745,6 +873,91 @@ export default function OrderShow({ order }: OrderShowProps) {
                                         className="rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50"
                                     >
                                         {rejecting ? 'Rejecting...' : 'Reject Payment'}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Ship Order Modal */}
+                    {showShipModal && (
+                        <div className="bg-opacity-50 fixed inset-0 z-50 flex items-center justify-center bg-black">
+                            <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
+                                <h3 className="mb-4 text-lg font-bold text-gray-900">Mark Order as Shipped</h3>
+                                <p className="mb-4 text-sm text-gray-600">
+                                    Enter the shipping details for this order. The buyer will be notified with tracking information.
+                                </p>
+                                <div className="space-y-4">
+                                    <div>
+                                        <label className="mb-2 block text-sm font-medium text-gray-700">Shipping Provider</label>
+                                        <select
+                                            value={shipping.shipping_provider}
+                                            onChange={(e) =>
+                                                setShipping({
+                                                    ...shipping,
+                                                    shipping_provider: e.target.value,
+                                                })
+                                            }
+                                            className="w-full rounded-lg border border-gray-300 p-3 text-sm focus:border-purple-500 focus:ring-2 focus:ring-purple-200 focus:outline-none"
+                                        >
+                                            <option value="jt_express">J&T Express</option>
+                                            <option value="other">Other</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label className="mb-2 block text-sm font-medium text-gray-700">
+                                            Tracking Number <span className="text-red-500">*</span>
+                                        </label>
+                                        <input
+                                            type="text"
+                                            value={shipping.tracking_number}
+                                            onChange={(e) =>
+                                                setShipping({
+                                                    ...shipping,
+                                                    tracking_number: e.target.value,
+                                                })
+                                            }
+                                            placeholder="Enter tracking number"
+                                            className="w-full rounded-lg border border-gray-300 p-3 text-sm focus:border-purple-500 focus:ring-2 focus:ring-purple-200 focus:outline-none"
+                                            required
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="mb-2 block text-sm font-medium text-gray-700">Waybill Number (Optional)</label>
+                                        <input
+                                            type="text"
+                                            value={shipping.waybill_number}
+                                            onChange={(e) =>
+                                                setShipping({
+                                                    ...shipping,
+                                                    waybill_number: e.target.value,
+                                                })
+                                            }
+                                            placeholder="Enter waybill number"
+                                            className="w-full rounded-lg border border-gray-300 p-3 text-sm focus:border-purple-500 focus:ring-2 focus:ring-purple-200 focus:outline-none"
+                                        />
+                                    </div>
+                                </div>
+                                <div className="mt-6 flex justify-end gap-3">
+                                    <button
+                                        onClick={() => {
+                                            setShowShipModal(false);
+                                            setShipping({
+                                                shipping_provider: 'jt_express',
+                                                tracking_number: '',
+                                                waybill_number: '',
+                                            });
+                                        }}
+                                        className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button
+                                        onClick={handleShipOrder}
+                                        disabled={shippingOrder || !shipping.tracking_number.trim()}
+                                        className="rounded-lg bg-gradient-to-r from-purple-600 to-violet-600 px-4 py-2 text-sm font-medium text-white hover:from-purple-700 hover:to-violet-700 disabled:cursor-not-allowed disabled:opacity-50"
+                                    >
+                                        {shippingOrder ? 'Shipping...' : 'Mark as Shipped'}
                                     </button>
                                 </div>
                             </div>

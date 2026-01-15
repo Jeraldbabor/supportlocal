@@ -1,7 +1,7 @@
 import BuyerLayout from '@/layouts/BuyerLayout';
 import { formatPeso } from '@/utils/currency';
 import { Head, router, usePage } from '@inertiajs/react';
-import { ArrowLeft, CheckCircle, Clock, CreditCard, MapPin, MessageSquare, Package, Upload, User, X, XCircle } from 'lucide-react';
+import { ArrowLeft, CheckCircle, Clock, CreditCard, MapPin, MessageSquare, Package, Truck, Upload, User, X, XCircle } from 'lucide-react';
 import { useState } from 'react';
 import StartChatButton from '../../../components/StartChatButton';
 
@@ -26,6 +26,9 @@ interface Order {
     delivery_address: string;
     delivery_phone: string;
     delivery_notes: string;
+    shipping_provider?: string | null;
+    tracking_number?: string | null;
+    waybill_number?: string | null;
     rejection_reason?: string;
     created_at: string;
     updated_at: string;
@@ -117,6 +120,10 @@ export default function OrderShow({ order }: OrderShowProps) {
                 return <Clock className="h-6 w-6 text-yellow-500" />;
             case 'confirmed':
                 return <CheckCircle className="h-6 w-6 text-amber-600" />;
+            case 'shipped':
+                return <Truck className="h-6 w-6 text-purple-500" />;
+            case 'delivered':
+                return <CheckCircle className="h-6 w-6 text-green-500" />;
             case 'completed':
                 return <CheckCircle className="h-6 w-6 text-green-500" />;
             case 'cancelled':
@@ -132,6 +139,10 @@ export default function OrderShow({ order }: OrderShowProps) {
                 return 'bg-yellow-100 text-yellow-800 border-yellow-200';
             case 'confirmed':
                 return 'bg-gradient-to-r from-amber-100 to-orange-100 text-amber-900 border-amber-300';
+            case 'shipped':
+                return 'bg-purple-100 text-purple-800 border-purple-200';
+            case 'delivered':
+                return 'bg-green-100 text-green-800 border-green-200';
             case 'completed':
                 return 'bg-green-100 text-green-800 border-green-200';
             case 'cancelled':
@@ -147,6 +158,10 @@ export default function OrderShow({ order }: OrderShowProps) {
                 return 'Your order is waiting for seller confirmation.';
             case 'confirmed':
                 return 'Your order has been confirmed and is being prepared.';
+            case 'shipped':
+                return 'Your order has been shipped and is on its way.';
+            case 'delivered':
+                return 'Your order has been delivered.';
             case 'completed':
                 return 'Your order has been completed and delivered.';
             case 'cancelled':
@@ -275,6 +290,52 @@ export default function OrderShow({ order }: OrderShowProps) {
                         </div>
                     </div>
                 </div>
+
+                {/* Shipping Information */}
+                {(order.status === 'shipped' || order.status === 'delivered' || order.status === 'completed') &&
+                    order.shipping_provider &&
+                    order.tracking_number && (
+                        <div className="mb-8 rounded-lg border border-purple-200 bg-white p-6 shadow-sm">
+                            <h2 className="mb-4 flex items-center text-lg font-semibold text-gray-900">
+                                <Truck className="mr-2 h-5 w-5 text-purple-600" />
+                                Shipping Information
+                            </h2>
+                            <div className="space-y-4">
+                                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                                    <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
+                                        <p className="mb-1 text-sm font-medium text-gray-700">Shipping Provider</p>
+                                        <p className="text-lg font-semibold text-gray-900">
+                                            {order.shipping_provider === 'jt_express' ? 'J&T Express' : 'Other'}
+                                        </p>
+                                    </div>
+                                    <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
+                                        <p className="mb-1 text-sm font-medium text-gray-700">Tracking Number</p>
+                                        <p className="break-all text-lg font-semibold text-purple-600">{order.tracking_number}</p>
+                                    </div>
+                                </div>
+                                {order.waybill_number && (
+                                    <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
+                                        <p className="mb-1 text-sm font-medium text-gray-700">Waybill Number</p>
+                                        <p className="break-all text-lg font-semibold text-gray-900">{order.waybill_number}</p>
+                                    </div>
+                                )}
+                                {order.shipping_provider === 'jt_express' && order.tracking_number && (
+                                    <div className="mt-4 rounded-lg border border-purple-200 bg-purple-50 p-4">
+                                        <p className="mb-2 text-sm font-medium text-purple-800">Track Your Package</p>
+                                        <a
+                                            href={`https://www.jtexpress.ph/track?trackNo=${order.tracking_number}`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="inline-flex items-center rounded-lg bg-purple-600 px-4 py-2 text-sm font-medium text-white hover:bg-purple-700"
+                                        >
+                                            <Truck className="mr-2 h-4 w-4" />
+                                            Track on J&T Express Website
+                                        </a>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    )}
 
                 {/* Order Items */}
                 <div className="mt-8 rounded-lg border border-gray-200 bg-white p-6 shadow-sm">

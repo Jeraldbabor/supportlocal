@@ -26,9 +26,10 @@ interface NotificationItem {
 interface NotificationsDropdownProps {
     userRole: string;
     initialUnreadCount?: number;
+    buttonClassName?: string;
 }
 
-export default function NotificationsDropdown({ userRole, initialUnreadCount = 0 }: NotificationsDropdownProps) {
+export default function NotificationsDropdown({ userRole, initialUnreadCount = 0, buttonClassName }: NotificationsDropdownProps) {
     const [isOpen, setIsOpen] = useState(false);
     const [notifications, setNotifications] = useState<NotificationItem[]>([]);
     const [isLoading, setIsLoading] = useState(false);
@@ -161,15 +162,16 @@ export default function NotificationsDropdown({ userRole, initialUnreadCount = 0
             <div className="relative" ref={dropdownRef}>
                 <button
                     onClick={() => setIsOpen(!isOpen)}
-                    className="group relative rounded-xl p-2.5 text-sidebar-foreground/60 transition-all duration-200 hover:scale-105 hover:bg-sidebar-accent hover:text-sidebar-foreground active:scale-95"
+                    className={buttonClassName || "group relative rounded-xl p-2.5 text-sidebar-foreground/60 transition-all duration-200 hover:scale-105 hover:bg-sidebar-accent hover:text-sidebar-foreground active:scale-95"}
                     aria-label={`Notifications ${unreadCount > 0 ? `(${unreadCount} unread)` : ''}`}
                 >
-                    <Bell className="h-5 w-5 transition-transform duration-200 group-hover:rotate-12" />
+                    <Bell className="h-5 w-5 transition-transform duration-300 group-hover:scale-110" />
                     {unreadCount > 0 && (
-                        <span className="absolute -top-0.5 -right-0.5 flex h-5 min-w-[20px] animate-pulse items-center justify-center rounded-full bg-gradient-to-br from-red-500 to-red-600 px-1.5 py-0.5 text-[10px] font-bold text-white shadow-lg ring-2 shadow-red-500/50 ring-background">
-                            {unreadCount > 99 ? '99+' : unreadCount}
+                        <span className="absolute -top-1 -right-1 flex h-5 w-5 animate-pulse items-center justify-center rounded-full bg-gradient-to-r from-red-500 to-red-600 text-xs font-medium text-white shadow-sm">
+                            {unreadCount > 9 ? '9+' : unreadCount}
                         </span>
                     )}
+                    <span className="absolute inset-0 rounded-xl opacity-0 ring-primary/50 transition-all duration-300 group-hover:opacity-100 group-hover:ring-2 group-hover:ring-offset-2"></span>
                 </button>
 
                 {/* Dropdown */}
