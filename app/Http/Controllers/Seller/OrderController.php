@@ -187,6 +187,58 @@ class OrderController extends Controller
     }
 
     /**
+     * Mark order as shipped with shipping provider details.
+     */
+    public function ship(Request $request, Order $order)
+    {
+        // Check if the order belongs to the authenticated seller
+        if ($order->seller_id !== auth()->id()) {
+            abort(403);
+        }
+
+        // Check if order can be shipped
+        if ($order->status !== Order::STATUS_CONFIRMED) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Order must be confirmed before it can be shipped.',
+            ], 400);
+        }
+
+        $request->validate([
+            'shipping_provider' => ['required', 'string', 'in:jt_express,other'],
+            'tracking_number' => ['required', 'string', 'max:100'],
+            'waybill_number' => ['nullable', 'string', 'max:100'],
+        ]);
+
+        try {
+            // Update order status and shipping information
+            $order->update([
+                'status' => Order::STATUS_SHIPPED,
+                'shipping_provider' => $request->input('shipping_provider'),
+                'tracking_number' => $request->input('tracking_number'),
+                'waybill_number' => $request->input('waybill_number'),
+                'shipped_at' => now(),
+            ]);
+
+            // Notify buyer
+            $shippingProviderName = $request->input('shipping_provider') === Order::SHIPPING_JT_EXPRESS ? 'J&T Express' : 'Other';
+            $order->buyer->notify(new OrderStatusUpdated($order, "Your order has been shipped via {$shippingProviderName}. Tracking Number: {$request->input('tracking_number')}"));
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Order marked as shipped successfully!',
+                'order' => $order->fresh(['orderItems.product', 'buyer']),
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to ship order: '.$e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
      * Mark order as completed.
      */
     public function complete(Request $request, Order $order)
@@ -196,11 +248,11 @@ class OrderController extends Controller
             abort(403);
         }
 
-        // Check if order can be completed
-        if ($order->status !== Order::STATUS_CONFIRMED) {
+        // Check if order can be completed (must be confirmed or shipped)
+        if (!in_array($order->status, [Order::STATUS_CONFIRMED, Order::STATUS_SHIPPED])) {
             return response()->json([
                 'success' => false,
-                'message' => 'Order must be confirmed before it can be completed.',
+                'message' => 'Order must be confirmed or shipped before it can be completed.',
             ], 400);
         }
 

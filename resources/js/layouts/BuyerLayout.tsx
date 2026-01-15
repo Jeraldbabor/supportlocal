@@ -1,4 +1,5 @@
 import MessagesDropdown from '@/components/MessagesDropdown';
+import NotificationsDropdown from '@/components/NotificationsDropdown';
 import ProfileCompletionBanner from '@/components/ProfileCompletionBanner';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useCart } from '@/contexts/CartContext';
@@ -161,20 +162,12 @@ function BuyerLayoutContent({ children, title }: BuyerLayoutProps) {
                             {/* Messages Dropdown */}
                             <MessagesDropdown currentUserId={user.id} />
 
-                            {/* Notifications */}
-                            <Link
-                                href="/buyer/notifications"
-                                className="group relative rounded-xl p-2 text-gray-600 transition-all duration-300 hover:bg-primary/5 hover:text-primary hover:shadow-sm focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 focus:outline-none"
-                                aria-label={`Notifications ${unreadCount > 0 ? `(${unreadCount} unread)` : ''}`}
-                            >
-                                <Bell className="h-5 w-5 transition-transform duration-300 group-hover:scale-110" />
-                                {unreadCount > 0 && (
-                                    <span className="absolute -top-1 -right-1 flex h-5 w-5 animate-pulse items-center justify-center rounded-full bg-gradient-to-r from-red-500 to-red-600 text-xs font-medium text-white shadow-sm">
-                                        {unreadCount > 9 ? '9+' : unreadCount}
-                                    </span>
-                                )}
-                                <span className="absolute inset-0 rounded-xl opacity-0 ring-primary/50 transition-all duration-300 group-hover:opacity-100 group-hover:ring-2 group-hover:ring-offset-2"></span>
-                            </Link>
+                            {/* Notifications Dropdown */}
+                            <NotificationsDropdown 
+                                userRole="buyer" 
+                                initialUnreadCount={unreadCount}
+                                buttonClassName="group relative rounded-xl p-2 text-gray-600 transition-all duration-300 hover:bg-primary/5 hover:text-primary hover:shadow-sm focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 focus:outline-none"
+                            />
 
                             {/* Wishlist Icon */}
                             <Link

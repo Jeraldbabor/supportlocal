@@ -107,6 +107,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/seller/orders/{order}', [App\Http\Controllers\Seller\OrderController::class, 'show'])->name('seller.orders.show');
         Route::post('/seller/orders/{order}/confirm', [App\Http\Controllers\Seller\OrderController::class, 'confirm'])->name('seller.orders.confirm');
         Route::post('/seller/orders/{order}/reject', [App\Http\Controllers\Seller\OrderController::class, 'reject'])->name('seller.orders.reject');
+        Route::post('/seller/orders/{order}/ship', [App\Http\Controllers\Seller\OrderController::class, 'ship'])->name('seller.orders.ship');
         Route::post('/seller/orders/{order}/complete', [App\Http\Controllers\Seller\OrderController::class, 'complete'])->name('seller.orders.complete');
         Route::post('/seller/orders/{order}/verify-payment', [App\Http\Controllers\Seller\OrderController::class, 'verifyPayment'])->name('seller.orders.verify-payment');
         Route::post('/seller/orders/{order}/reject-payment', [App\Http\Controllers\Seller\OrderController::class, 'rejectPayment'])->name('seller.orders.reject-payment');

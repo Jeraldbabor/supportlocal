@@ -1,8 +1,9 @@
 import { NotificationsProvider, useNotifications } from '@/contexts/NotificationsContext';
 import BuyerLayout from '@/layouts/BuyerLayout';
 import { Head, router, usePage } from '@inertiajs/react';
-import { Bell, Check, Clock, Trash2, X } from 'lucide-react';
-import { useState } from 'react';
+import { Bell, Check, Clock, Filter, Trash2, X } from 'lucide-react';
+import { useState, useMemo } from 'react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 interface Notification {
     id: string;
@@ -38,6 +39,7 @@ function NotificationsContent({ notifications }: NotificationsProps) {
     const [deletingId, setDeletingId] = useState<string | null>(null);
     const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null);
     const [localReadIds, setLocalReadIds] = useState<Set<string>>(new Set());
+    const [filter, setFilter] = useState<'all' | 'unread' | 'read'>('all');
 
     // Check if notification is read (either from server or locally marked)
     const isRead = (notification: Notification) => {
@@ -124,6 +126,18 @@ function NotificationsContent({ notifications }: NotificationsProps) {
     // Calculate unread count considering local state
     const unreadCount = notifications.data.filter((n) => !isRead(n)).length;
 
+    // Filter notifications based on selected filter
+    const filteredNotifications = useMemo(() => {
+        switch (filter) {
+            case 'unread':
+                return notifications.data.filter((n) => !isRead(n));
+            case 'read':
+                return notifications.data.filter((n) => isRead(n));
+            default:
+                return notifications.data;
+        }
+    }, [notifications.data, filter, localReadIds]);
+
     return (
         <BuyerLayout>
             <Head title="Notifications" />
@@ -144,10 +158,24 @@ function NotificationsContent({ notifications }: NotificationsProps) {
                             </div>
 
                             <div className="flex items-center space-x-3">
+                                {/* Filter Dropdown */}
+                                <div className="flex items-center gap-2">
+                                    <Filter className="h-4 w-4 text-gray-500" />
+                                    <Select value={filter} onValueChange={(value) => setFilter(value as 'all' | 'unread' | 'read')}>
+                                        <SelectTrigger className="w-[140px]">
+                                            <SelectValue placeholder="Filter" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="all">All Notifications</SelectItem>
+                                            <SelectItem value="unread">Unread Only</SelectItem>
+                                            <SelectItem value="read">Read Only</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
                                 {notifications.data.length > 0 && (
                                     <button
                                         onClick={() => setShowClearAllConfirm(true)}
-                                        className="inline-flex items-center gap-2 rounded-lg border border-red-300 bg-white px-3 py-1.5 text-sm font-medium text-red-700 transition-colors hover:bg-red-50"
+                                        className="inline-flex items-center gap-2 rounded-lg border border-red-300 bg-white px-3 py-1.5 text-sm font-medium text-red-700 transition-colors hover:bg-red-50 dark:border-red-600 dark:bg-gray-800 dark:text-red-400 dark:hover:bg-red-950"
                                         disabled={isClearing}
                                     >
                                         <Trash2 className="h-4 w-4" />
@@ -155,7 +183,7 @@ function NotificationsContent({ notifications }: NotificationsProps) {
                                     </button>
                                 )}
                                 {unreadCount > 0 && (
-                                    <button onClick={handleMarkAllAsReadLocal} className="text-sm font-medium text-amber-700 hover:text-amber-900">
+                                    <button onClick={handleMarkAllAsReadLocal} className="text-sm font-medium text-amber-700 hover:text-amber-900 dark:text-amber-500 dark:hover:text-amber-400">
                                         Mark all as read
                                     </button>
                                 )}
@@ -165,16 +193,22 @@ function NotificationsContent({ notifications }: NotificationsProps) {
 
                     {/* Notifications List */}
                     <div className="divide-y divide-gray-200 dark:divide-gray-700">
-                        {notifications.data.length === 0 ? (
+                        {filteredNotifications.length === 0 ? (
                             <div className="px-6 py-12 text-center">
                                 <Bell className="mx-auto h-12 w-12 text-gray-400" />
-                                <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-white">No notifications</h3>
+                                <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-white">
+                                    {filter === 'unread' ? 'No unread notifications' : filter === 'read' ? 'No read notifications' : 'No notifications'}
+                                </h3>
                                 <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                                    You're all caught up! New notifications will appear here.
+                                    {filter === 'unread'
+                                        ? "You're all caught up! No unread notifications."
+                                        : filter === 'read'
+                                          ? 'No read notifications yet.'
+                                          : "You're all caught up! New notifications will appear here."}
                                 </p>
                             </div>
                         ) : (
-                            notifications.data.map((notification) => (
+                            filteredNotifications.map((notification) => (
                                 <div
                                     key={notification.id}
                                     className={`px-6 py-4 transition-all duration-200 ${
@@ -255,7 +289,7 @@ function NotificationsContent({ notifications }: NotificationsProps) {
                         <div className="border-t border-gray-200 px-6 py-4 dark:border-gray-700">
                             <div className="flex items-center justify-between">
                                 <div className="text-sm text-gray-700 dark:text-gray-300">
-                                    Showing page {notifications.current_page} of {notifications.last_page}
+                                    Showing {filteredNotifications.length} of {notifications.total} notifications (page {notifications.current_page} of {notifications.last_page})
                                 </div>
                                 <div className="flex space-x-2">
                                     {notifications.current_page > 1 && (
