@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\ContactMessage;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\ProductCategory;
@@ -45,6 +46,15 @@ class DashboardController extends Controller
             'approved' => SellerApplication::where('status', 'approved')->count(),
             'rejected' => SellerApplication::where('status', 'rejected')->count(),
             'recent' => SellerApplication::where('created_at', '>=', Carbon::now()->subDays(7))->count(),
+        ];
+
+        // Contact message statistics
+        $contactMessageStats = [
+            'total' => ContactMessage::count(),
+            'new' => ContactMessage::where('status', ContactMessage::STATUS_NEW)->count(),
+            'read' => ContactMessage::where('status', ContactMessage::STATUS_READ)->count(),
+            'replied' => ContactMessage::where('status', ContactMessage::STATUS_REPLIED)->count(),
+            'recent' => ContactMessage::where('created_at', '>=', Carbon::now()->subDays(7))->count(),
         ];
 
         // System health indicators
@@ -123,6 +133,7 @@ class DashboardController extends Controller
             'orderStats' => $orderStats,
             'categoryStats' => $categoryStats,
             'sellerApplicationStats' => $sellerApplicationStats,
+            'contactMessageStats' => $contactMessageStats,
             'systemStats' => $systemStats,
             'recentActivity' => $recentActivity,
             'growthMetrics' => $growthMetrics,

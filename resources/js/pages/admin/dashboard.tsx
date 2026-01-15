@@ -9,8 +9,10 @@ import {
     CheckCircle,
     Clock,
     Database,
+    FileEdit,
     FileText,
     HardDrive,
+    Mail,
     Server,
     Settings,
     Shield,
@@ -36,6 +38,14 @@ interface SellerApplicationStats {
     pending: number;
     approved: number;
     rejected: number;
+    recent: number;
+}
+
+interface ContactMessageStats {
+    total: number;
+    new: number;
+    read: number;
+    replied: number;
     recent: number;
 }
 
@@ -68,6 +78,7 @@ interface ActivityItem {
 interface DashboardProps extends SharedData {
     userStats: UserStats;
     sellerApplicationStats: SellerApplicationStats;
+    contactMessageStats: ContactMessageStats;
     systemStats: SystemStats;
     recentActivity: ActivityItem[];
     growthMetrics: GrowthMetrics;
@@ -113,7 +124,7 @@ const getActivityColor = (color: string) => {
 };
 
 export default function AdminDashboard() {
-    const { auth, userStats, sellerApplicationStats, systemStats, recentActivity, growthMetrics, recentUsersCount, recentActiveUsersCount } =
+    const { auth, userStats, sellerApplicationStats, contactMessageStats, systemStats, recentActivity, growthMetrics, recentUsersCount, recentActiveUsersCount } =
         usePage<DashboardProps>().props;
 
     const user = auth.user;
@@ -124,19 +135,19 @@ export default function AdminDashboard() {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Administrator Dashboard" />
-            <div className="flex h-full flex-1 flex-col gap-6 overflow-x-auto rounded-xl p-4">
+            <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-3 sm:gap-6 sm:p-4 md:p-6">
                 {/* Welcome Section */}
-                <div className="rounded-xl border bg-gradient-to-r from-red-50 to-orange-50 p-6 dark:from-red-950/20 dark:to-orange-950/20">
-                    <div className="flex items-center gap-4">
-                        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-red-100 dark:bg-red-900">
-                            <Shield className="h-6 w-6 text-red-600 dark:text-red-400" />
+                <div className="rounded-xl border bg-gradient-to-r from-red-50 to-orange-50 p-4 shadow-sm transition-shadow hover:shadow-md dark:from-red-950/20 dark:to-orange-950/20 sm:p-6">
+                    <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:gap-4">
+                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-red-100 shadow-sm dark:bg-red-900 sm:h-12 sm:w-12">
+                            <Shield className="h-5 w-5 text-red-600 dark:text-red-400 sm:h-6 sm:w-6" />
                         </div>
-                        <div>
-                            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Welcome, {user?.name}!</h1>
-                            <p className="text-gray-600 dark:text-gray-300">
+                        <div className="min-w-0 flex-1">
+                            <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100 sm:text-2xl">Welcome, {user?.name}!</h1>
+                            <p className="mt-1 text-sm text-gray-600 dark:text-gray-300 sm:text-base">
                                 Role: <span className="font-semibold text-red-600 dark:text-red-400">Administrator</span>
                             </p>
-                            <p className="text-sm text-gray-500 dark:text-gray-400">
+                            <p className="mt-1 text-xs text-gray-500 dark:text-gray-400 sm:text-sm">
                                 Managing {userStats.total} users • {recentActiveUsersCount} active this week
                             </p>
                         </div>
@@ -144,15 +155,15 @@ export default function AdminDashboard() {
                 </div>
 
                 {/* Primary Stats */}
-                <div className="grid auto-rows-min gap-4 md:grid-cols-4">
-                    <Card>
-                        <CardContent className="flex items-center gap-4 p-4">
-                            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900">
+                <div className="grid auto-rows-min gap-3 sm:gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                    <Card className="transition-all duration-200 hover:shadow-md">
+                        <CardContent className="flex items-center gap-3 p-4 sm:gap-4">
+                            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blue-100 shadow-sm dark:bg-blue-900">
                                 <Users className="h-5 w-5 text-blue-600 dark:text-blue-400" />
                             </div>
-                            <div>
-                                <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Total Users</p>
-                                <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{userStats.total}</p>
+                            <div className="min-w-0 flex-1">
+                                <p className="text-xs font-medium text-gray-600 dark:text-gray-300 sm:text-sm">Total Users</p>
+                                <p className="text-xl font-bold text-gray-900 dark:text-gray-100 sm:text-2xl">{userStats.total}</p>
                                 <div className="mt-1 flex items-center gap-1">
                                     {userGrowth.isPositive ? (
                                         <TrendingUp className="h-3 w-3 text-green-600" />
@@ -167,14 +178,14 @@ export default function AdminDashboard() {
                         </CardContent>
                     </Card>
 
-                    <Card>
-                        <CardContent className="flex items-center gap-4 p-4">
-                            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-green-100 dark:bg-green-900">
+                    <Card className="transition-all duration-200 hover:shadow-md">
+                        <CardContent className="flex items-center gap-3 p-4 sm:gap-4">
+                            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-green-100 shadow-sm dark:bg-green-900">
                                 <CheckCircle className="h-5 w-5 text-green-600 dark:text-green-400" />
                             </div>
-                            <div>
-                                <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Active Users</p>
-                                <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{userStats.active}</p>
+                            <div className="min-w-0 flex-1">
+                                <p className="text-xs font-medium text-gray-600 dark:text-gray-300 sm:text-sm">Active Users</p>
+                                <p className="text-xl font-bold text-gray-900 dark:text-gray-100 sm:text-2xl">{userStats.active}</p>
                                 <p className="text-xs text-gray-500 dark:text-gray-400">
                                     {Math.round((userStats.active / userStats.total) * 100)}% of total
                                 </p>
@@ -182,14 +193,14 @@ export default function AdminDashboard() {
                         </CardContent>
                     </Card>
 
-                    <Card>
-                        <CardContent className="flex items-center gap-4 p-4">
-                            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-orange-100 dark:bg-orange-900">
+                    <Card className="transition-all duration-200 hover:shadow-md">
+                        <CardContent className="flex items-center gap-3 p-4 sm:gap-4">
+                            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-orange-100 shadow-sm dark:bg-orange-900">
                                 <FileText className="h-5 w-5 text-orange-600 dark:text-orange-400" />
                             </div>
-                            <div>
-                                <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Applications</p>
-                                <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{sellerApplicationStats.total}</p>
+                            <div className="min-w-0 flex-1">
+                                <p className="text-xs font-medium text-gray-600 dark:text-gray-300 sm:text-sm">Applications</p>
+                                <p className="text-xl font-bold text-gray-900 dark:text-gray-100 sm:text-2xl">{sellerApplicationStats.total}</p>
                                 <div className="mt-1 flex items-center gap-1">
                                     {applicationGrowth.isPositive ? (
                                         <TrendingUp className="h-3 w-3 text-green-600" />
@@ -204,14 +215,14 @@ export default function AdminDashboard() {
                         </CardContent>
                     </Card>
 
-                    <Card>
-                        <CardContent className="flex items-center gap-4 p-4">
-                            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-purple-100 dark:bg-purple-900">
+                    <Card className="transition-all duration-200 hover:shadow-md">
+                        <CardContent className="flex items-center gap-3 p-4 sm:gap-4">
+                            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-purple-100 shadow-sm dark:bg-purple-900">
                                 <Clock className="h-5 w-5 text-purple-600 dark:text-purple-400" />
                             </div>
-                            <div>
-                                <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Pending</p>
-                                <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{sellerApplicationStats.pending}</p>
+                            <div className="min-w-0 flex-1">
+                                <p className="text-xs font-medium text-gray-600 dark:text-gray-300 sm:text-sm">Pending</p>
+                                <p className="text-xl font-bold text-gray-900 dark:text-gray-100 sm:text-2xl">{sellerApplicationStats.pending}</p>
                                 <p className="text-xs text-gray-500 dark:text-gray-400">Require review</p>
                             </div>
                         </CardContent>
@@ -219,41 +230,41 @@ export default function AdminDashboard() {
                 </div>
 
                 {/* Main Content Area */}
-                <div className="grid gap-6 lg:grid-cols-3">
+                <div className="grid gap-4 sm:gap-6 lg:grid-cols-3">
                     {/* User Management - spans 1 column */}
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className="flex items-center gap-2">
-                                <Users className="h-5 w-5" />
+                    <Card className="transition-all duration-200 hover:shadow-md">
+                        <CardHeader className="pb-3">
+                            <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+                                <Users className="h-4 w-4 sm:h-5 sm:w-5" />
                                 User Management
                             </CardTitle>
                         </CardHeader>
-                        <CardContent className="space-y-4">
-                            <div className="flex items-center justify-between rounded-lg bg-gray-50 p-3 dark:bg-gray-700">
-                                <div>
-                                    <p className="font-medium text-gray-900 dark:text-gray-100">Administrators</p>
-                                    <p className="text-sm text-gray-500 dark:text-gray-400">{userStats.administrators} admin users</p>
+                        <CardContent className="space-y-3 sm:space-y-4">
+                            <div className="flex items-center justify-between rounded-lg bg-gray-50 p-2.5 transition-colors hover:bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 sm:p-3">
+                                <div className="min-w-0 flex-1">
+                                    <p className="text-sm font-medium text-gray-900 dark:text-gray-100 sm:text-base">Administrators</p>
+                                    <p className="text-xs text-gray-500 dark:text-gray-400 sm:text-sm">{userStats.administrators} admin users</p>
                                 </div>
-                                <Badge variant="destructive">{userStats.administrators}</Badge>
+                                <Badge variant="destructive" className="ml-2 shrink-0">{userStats.administrators}</Badge>
                             </div>
-                            <div className="flex items-center justify-between rounded-lg bg-gray-50 p-3 dark:bg-gray-700">
-                                <div>
-                                    <p className="font-medium text-gray-900 dark:text-gray-100">Sellers</p>
-                                    <p className="text-sm text-gray-500 dark:text-gray-400">{userStats.sellers} registered sellers</p>
+                            <div className="flex items-center justify-between rounded-lg bg-gray-50 p-2.5 transition-colors hover:bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 sm:p-3">
+                                <div className="min-w-0 flex-1">
+                                    <p className="text-sm font-medium text-gray-900 dark:text-gray-100 sm:text-base">Sellers</p>
+                                    <p className="text-xs text-gray-500 dark:text-gray-400 sm:text-sm">{userStats.sellers} registered sellers</p>
                                 </div>
-                                <Badge variant="secondary">{userStats.sellers}</Badge>
+                                <Badge variant="secondary" className="ml-2 shrink-0">{userStats.sellers}</Badge>
                             </div>
-                            <div className="flex items-center justify-between rounded-lg bg-gray-50 p-3 dark:bg-gray-700">
-                                <div>
-                                    <p className="font-medium text-gray-900 dark:text-gray-100">Buyers</p>
-                                    <p className="text-sm text-gray-500 dark:text-gray-400">{userStats.buyers} registered buyers</p>
+                            <div className="flex items-center justify-between rounded-lg bg-gray-50 p-2.5 transition-colors hover:bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 sm:p-3">
+                                <div className="min-w-0 flex-1">
+                                    <p className="text-sm font-medium text-gray-900 dark:text-gray-100 sm:text-base">Buyers</p>
+                                    <p className="text-xs text-gray-500 dark:text-gray-400 sm:text-sm">{userStats.buyers} registered buyers</p>
                                 </div>
-                                <Badge>{userStats.buyers}</Badge>
+                                <Badge className="ml-2 shrink-0">{userStats.buyers}</Badge>
                             </div>
-                            <div className="pt-4">
+                            <div className="pt-2 sm:pt-4">
                                 <Link
                                     href="/admin/users"
-                                    className="block w-full rounded-lg border border-blue-200 bg-blue-50 px-4 py-3 text-center text-blue-700 hover:bg-blue-100 dark:border-blue-800 dark:bg-blue-950/50 dark:text-blue-300 dark:hover:bg-blue-950/80"
+                                    className="block w-full rounded-lg border border-blue-200 bg-blue-50 px-3 py-2 text-center text-sm font-medium text-blue-700 transition-colors hover:bg-blue-100 dark:border-blue-800 dark:bg-blue-950/50 dark:text-blue-300 dark:hover:bg-blue-950/80 sm:px-4 sm:py-3 sm:text-base"
                                 >
                                     Manage All Users
                                 </Link>
@@ -262,27 +273,27 @@ export default function AdminDashboard() {
                     </Card>
 
                     {/* Recent Activity - spans 1 column */}
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className="flex items-center gap-2">
-                                <Activity className="h-5 w-5" />
+                    <Card className="transition-all duration-200 hover:shadow-md">
+                        <CardHeader className="pb-3">
+                            <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+                                <Activity className="h-4 w-4 sm:h-5 sm:w-5" />
                                 Recent Activity
                             </CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <div className="space-y-4">
+                            <div className="space-y-3 sm:space-y-4">
                                 {recentActivity.length > 0 ? (
                                     recentActivity.map((activity, index) => (
-                                        <div key={index} className="flex items-start gap-3">
+                                        <div key={index} className="flex items-start gap-2.5 sm:gap-3">
                                             <div
-                                                className={`flex h-8 w-8 items-center justify-center rounded-full ${getActivityColor(activity.color)}`}
+                                                className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full shadow-sm sm:h-8 sm:w-8 ${getActivityColor(activity.color)}`}
                                             >
                                                 {getActivityIcon(activity.icon)}
                                             </div>
                                             <div className="min-w-0 flex-1">
-                                                <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{activity.title}</p>
-                                                <p className="truncate text-sm text-gray-500 dark:text-gray-400">{activity.description}</p>
-                                                <p className="text-xs text-gray-400 dark:text-gray-500">
+                                                <p className="text-xs font-medium text-gray-900 dark:text-gray-100 sm:text-sm">{activity.title}</p>
+                                                <p className="mt-0.5 truncate text-xs text-gray-500 dark:text-gray-400 sm:text-sm">{activity.description}</p>
+                                                <p className="mt-1 text-xs text-gray-400 dark:text-gray-500">
                                                     {new Date(activity.time).toLocaleDateString()} {new Date(activity.time).toLocaleTimeString()}
                                                 </p>
                                             </div>
@@ -296,91 +307,114 @@ export default function AdminDashboard() {
                     </Card>
 
                     {/* Quick Actions - spans 1 column */}
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className="flex items-center gap-2">
-                                <Settings className="h-5 w-5" />
+                    <Card className="transition-all duration-200 hover:shadow-md">
+                        <CardHeader className="pb-3">
+                            <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+                                <Settings className="h-4 w-4 sm:h-5 sm:w-5" />
                                 Quick Actions
                             </CardTitle>
                         </CardHeader>
-                        <CardContent className="space-y-3">
+                        <CardContent className="space-y-2 sm:space-y-3">
                             <Link
                                 href="/admin/users"
-                                className="flex w-full items-center gap-3 rounded-lg border border-blue-200 bg-blue-50 px-4 py-3 text-left text-blue-700 hover:bg-blue-100 dark:border-blue-800 dark:bg-blue-950/50 dark:text-blue-300 dark:hover:bg-blue-950/80"
+                                className="flex w-full items-center gap-2.5 rounded-lg border border-blue-200 bg-blue-50 px-3 py-2 text-left text-sm font-medium text-blue-700 transition-colors hover:bg-blue-100 dark:border-blue-800 dark:bg-blue-950/50 dark:text-blue-300 dark:hover:bg-blue-950/80 sm:gap-3 sm:px-4 sm:py-3 sm:text-base"
                             >
-                                <Users className="h-5 w-5" />
-                                <span className="font-medium">Manage Users</span>
+                                <Users className="h-4 w-4 shrink-0 sm:h-5 sm:w-5" />
+                                <span>Manage Users</span>
                             </Link>
                             <Link
                                 href="/admin/seller-applications"
-                                className="flex w-full items-center gap-3 rounded-lg border border-orange-200 bg-orange-50 px-4 py-3 text-left text-orange-700 hover:bg-orange-100 dark:border-orange-800 dark:bg-orange-950/50 dark:text-orange-300 dark:hover:bg-orange-950/80"
+                                className="flex w-full items-center gap-2.5 rounded-lg border border-orange-200 bg-orange-50 px-3 py-2 text-left text-sm font-medium text-orange-700 transition-colors hover:bg-orange-100 dark:border-orange-800 dark:bg-orange-950/50 dark:text-orange-300 dark:hover:bg-orange-950/80 sm:gap-3 sm:px-4 sm:py-3 sm:text-base"
                             >
-                                <FileText className="h-5 w-5" />
-                                <div>
-                                    <span className="block font-medium">Seller Applications</span>
+                                <FileText className="h-4 w-4 shrink-0 sm:h-5 sm:w-5" />
+                                <div className="min-w-0 flex-1">
+                                    <span className="block">Seller Applications</span>
                                     {sellerApplicationStats.pending > 0 && <span className="text-xs">{sellerApplicationStats.pending} pending</span>}
                                 </div>
                             </Link>
-                            <button className="flex w-full items-center gap-3 rounded-lg border border-purple-200 bg-purple-50 px-4 py-3 text-left text-purple-700 hover:bg-purple-100 dark:border-purple-800 dark:bg-purple-950/50 dark:text-purple-300 dark:hover:bg-purple-950/80">
-                                <BarChart3 className="h-5 w-5" />
-                                <span className="font-medium">View Reports</span>
-                            </button>
-                            <button className="flex w-full items-center gap-3 rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 text-left text-gray-700 hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700">
-                                <Settings className="h-5 w-5" />
-                                <span className="font-medium">System Settings</span>
-                            </button>
+                            <Link
+                                href="/admin/reports"
+                                className="flex w-full items-center gap-2.5 rounded-lg border border-purple-200 bg-purple-50 px-3 py-2 text-left text-sm font-medium text-purple-700 transition-colors hover:bg-purple-100 dark:border-purple-800 dark:bg-purple-950/50 dark:text-purple-300 dark:hover:bg-purple-950/80 sm:gap-3 sm:px-4 sm:py-3 sm:text-base"
+                            >
+                                <BarChart3 className="h-4 w-4 shrink-0 sm:h-5 sm:w-5" />
+                                <span>View Reports</span>
+                            </Link>
+                            <Link
+                                href="/admin/settings"
+                                className="flex w-full items-center gap-2.5 rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-left text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 sm:gap-3 sm:px-4 sm:py-3 sm:text-base"
+                            >
+                                <Settings className="h-4 w-4 shrink-0 sm:h-5 sm:w-5" />
+                                <span>System Settings</span>
+                            </Link>
+                            <Link
+                                href="/admin/page-content"
+                                className="flex w-full items-center gap-2.5 rounded-lg border border-blue-200 bg-blue-50 px-3 py-2 text-left text-sm font-medium text-blue-700 transition-colors hover:bg-blue-100 dark:border-blue-800 dark:bg-blue-950/50 dark:text-blue-300 dark:hover:bg-blue-950/80 sm:gap-3 sm:px-4 sm:py-3 sm:text-base"
+                            >
+                                <FileEdit className="h-4 w-4 shrink-0 sm:h-5 sm:w-5" />
+                                <span>Customize Pages</span>
+                            </Link>
+                            <Link
+                                href="/admin/contact-messages"
+                                className="flex w-full items-center gap-2.5 rounded-lg border border-teal-200 bg-teal-50 px-3 py-2 text-left text-sm font-medium text-teal-700 transition-colors hover:bg-teal-100 dark:border-teal-800 dark:bg-teal-950/50 dark:text-teal-300 dark:hover:bg-teal-950/80 sm:gap-3 sm:px-4 sm:py-3 sm:text-base"
+                            >
+                                <Mail className="h-4 w-4 shrink-0 sm:h-5 sm:w-5" />
+                                <div className="min-w-0 flex-1">
+                                    <span className="block">Contact Messages</span>
+                                    {contactMessageStats.new > 0 && <span className="text-xs">{contactMessageStats.new} new</span>}
+                                </div>
+                            </Link>
                         </CardContent>
                     </Card>
                 </div>
 
                 {/* System Information */}
-                <Card>
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
-                            <Server className="h-5 w-5" />
+                <Card className="transition-all duration-200 hover:shadow-md">
+                    <CardHeader className="pb-3">
+                        <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+                            <Server className="h-4 w-4 sm:h-5 sm:w-5" />
                             System Information
                         </CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <div className="grid gap-4 md:grid-cols-4">
-                            <div className="flex items-center gap-3">
-                                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-green-100 dark:bg-green-900">
-                                    <HardDrive className="h-5 w-5 text-green-600 dark:text-green-400" />
+                        <div className="grid gap-3 sm:gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                            <div className="flex items-center gap-2.5 sm:gap-3">
+                                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-green-100 shadow-sm dark:bg-green-900 sm:h-10 sm:w-10">
+                                    <HardDrive className="h-4 w-4 text-green-600 dark:text-green-400 sm:h-5 sm:w-5" />
                                 </div>
-                                <div>
-                                    <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Database Size</p>
-                                    <p className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                                <div className="min-w-0 flex-1">
+                                    <p className="text-xs font-medium text-gray-600 dark:text-gray-300 sm:text-sm">Database Size</p>
+                                    <p className="text-base font-semibold text-gray-900 dark:text-gray-100 sm:text-lg">
                                         {systemStats.database_size.size_formatted}
                                     </p>
                                 </div>
                             </div>
-                            <div className="flex items-center gap-3">
-                                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900">
-                                    <Database className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                            <div className="flex items-center gap-2.5 sm:gap-3">
+                                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-blue-100 shadow-sm dark:bg-blue-900 sm:h-10 sm:w-10">
+                                    <Database className="h-4 w-4 text-blue-600 dark:text-blue-400 sm:h-5 sm:w-5" />
                                 </div>
-                                <div>
-                                    <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Tables</p>
-                                    <p className="text-lg font-semibold text-gray-900 dark:text-gray-100">{systemStats.total_tables}</p>
+                                <div className="min-w-0 flex-1">
+                                    <p className="text-xs font-medium text-gray-600 dark:text-gray-300 sm:text-sm">Tables</p>
+                                    <p className="text-base font-semibold text-gray-900 dark:text-gray-100 sm:text-lg">{systemStats.total_tables}</p>
                                 </div>
                             </div>
-                            <div className="flex items-center gap-3">
-                                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-purple-100 dark:bg-purple-900">
-                                    <BarChart3 className="h-5 w-5 text-purple-600 dark:text-purple-400" />
+                            <div className="flex items-center gap-2.5 sm:gap-3">
+                                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-purple-100 shadow-sm dark:bg-purple-900 sm:h-10 sm:w-10">
+                                    <BarChart3 className="h-4 w-4 text-purple-600 dark:text-purple-400 sm:h-5 sm:w-5" />
                                 </div>
-                                <div>
-                                    <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Cache Hits</p>
-                                    <p className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                                <div className="min-w-0 flex-1">
+                                    <p className="text-xs font-medium text-gray-600 dark:text-gray-300 sm:text-sm">Cache Hits</p>
+                                    <p className="text-base font-semibold text-gray-900 dark:text-gray-100 sm:text-lg">
                                         {systemStats.cache_hits.toLocaleString()}
                                     </p>
                                 </div>
                             </div>
-                            <div className="flex items-center gap-3">
-                                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-orange-100 dark:bg-orange-900">
-                                    <Clock className="h-5 w-5 text-orange-600 dark:text-orange-400" />
+                            <div className="flex items-center gap-2.5 sm:gap-3">
+                                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-orange-100 shadow-sm dark:bg-orange-900 sm:h-10 sm:w-10">
+                                    <Clock className="h-4 w-4 text-orange-600 dark:text-orange-400 sm:h-5 sm:w-5" />
                                 </div>
-                                <div>
-                                    <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Uptime</p>
-                                    <p className="text-lg font-semibold text-gray-900 dark:text-gray-100">{systemStats.server_uptime}</p>
+                                <div className="min-w-0 flex-1">
+                                    <p className="text-xs font-medium text-gray-600 dark:text-gray-300 sm:text-sm">Uptime</p>
+                                    <p className="text-base font-semibold text-gray-900 dark:text-gray-100 sm:text-lg">{systemStats.server_uptime}</p>
                                 </div>
                             </div>
                         </div>
@@ -388,15 +422,15 @@ export default function AdminDashboard() {
                 </Card>
 
                 {/* Additional Stats Row */}
-                <div className="grid gap-4 md:grid-cols-3">
-                    <Card>
-                        <CardContent className="p-6">
+                <div className="grid gap-3 sm:gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                    <Card className="transition-all duration-200 hover:shadow-md">
+                        <CardContent className="p-4 sm:p-6">
                             <div className="flex items-center justify-between">
-                                <div>
-                                    <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Email Verified</p>
-                                    <p className="text-2xl font-bold text-green-600 dark:text-green-400">{userStats.verified}</p>
+                                <div className="min-w-0 flex-1">
+                                    <p className="text-xs font-medium text-gray-600 dark:text-gray-300 sm:text-sm">Email Verified</p>
+                                    <p className="text-xl font-bold text-green-600 dark:text-green-400 sm:text-2xl">{userStats.verified}</p>
                                 </div>
-                                <CheckCircle className="h-8 w-8 text-green-600 dark:text-green-400" />
+                                <CheckCircle className="h-7 w-7 shrink-0 text-green-600 dark:text-green-400 sm:h-8 sm:w-8" />
                             </div>
                             <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
                                 {Math.round((userStats.verified / userStats.total) * 100)}% verification rate
@@ -404,14 +438,14 @@ export default function AdminDashboard() {
                         </CardContent>
                     </Card>
 
-                    <Card>
-                        <CardContent className="p-6">
+                    <Card className="transition-all duration-200 hover:shadow-md">
+                        <CardContent className="p-4 sm:p-6">
                             <div className="flex items-center justify-between">
-                                <div>
-                                    <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Approved Applications</p>
-                                    <p className="text-2xl font-bold text-green-600 dark:text-green-400">{sellerApplicationStats.approved}</p>
+                                <div className="min-w-0 flex-1">
+                                    <p className="text-xs font-medium text-gray-600 dark:text-gray-300 sm:text-sm">Approved Applications</p>
+                                    <p className="text-xl font-bold text-green-600 dark:text-green-400 sm:text-2xl">{sellerApplicationStats.approved}</p>
                                 </div>
-                                <CheckCircle className="h-8 w-8 text-green-600 dark:text-green-400" />
+                                <CheckCircle className="h-7 w-7 shrink-0 text-green-600 dark:text-green-400 sm:h-8 sm:w-8" />
                             </div>
                             <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
                                 {sellerApplicationStats.total > 0
@@ -422,14 +456,14 @@ export default function AdminDashboard() {
                         </CardContent>
                     </Card>
 
-                    <Card>
-                        <CardContent className="p-6">
+                    <Card className="transition-all duration-200 hover:shadow-md sm:col-span-2 lg:col-span-1">
+                        <CardContent className="p-4 sm:p-6">
                             <div className="flex items-center justify-between">
-                                <div>
-                                    <p className="text-sm font-medium text-gray-600 dark:text-gray-300">New This Month</p>
-                                    <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">{recentUsersCount}</p>
+                                <div className="min-w-0 flex-1">
+                                    <p className="text-xs font-medium text-gray-600 dark:text-gray-300 sm:text-sm">New This Month</p>
+                                    <p className="text-xl font-bold text-blue-600 dark:text-blue-400 sm:text-2xl">{recentUsersCount}</p>
                                 </div>
-                                <UserPlus className="h-8 w-8 text-blue-600 dark:text-blue-400" />
+                                <UserPlus className="h-7 w-7 shrink-0 text-blue-600 dark:text-blue-400 sm:h-8 sm:w-8" />
                             </div>
                             <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">User registrations (30 days)</p>
                         </CardContent>

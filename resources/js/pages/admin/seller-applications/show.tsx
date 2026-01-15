@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import AppLayout from '@/layouts/app-layout';
 import { Head, Link, useForm } from '@inertiajs/react';
-import { AlertCircle, ArrowLeft, Briefcase, Calendar, CheckCircle, Download, FileText, Mail, User, XCircle } from 'lucide-react';
+import { AlertCircle, ArrowLeft, Briefcase, Calendar, CheckCircle, Download, FileText, Mail, User, X, XCircle, ZoomIn } from 'lucide-react';
 import { useState } from 'react';
 
 interface User {
@@ -38,6 +38,7 @@ interface SellerApplicationShowProps {
 export default function SellerApplicationShow({ application }: SellerApplicationShowProps) {
     const [showApprovalForm, setShowApprovalForm] = useState(false);
     const [showRejectionForm, setShowRejectionForm] = useState(false);
+    const [previewImage, setPreviewImage] = useState<{ url: string; title: string } | null>(null);
 
     const approveForm = useForm({
         admin_notes: '',
@@ -102,6 +103,25 @@ export default function SellerApplicationShow({ application }: SellerApplication
             drivers_license: "Driver's License",
         };
         return types[type] || type;
+    };
+
+    const isImageFile = (path: string): boolean => {
+        const extension = path.split('.').pop()?.toLowerCase();
+        return ['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(extension || '');
+    };
+
+    const getPreviewUrl = (type: string, index?: number): string => {
+        if (index !== undefined) {
+            return `/admin/seller-applications/${application.id}/preview/${type}/${index}`;
+        }
+        return `/admin/seller-applications/${application.id}/preview/${type}`;
+    };
+
+    const getDownloadUrl = (type: string, index?: number): string => {
+        if (index !== undefined) {
+            return `/admin/seller-applications/${application.id}/download/${type}/${index}`;
+        }
+        return `/admin/seller-applications/${application.id}/download/${type}`;
     };
 
     return (
@@ -202,25 +222,54 @@ export default function SellerApplicationShow({ application }: SellerApplication
                             <CardContent className="space-y-4">
                                 {/* ID Document */}
                                 <div className="rounded-lg border p-4">
-                                    <div className="flex items-center justify-between">
-                                        <div>
+                                    <div className="flex items-start justify-between gap-4">
+                                        <div className="flex-1">
                                             <h4 className="font-medium">Valid ID Document</h4>
                                             <p className="text-sm text-gray-600">Type: {getIdTypeDisplay(application.id_document_type)}</p>
+                                            
+                                            {/* Image Preview */}
+                                            {isImageFile(application.id_document_path) && (
+                                                <div className="mt-3">
+                                                    <div className="relative inline-block">
+                                                        <img
+                                                            src={getPreviewUrl('id_document')}
+                                                            alt="ID Document Preview"
+                                                            className="h-32 w-auto cursor-pointer rounded-lg border border-gray-200 object-contain transition-transform hover:scale-105"
+                                                            onClick={() => setPreviewImage({ url: getPreviewUrl('id_document'), title: 'Valid ID Document' })}
+                                                        />
+                                                        <div className="absolute inset-0 flex items-center justify-center rounded-lg bg-black/0 transition-colors hover:bg-black/10">
+                                                            <ZoomIn className="h-6 w-6 text-white opacity-0 transition-opacity hover:opacity-100" />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            )}
                                         </div>
-                                        <Button
-                                            variant="outline"
-                                            size="sm"
-                                            onClick={() => window.open(`/admin/seller-applications/${application.id}/download/id_document`)}
-                                        >
-                                            <Download className="mr-2 h-4 w-4" />
-                                            Download
-                                        </Button>
+                                        <div className="flex flex-col gap-2">
+                                            {isImageFile(application.id_document_path) && (
+                                                <Button
+                                                    variant="outline"
+                                                    size="sm"
+                                                    onClick={() => setPreviewImage({ url: getPreviewUrl('id_document'), title: 'Valid ID Document' })}
+                                                >
+                                                    <ZoomIn className="mr-2 h-4 w-4" />
+                                                    Preview
+                                                </Button>
+                                            )}
+                                            <Button
+                                                variant="outline"
+                                                size="sm"
+                                                onClick={() => window.open(getDownloadUrl('id_document'))}
+                                            >
+                                                <Download className="mr-2 h-4 w-4" />
+                                                Download
+                                            </Button>
+                                        </div>
                                     </div>
                                 </div>
 
                                 {/* Additional Documents */}
                                 {application.additional_documents_path && application.additional_documents_path.length > 0 && (
-                                    <div className="rounded-lg border p-4">
+                                    <div className="space-y-3">
                                         <div className="flex items-center justify-between">
                                             <div>
                                                 <h4 className="font-medium">Additional Documents</h4>
@@ -228,16 +277,57 @@ export default function SellerApplicationShow({ application }: SellerApplication
                                                     {application.additional_documents_path.length} file(s) submitted
                                                 </p>
                                             </div>
-                                            <Button
-                                                variant="outline"
-                                                size="sm"
-                                                onClick={() =>
-                                                    window.open(`/admin/seller-applications/${application.id}/download/additional_documents`)
-                                                }
-                                            >
-                                                <Download className="mr-2 h-4 w-4" />
-                                                Download
-                                            </Button>
+                                        </div>
+                                        
+                                        {/* List each additional document */}
+                                        <div className="space-y-3">
+                                            {application.additional_documents_path.map((docPath, index) => (
+                                                <div key={index} className="rounded-lg border p-4">
+                                                    <div className="flex items-start justify-between gap-4">
+                                                        <div className="flex-1">
+                                                            <h5 className="text-sm font-medium">Document {index + 1}</h5>
+                                                            <p className="text-xs text-gray-500">{docPath.split('/').pop()}</p>
+                                                            
+                                                            {/* Image Preview */}
+                                                            {isImageFile(docPath) && (
+                                                                <div className="mt-3">
+                                                                    <div className="relative inline-block">
+                                                                        <img
+                                                                            src={getPreviewUrl('additional_documents', index)}
+                                                                            alt={`Additional Document ${index + 1} Preview`}
+                                                                            className="h-32 w-auto cursor-pointer rounded-lg border border-gray-200 object-contain transition-transform hover:scale-105"
+                                                                            onClick={() => setPreviewImage({ url: getPreviewUrl('additional_documents', index), title: `Additional Document ${index + 1}` })}
+                                                                        />
+                                                                        <div className="absolute inset-0 flex items-center justify-center rounded-lg bg-black/0 transition-colors hover:bg-black/10">
+                                                                            <ZoomIn className="h-6 w-6 text-white opacity-0 transition-opacity hover:opacity-100" />
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                        <div className="flex flex-col gap-2">
+                                                            {isImageFile(docPath) && (
+                                                                <Button
+                                                                    variant="outline"
+                                                                    size="sm"
+                                                                    onClick={() => setPreviewImage({ url: getPreviewUrl('additional_documents', index), title: `Additional Document ${index + 1}` })}
+                                                                >
+                                                                    <ZoomIn className="mr-2 h-4 w-4" />
+                                                                    Preview
+                                                                </Button>
+                                                            )}
+                                                            <Button
+                                                                variant="outline"
+                                                                size="sm"
+                                                                onClick={() => window.open(getDownloadUrl('additional_documents', index))}
+                                                            >
+                                                                <Download className="mr-2 h-4 w-4" />
+                                                                Download
+                                                            </Button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            ))}
                                         </div>
                                     </div>
                                 )}
@@ -398,6 +488,32 @@ export default function SellerApplicationShow({ application }: SellerApplication
                     </div>
                 </div>
             </div>
+
+            {/* Image Preview Modal */}
+            {previewImage && (
+                <div
+                    className="fixed inset-0 z-[10000] flex items-center justify-center bg-black/80 p-4"
+                    onClick={() => setPreviewImage(null)}
+                >
+                    <div className="relative max-h-[90vh] max-w-[90vw]">
+                        <button
+                            onClick={() => setPreviewImage(null)}
+                            className="absolute -right-12 top-0 rounded-full bg-white/10 p-2 text-white transition-colors hover:bg-white/20"
+                        >
+                            <X className="h-6 w-6" />
+                        </button>
+                        <div className="rounded-lg bg-white p-4 shadow-2xl">
+                            <h3 className="mb-2 text-lg font-semibold">{previewImage.title}</h3>
+                            <img
+                                src={previewImage.url}
+                                alt={previewImage.title}
+                                className="max-h-[80vh] max-w-full object-contain"
+                                onClick={(e) => e.stopPropagation()}
+                            />
+                        </div>
+                    </div>
+                </div>
+            )}
         </AppLayout>
     );
 }

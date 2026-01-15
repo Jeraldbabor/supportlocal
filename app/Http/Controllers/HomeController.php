@@ -3,10 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\WishlistHelper;
+use App\Models\ContactMessage;
+use App\Models\PageContent;
 use App\Models\Product;
 use App\Models\ProductCategory;
 use App\Models\User;
+use App\Notifications\NewContactMessageReceived;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Notification;
 use Inertia\Inertia;
 
 class HomeController extends Controller
@@ -180,8 +184,21 @@ class HomeController extends Controller
                 ];
             });
 
+        // Get dynamic page content
+        $pageContents = PageContent::getPageContents(PageContent::PAGE_TYPE_ABOUT)
+            ->map(function ($content) {
+                return [
+                    'section' => $content->section,
+                    'title' => $content->title,
+                    'content' => $content->content,
+                    'metadata' => $content->metadata,
+                ];
+            })
+            ->keyBy('section');
+
         return Inertia::render('About', [
             'artisans' => $artisans ?? [],
+            'pageContents' => $pageContents,
         ]);
     }
 
@@ -190,7 +207,21 @@ class HomeController extends Controller
      */
     public function contact()
     {
-        return Inertia::render('Contact');
+        // Get dynamic page content
+        $pageContents = PageContent::getPageContents(PageContent::PAGE_TYPE_CONTACT)
+            ->map(function ($content) {
+                return [
+                    'section' => $content->section,
+                    'title' => $content->title,
+                    'content' => $content->content,
+                    'metadata' => $content->metadata,
+                ];
+            })
+            ->keyBy('section');
+
+        return Inertia::render('Contact', [
+            'pageContents' => $pageContents,
+        ]);
     }
 
     /**
@@ -198,18 +229,25 @@ class HomeController extends Controller
      */
     public function sendContactMessage(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255',
             'subject' => 'required|string|max:255',
             'message' => 'required|string|max:2000',
         ]);
 
-        // Here you would typically send an email or store the message
-        // For now, we'll just return a success response
+        // Store the message in the database
+        $contactMessage = ContactMessage::create([
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'subject' => $validated['subject'],
+            'message' => $validated['message'],
+            'status' => ContactMessage::STATUS_NEW,
+        ]);
 
-        // TODO: Implement email functionality
-        // Mail::to(config('app.contact_email'))->send(new ContactMessage($request->all()));
+        // Notify all administrators about the new contact message
+        $admins = User::where('role', User::ROLE_ADMINISTRATOR)->get();
+        Notification::send($admins, new NewContactMessageReceived($contactMessage));
 
         return back()->with('success', 'Thank you for your message! We\'ll get back to you within 24 hours.');
     }

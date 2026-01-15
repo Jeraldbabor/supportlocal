@@ -2,7 +2,7 @@ import { SidebarGroup, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, Sideba
 import { type NavItem } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
 
-export function NavMain({ items = [], unreadMessagesCount = 0 }: { items: NavItem[]; unreadMessagesCount?: number }) {
+export function NavMain({ items = [], unreadMessagesCount = 0, newContactMessagesCount = 0 }: { items: NavItem[]; unreadMessagesCount?: number; newContactMessagesCount?: number }) {
     const page = usePage();
 
     // Function to determine if a nav item is active
@@ -43,6 +43,11 @@ export function NavMain({ items = [], unreadMessagesCount = 0 }: { items: NavIte
                                 {item.title === 'Messages' && unreadMessagesCount > 0 && (
                                     <span className="ml-auto flex h-5 w-5 items-center justify-center rounded-full bg-blue-500 text-xs font-semibold text-white group-data-[active=true]:bg-white group-data-[active=true]:text-primary">
                                         {unreadMessagesCount > 9 ? '9+' : unreadMessagesCount}
+                                    </span>
+                                )}
+                                {item.title === 'Contact Messages' && newContactMessagesCount > 0 && (
+                                    <span className="ml-auto flex h-5 w-5 items-center justify-center rounded-full bg-blue-500 text-xs font-semibold text-white group-data-[active=true]:bg-white group-data-[active=true]:text-primary animate-pulse">
+                                        {newContactMessagesCount > 9 ? '9+' : newContactMessagesCount}
                                     </span>
                                 )}
                             </Link>

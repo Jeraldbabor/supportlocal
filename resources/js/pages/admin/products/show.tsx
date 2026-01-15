@@ -398,10 +398,18 @@ export default function ProductShow() {
                                         </span>
                                     </div>
                                 )}
-                                {product.shipping_cost !== null && (
+                                {product.shipping_cost !== null && product.shipping_cost !== undefined && (
                                     <div className="flex justify-between">
                                         <span className="text-muted-foreground">Shipping Cost</span>
-                                        <span>₱{product.shipping_cost.toFixed(2)}</span>
+                                        <span>
+                                            ₱
+                                            {(() => {
+                                                const cost = typeof product.shipping_cost === 'number' 
+                                                    ? product.shipping_cost 
+                                                    : Number(product.shipping_cost);
+                                                return !isNaN(cost) ? cost.toFixed(2) : 'N/A';
+                                            })()}
+                                        </span>
                                     </div>
                                 )}
                                 <div className="flex justify-between">

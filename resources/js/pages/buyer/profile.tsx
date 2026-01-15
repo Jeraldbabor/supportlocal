@@ -13,7 +13,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { getBarangaysByCity, getCitiesByProvince, getProvinces } from '@/data/philippineLocations';
 import BuyerLayout from '@/layouts/BuyerLayout';
 import { Head, useForm, usePage } from '@inertiajs/react';
-import { AlertTriangle, Calendar, Camera, CreditCard, Key, MapPin, Phone, Save, Shield, Trash2, Truck, Upload, User } from 'lucide-react';
+import { AlertTriangle, Calendar, Camera, CreditCard, Download, Info, Key, MapPin, Phone, Save, Shield, Trash2, Truck, Upload, User } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 // Helper function to format date for HTML date input (yyyy-MM-dd)
@@ -892,6 +892,38 @@ export default function BuyerProfile({ user }: BuyerProfileProps) {
                                     </div>
                                 </form>
                             )}
+                        </CardContent>
+                    </Card>
+
+                    {/* Data Export Section */}
+                    <Card className="border-2 border-blue-200 shadow-lg transition-shadow duration-300 hover:shadow-xl">
+                        <CardHeader className="border-b border-blue-200 bg-gradient-to-br from-blue-50/50 to-transparent p-4 sm:p-6">
+                            <CardTitle className="flex items-center gap-2 text-lg text-blue-600 sm:gap-3 sm:text-xl">
+                                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-100 sm:h-10 sm:w-10">
+                                    <Download className="h-4 w-4 text-blue-600 sm:h-5 sm:w-5" />
+                                </div>
+                                Export Your Data
+                            </CardTitle>
+                            <CardDescription className="mt-1 text-sm sm:text-base">
+                                Download a copy of all your personal data (GDPR compliant)
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent className="p-4 pt-4 sm:p-6 sm:pt-6">
+                            <Alert className="mb-4 border-2 border-blue-200 bg-blue-50/80 shadow-sm sm:mb-6">
+                                <Info className="h-4 w-4 flex-shrink-0 text-blue-600 sm:h-5 sm:w-5" />
+                                <AlertDescription className="text-xs leading-relaxed font-medium text-blue-800 sm:text-sm">
+                                    You have the right to access your personal data. This export includes all your account information, orders, ratings, conversations, and more.
+                                </AlertDescription>
+                            </Alert>
+                            <Button
+                                type="button"
+                                variant="outline"
+                                onClick={() => window.location.href = '/data-export'}
+                                className="h-11 w-full text-sm font-semibold shadow-md transition-all duration-300 hover:scale-[1.02] hover:shadow-lg active:scale-[0.98] sm:h-12 sm:text-base"
+                            >
+                                <Download className="mr-2 h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                                Download My Data (JSON)
+                            </Button>
                         </CardContent>
                     </Card>
 

@@ -139,78 +139,78 @@ export default function UsersIndex() {
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="User Management" />
 
-            <div className="flex flex-col gap-6">
+            <div className="flex flex-col gap-4 sm:gap-6">
                 {/* Stats Cards */}
-                <div className="grid gap-4 md:grid-cols-6">
-                    <Card>
+                <div className="grid gap-3 sm:gap-4 grid-cols-2 sm:grid-cols-3 lg:grid-cols-6">
+                    <Card className="transition-all duration-200 hover:shadow-md">
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Total Users</CardTitle>
-                            <Users className="h-4 w-4 text-muted-foreground" />
+                            <CardTitle className="text-xs font-medium sm:text-sm">Total Users</CardTitle>
+                            <Users className="h-3 w-3 text-muted-foreground sm:h-4 sm:w-4" />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold">{stats.total}</div>
+                            <div className="text-xl font-bold sm:text-2xl">{stats.total}</div>
                         </CardContent>
                     </Card>
 
-                    <Card>
+                    <Card className="transition-all duration-200 hover:shadow-md">
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Active</CardTitle>
-                            <UserCheck className="h-4 w-4 text-green-600" />
+                            <CardTitle className="text-xs font-medium sm:text-sm">Active</CardTitle>
+                            <UserCheck className="h-3 w-3 text-green-600 sm:h-4 sm:w-4" />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold text-green-600">{stats.active}</div>
+                            <div className="text-xl font-bold text-green-600 sm:text-2xl">{stats.active}</div>
                         </CardContent>
                     </Card>
 
-                    <Card>
+                    <Card className="transition-all duration-200 hover:shadow-md">
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Inactive</CardTitle>
-                            <UserX className="h-4 w-4 text-red-600" />
+                            <CardTitle className="text-xs font-medium sm:text-sm">Inactive</CardTitle>
+                            <UserX className="h-3 w-3 text-red-600 sm:h-4 sm:w-4" />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold text-red-600">{stats.inactive}</div>
+                            <div className="text-xl font-bold text-red-600 sm:text-2xl">{stats.inactive}</div>
                         </CardContent>
                     </Card>
 
-                    <Card>
+                    <Card className="transition-all duration-200 hover:shadow-md">
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Administrators</CardTitle>
-                            <Shield className="h-4 w-4 text-red-600" />
+                            <CardTitle className="text-xs font-medium sm:text-sm">Administrators</CardTitle>
+                            <Shield className="h-3 w-3 text-red-600 sm:h-4 sm:w-4" />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold">{stats.administrators}</div>
+                            <div className="text-xl font-bold sm:text-2xl">{stats.administrators}</div>
                         </CardContent>
                     </Card>
 
-                    <Card>
+                    <Card className="transition-all duration-200 hover:shadow-md">
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Sellers</CardTitle>
-                            <Users className="h-4 w-4 text-blue-600" />
+                            <CardTitle className="text-xs font-medium sm:text-sm">Sellers</CardTitle>
+                            <Users className="h-3 w-3 text-blue-600 sm:h-4 sm:w-4" />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold">{stats.sellers}</div>
+                            <div className="text-xl font-bold sm:text-2xl">{stats.sellers}</div>
                         </CardContent>
                     </Card>
 
-                    <Card>
+                    <Card className="transition-all duration-200 hover:shadow-md">
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Buyers</CardTitle>
-                            <Users className="h-4 w-4 text-green-600" />
+                            <CardTitle className="text-xs font-medium sm:text-sm">Buyers</CardTitle>
+                            <Users className="h-3 w-3 text-green-600 sm:h-4 sm:w-4" />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold">{stats.buyers}</div>
+                            <div className="text-xl font-bold sm:text-2xl">{stats.buyers}</div>
                         </CardContent>
                     </Card>
                 </div>
 
                 {/* Header */}
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                     <div>
-                        <h1 className="text-3xl font-bold tracking-tight">User Management</h1>
-                        <p className="text-muted-foreground">Manage all users in the system</p>
+                        <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">User Management</h1>
+                        <p className="mt-1 text-sm text-muted-foreground sm:text-base">Manage all users in the system</p>
                     </div>
-                    <Link href="/admin/users/create">
-                        <Button>
+                    <Link href="/admin/users/create" className="w-full sm:w-auto">
+                        <Button className="w-full sm:w-auto">
                             <UserPlus className="mr-2 h-4 w-4" />
                             Add User
                         </Button>
@@ -218,25 +218,25 @@ export default function UsersIndex() {
                 </div>
 
                 {/* Filters */}
-                <Card>
-                    <CardContent className="pt-6">
-                        <div className="flex flex-col gap-4 md:flex-row md:items-end">
+                <Card className="transition-all duration-200 hover:shadow-md">
+                    <CardContent className="pt-4 sm:pt-6">
+                        <div className="flex flex-col gap-3 sm:gap-4 md:flex-row md:items-end">
                             <div className="flex-1">
-                                <label className="text-sm font-medium">Search</label>
+                                <label className="mb-1.5 block text-xs font-medium sm:text-sm">Search</label>
                                 <div className="relative">
-                                    <Search className="absolute top-3 left-3 h-4 w-4 text-muted-foreground" />
+                                    <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                                     <Input
                                         placeholder="Search by name or email..."
                                         value={searchTerm}
                                         onChange={(e: ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
-                                        className="pl-10"
+                                        className="pl-9"
                                         onKeyPress={(e: KeyboardEvent<HTMLInputElement>) => e.key === 'Enter' && handleSearch()}
                                     />
                                 </div>
                             </div>
 
-                            <div className="w-48">
-                                <label className="text-sm font-medium">Role</label>
+                            <div className="w-full md:w-48">
+                                <label className="mb-1.5 block text-xs font-medium sm:text-sm">Role</label>
                                 <Select value={selectedRole} onValueChange={setSelectedRole}>
                                     <SelectTrigger>
                                         <SelectValue placeholder="All Roles" />
@@ -252,8 +252,8 @@ export default function UsersIndex() {
                                 </Select>
                             </div>
 
-                            <div className="w-48">
-                                <label className="text-sm font-medium">Status</label>
+                            <div className="w-full md:w-48">
+                                <label className="mb-1.5 block text-xs font-medium sm:text-sm">Status</label>
                                 <Select value={selectedStatus} onValueChange={setSelectedStatus}>
                                     <SelectTrigger>
                                         <SelectValue placeholder="All Status" />
@@ -267,11 +267,11 @@ export default function UsersIndex() {
                             </div>
 
                             <div className="flex gap-2">
-                                <Button onClick={handleSearch}>
+                                <Button onClick={handleSearch} className="flex-1 sm:flex-initial">
                                     <Filter className="mr-2 h-4 w-4" />
                                     Apply
                                 </Button>
-                                <Button variant="outline" onClick={handleClearFilters}>
+                                <Button variant="outline" onClick={handleClearFilters} className="flex-1 sm:flex-initial">
                                     Clear
                                 </Button>
                             </div>
@@ -280,52 +280,53 @@ export default function UsersIndex() {
                 </Card>
 
                 {/* Users Table */}
-                <Card>
+                <Card className="transition-all duration-200 hover:shadow-md">
                     <CardContent className="p-0">
-                        <div className="overflow-x-auto">
+                        {/* Desktop Table View */}
+                        <div className="hidden overflow-x-auto md:block">
                             <table className="w-full">
                                 <thead className="border-b bg-gray-50 dark:bg-gray-800">
                                     <tr>
-                                        <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">User</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">Role</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">Status</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">
+                                        <th className="px-4 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase lg:px-6">User</th>
+                                        <th className="px-4 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase lg:px-6">Role</th>
+                                        <th className="px-4 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase lg:px-6">Status</th>
+                                        <th className="px-4 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase lg:px-6">
                                             Email Verified
                                         </th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">Last Login</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">Created</th>
-                                        <th className="w-[70px] px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">
+                                        <th className="px-4 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase lg:px-6">Last Login</th>
+                                        <th className="px-4 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase lg:px-6">Created</th>
+                                        <th className="w-[70px] px-4 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase lg:px-6">
                                             Actions
                                         </th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-gray-200 bg-white dark:divide-gray-700 dark:bg-gray-900">
                                     {users.data.map((user) => (
-                                        <tr key={user.id} className="hover:bg-gray-50 dark:hover:bg-gray-800">
-                                            <td className="px-6 py-4">
+                                        <tr key={user.id} className="transition-colors hover:bg-gray-50 dark:hover:bg-gray-800">
+                                            <td className="px-4 py-4 lg:px-6">
                                                 <div className="flex items-center gap-3">
                                                     <img
                                                         src={user.avatar_url}
                                                         alt={user.name}
-                                                        className="h-8 w-8 rounded-full"
+                                                        className="h-8 w-8 shrink-0 rounded-full"
                                                         onError={(e) => {
                                                             const target = e.target as HTMLImageElement;
                                                             target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&color=7F9CF5&background=EBF4FF`;
                                                         }}
                                                     />
-                                                    <div>
-                                                        <div className="font-medium">{user.name}</div>
-                                                        <div className="text-sm text-muted-foreground">{user.email}</div>
+                                                    <div className="min-w-0">
+                                                        <div className="truncate font-medium">{user.name}</div>
+                                                        <div className="truncate text-sm text-muted-foreground">{user.email}</div>
                                                         {user.phone_number && (
                                                             <div className="text-xs text-muted-foreground">{user.phone_number}</div>
                                                         )}
                                                     </div>
                                                 </div>
                                             </td>
-                                            <td className="px-6 py-4">
+                                            <td className="px-4 py-4 lg:px-6">
                                                 <Badge className={getRoleColor(user.role || '')}>{user.role_display}</Badge>
                                             </td>
-                                            <td className="px-6 py-4">
+                                            <td className="px-4 py-4 lg:px-6">
                                                 <Badge
                                                     variant={user.is_active ? 'default' : 'secondary'}
                                                     className={
@@ -337,7 +338,7 @@ export default function UsersIndex() {
                                                     {user.is_active ? 'Active' : 'Inactive'}
                                                 </Badge>
                                             </td>
-                                            <td className="px-6 py-4">
+                                            <td className="px-4 py-4 lg:px-6">
                                                 {user.email_verified_at ? (
                                                     <div className="flex items-center gap-1 text-green-600">
                                                         <CheckCircle className="h-4 w-4" />
@@ -350,17 +351,17 @@ export default function UsersIndex() {
                                                     </div>
                                                 )}
                                             </td>
-                                            <td className="px-6 py-4">
+                                            <td className="px-4 py-4 lg:px-6">
                                                 {user.last_login_at ? (
                                                     <span className="text-sm">{new Date(user.last_login_at as string).toLocaleDateString()}</span>
                                                 ) : (
                                                     <span className="text-sm text-muted-foreground">Never</span>
                                                 )}
                                             </td>
-                                            <td className="px-6 py-4">
+                                            <td className="px-4 py-4 lg:px-6">
                                                 <span className="text-sm">{new Date(user.created_at).toLocaleDateString()}</span>
                                             </td>
-                                            <td className="px-6 py-4">
+                                            <td className="px-4 py-4 lg:px-6">
                                                 <DropdownMenu>
                                                     <DropdownMenuTrigger asChild>
                                                         <Button variant="ghost" className="h-8 w-8 p-0">
@@ -417,11 +418,119 @@ export default function UsersIndex() {
                             </table>
                         </div>
 
+                        {/* Mobile Card View */}
+                        <div className="space-y-3 p-4 md:hidden">
+                            {users.data.map((user) => (
+                                <div
+                                    key={user.id}
+                                    className="rounded-lg border bg-card p-4 shadow-sm transition-all hover:shadow-md"
+                                >
+                                    <div className="flex items-start justify-between gap-3">
+                                        <div className="flex min-w-0 flex-1 items-start gap-3">
+                                            <img
+                                                src={user.avatar_url}
+                                                alt={user.name}
+                                                className="h-10 w-10 shrink-0 rounded-full"
+                                                onError={(e) => {
+                                                    const target = e.target as HTMLImageElement;
+                                                    target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&color=7F9CF5&background=EBF4FF`;
+                                                }}
+                                            />
+                                            <div className="min-w-0 flex-1">
+                                                <div className="font-medium">{user.name}</div>
+                                                <div className="mt-0.5 truncate text-sm text-muted-foreground">{user.email}</div>
+                                                {user.phone_number && (
+                                                    <div className="mt-0.5 text-xs text-muted-foreground">{user.phone_number}</div>
+                                                )}
+                                                <div className="mt-2 flex flex-wrap items-center gap-2">
+                                                    <Badge className={getRoleColor(user.role || '')}>{user.role_display}</Badge>
+                                                    <Badge
+                                                        variant={user.is_active ? 'default' : 'secondary'}
+                                                        className={
+                                                            user.is_active
+                                                                ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400'
+                                                                : 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400'
+                                                        }
+                                                    >
+                                                        {user.is_active ? 'Active' : 'Inactive'}
+                                                    </Badge>
+                                                    {user.email_verified_at ? (
+                                                        <div className="flex items-center gap-1 text-xs text-green-600">
+                                                            <CheckCircle className="h-3 w-3" />
+                                                            <span>Verified</span>
+                                                        </div>
+                                                    ) : (
+                                                        <div className="flex items-center gap-1 text-xs text-red-600">
+                                                            <XCircle className="h-3 w-3" />
+                                                            <span>Not Verified</span>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                                <div className="mt-2 space-y-1 text-xs text-muted-foreground">
+                                                    <div>Last Login: {user.last_login_at ? new Date(user.last_login_at as string).toLocaleDateString() : 'Never'}</div>
+                                                    <div>Created: {new Date(user.created_at).toLocaleDateString()}</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <DropdownMenu>
+                                            <DropdownMenuTrigger asChild>
+                                                <Button variant="ghost" className="h-8 w-8 shrink-0 p-0">
+                                                    <MoreHorizontal className="h-4 w-4" />
+                                                </Button>
+                                            </DropdownMenuTrigger>
+                                            <DropdownMenuContent align="end">
+                                                <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                                                <DropdownMenuItem asChild>
+                                                    <Link href={`/admin/users/${user.id}`}>
+                                                        <Eye className="mr-2 h-4 w-4" />
+                                                        View Details
+                                                    </Link>
+                                                </DropdownMenuItem>
+                                                <DropdownMenuItem asChild>
+                                                    <Link href={`/admin/users/${user.id}/edit`}>
+                                                        <Edit className="mr-2 h-4 w-4" />
+                                                        Edit User
+                                                    </Link>
+                                                </DropdownMenuItem>
+                                                <DropdownMenuSeparator />
+                                                <DropdownMenuItem onClick={() => handleToggleStatus(user.id)}>
+                                                    {user.is_active ? (
+                                                        <>
+                                                            <UserX className="mr-2 h-4 w-4" />
+                                                            Deactivate
+                                                        </>
+                                                    ) : (
+                                                        <>
+                                                            <UserCheck className="mr-2 h-4 w-4" />
+                                                            Activate
+                                                        </>
+                                                    )}
+                                                </DropdownMenuItem>
+                                                {!user.email_verified_at && (
+                                                    <DropdownMenuItem asChild>
+                                                        <Link href={`/admin/users/${user.id}/verify-email`} method="post">
+                                                            <Mail className="mr-2 h-4 w-4" />
+                                                            Verify Email
+                                                        </Link>
+                                                    </DropdownMenuItem>
+                                                )}
+                                                <DropdownMenuSeparator />
+                                                <DropdownMenuItem onClick={() => handleDelete(user.id)} className="text-red-600">
+                                                    <Trash2 className="mr-2 h-4 w-4" />
+                                                    Delete User
+                                                </DropdownMenuItem>
+                                            </DropdownMenuContent>
+                                        </DropdownMenu>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+
                         {users.data.length === 0 && (
-                            <div className="flex flex-col items-center justify-center py-12">
+                            <div className="flex flex-col items-center justify-center py-12 px-4">
                                 <Users className="mb-4 h-12 w-12 text-muted-foreground" />
                                 <h3 className="text-lg font-medium">No users found</h3>
-                                <p className="text-muted-foreground">
+                                <p className="mt-1 text-center text-sm text-muted-foreground">
                                     {filters.search || filters.role || filters.status
                                         ? 'Try adjusting your filters'
                                         : 'Get started by creating your first user'}
@@ -433,14 +542,14 @@ export default function UsersIndex() {
 
                 {/* Pagination */}
                 {users.links && users.links.length > 3 && (
-                    <div className="flex items-center justify-center gap-2">
+                    <div className="flex flex-wrap items-center justify-center gap-2 px-4">
                         {users.links.map(
                             (link, index) =>
                                 link.url && (
                                     <Link
                                         key={index}
                                         href={link.url}
-                                        className={`rounded-md px-3 py-2 text-sm ${
+                                        className={`rounded-md px-2 py-1.5 text-xs transition-colors sm:px-3 sm:py-2 sm:text-sm ${
                                             link.active ? 'bg-primary text-primary-foreground' : 'border bg-background hover:bg-muted'
                                         }`}
                                         dangerouslySetInnerHTML={{ __html: link.label }}

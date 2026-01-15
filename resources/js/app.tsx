@@ -4,6 +4,7 @@ import { createInertiaApp } from '@inertiajs/react';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import React from 'react';
 import { createRoot } from 'react-dom/client';
+import PageLoader from './components/PageLoader';
 import { CartProvider } from './contexts/CartContext';
 import { initializeTheme } from './hooks/use-appearance';
 import './lib/echo'; // Initialize Echo for real-time features
@@ -16,7 +17,9 @@ function AppShell({ Component, props }: { Component: React.ComponentType<Record<
 
     return (
         <CartProvider isAuthenticated={isAuthenticated}>
-            <Component {...props} />
+            <PageLoader>
+                <Component {...props} />
+            </PageLoader>
         </CartProvider>
     );
 }
@@ -27,7 +30,7 @@ createInertiaApp({
     setup({ el, App, props }) {
         const root = createRoot(el);
 
-        // Wrap App with our shell that includes CartProvider
+        // Wrap App with our shell that includes CartProvider and PageLoader
         root.render(
             <App {...props}>
                 {({ Component, props: pageProps }: { Component: React.ComponentType<Record<string, unknown>>; props: Record<string, unknown> }) => (

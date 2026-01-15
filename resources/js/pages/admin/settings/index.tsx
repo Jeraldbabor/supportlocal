@@ -64,7 +64,16 @@ export default function SettingsIndex() {
 
     const handleSubmit = (section: string, data: Record<string, unknown>) => {
         setIsSubmitting(true);
-        router.post(`/admin/settings/${section}`, data, {
+        // Convert data to proper format for router.post
+        const payload: Record<string, string | number | boolean> = {};
+        Object.entries(data).forEach(([key, value]) => {
+            if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
+                payload[key] = value;
+            } else if (value !== null && value !== undefined) {
+                payload[key] = String(value);
+            }
+        });
+        router.post(`/admin/settings/${section}`, payload, {
             preserveScroll: true,
             onFinish: () => setIsSubmitting(false),
         });
@@ -86,12 +95,13 @@ export default function SettingsIndex() {
                 </div>
 
                 <Tabs defaultValue="general" className="w-full">
-                    <TabsList className="grid w-full grid-cols-5">
+                    <TabsList className="grid w-full grid-cols-6">
                         <TabsTrigger value="general">General</TabsTrigger>
                         <TabsTrigger value="ecommerce">E-commerce</TabsTrigger>
                         <TabsTrigger value="seller">Seller</TabsTrigger>
                         <TabsTrigger value="notifications">Notifications</TabsTrigger>
                         <TabsTrigger value="seo">SEO</TabsTrigger>
+                        <TabsTrigger value="backup">Backup</TabsTrigger>
                     </TabsList>
 
                     {/* General Settings */}
@@ -382,6 +392,60 @@ export default function SettingsIndex() {
                                         Save SEO Settings
                                     </Button>
                                 </form>
+                            </CardContent>
+                        </Card>
+                    </TabsContent>
+
+                    {/* Database Backup Settings */}
+                    <TabsContent value="backup">
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>Database Backup</CardTitle>
+                                <CardDescription>Manage automated database backups</CardDescription>
+                            </CardHeader>
+                            <CardContent className="space-y-4">
+                                <div className="rounded-lg border bg-muted/50 p-4">
+                                    <h3 className="mb-2 font-semibold">Automated Backups</h3>
+                                    <p className="mb-4 text-sm text-muted-foreground">
+                                        Database backups are automatically created daily at 2:00 AM (Asia/Manila timezone).
+                                        Backups are retained for 7 days and stored in <code className="rounded bg-background px-1 py-0.5 text-xs">storage/app/backups</code>.
+                                    </p>
+                                    <div className="space-y-2 text-sm">
+                                        <div className="flex items-center gap-2">
+                                            <div className="h-2 w-2 rounded-full bg-green-500"></div>
+                                            <span>Automatic daily backups enabled</span>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <div className="h-2 w-2 rounded-full bg-blue-500"></div>
+                                            <span>Backup retention: 7 days</span>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <div className="h-2 w-2 rounded-full bg-purple-500"></div>
+                                            <span>Backups are compressed (gzip)</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="rounded-lg border p-4">
+                                    <h3 className="mb-2 font-semibold">Manual Backup</h3>
+                                    <p className="mb-4 text-sm text-muted-foreground">
+                                        Create an immediate database backup. This may take a few moments depending on your database size.
+                                    </p>
+                                    <form
+                                        onSubmit={(e) => {
+                                            e.preventDefault();
+                                            router.post('/admin/database/backup', {}, {
+                                                preserveScroll: true,
+                                                onSuccess: () => {
+                                                    alert('Database backup initiated successfully!');
+                                                },
+                                            });
+                                        }}
+                                    >
+                                        <Button type="submit" variant="outline">
+                                            Create Backup Now
+                                        </Button>
+                                    </form>
+                                </div>
                             </CardContent>
                         </Card>
                     </TabsContent>

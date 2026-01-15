@@ -17,6 +17,9 @@ import {
     Truck,
     User,
     XCircle,
+    Image as ImageIcon,
+    Check,
+    X,
 } from 'lucide-react';
 import { useState } from 'react';
 
@@ -37,6 +40,8 @@ interface Order {
     status: string;
     payment_method: string;
     payment_status: string;
+    payment_proof: string | null;
+    payment_verification_notes: string | null;
     delivery_address: string;
     delivery_phone: string;
     delivery_notes: string;
@@ -59,6 +64,10 @@ export default function OrderShow({ order }: OrderShowProps) {
     const [showToast, setShowToast] = useState(false);
     const [toastMessage, setToastMessage] = useState('');
     const [toastType, setToastType] = useState<'success' | 'error'>('success');
+    const [showRejectModal, setShowRejectModal] = useState(false);
+    const [rejectionNotes, setRejectionNotes] = useState('');
+    const [verifying, setVerifying] = useState(false);
+    const [rejecting, setRejecting] = useState(false);
 
     const getStatusColor = (status: string) => {
         switch (status) {
@@ -174,6 +183,97 @@ export default function OrderShow({ order }: OrderShowProps) {
             }
         }
     };
+
+    const handleVerifyPayment = async () => {
+        setVerifying(true);
+        try {
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+            if (!csrfToken) {
+                throw new Error('Security token not found.');
+            }
+
+            const response = await fetch(`/seller/orders/${order.id}/verify-payment`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken,
+                },
+                body: JSON.stringify({
+                    payment_verification_notes: '',
+                }),
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                setToastMessage('Payment verified successfully!');
+                setToastType('success');
+                setShowToast(true);
+                router.reload();
+            } else {
+                setToastMessage(data.message || 'Failed to verify payment.');
+                setToastType('error');
+                setShowToast(true);
+            }
+        } catch (error) {
+            setToastMessage('An error occurred while verifying payment.');
+            setToastType('error');
+            setShowToast(true);
+        } finally {
+            setVerifying(false);
+        }
+    };
+
+    const handleRejectPayment = async () => {
+        if (!rejectionNotes.trim()) {
+            setToastMessage('Please provide a reason for rejection.');
+            setToastType('error');
+            setShowToast(true);
+            return;
+        }
+
+        setRejecting(true);
+        try {
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+            if (!csrfToken) {
+                throw new Error('Security token not found.');
+            }
+
+            const response = await fetch(`/seller/orders/${order.id}/reject-payment`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken,
+                },
+                body: JSON.stringify({
+                    payment_verification_notes: rejectionNotes,
+                }),
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                setToastMessage('Payment proof rejected. Buyer has been notified.');
+                setToastType('success');
+                setShowToast(true);
+                setShowRejectModal(false);
+                setRejectionNotes('');
+                router.reload();
+            } else {
+                setToastMessage(data.message || 'Failed to reject payment.');
+                setToastType('error');
+                setShowToast(true);
+            }
+        } catch (error) {
+            setToastMessage('An error occurred while rejecting payment.');
+            setToastType('error');
+            setShowToast(true);
+        } finally {
+            setRejecting(false);
+        }
+    };
+
+    const canVerifyPayment = order.payment_method === 'gcash' && order.status === 'pending' && order.payment_proof && order.payment_status === 'pending';
 
     return (
         <AppLayout>
@@ -440,6 +540,108 @@ export default function OrderShow({ order }: OrderShowProps) {
                         </div>
                     </div>
 
+                    {/* Payment Verification Section */}
+                    {order.payment_method === 'gcash' && order.status === 'pending' && (
+                        <div className="mt-6 overflow-hidden rounded-2xl bg-white shadow-lg ring-1 shadow-gray-100 ring-gray-100">
+                            <div className="border-b border-gray-100 bg-gradient-to-r from-blue-50 to-indigo-50 px-6 py-4">
+                                <h2 className="flex items-center gap-3 text-lg font-bold text-gray-900">
+                                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 shadow-md">
+                                        <CreditCard className="h-5 w-5 text-white" />
+                                    </div>
+                                    Payment Verification
+                                </h2>
+                            </div>
+                            <div className="p-6">
+                                {order.payment_status === 'paid' && (
+                                    <div className="rounded-xl bg-gradient-to-r from-emerald-50 to-green-50 p-6 ring-1 ring-emerald-200">
+                                        <div className="flex items-center gap-4">
+                                            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-emerald-500 to-green-600 shadow-md">
+                                                <CheckCircle className="h-6 w-6 text-white" />
+                                            </div>
+                                            <div>
+                                                <p className="font-bold text-emerald-800">Payment Verified</p>
+                                                {order.payment_verification_notes && (
+                                                    <p className="mt-1 text-sm text-emerald-700">{order.payment_verification_notes}</p>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+                                {order.payment_status === 'pending' && !order.payment_proof && (
+                                    <div className="rounded-xl bg-gradient-to-r from-amber-50 to-yellow-50 p-6 ring-1 ring-amber-200">
+                                        <div className="flex items-center gap-4">
+                                            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-amber-500 to-yellow-600 shadow-md">
+                                                <Clock className="h-6 w-6 text-white" />
+                                            </div>
+                                            <div>
+                                                <p className="font-bold text-amber-800">Waiting for Payment Proof</p>
+                                                <p className="mt-1 text-sm text-amber-700">The buyer has not uploaded a payment proof yet.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+                                {order.payment_status === 'pending' && order.payment_proof && (
+                                    <div className="space-y-4">
+                                        <div>
+                                            <p className="mb-3 text-sm font-semibold text-gray-700">Payment Proof:</p>
+                                            <div className="relative flex justify-center rounded-xl border-2 border-gray-200 bg-gray-50 p-4">
+                                                <div className="w-full max-w-md">
+                                                    <img
+                                                        src={`/storage/${order.payment_proof}`}
+                                                        alt="Payment proof"
+                                                        className="w-full h-auto max-h-96 object-contain rounded-lg shadow-sm"
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="flex flex-wrap gap-3">
+                                            <button
+                                                onClick={handleVerifyPayment}
+                                                disabled={verifying}
+                                                className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-emerald-600 to-green-600 px-6 py-3 text-sm font-bold text-white shadow-lg shadow-green-200 transition-all hover:from-emerald-700 hover:to-green-700 hover:shadow-xl hover:shadow-green-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                                            >
+                                                {verifying ? (
+                                                    <>
+                                                        <Clock className="h-5 w-5 animate-spin" />
+                                                        Verifying...
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <Check className="h-5 w-5" />
+                                                        Verify Payment
+                                                    </>
+                                                )}
+                                            </button>
+                                            <button
+                                                onClick={() => setShowRejectModal(true)}
+                                                disabled={rejecting}
+                                                className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-red-600 to-rose-600 px-6 py-3 text-sm font-bold text-white shadow-lg shadow-red-200 transition-all hover:from-red-700 hover:to-rose-700 hover:shadow-xl hover:shadow-red-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                                            >
+                                                <X className="h-5 w-5" />
+                                                Reject Payment
+                                            </button>
+                                        </div>
+                                    </div>
+                                )}
+                                {order.payment_status === 'failed' && (
+                                    <div className="rounded-xl bg-gradient-to-r from-red-50 to-rose-50 p-6 ring-1 ring-red-200">
+                                        <div className="flex items-center gap-4">
+                                            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-red-500 to-rose-600 shadow-md">
+                                                <XCircle className="h-6 w-6 text-white" />
+                                            </div>
+                                            <div>
+                                                <p className="font-bold text-red-800">Payment Proof Rejected</p>
+                                                {order.payment_verification_notes && (
+                                                    <p className="mt-1 text-sm text-red-700">{order.payment_verification_notes}</p>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    )}
+
                     {/* Order Actions */}
                     <div className="mt-6 overflow-hidden rounded-2xl bg-white shadow-lg ring-1 shadow-gray-100 ring-gray-100">
                         <div className="border-b border-gray-100 bg-gradient-to-r from-gray-50 to-slate-50 px-6 py-4">
@@ -451,11 +653,17 @@ export default function OrderShow({ order }: OrderShowProps) {
                                     <>
                                         <button
                                             onClick={handleConfirmOrder}
-                                            className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-emerald-600 to-green-600 px-8 py-3 text-sm font-bold text-white shadow-lg shadow-green-200 transition-all hover:from-emerald-700 hover:to-green-700 hover:shadow-xl hover:shadow-green-300"
+                                            disabled={order.payment_method === 'gcash' && order.payment_status !== 'paid'}
+                                            className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-emerald-600 to-green-600 px-8 py-3 text-sm font-bold text-white shadow-lg shadow-green-200 transition-all hover:from-emerald-700 hover:to-green-700 hover:shadow-xl hover:shadow-green-300 disabled:opacity-50 disabled:cursor-not-allowed"
                                         >
                                             <CheckCircle className="h-5 w-5" />
                                             Confirm Order
                                         </button>
+                                        {order.payment_method === 'gcash' && order.payment_status !== 'paid' && (
+                                            <p className="flex items-center text-sm text-amber-600">
+                                                Payment must be verified before confirming order
+                                            </p>
+                                        )}
                                         <button
                                             onClick={handleRejectOrder}
                                             className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-red-600 to-rose-600 px-8 py-3 text-sm font-bold text-white shadow-lg shadow-red-200 transition-all hover:from-red-700 hover:to-rose-700 hover:shadow-xl hover:shadow-red-300"
@@ -508,6 +716,43 @@ export default function OrderShow({ order }: OrderShowProps) {
 
                     {/* Toast Notification */}
                     {showToast && <Toast message={toastMessage} type={toastType} onClose={() => setShowToast(false)} />}
+
+                    {/* Reject Payment Modal */}
+                    {showRejectModal && (
+                        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+                            <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
+                                <h3 className="mb-4 text-lg font-bold text-gray-900">Reject Payment Proof</h3>
+                                <p className="mb-4 text-sm text-gray-600">
+                                    Please provide a reason for rejecting this payment proof. The buyer will be notified and can upload a new proof.
+                                </p>
+                                <textarea
+                                    value={rejectionNotes}
+                                    onChange={(e) => setRejectionNotes(e.target.value)}
+                                    placeholder="Enter rejection reason..."
+                                    className="w-full rounded-lg border border-gray-300 p-3 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+                                    rows={4}
+                                />
+                                <div className="mt-6 flex justify-end gap-3">
+                                    <button
+                                        onClick={() => {
+                                            setShowRejectModal(false);
+                                            setRejectionNotes('');
+                                        }}
+                                        className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button
+                                        onClick={handleRejectPayment}
+                                        disabled={rejecting || !rejectionNotes.trim()}
+                                        className="rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                                    >
+                                        {rejecting ? 'Rejecting...' : 'Reject Payment'}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
         </AppLayout>

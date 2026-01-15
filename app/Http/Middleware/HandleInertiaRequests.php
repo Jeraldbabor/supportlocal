@@ -57,6 +57,11 @@ class HandleInertiaRequests extends Middleware
         if ($request->user()) {
             $sharedData['unreadNotificationsCount'] = $request->user()->unreadNotifications()->count();
 
+            // Add new contact messages count for administrators
+            if ($request->user()->role === \App\Models\User::ROLE_ADMINISTRATOR) {
+                $sharedData['newContactMessagesCount'] = \App\Models\ContactMessage::where('status', \App\Models\ContactMessage::STATUS_NEW)->count();
+            }
+
             // Add profile completion status and recommendation
             $sharedData['profileCompletion'] = [
                 'status' => $request->user()->getProfileCompletionStatus(),

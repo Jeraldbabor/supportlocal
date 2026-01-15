@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Buyer;
 
 use App\Http\Controllers\Controller;
+use App\Models\PageContent;
 use App\Models\User;
 use Carbon\Carbon;
 use Inertia\Inertia;
@@ -52,8 +53,21 @@ class AboutController extends Controller
                 ];
             });
 
+        // Get dynamic page content
+        $pageContents = PageContent::getPageContents(PageContent::PAGE_TYPE_ABOUT)
+            ->map(function ($content) {
+                return [
+                    'section' => $content->section,
+                    'title' => $content->title,
+                    'content' => $content->content,
+                    'metadata' => $content->metadata,
+                ];
+            })
+            ->keyBy('section');
+
         return Inertia::render('buyer/About', [
             'artisans' => $artisans,
+            'pageContents' => $pageContents,
         ]);
     }
 }

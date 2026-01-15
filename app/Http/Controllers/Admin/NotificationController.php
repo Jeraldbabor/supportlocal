@@ -85,4 +85,36 @@ class NotificationController extends Controller
             return back()->with('error', 'Failed to clear notification history. Please try again.');
         }
     }
+
+    /**
+     * Get recent notifications for dropdown (API endpoint).
+     */
+    public function getRecent(Request $request)
+    {
+        $limit = $request->get('limit', 10);
+        
+        $notifications = auth()->user()
+            ->notifications()
+            ->orderBy('created_at', 'desc')
+            ->limit($limit)
+            ->get()
+            ->map(function ($notification) {
+                $data = is_array($notification->data) ? $notification->data : json_decode($notification->data, true);
+                return [
+                    'id' => $notification->id,
+                    'type' => $notification->type,
+                    'title' => $data['title'] ?? 'Notification',
+                    'message' => $data['message'] ?? '',
+                    'action_url' => $data['action_url'] ?? null,
+                    'read_at' => $notification->read_at,
+                    'created_at' => $notification->created_at,
+                    'data' => $data,
+                ];
+            });
+
+        return response()->json([
+            'notifications' => $notifications,
+            'unread_count' => auth()->user()->unreadNotifications()->count(),
+        ]);
+    }
 }

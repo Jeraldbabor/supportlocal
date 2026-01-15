@@ -231,9 +231,54 @@ class SellerApplicationController extends Controller
     }
 
     /**
+     * Preview/view a document from an application (for images).
+     */
+    public function previewDocument(SellerApplication $application, string $type, ?int $index = null): \Symfony\Component\HttpFoundation\BinaryFileResponse
+    {
+        // Ensure the user is an admin
+        if (! Auth::user()->isAdministrator()) {
+            abort(403);
+        }
+
+        $path = null;
+
+        if ($type === 'id_document') {
+            $path = $application->id_document_path;
+        } elseif ($type === 'additional_documents' && is_array($application->additional_documents_path)) {
+            if ($index !== null && isset($application->additional_documents_path[$index])) {
+                $path = $application->additional_documents_path[$index];
+            } else {
+                $path = $application->additional_documents_path[0] ?? null;
+            }
+        }
+
+        if (! $path || ! Storage::disk('private')->exists($path)) {
+            abort(404);
+        }
+
+        $filePath = Storage::disk('private')->path($path);
+        
+        // Check if file exists
+        if (! file_exists($filePath)) {
+            abort(404);
+        }
+
+        $mimeType = mime_content_type($filePath);
+
+        // Only allow image previews
+        if (! $mimeType || strpos($mimeType, 'image/') !== 0) {
+            abort(404);
+        }
+
+        return response()->file($filePath, [
+            'Content-Type' => $mimeType,
+        ]);
+    }
+
+    /**
      * Download a document from an application.
      */
-    public function downloadDocument(SellerApplication $application, string $type): \Symfony\Component\HttpFoundation\StreamedResponse
+    public function downloadDocument(SellerApplication $application, string $type, ?int $index = null): \Symfony\Component\HttpFoundation\StreamedResponse
     {
         // Ensure the user is an admin
         if (! Auth::user()->isAdministrator()) {
@@ -253,10 +298,14 @@ class SellerApplicationController extends Controller
             $path = $application->id_document_path;
             $filename = 'id_document_'.$user->name.'_'.$application->id;
         } elseif ($type === 'additional_documents' && is_array($application->additional_documents_path)) {
-            // For simplicity, we'll download the first additional document
-            // In a real app, you might want to specify which document to download
-            $path = $application->additional_documents_path[0] ?? null;
-            $filename = 'additional_document_'.$user->name.'_'.$application->id;
+            if ($index !== null && isset($application->additional_documents_path[$index])) {
+                $path = $application->additional_documents_path[$index];
+                $filename = 'additional_document_'.$user->name.'_'.$application->id.'_'.($index + 1);
+            } else {
+                // For backward compatibility, download the first document
+                $path = $application->additional_documents_path[0] ?? null;
+                $filename = 'additional_document_'.$user->name.'_'.$application->id;
+            }
         }
 
         if (! $path || ! Storage::disk('private')->exists($path)) {

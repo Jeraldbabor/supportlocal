@@ -1,10 +1,10 @@
 import { Breadcrumbs } from '@/components/breadcrumbs';
+import NotificationsDropdown from '@/components/NotificationsDropdown';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import UserRoleDisplay from '@/components/user-role-display';
 import { useNotifications } from '@/contexts/NotificationsContext';
 import { type BreadcrumbItem as BreadcrumbItemType } from '@/types';
-import { Link, usePage } from '@inertiajs/react';
-import { Bell } from 'lucide-react';
+import { usePage } from '@inertiajs/react';
 
 export function AppSidebarHeader({ breadcrumbs = [] }: { breadcrumbs?: BreadcrumbItemType[] }) {
     const { props } = usePage<{ auth?: { user?: { role?: string } }; unreadNotificationsCount?: number }>();
@@ -40,19 +40,8 @@ export function AppSidebarHeader({ breadcrumbs = [] }: { breadcrumbs?: Breadcrum
                 <Breadcrumbs breadcrumbs={breadcrumbs} />
             </div>
             <div className="flex items-center gap-3">
-                {showNotifications && (
-                    <Link
-                        href={getNotificationRoute()}
-                        className="group relative rounded-xl p-2.5 text-sidebar-foreground/60 transition-all duration-200 hover:scale-105 hover:bg-sidebar-accent hover:text-sidebar-foreground active:scale-95"
-                        title="Notifications"
-                    >
-                        <Bell className="h-5 w-5 transition-transform duration-200 group-hover:rotate-12" />
-                        {unreadCount > 0 && (
-                            <span className="absolute -top-0.5 -right-0.5 flex h-5 min-w-[20px] animate-pulse items-center justify-center rounded-full bg-gradient-to-br from-red-500 to-red-600 px-1.5 py-0.5 text-[10px] font-bold text-white shadow-lg ring-2 shadow-red-500/50 ring-background">
-                                {unreadCount > 99 ? '99+' : unreadCount}
-                            </span>
-                        )}
-                    </Link>
+                {showNotifications && user?.role && (
+                    <NotificationsDropdown userRole={user.role} initialUnreadCount={unreadCount} />
                 )}
                 <UserRoleDisplay />
             </div>

@@ -164,7 +164,17 @@ export default function Analytics({ dateRange, overview, revenue, orders, produc
                                 <SelectItem value="365">Last 12 months</SelectItem>
                             </SelectContent>
                         </Select>
-                        <Button variant="outline" size="sm" className="w-full sm:w-auto">
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            className="w-full sm:w-auto"
+                            onClick={() => {
+                                const format = window.prompt('Export format (csv or pdf):', 'csv');
+                                if (format === 'csv' || format === 'pdf') {
+                                    window.location.href = `/seller/analytics/export?format=${format}&range=${selectedRange}`;
+                                }
+                            }}
+                        >
                             <Download className="mr-2 h-4 w-4" />
                             Export
                         </Button>
