@@ -96,14 +96,9 @@ export default function Contact({ flash, pageContents = {} }: ContactProps = {})
                 <div className="grid grid-cols-1 gap-12 lg:grid-cols-2">
                     {/* Contact Information */}
                     <div>
-                        {contactInfoContent?.title && (
-                            <h2 className="mb-6 text-3xl font-bold text-gray-900">{contactInfoContent.title}</h2>
-                        )}
+                        {contactInfoContent?.title && <h2 className="mb-6 text-3xl font-bold text-gray-900">{contactInfoContent.title}</h2>}
                         {contactInfoContent?.content && (
-                            <div
-                                className="mb-8 text-lg text-gray-600"
-                                dangerouslySetInnerHTML={{ __html: contactInfoContent.content }}
-                            />
+                            <div className="mb-8 text-lg text-gray-600" dangerouslySetInnerHTML={{ __html: contactInfoContent.content }} />
                         )}
 
                         <div className="space-y-6">
@@ -175,14 +170,9 @@ export default function Contact({ flash, pageContents = {} }: ContactProps = {})
                         {/* FAQ Section */}
                         {faqContent && (
                             <div className="mt-12">
-                                {faqContent.title && (
-                                    <h3 className="mb-6 text-2xl font-bold text-gray-900">{faqContent.title}</h3>
-                                )}
+                                {faqContent.title && <h3 className="mb-6 text-2xl font-bold text-gray-900">{faqContent.title}</h3>}
                                 {faqContent.content && (
-                                    <div
-                                        className="space-y-4 text-gray-600"
-                                        dangerouslySetInnerHTML={{ __html: faqContent.content }}
-                                    />
+                                    <div className="space-y-4 text-gray-600" dangerouslySetInnerHTML={{ __html: faqContent.content }} />
                                 )}
                             </div>
                         )}

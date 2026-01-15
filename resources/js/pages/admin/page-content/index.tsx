@@ -1,12 +1,6 @@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem, type SharedData } from '@/types';
@@ -60,13 +54,16 @@ export default function PageContentIndex() {
         return sections[section] || section;
     };
 
-    const groupedContents = contents.reduce((acc, content) => {
-        if (!acc[content.section]) {
-            acc[content.section] = [];
-        }
-        acc[content.section].push(content);
-        return acc;
-    }, {} as Record<string, PageContent[]>);
+    const groupedContents = contents.reduce(
+        (acc, content) => {
+            if (!acc[content.section]) {
+                acc[content.section] = [];
+            }
+            acc[content.section].push(content);
+            return acc;
+        },
+        {} as Record<string, PageContent[]>,
+    );
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -117,10 +114,7 @@ export default function PageContentIndex() {
                                                 <h3 className="text-lg font-semibold">{getSectionDisplayName(section)}</h3>
                                                 <div className="space-y-2">
                                                     {sectionContents.map((content) => (
-                                                        <div
-                                                            key={content.id}
-                                                            className="flex items-center justify-between rounded-lg border p-4"
-                                                        >
+                                                        <div key={content.id} className="flex items-center justify-between rounded-lg border p-4">
                                                             <div className="flex-1">
                                                                 <div className="flex items-center gap-2">
                                                                     <h4 className="font-medium">{content.title || 'Untitled'}</h4>
@@ -132,7 +126,7 @@ export default function PageContentIndex() {
                                                                     <Badge variant="outline">Order: {content.sort_order}</Badge>
                                                                 </div>
                                                                 {content.content && (
-                                                                    <p className="mt-1 text-sm text-muted-foreground line-clamp-2">
+                                                                    <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">
                                                                         {content.content.replace(/<[^>]*>/g, '').substring(0, 100)}...
                                                                     </p>
                                                                 )}
@@ -170,8 +164,9 @@ export default function PageContentIndex() {
                         <Card>
                             <CardHeader>
                                 <CardTitle>Contact Page Content</CardTitle>
-                                <p className="text-sm text-muted-foreground mt-2">
-                                    Customize your contact information including email, phone, address, and business hours. Click "Edit" on the "Contact Information" section to update these details.
+                                <p className="mt-2 text-sm text-muted-foreground">
+                                    Customize your contact information including email, phone, address, and business hours. Click "Edit" on the
+                                    "Contact Information" section to update these details.
                                 </p>
                             </CardHeader>
                             <CardContent>
@@ -221,11 +216,12 @@ export default function PageContentIndex() {
                                                                 </div>
                                                                 {section === 'contact_info' && (
                                                                     <p className="mt-2 text-sm text-muted-foreground">
-                                                                        Click <strong>Edit</strong> to customize Email, Phone, Address, and Business Hours
+                                                                        Click <strong>Edit</strong> to customize Email, Phone, Address, and Business
+                                                                        Hours
                                                                     </p>
                                                                 )}
                                                                 {content.content && section !== 'contact_info' && (
-                                                                    <p className="mt-1 text-sm text-muted-foreground line-clamp-2">
+                                                                    <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">
                                                                         {content.content.replace(/<[^>]*>/g, '').substring(0, 100)}...
                                                                     </p>
                                                                 )}

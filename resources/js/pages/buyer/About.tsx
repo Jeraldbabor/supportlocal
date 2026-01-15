@@ -85,23 +85,18 @@ export default function About({ artisans = [], pageContents = {} }: AboutProps) 
                 <div className="mx-auto max-w-4xl px-4 text-center sm:px-6 lg:px-8">
                     {missionContent ? (
                         <>
-                            {missionContent.title && (
-                                <h2 className="mb-6 text-3xl font-bold text-gray-900 md:text-4xl">{missionContent.title}</h2>
-                            )}
+                            {missionContent.title && <h2 className="mb-6 text-3xl font-bold text-gray-900 md:text-4xl">{missionContent.title}</h2>}
                             {missionContent.content && (
-                                <div
-                                    className="text-lg leading-relaxed text-gray-600"
-                                    dangerouslySetInnerHTML={{ __html: missionContent.content }}
-                                />
+                                <div className="text-lg leading-relaxed text-gray-600" dangerouslySetInnerHTML={{ __html: missionContent.content }} />
                             )}
                         </>
                     ) : (
                         <>
                             <h2 className="mb-6 text-3xl font-bold text-gray-900 md:text-4xl">Our Mission</h2>
                             <p className="mb-8 text-xl leading-relaxed text-gray-600">
-                                At Support Local, we believe in the power of handmade craftsmanship and the importance of supporting local artisans. Our
-                                platform connects skilled craftspeople with customers who appreciate the beauty, quality, and story behind each handmade
-                                piece.
+                                At Support Local, we believe in the power of handmade craftsmanship and the importance of supporting local artisans.
+                                Our platform connects skilled craftspeople with customers who appreciate the beauty, quality, and story behind each
+                                handmade piece.
                             </p>
                             <p className="text-lg leading-relaxed text-gray-600">
                                 Every purchase you make helps preserve traditional crafting techniques, supports local economies, and brings unique,
@@ -122,12 +117,7 @@ export default function About({ artisans = [], pageContents = {} }: AboutProps) 
                                     <h2 className="mb-4 text-3xl font-bold text-gray-900 md:text-4xl">{valuesContent.title}</h2>
                                 </div>
                             )}
-                            {valuesContent.content && (
-                                <div
-                                    className="text-gray-600"
-                                    dangerouslySetInnerHTML={{ __html: valuesContent.content }}
-                                />
-                            )}
+                            {valuesContent.content && <div className="text-gray-600" dangerouslySetInnerHTML={{ __html: valuesContent.content }} />}
                         </>
                     ) : (
                         <>
@@ -142,21 +132,27 @@ export default function About({ artisans = [], pageContents = {} }: AboutProps) 
                                         <Heart className="h-8 w-8 text-primary" />
                                     </div>
                                     <h3 className="mb-3 text-xl font-semibold">Craftsmanship</h3>
-                                    <p className="text-gray-600">We celebrate the skill, dedication, and artistry that goes into every handmade piece.</p>
+                                    <p className="text-gray-600">
+                                        We celebrate the skill, dedication, and artistry that goes into every handmade piece.
+                                    </p>
                                 </div>
                                 <div className="text-center">
                                     <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
                                         <Users className="h-8 w-8 text-primary" />
                                     </div>
                                     <h3 className="mb-3 text-xl font-semibold">Community</h3>
-                                    <p className="text-gray-600">Building connections between artisans and customers to strengthen local communities.</p>
+                                    <p className="text-gray-600">
+                                        Building connections between artisans and customers to strengthen local communities.
+                                    </p>
                                 </div>
                                 <div className="text-center">
                                     <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
                                         <Award className="h-8 w-8 text-primary" />
                                     </div>
                                     <h3 className="mb-3 text-xl font-semibold">Quality</h3>
-                                    <p className="text-gray-600">We curate only the finest handcrafted items that meet our high standards for excellence.</p>
+                                    <p className="text-gray-600">
+                                        We curate only the finest handcrafted items that meet our high standards for excellence.
+                                    </p>
                                 </div>
                                 <div className="text-center">
                                     <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
@@ -207,14 +203,9 @@ export default function About({ artisans = [], pageContents = {} }: AboutProps) 
                     <div className="text-center text-white">
                         {storyContent ? (
                             <>
-                                {storyContent.title && (
-                                    <h2 className="mb-6 text-3xl font-bold md:text-4xl">{storyContent.title}</h2>
-                                )}
+                                {storyContent.title && <h2 className="mb-6 text-3xl font-bold md:text-4xl">{storyContent.title}</h2>}
                                 {storyContent.content && (
-                                    <div
-                                        className="space-y-4 text-lg leading-relaxed"
-                                        dangerouslySetInnerHTML={{ __html: storyContent.content }}
-                                    />
+                                    <div className="space-y-4 text-lg leading-relaxed" dangerouslySetInnerHTML={{ __html: storyContent.content }} />
                                 )}
                             </>
                         ) : (
@@ -222,16 +213,18 @@ export default function About({ artisans = [], pageContents = {} }: AboutProps) 
                                 <h2 className="mb-6 text-3xl font-bold md:text-4xl">Our Story</h2>
                                 <div className="space-y-4 text-lg leading-relaxed">
                                     <p>
-                                        Support Local was born from a simple observation: in our increasingly digital world, there's something magical about
-                                        items created by human hands with care, skill, and passion.
+                                        Support Local was born from a simple observation: in our increasingly digital world, there's something magical
+                                        about items created by human hands with care, skill, and passion.
                                     </p>
                                     <p>
-                                        Founded in 2023, we started as a small team passionate about supporting local artisans and preserving traditional
-                                        crafts. We noticed that many talented craftspeople struggled to reach customers beyond their immediate communities.
+                                        Founded in 2023, we started as a small team passionate about supporting local artisans and preserving
+                                        traditional crafts. We noticed that many talented craftspeople struggled to reach customers beyond their
+                                        immediate communities.
                                     </p>
                                     <p>
-                                        Today, we're proud to be a bridge between skilled artisans and customers who value authentic, handmade products. Every
-                                        item in our marketplace tells a story – of tradition, creativity, and the human touch that makes each piece unique.
+                                        Today, we're proud to be a bridge between skilled artisans and customers who value authentic, handmade
+                                        products. Every item in our marketplace tells a story – of tradition, creativity, and the human touch that
+                                        makes each piece unique.
                                     </p>
                                 </div>
                             </>
@@ -245,22 +238,17 @@ export default function About({ artisans = [], pageContents = {} }: AboutProps) 
                 <div className="mx-auto max-w-4xl px-4 text-center sm:px-6 lg:px-8">
                     {joinUsContent ? (
                         <>
-                            {joinUsContent.title && (
-                                <h2 className="mb-6 text-3xl font-bold text-gray-900 md:text-4xl">{joinUsContent.title}</h2>
-                            )}
+                            {joinUsContent.title && <h2 className="mb-6 text-3xl font-bold text-gray-900 md:text-4xl">{joinUsContent.title}</h2>}
                             {joinUsContent.content && (
-                                <div
-                                    className="mb-8 text-xl text-gray-600"
-                                    dangerouslySetInnerHTML={{ __html: joinUsContent.content }}
-                                />
+                                <div className="mb-8 text-xl text-gray-600" dangerouslySetInnerHTML={{ __html: joinUsContent.content }} />
                             )}
                         </>
                     ) : (
                         <>
                             <h2 className="mb-6 text-3xl font-bold text-gray-900 md:text-4xl">Join Our Community</h2>
                             <p className="mb-8 text-xl text-gray-600">
-                                Whether you're an artisan looking to share your craft or a customer seeking unique, handmade items, we'd love to have you as
-                                part of our community.
+                                Whether you're an artisan looking to share your craft or a customer seeking unique, handmade items, we'd love to have
+                                you as part of our community.
                             </p>
                         </>
                     )}

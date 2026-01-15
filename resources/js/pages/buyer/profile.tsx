@@ -13,7 +13,23 @@ import { Textarea } from '@/components/ui/textarea';
 import { getBarangaysByCity, getCitiesByProvince, getProvinces } from '@/data/philippineLocations';
 import BuyerLayout from '@/layouts/BuyerLayout';
 import { Head, useForm, usePage } from '@inertiajs/react';
-import { AlertTriangle, Calendar, Camera, CreditCard, Download, Info, Key, MapPin, Phone, Save, Shield, Trash2, Truck, Upload, User } from 'lucide-react';
+import {
+    AlertTriangle,
+    Calendar,
+    Camera,
+    CreditCard,
+    Download,
+    Info,
+    Key,
+    MapPin,
+    Phone,
+    Save,
+    Shield,
+    Trash2,
+    Truck,
+    Upload,
+    User,
+} from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 // Helper function to format date for HTML date input (yyyy-MM-dd)
@@ -912,13 +928,14 @@ export default function BuyerProfile({ user }: BuyerProfileProps) {
                             <Alert className="mb-4 border-2 border-blue-200 bg-blue-50/80 shadow-sm sm:mb-6">
                                 <Info className="h-4 w-4 flex-shrink-0 text-blue-600 sm:h-5 sm:w-5" />
                                 <AlertDescription className="text-xs leading-relaxed font-medium text-blue-800 sm:text-sm">
-                                    You have the right to access your personal data. This export includes all your account information, orders, ratings, conversations, and more.
+                                    You have the right to access your personal data. This export includes all your account information, orders,
+                                    ratings, conversations, and more.
                                 </AlertDescription>
                             </Alert>
                             <Button
                                 type="button"
                                 variant="outline"
-                                onClick={() => window.location.href = '/data-export'}
+                                onClick={() => (window.location.href = '/data-export')}
                                 className="h-11 w-full text-sm font-semibold shadow-md transition-all duration-300 hover:scale-[1.02] hover:shadow-lg active:scale-[0.98] sm:h-12 sm:text-base"
                             >
                                 <Download className="mr-2 h-3.5 w-3.5 sm:h-4 sm:w-4" />

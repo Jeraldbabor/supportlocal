@@ -78,11 +78,19 @@ export default function ContactMessageShow() {
     const getStatusBadge = (status: string) => {
         switch (status) {
             case 'new':
-                return <Badge variant="default" className="bg-blue-500">New</Badge>;
+                return (
+                    <Badge variant="default" className="bg-blue-500">
+                        New
+                    </Badge>
+                );
             case 'read':
                 return <Badge variant="secondary">Read</Badge>;
             case 'replied':
-                return <Badge variant="default" className="bg-green-500">Replied</Badge>;
+                return (
+                    <Badge variant="default" className="bg-green-500">
+                        Replied
+                    </Badge>
+                );
             case 'archived':
                 return <Badge variant="outline">Archived</Badge>;
             default:
@@ -107,7 +115,7 @@ export default function ContactMessageShow() {
 
                 <div className="grid gap-6 md:grid-cols-3">
                     {/* Message Details */}
-                    <div className="md:col-span-2 space-y-6">
+                    <div className="space-y-6 md:col-span-2">
                         <Card>
                             <CardHeader>
                                 <div className="flex items-center justify-between">
@@ -139,7 +147,7 @@ export default function ContactMessageShow() {
                                         <p className="whitespace-pre-wrap">{message.message}</p>
                                     </div>
                                 </div>
-                                <div className="pt-4 border-t">
+                                <div className="border-t pt-4">
                                     <div className="grid grid-cols-2 gap-4 text-sm">
                                         <div>
                                             <label className="text-muted-foreground">Received</label>
@@ -189,9 +197,7 @@ export default function ContactMessageShow() {
                                             placeholder="Add internal notes about this message..."
                                             rows={6}
                                         />
-                                        <p className="text-xs text-muted-foreground">
-                                            These notes are only visible to administrators.
-                                        </p>
+                                        <p className="text-xs text-muted-foreground">These notes are only visible to administrators.</p>
                                     </div>
 
                                     <Button type="submit" disabled={isSubmitting} className="w-full">
@@ -208,11 +214,7 @@ export default function ContactMessageShow() {
                                 <CardTitle>Quick Actions</CardTitle>
                             </CardHeader>
                             <CardContent className="space-y-2">
-                                <Button
-                                    variant="default"
-                                    className="w-full justify-start"
-                                    onClick={() => setShowReplyModal(true)}
-                                >
+                                <Button variant="default" className="w-full justify-start" onClick={() => setShowReplyModal(true)}>
                                     <Send className="mr-2 h-4 w-4" />
                                     Reply via Email
                                 </Button>
@@ -240,15 +242,11 @@ export default function ContactMessageShow() {
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="subject">Subject</Label>
-                            <div className="rounded-md border bg-muted px-3 py-2 text-sm">
-                                Re: {message.subject}
-                            </div>
+                            <div className="rounded-md border bg-muted px-3 py-2 text-sm">Re: {message.subject}</div>
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="original-message">Original Message</Label>
-                            <div className="max-h-32 overflow-y-auto rounded-md border bg-muted p-3 text-sm">
-                                {message.message}
-                            </div>
+                            <div className="max-h-32 overflow-y-auto rounded-md border bg-muted p-3 text-sm">{message.message}</div>
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="reply_message">Your Reply *</Label>

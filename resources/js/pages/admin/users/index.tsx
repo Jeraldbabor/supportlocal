@@ -141,7 +141,7 @@ export default function UsersIndex() {
 
             <div className="flex flex-col gap-4 sm:gap-6">
                 {/* Stats Cards */}
-                <div className="grid gap-3 sm:gap-4 grid-cols-2 sm:grid-cols-3 lg:grid-cols-6">
+                <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-6">
                     <Card className="transition-all duration-200 hover:shadow-md">
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                             <CardTitle className="text-xs font-medium sm:text-sm">Total Users</CardTitle>
@@ -224,7 +224,7 @@ export default function UsersIndex() {
                             <div className="flex-1">
                                 <label className="mb-1.5 block text-xs font-medium sm:text-sm">Search</label>
                                 <div className="relative">
-                                    <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                                    <Search className="absolute top-1/2 left-2.5 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                                     <Input
                                         placeholder="Search by name or email..."
                                         value={searchTerm}
@@ -287,14 +287,24 @@ export default function UsersIndex() {
                             <table className="w-full">
                                 <thead className="border-b bg-gray-50 dark:bg-gray-800">
                                     <tr>
-                                        <th className="px-4 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase lg:px-6">User</th>
-                                        <th className="px-4 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase lg:px-6">Role</th>
-                                        <th className="px-4 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase lg:px-6">Status</th>
+                                        <th className="px-4 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase lg:px-6">
+                                            User
+                                        </th>
+                                        <th className="px-4 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase lg:px-6">
+                                            Role
+                                        </th>
+                                        <th className="px-4 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase lg:px-6">
+                                            Status
+                                        </th>
                                         <th className="px-4 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase lg:px-6">
                                             Email Verified
                                         </th>
-                                        <th className="px-4 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase lg:px-6">Last Login</th>
-                                        <th className="px-4 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase lg:px-6">Created</th>
+                                        <th className="px-4 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase lg:px-6">
+                                            Last Login
+                                        </th>
+                                        <th className="px-4 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase lg:px-6">
+                                            Created
+                                        </th>
                                         <th className="w-[70px] px-4 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase lg:px-6">
                                             Actions
                                         </th>
@@ -421,10 +431,7 @@ export default function UsersIndex() {
                         {/* Mobile Card View */}
                         <div className="space-y-3 p-4 md:hidden">
                             {users.data.map((user) => (
-                                <div
-                                    key={user.id}
-                                    className="rounded-lg border bg-card p-4 shadow-sm transition-all hover:shadow-md"
-                                >
+                                <div key={user.id} className="rounded-lg border bg-card p-4 shadow-sm transition-all hover:shadow-md">
                                     <div className="flex items-start justify-between gap-3">
                                         <div className="flex min-w-0 flex-1 items-start gap-3">
                                             <img
@@ -439,9 +446,7 @@ export default function UsersIndex() {
                                             <div className="min-w-0 flex-1">
                                                 <div className="font-medium">{user.name}</div>
                                                 <div className="mt-0.5 truncate text-sm text-muted-foreground">{user.email}</div>
-                                                {user.phone_number && (
-                                                    <div className="mt-0.5 text-xs text-muted-foreground">{user.phone_number}</div>
-                                                )}
+                                                {user.phone_number && <div className="mt-0.5 text-xs text-muted-foreground">{user.phone_number}</div>}
                                                 <div className="mt-2 flex flex-wrap items-center gap-2">
                                                     <Badge className={getRoleColor(user.role || '')}>{user.role_display}</Badge>
                                                     <Badge
@@ -467,7 +472,10 @@ export default function UsersIndex() {
                                                     )}
                                                 </div>
                                                 <div className="mt-2 space-y-1 text-xs text-muted-foreground">
-                                                    <div>Last Login: {user.last_login_at ? new Date(user.last_login_at as string).toLocaleDateString() : 'Never'}</div>
+                                                    <div>
+                                                        Last Login:{' '}
+                                                        {user.last_login_at ? new Date(user.last_login_at as string).toLocaleDateString() : 'Never'}
+                                                    </div>
                                                     <div>Created: {new Date(user.created_at).toLocaleDateString()}</div>
                                                 </div>
                                             </div>
@@ -527,7 +535,7 @@ export default function UsersIndex() {
                         </div>
 
                         {users.data.length === 0 && (
-                            <div className="flex flex-col items-center justify-center py-12 px-4">
+                            <div className="flex flex-col items-center justify-center px-4 py-12">
                                 <Users className="mb-4 h-12 w-12 text-muted-foreground" />
                                 <h3 className="text-lg font-medium">No users found</h3>
                                 <p className="mt-1 text-center text-sm text-muted-foreground">

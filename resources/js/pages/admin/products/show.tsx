@@ -404,9 +404,8 @@ export default function ProductShow() {
                                         <span>
                                             ₱
                                             {(() => {
-                                                const cost = typeof product.shipping_cost === 'number' 
-                                                    ? product.shipping_cost 
-                                                    : Number(product.shipping_cost);
+                                                const cost =
+                                                    typeof product.shipping_cost === 'number' ? product.shipping_cost : Number(product.shipping_cost);
                                                 return !isNaN(cost) ? cost.toFixed(2) : 'N/A';
                                             })()}
                                         </span>

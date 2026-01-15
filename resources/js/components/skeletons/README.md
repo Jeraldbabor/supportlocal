@@ -5,9 +5,11 @@ A comprehensive skeleton loading system for the application. These components pr
 ## Available Components
 
 ### Base Component
+
 - **`Skeleton`** - Basic skeleton element with pulse animation
 
 ### Specialized Components
+
 - **`ProductCardSkeleton`** - Skeleton for product cards
 - **`ProductListSkeleton`** - Grid of product card skeletons
 - **`DashboardStatsSkeleton`** - Dashboard statistics cards skeleton
@@ -20,6 +22,7 @@ A comprehensive skeleton loading system for the application. These components pr
 ## Usage
 
 ### Automatic Page Loading
+
 The `PageLoader` component is automatically integrated into the app and shows a skeleton during page transitions. No additional setup needed!
 
 ### Manual Usage in Components
@@ -35,7 +38,7 @@ export default function ProductsPage({ products, isLoading }) {
 
     return (
         <div className="grid grid-cols-4">
-            {products.map(product => (
+            {products.map((product) => (
                 <ProductCard key={product.id} product={product} />
             ))}
         </div>
@@ -105,19 +108,24 @@ export default function CustomComponent({ isLoading }) {
 ## Component Props
 
 ### ProductListSkeleton
+
 - `count?: number` - Number of product cards to show (default: 8)
 
 ### DashboardStatsSkeleton
+
 - `count?: number` - Number of stat cards to show (default: 4)
 
 ### TableSkeleton
+
 - `rows?: number` - Number of table rows (default: 5)
 - `columns?: number` - Number of table columns (default: 4)
 
 ### FormSkeleton
+
 - `fields?: number` - Number of form fields (default: 5)
 
 ### Skeleton
+
 - `className?: string` - Additional CSS classes
 - All standard div props
 

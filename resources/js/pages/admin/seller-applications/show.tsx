@@ -226,7 +226,7 @@ export default function SellerApplicationShow({ application }: SellerApplication
                                         <div className="flex-1">
                                             <h4 className="font-medium">Valid ID Document</h4>
                                             <p className="text-sm text-gray-600">Type: {getIdTypeDisplay(application.id_document_type)}</p>
-                                            
+
                                             {/* Image Preview */}
                                             {isImageFile(application.id_document_path) && (
                                                 <div className="mt-3">
@@ -235,7 +235,9 @@ export default function SellerApplicationShow({ application }: SellerApplication
                                                             src={getPreviewUrl('id_document')}
                                                             alt="ID Document Preview"
                                                             className="h-32 w-auto cursor-pointer rounded-lg border border-gray-200 object-contain transition-transform hover:scale-105"
-                                                            onClick={() => setPreviewImage({ url: getPreviewUrl('id_document'), title: 'Valid ID Document' })}
+                                                            onClick={() =>
+                                                                setPreviewImage({ url: getPreviewUrl('id_document'), title: 'Valid ID Document' })
+                                                            }
                                                         />
                                                         <div className="absolute inset-0 flex items-center justify-center rounded-lg bg-black/0 transition-colors hover:bg-black/10">
                                                             <ZoomIn className="h-6 w-6 text-white opacity-0 transition-opacity hover:opacity-100" />
@@ -255,11 +257,7 @@ export default function SellerApplicationShow({ application }: SellerApplication
                                                     Preview
                                                 </Button>
                                             )}
-                                            <Button
-                                                variant="outline"
-                                                size="sm"
-                                                onClick={() => window.open(getDownloadUrl('id_document'))}
-                                            >
+                                            <Button variant="outline" size="sm" onClick={() => window.open(getDownloadUrl('id_document'))}>
                                                 <Download className="mr-2 h-4 w-4" />
                                                 Download
                                             </Button>
@@ -278,7 +276,7 @@ export default function SellerApplicationShow({ application }: SellerApplication
                                                 </p>
                                             </div>
                                         </div>
-                                        
+
                                         {/* List each additional document */}
                                         <div className="space-y-3">
                                             {application.additional_documents_path.map((docPath, index) => (
@@ -287,7 +285,7 @@ export default function SellerApplicationShow({ application }: SellerApplication
                                                         <div className="flex-1">
                                                             <h5 className="text-sm font-medium">Document {index + 1}</h5>
                                                             <p className="text-xs text-gray-500">{docPath.split('/').pop()}</p>
-                                                            
+
                                                             {/* Image Preview */}
                                                             {isImageFile(docPath) && (
                                                                 <div className="mt-3">
@@ -296,7 +294,12 @@ export default function SellerApplicationShow({ application }: SellerApplication
                                                                             src={getPreviewUrl('additional_documents', index)}
                                                                             alt={`Additional Document ${index + 1} Preview`}
                                                                             className="h-32 w-auto cursor-pointer rounded-lg border border-gray-200 object-contain transition-transform hover:scale-105"
-                                                                            onClick={() => setPreviewImage({ url: getPreviewUrl('additional_documents', index), title: `Additional Document ${index + 1}` })}
+                                                                            onClick={() =>
+                                                                                setPreviewImage({
+                                                                                    url: getPreviewUrl('additional_documents', index),
+                                                                                    title: `Additional Document ${index + 1}`,
+                                                                                })
+                                                                            }
                                                                         />
                                                                         <div className="absolute inset-0 flex items-center justify-center rounded-lg bg-black/0 transition-colors hover:bg-black/10">
                                                                             <ZoomIn className="h-6 w-6 text-white opacity-0 transition-opacity hover:opacity-100" />
@@ -310,7 +313,12 @@ export default function SellerApplicationShow({ application }: SellerApplication
                                                                 <Button
                                                                     variant="outline"
                                                                     size="sm"
-                                                                    onClick={() => setPreviewImage({ url: getPreviewUrl('additional_documents', index), title: `Additional Document ${index + 1}` })}
+                                                                    onClick={() =>
+                                                                        setPreviewImage({
+                                                                            url: getPreviewUrl('additional_documents', index),
+                                                                            title: `Additional Document ${index + 1}`,
+                                                                        })
+                                                                    }
                                                                 >
                                                                     <ZoomIn className="mr-2 h-4 w-4" />
                                                                     Preview
@@ -491,14 +499,11 @@ export default function SellerApplicationShow({ application }: SellerApplication
 
             {/* Image Preview Modal */}
             {previewImage && (
-                <div
-                    className="fixed inset-0 z-[10000] flex items-center justify-center bg-black/80 p-4"
-                    onClick={() => setPreviewImage(null)}
-                >
+                <div className="fixed inset-0 z-[10000] flex items-center justify-center bg-black/80 p-4" onClick={() => setPreviewImage(null)}>
                     <div className="relative max-h-[90vh] max-w-[90vw]">
                         <button
                             onClick={() => setPreviewImage(null)}
-                            className="absolute -right-12 top-0 rounded-full bg-white/10 p-2 text-white transition-colors hover:bg-white/20"
+                            className="absolute top-0 -right-12 rounded-full bg-white/10 p-2 text-white transition-colors hover:bg-white/20"
                         >
                             <X className="h-6 w-6" />
                         </button>

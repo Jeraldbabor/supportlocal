@@ -91,11 +91,19 @@ export default function ContactMessagesIndex() {
     const getStatusBadge = (status: string) => {
         switch (status) {
             case 'new':
-                return <Badge variant="default" className="bg-blue-500">New</Badge>;
+                return (
+                    <Badge variant="default" className="bg-blue-500">
+                        New
+                    </Badge>
+                );
             case 'read':
                 return <Badge variant="secondary">Read</Badge>;
             case 'replied':
-                return <Badge variant="default" className="bg-green-500">Replied</Badge>;
+                return (
+                    <Badge variant="default" className="bg-green-500">
+                        Replied
+                    </Badge>
+                );
             case 'archived':
                 return <Badge variant="outline">Archived</Badge>;
             default:
@@ -113,7 +121,7 @@ export default function ContactMessagesIndex() {
                 </div>
 
                 {/* Stats Cards */}
-                <div className="grid gap-3 sm:gap-4 grid-cols-2 sm:grid-cols-4">
+                <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">
                     <Card className="transition-all duration-200 hover:shadow-md">
                         <CardHeader className="pb-2 sm:pb-3">
                             <CardTitle className="text-xs font-medium text-muted-foreground sm:text-sm">Total Messages</CardTitle>
@@ -158,7 +166,7 @@ export default function ContactMessagesIndex() {
                             <div className="flex-1">
                                 <label className="mb-1.5 block text-xs font-medium sm:text-sm">Search</label>
                                 <div className="relative">
-                                    <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                                    <Search className="absolute top-1/2 left-2.5 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                                     <Input
                                         placeholder="Search by name, email, subject, or message..."
                                         value={searchTerm}
@@ -188,7 +196,9 @@ export default function ContactMessagesIndex() {
                                 </Select>
                             </div>
                             <div className="flex gap-2">
-                                <Button onClick={handleSearch} className="flex-1 sm:flex-initial">Search</Button>
+                                <Button onClick={handleSearch} className="flex-1 sm:flex-initial">
+                                    Search
+                                </Button>
                                 {(searchTerm || selectedStatus !== 'all') && (
                                     <Button variant="outline" onClick={handleClearFilters} className="flex-1 sm:flex-initial">
                                         Clear
@@ -206,7 +216,7 @@ export default function ContactMessagesIndex() {
                     </CardHeader>
                     <CardContent>
                         {messages.data.length === 0 ? (
-                            <div className="py-12 px-4 text-center text-muted-foreground">
+                            <div className="px-4 py-12 text-center text-muted-foreground">
                                 <Mail className="mx-auto mb-4 h-12 w-12 opacity-50" />
                                 <p className="text-sm sm:text-base">No contact messages found.</p>
                             </div>
@@ -222,7 +232,7 @@ export default function ContactMessagesIndex() {
                                         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                                             <div className="min-w-0 flex-1">
                                                 <div className="mb-2 flex flex-wrap items-center gap-2">
-                                                    <h3 className="font-semibold text-base sm:text-lg">{message.name}</h3>
+                                                    <h3 className="text-base font-semibold sm:text-lg">{message.name}</h3>
                                                     {getStatusBadge(message.status)}
                                                 </div>
                                                 <div className="space-y-1.5 text-xs text-muted-foreground sm:text-sm">
@@ -232,9 +242,7 @@ export default function ContactMessagesIndex() {
                                                     </p>
                                                     <p className="font-medium text-foreground">{message.subject}</p>
                                                     <p className="line-clamp-2">{message.message}</p>
-                                                    <p className="text-xs">
-                                                        Received: {new Date(message.created_at).toLocaleString()}
-                                                    </p>
+                                                    <p className="text-xs">Received: {new Date(message.created_at).toLocaleString()}</p>
                                                 </div>
                                             </div>
                                             <div className="flex items-center gap-2 sm:ml-4 sm:flex-col sm:items-end">
@@ -269,9 +277,7 @@ export default function ContactMessagesIndex() {
                                         key={index}
                                         href={link.url || '#'}
                                         className={`rounded-md px-2 py-1.5 text-xs transition-colors sm:px-3 sm:py-2 sm:text-sm ${
-                                            link.active
-                                                ? 'bg-primary text-primary-foreground'
-                                                : 'bg-background hover:bg-muted'
+                                            link.active ? 'bg-primary text-primary-foreground' : 'bg-background hover:bg-muted'
                                         } ${!link.url ? 'pointer-events-none opacity-50' : ''}`}
                                         dangerouslySetInnerHTML={{ __html: link.label }}
                                     />

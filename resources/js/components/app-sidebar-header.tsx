@@ -20,19 +20,6 @@ export function AppSidebarHeader({ breadcrumbs = [] }: { breadcrumbs?: Breadcrum
 
     const showNotifications = user?.role === 'seller' || user?.role === 'administrator' || user?.role === 'buyer';
 
-    const getNotificationRoute = () => {
-        switch (user?.role) {
-            case 'seller':
-                return '/seller/notifications';
-            case 'administrator':
-                return '/admin/notifications';
-            case 'buyer':
-                return '/buyer/notifications';
-            default:
-                return '/notifications';
-        }
-    };
-
     return (
         <header className="flex h-16 shrink-0 items-center gap-3 border-b border-sidebar-border/50 bg-gradient-to-r from-background to-background/95 px-6 backdrop-blur-sm transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12 md:px-5">
             <div className="flex flex-1 items-center gap-3">
@@ -40,9 +27,7 @@ export function AppSidebarHeader({ breadcrumbs = [] }: { breadcrumbs?: Breadcrum
                 <Breadcrumbs breadcrumbs={breadcrumbs} />
             </div>
             <div className="flex items-center gap-3">
-                {showNotifications && user?.role && (
-                    <NotificationsDropdown userRole={user.role} initialUnreadCount={unreadCount} />
-                )}
+                {showNotifications && user?.role && <NotificationsDropdown userRole={user.role} initialUnreadCount={unreadCount} />}
                 <UserRoleDisplay />
             </div>
         </header>

@@ -1,9 +1,9 @@
 import BuyerLayout from '@/layouts/BuyerLayout';
 import { formatPeso } from '@/utils/currency';
 import { Head, router, usePage } from '@inertiajs/react';
-import { ArrowLeft, CheckCircle, Clock, MapPin, MessageSquare, Package, Upload, User, XCircle, Image as ImageIcon, X, CreditCard } from 'lucide-react';
-import StartChatButton from '../../../components/StartChatButton';
+import { ArrowLeft, CheckCircle, Clock, CreditCard, MapPin, MessageSquare, Package, Upload, User, X, XCircle } from 'lucide-react';
 import { useState } from 'react';
+import StartChatButton from '../../../components/StartChatButton';
 
 interface OrderItem {
     id: number;
@@ -104,14 +104,13 @@ export default function OrderShow({ order }: OrderShowProps) {
             } else {
                 setUploadError(data.message || 'Failed to upload payment proof.');
             }
-        } catch (error) {
+        } catch {
             setUploadError('An error occurred while uploading the payment proof.');
         } finally {
             setUploading(false);
         }
     };
 
-    const canUploadPaymentProof = order.payment_method === 'gcash' && order.status === 'pending' && order.payment_status === 'pending';
     const getStatusIcon = (status: string) => {
         switch (status) {
             case 'pending':
@@ -234,11 +233,11 @@ export default function OrderShow({ order }: OrderShowProps) {
                             </div>
                             {order.payment_method === 'gcash' && order.seller?.gcash_number && (
                                 <div>
-                                    <p className="text-sm font-medium text-gray-700 flex items-center">
+                                    <p className="flex items-center text-sm font-medium text-gray-700">
                                         <CreditCard className="mr-1 h-4 w-4" />
                                         GCash Number
                                     </p>
-                                    <p className="text-gray-900 font-semibold">{order.seller.gcash_number}</p>
+                                    <p className="font-semibold text-gray-900">{order.seller.gcash_number}</p>
                                 </div>
                             )}
                             {auth?.user && order.seller && auth.user.id !== order.seller.id && (
@@ -328,9 +327,7 @@ export default function OrderShow({ order }: OrderShowProps) {
                         </h2>
                         {order.payment_status === 'pending' && !order.payment_proof && (
                             <div className="space-y-4">
-                                <p className="text-gray-600">
-                                    Please upload a screenshot or photo of your GCash payment confirmation.
-                                </p>
+                                <p className="text-gray-600">Please upload a screenshot or photo of your GCash payment confirmation.</p>
                                 {uploadError && (
                                     <div className="rounded-lg border border-red-200 bg-red-50 p-4">
                                         <p className="text-sm text-red-800">{uploadError}</p>
@@ -338,36 +335,36 @@ export default function OrderShow({ order }: OrderShowProps) {
                                 )}
                                 {uploadSuccess && (
                                     <div className="rounded-lg border border-green-200 bg-green-50 p-4">
-                                        <p className="text-sm text-green-800">Payment proof uploaded successfully! The seller will review it shortly.</p>
+                                        <p className="text-sm text-green-800">
+                                            Payment proof uploaded successfully! The seller will review it shortly.
+                                        </p>
                                     </div>
                                 )}
                                 <div className="space-y-3">
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                                            Select Payment Proof Image
-                                        </label>
+                                        <label className="mb-2 block text-sm font-medium text-gray-700">Select Payment Proof Image</label>
                                         <input
                                             type="file"
                                             accept="image/*"
                                             onChange={handleFileSelect}
-                                            className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-white hover:file:bg-primary/90"
+                                            className="block w-full text-sm text-gray-500 file:mr-4 file:rounded-lg file:border-0 file:bg-primary file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-primary/90"
                                             disabled={uploading}
                                         />
                                     </div>
                                     {preview && (
                                         <div className="relative flex justify-center">
                                             <div className="relative max-w-md">
-                                                <img 
-                                                    src={preview} 
-                                                    alt="Payment proof preview" 
-                                                    className="w-full h-auto max-h-96 object-contain rounded-lg border border-gray-200 shadow-sm" 
+                                                <img
+                                                    src={preview}
+                                                    alt="Payment proof preview"
+                                                    className="h-auto max-h-96 w-full rounded-lg border border-gray-200 object-contain shadow-sm"
                                                 />
                                                 <button
                                                     onClick={() => {
                                                         setPreview(null);
                                                         setSelectedFile(null);
                                                     }}
-                                                    className="absolute top-2 right-2 rounded-full bg-red-500 p-1.5 text-white hover:bg-red-600 shadow-lg transition-colors"
+                                                    className="absolute top-2 right-2 rounded-full bg-red-500 p-1.5 text-white shadow-lg transition-colors hover:bg-red-600"
                                                 >
                                                     <X className="h-4 w-4" />
                                                 </button>
@@ -378,7 +375,7 @@ export default function OrderShow({ order }: OrderShowProps) {
                                         <button
                                             onClick={handleUpload}
                                             disabled={uploading}
-                                            className="w-full rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
+                                            className="w-full rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
                                         >
                                             {uploading ? 'Uploading...' : 'Upload Payment Proof'}
                                         </button>
@@ -394,7 +391,7 @@ export default function OrderShow({ order }: OrderShowProps) {
                                         <img
                                             src={`/storage/${order.payment_proof}`}
                                             alt="Payment proof"
-                                            className="w-full max-w-md h-auto max-h-96 object-contain rounded-lg border border-gray-200 shadow-sm"
+                                            className="h-auto max-h-96 w-full max-w-md rounded-lg border border-gray-200 object-contain shadow-sm"
                                         />
                                     </div>
                                 </div>

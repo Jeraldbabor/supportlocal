@@ -4,7 +4,20 @@ import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, Sid
 import Echo from '@/lib/echo';
 import { type NavItem, type SharedData } from '@/types';
 import { usePage } from '@inertiajs/react';
-import { BarChart3, FileSearch, FileText, FolderTree, LayoutGrid, MessageSquare, Package, ShoppingBag, Star, Users, FileEdit, Mail } from 'lucide-react';
+import {
+    BarChart3,
+    FileEdit,
+    FileSearch,
+    FileText,
+    FolderTree,
+    LayoutGrid,
+    Mail,
+    MessageSquare,
+    Package,
+    ShoppingBag,
+    Star,
+    Users,
+} from 'lucide-react';
 import { useEffect, useState } from 'react';
 import AppLogo from './app-logo';
 
@@ -193,11 +206,7 @@ export function AppSidebar() {
             </SidebarHeader>
 
             <SidebarContent className="bg-gradient-to-b from-sidebar/50 to-sidebar py-4">
-                <NavMain 
-                    items={mainNavItems} 
-                    unreadMessagesCount={unreadMessagesCount}
-                    newContactMessagesCount={newContactMessagesCount || 0}
-                />
+                <NavMain items={mainNavItems} unreadMessagesCount={unreadMessagesCount} newContactMessagesCount={newContactMessagesCount || 0} />
             </SidebarContent>
 
             <SidebarFooter className="border-t border-sidebar-border/50 py-3">

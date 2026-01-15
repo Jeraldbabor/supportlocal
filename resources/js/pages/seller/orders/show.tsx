@@ -6,6 +6,7 @@ import {
     AlertCircle,
     ArrowLeft,
     Calendar,
+    Check,
     CheckCircle,
     Clock,
     CreditCard,
@@ -16,10 +17,8 @@ import {
     Phone,
     Truck,
     User,
-    XCircle,
-    Image as ImageIcon,
-    Check,
     X,
+    XCircle,
 } from 'lucide-react';
 import { useState } from 'react';
 
@@ -215,7 +214,7 @@ export default function OrderShow({ order }: OrderShowProps) {
                 setToastType('error');
                 setShowToast(true);
             }
-        } catch (error) {
+        } catch {
             setToastMessage('An error occurred while verifying payment.');
             setToastType('error');
             setShowToast(true);
@@ -264,7 +263,7 @@ export default function OrderShow({ order }: OrderShowProps) {
                 setToastType('error');
                 setShowToast(true);
             }
-        } catch (error) {
+        } catch {
             setToastMessage('An error occurred while rejecting payment.');
             setToastType('error');
             setShowToast(true);
@@ -272,8 +271,6 @@ export default function OrderShow({ order }: OrderShowProps) {
             setRejecting(false);
         }
     };
-
-    const canVerifyPayment = order.payment_method === 'gcash' && order.status === 'pending' && order.payment_proof && order.payment_status === 'pending';
 
     return (
         <AppLayout>
@@ -589,7 +586,7 @@ export default function OrderShow({ order }: OrderShowProps) {
                                                     <img
                                                         src={`/storage/${order.payment_proof}`}
                                                         alt="Payment proof"
-                                                        className="w-full h-auto max-h-96 object-contain rounded-lg shadow-sm"
+                                                        className="h-auto max-h-96 w-full rounded-lg object-contain shadow-sm"
                                                     />
                                                 </div>
                                             </div>
@@ -598,7 +595,7 @@ export default function OrderShow({ order }: OrderShowProps) {
                                             <button
                                                 onClick={handleVerifyPayment}
                                                 disabled={verifying}
-                                                className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-emerald-600 to-green-600 px-6 py-3 text-sm font-bold text-white shadow-lg shadow-green-200 transition-all hover:from-emerald-700 hover:to-green-700 hover:shadow-xl hover:shadow-green-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                                                className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-emerald-600 to-green-600 px-6 py-3 text-sm font-bold text-white shadow-lg shadow-green-200 transition-all hover:from-emerald-700 hover:to-green-700 hover:shadow-xl hover:shadow-green-300 disabled:cursor-not-allowed disabled:opacity-50"
                                             >
                                                 {verifying ? (
                                                     <>
@@ -615,7 +612,7 @@ export default function OrderShow({ order }: OrderShowProps) {
                                             <button
                                                 onClick={() => setShowRejectModal(true)}
                                                 disabled={rejecting}
-                                                className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-red-600 to-rose-600 px-6 py-3 text-sm font-bold text-white shadow-lg shadow-red-200 transition-all hover:from-red-700 hover:to-rose-700 hover:shadow-xl hover:shadow-red-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                                                className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-red-600 to-rose-600 px-6 py-3 text-sm font-bold text-white shadow-lg shadow-red-200 transition-all hover:from-red-700 hover:to-rose-700 hover:shadow-xl hover:shadow-red-300 disabled:cursor-not-allowed disabled:opacity-50"
                                             >
                                                 <X className="h-5 w-5" />
                                                 Reject Payment
@@ -654,7 +651,7 @@ export default function OrderShow({ order }: OrderShowProps) {
                                         <button
                                             onClick={handleConfirmOrder}
                                             disabled={order.payment_method === 'gcash' && order.payment_status !== 'paid'}
-                                            className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-emerald-600 to-green-600 px-8 py-3 text-sm font-bold text-white shadow-lg shadow-green-200 transition-all hover:from-emerald-700 hover:to-green-700 hover:shadow-xl hover:shadow-green-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                                            className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-emerald-600 to-green-600 px-8 py-3 text-sm font-bold text-white shadow-lg shadow-green-200 transition-all hover:from-emerald-700 hover:to-green-700 hover:shadow-xl hover:shadow-green-300 disabled:cursor-not-allowed disabled:opacity-50"
                                         >
                                             <CheckCircle className="h-5 w-5" />
                                             Confirm Order
@@ -719,7 +716,7 @@ export default function OrderShow({ order }: OrderShowProps) {
 
                     {/* Reject Payment Modal */}
                     {showRejectModal && (
-                        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+                        <div className="bg-opacity-50 fixed inset-0 z-50 flex items-center justify-center bg-black">
                             <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
                                 <h3 className="mb-4 text-lg font-bold text-gray-900">Reject Payment Proof</h3>
                                 <p className="mb-4 text-sm text-gray-600">
@@ -729,7 +726,7 @@ export default function OrderShow({ order }: OrderShowProps) {
                                     value={rejectionNotes}
                                     onChange={(e) => setRejectionNotes(e.target.value)}
                                     placeholder="Enter rejection reason..."
-                                    className="w-full rounded-lg border border-gray-300 p-3 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+                                    className="w-full rounded-lg border border-gray-300 p-3 text-sm focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none"
                                     rows={4}
                                 />
                                 <div className="mt-6 flex justify-end gap-3">
@@ -745,7 +742,7 @@ export default function OrderShow({ order }: OrderShowProps) {
                                     <button
                                         onClick={handleRejectPayment}
                                         disabled={rejecting || !rejectionNotes.trim()}
-                                        className="rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                                        className="rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50"
                                     >
                                         {rejecting ? 'Rejecting...' : 'Reject Payment'}
                                     </button>

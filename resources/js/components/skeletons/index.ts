@@ -1,20 +1,20 @@
 // Export all skeleton components for easy importing
 export {
-    Skeleton,
+    DashboardStatsSkeleton,
+    FormSkeleton,
+    PageHeaderSkeleton,
+    PageSkeleton,
     ProductCardSkeleton,
     ProductListSkeleton,
-    DashboardStatsSkeleton,
-    TableSkeleton,
-    PageHeaderSkeleton,
-    FormSkeleton,
     ProfileSkeleton,
-    PageSkeleton,
+    Skeleton,
+    TableSkeleton,
 } from '../ui/skeleton';
 
 // Example usage:
-// 
+//
 // import { ProductListSkeleton, DashboardStatsSkeleton } from '@/components/skeletons';
-// 
+//
 // // In your component:
 // if (isLoading) {
 //     return <ProductListSkeleton count={8} />;

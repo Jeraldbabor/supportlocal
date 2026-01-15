@@ -32,9 +32,15 @@ interface Props {
 export default function PageContentEdit() {
     const { content, pageType, section, sections } = usePage<SharedData & Props>().props;
     const [isSubmitting, setIsSubmitting] = useState(false);
-    
+
     // Parse metadata for contact info
-    const contactMetadata = (content?.metadata as any) || {};
+    interface ContactMetadata {
+        email?: { primary?: string; secondary?: string };
+        phone?: { primary?: string; secondary?: string };
+        address?: { line1?: string; line2?: string; line3?: string };
+        business_hours?: { monday_friday?: string; saturday?: string; sunday?: string };
+    }
+    const contactMetadata = (content?.metadata as ContactMetadata | null) || ({} as ContactMetadata);
     const [contactInfo, setContactInfo] = useState({
         email: {
             primary: (contactMetadata.email?.primary as string) || 'hello@supportlocal.com',
@@ -83,7 +89,7 @@ export default function PageContentEdit() {
         const submitData = {
             ...formData,
             id: content?.id || null,
-            metadata: formData.section === 'contact_info' ? metadata : (content?.metadata || null),
+            metadata: formData.section === 'contact_info' ? metadata : content?.metadata || null,
         };
 
         router.post('/admin/page-content', submitData, {
@@ -111,12 +117,8 @@ export default function PageContentEdit() {
             <div className="flex flex-col gap-6">
                 <div className="flex items-center justify-between">
                     <div>
-                        <h1 className="text-3xl font-bold tracking-tight">
-                            {content ? 'Edit Page Content' : 'Create Page Content'}
-                        </h1>
-                        <p className="text-muted-foreground">
-                            {content ? 'Update the page content' : 'Add new content to your pages'}
-                        </p>
+                        <h1 className="text-3xl font-bold tracking-tight">{content ? 'Edit Page Content' : 'Create Page Content'}</h1>
+                        <p className="text-muted-foreground">{content ? 'Update the page content' : 'Add new content to your pages'}</p>
                     </div>
                     <Button variant="outline" onClick={() => router.visit('/admin/page-content')}>
                         <ArrowLeft className="mr-2 h-4 w-4" />
@@ -127,9 +129,7 @@ export default function PageContentEdit() {
                 <Card>
                     <CardHeader>
                         <CardTitle>{content ? 'Edit Content' : 'Create Content'}</CardTitle>
-                        <CardDescription>
-                            Customize the content for your {pageType === 'about' ? 'About' : 'Contact'} page
-                        </CardDescription>
+                        <CardDescription>Customize the content for your {pageType === 'about' ? 'About' : 'Contact'} page</CardDescription>
                     </CardHeader>
                     <CardContent>
                         <form onSubmit={handleSubmit} className="space-y-6">
@@ -153,11 +153,7 @@ export default function PageContentEdit() {
 
                                 <div className="space-y-2">
                                     <Label htmlFor="section">Section</Label>
-                                    <Select
-                                        value={formData.section}
-                                        onValueChange={(value) => handleInputChange('section', value)}
-                                        required
-                                    >
+                                    <Select value={formData.section} onValueChange={(value) => handleInputChange('section', value)} required>
                                         <SelectTrigger>
                                             <SelectValue placeholder="Select a section" />
                                         </SelectTrigger>
@@ -204,7 +200,7 @@ export default function PageContentEdit() {
                                 <div className="space-y-6 rounded-lg border p-6">
                                     <div>
                                         <h3 className="mb-4 text-lg font-semibold">Contact Information</h3>
-                                        
+
                                         {/* Email */}
                                         <div className="mb-4 space-y-2">
                                             <Label>Email Addresses</Label>
@@ -370,11 +366,7 @@ export default function PageContentEdit() {
                             </div>
 
                             <div className="flex justify-end gap-4">
-                                <Button
-                                    type="button"
-                                    variant="outline"
-                                    onClick={() => router.visit('/admin/page-content')}
-                                >
+                                <Button type="button" variant="outline" onClick={() => router.visit('/admin/page-content')}>
                                     Cancel
                                 </Button>
                                 <Button type="submit" disabled={isSubmitting}>

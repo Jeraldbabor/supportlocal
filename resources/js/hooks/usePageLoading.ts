@@ -1,5 +1,5 @@
 import { usePage } from '@inertiajs/react';
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 export function usePageLoading() {
     const { component, url } = usePage();
@@ -27,9 +27,9 @@ export function usePageLoading() {
             if (timeoutRef.current) {
                 clearTimeout(timeoutRef.current);
             }
-            
+
             setIsLoading(true);
-            
+
             timeoutRef.current = setTimeout(() => {
                 // Only hide if component has actually loaded
                 if (component) {
@@ -60,11 +60,9 @@ export function usePageLoading() {
         const checkProgressBar = () => {
             const progressBar = document.querySelector('.inertia-progress-bar') as HTMLElement;
             if (progressBar) {
-                const isVisible = 
-                    progressBar.offsetHeight > 0 && 
-                    progressBar.style.display !== 'none' &&
-                    window.getComputedStyle(progressBar).opacity !== '0';
-                
+                const isVisible =
+                    progressBar.offsetHeight > 0 && progressBar.style.display !== 'none' && window.getComputedStyle(progressBar).opacity !== '0';
+
                 if (isVisible && !isLoading) {
                     setIsLoading(true);
                 } else if (!isVisible && isLoading && component) {

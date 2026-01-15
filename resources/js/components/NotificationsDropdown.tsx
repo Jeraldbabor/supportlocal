@@ -118,22 +118,30 @@ export default function NotificationsDropdown({ userRole, initialUnreadCount = 0
     const handleMarkAsRead = (notificationId: string, e: React.MouseEvent) => {
         e.stopPropagation();
         const baseRoute = userRole === 'seller' ? 'seller' : userRole === 'administrator' ? 'admin' : 'buyer';
-        router.post(`/${baseRoute}/notifications/${notificationId}/read`, {}, {
-            preserveScroll: true,
-            onSuccess: () => {
-                loadNotifications();
+        router.post(
+            `/${baseRoute}/notifications/${notificationId}/read`,
+            {},
+            {
+                preserveScroll: true,
+                onSuccess: () => {
+                    loadNotifications();
+                },
             },
-        });
+        );
     };
 
     const handleMarkAllAsRead = () => {
         const baseRoute = userRole === 'seller' ? 'seller' : userRole === 'administrator' ? 'admin' : 'buyer';
-        router.post(`/${baseRoute}/notifications/read-all`, {}, {
-            preserveScroll: true,
-            onSuccess: () => {
-                loadNotifications();
+        router.post(
+            `/${baseRoute}/notifications/read-all`,
+            {},
+            {
+                preserveScroll: true,
+                onSuccess: () => {
+                    loadNotifications();
+                },
             },
-        });
+        );
     };
 
     const getNotificationIcon = (type: string) => {
@@ -169,9 +177,9 @@ export default function NotificationsDropdown({ userRole, initialUnreadCount = 0
                     <>
                         {/* Backdrop */}
                         <div className="fixed inset-0 z-[9998] bg-black/20 sm:hidden" onClick={() => setIsOpen(false)} />
-                        
+
                         {/* Dropdown Panel */}
-                        <div className="fixed top-[4.5rem] right-2 z-[9999] w-[calc(100vw-1rem)] max-w-sm rounded-lg border border-gray-200 bg-white shadow-xl dark:border-gray-700 dark:bg-gray-800 sm:absolute sm:top-auto sm:right-0 sm:z-50 sm:mt-2 sm:w-96">
+                        <div className="fixed top-[4.5rem] right-2 z-[9999] w-[calc(100vw-1rem)] max-w-sm rounded-lg border border-gray-200 bg-white shadow-xl sm:absolute sm:top-auto sm:right-0 sm:z-50 sm:mt-2 sm:w-96 dark:border-gray-700 dark:bg-gray-800">
                             {/* Header */}
                             <div className="flex items-center justify-between border-b border-gray-200 bg-gradient-to-r from-primary/5 to-primary/10 p-4 dark:border-gray-700">
                                 <div className="flex items-center gap-2">
@@ -185,22 +193,12 @@ export default function NotificationsDropdown({ userRole, initialUnreadCount = 0
                                 </div>
                                 <div className="flex items-center gap-2">
                                     {unreadCount > 0 && (
-                                        <Button
-                                            variant="ghost"
-                                            size="sm"
-                                            onClick={handleMarkAllAsRead}
-                                            className="h-8 text-xs"
-                                        >
+                                        <Button variant="ghost" size="sm" onClick={handleMarkAllAsRead} className="h-8 text-xs">
                                             <Check className="mr-1 h-3 w-3" />
                                             Mark all read
                                         </Button>
                                     )}
-                                    <Button
-                                        variant="ghost"
-                                        size="icon"
-                                        onClick={() => setIsOpen(false)}
-                                        className="h-8 w-8"
-                                    >
+                                    <Button variant="ghost" size="icon" onClick={() => setIsOpen(false)} className="h-8 w-8">
                                         <X className="h-4 w-4" />
                                     </Button>
                                 </div>
@@ -231,16 +229,14 @@ export default function NotificationsDropdown({ userRole, initialUnreadCount = 0
                                                 onClick={() => handleNotificationClick(notification)}
                                             >
                                                 <div className="flex items-start gap-3">
-                                                    <div className="mt-0.5 flex-shrink-0">
-                                                        {getNotificationIcon(notification.type)}
-                                                    </div>
+                                                    <div className="mt-0.5 flex-shrink-0">{getNotificationIcon(notification.type)}</div>
                                                     <div className="min-w-0 flex-1">
                                                         <div className="flex items-start justify-between gap-2">
                                                             <div className="flex-1">
                                                                 <p className="text-sm font-medium text-gray-900 dark:text-white">
                                                                     {notification.title}
                                                                 </p>
-                                                                <p className="mt-1 text-xs text-gray-600 dark:text-gray-300 line-clamp-2">
+                                                                <p className="mt-1 line-clamp-2 text-xs text-gray-600 dark:text-gray-300">
                                                                     {notification.message}
                                                                 </p>
                                                                 {notification.data.sender_name && (
@@ -253,11 +249,12 @@ export default function NotificationsDropdown({ userRole, initialUnreadCount = 0
                                                                         const date = new Date(notification.created_at);
                                                                         const now = new Date();
                                                                         const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
-                                                                        
+
                                                                         if (diffInSeconds < 60) return 'Just now';
                                                                         if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`;
                                                                         if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h ago`;
-                                                                        if (diffInSeconds < 604800) return `${Math.floor(diffInSeconds / 86400)}d ago`;
+                                                                        if (diffInSeconds < 604800)
+                                                                            return `${Math.floor(diffInSeconds / 86400)}d ago`;
                                                                         return date.toLocaleDateString();
                                                                     })()}
                                                                 </p>

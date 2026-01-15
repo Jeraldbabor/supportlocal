@@ -150,7 +150,7 @@ export default function ProductsIndex() {
 
             <div className="flex flex-col gap-4 sm:gap-6">
                 {/* Stats Cards */}
-                <div className="grid gap-3 sm:gap-4 grid-cols-2 sm:grid-cols-4 lg:grid-cols-8">
+                <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4 lg:grid-cols-8">
                     <Card className="transition-all duration-200 hover:shadow-md">
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                             <CardTitle className="text-xs font-medium sm:text-sm">Total Products</CardTitle>
@@ -241,7 +241,7 @@ export default function ProductsIndex() {
                             <div className="flex-1">
                                 <label className="mb-1.5 block text-xs font-medium sm:text-sm">Search</label>
                                 <div className="relative">
-                                    <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                                    <Search className="absolute top-1/2 left-2.5 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                                     <Input
                                         placeholder="Search products..."
                                         value={searchTerm}
@@ -307,13 +307,27 @@ export default function ProductsIndex() {
                             <table className="w-full">
                                 <thead className="border-b bg-gray-50 dark:bg-gray-800">
                                     <tr>
-                                        <th className="px-4 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase lg:px-6">Product</th>
-                                        <th className="px-4 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase lg:px-6">Seller</th>
-                                        <th className="px-4 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase lg:px-6">Price</th>
-                                        <th className="px-4 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase lg:px-6">Stock</th>
-                                        <th className="px-4 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase lg:px-6">Status</th>
-                                        <th className="px-4 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase lg:px-6">Rating</th>
-                                        <th className="px-4 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase lg:px-6">Actions</th>
+                                        <th className="px-4 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase lg:px-6">
+                                            Product
+                                        </th>
+                                        <th className="px-4 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase lg:px-6">
+                                            Seller
+                                        </th>
+                                        <th className="px-4 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase lg:px-6">
+                                            Price
+                                        </th>
+                                        <th className="px-4 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase lg:px-6">
+                                            Stock
+                                        </th>
+                                        <th className="px-4 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase lg:px-6">
+                                            Status
+                                        </th>
+                                        <th className="px-4 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase lg:px-6">
+                                            Rating
+                                        </th>
+                                        <th className="px-4 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase lg:px-6">
+                                            Actions
+                                        </th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-gray-200 bg-white dark:divide-gray-700 dark:bg-gray-900">
@@ -443,10 +457,7 @@ export default function ProductsIndex() {
                         {/* Mobile Card View */}
                         <div className="space-y-3 p-4 md:hidden">
                             {products.data.map((product) => (
-                                <div
-                                    key={product.id}
-                                    className="rounded-lg border bg-card p-4 shadow-sm transition-all hover:shadow-md"
-                                >
+                                <div key={product.id} className="rounded-lg border bg-card p-4 shadow-sm transition-all hover:shadow-md">
                                     <div className="flex items-start justify-between gap-3">
                                         <div className="flex min-w-0 flex-1 items-start gap-3">
                                             {product.primary_image ? (
@@ -474,7 +485,9 @@ export default function ProductsIndex() {
                                                             Featured
                                                         </Badge>
                                                     )}
-                                                    <Badge className={getStatusColor(product.status)}>{statuses[product.status] || product.status}</Badge>
+                                                    <Badge className={getStatusColor(product.status)}>
+                                                        {statuses[product.status] || product.status}
+                                                    </Badge>
                                                     <Badge className={getStockStatusColor(product.stock_status)}>
                                                         {stockStatuses[product.stock_status] || product.stock_status}
                                                     </Badge>
@@ -547,7 +560,7 @@ export default function ProductsIndex() {
                         </div>
 
                         {products.data.length === 0 && (
-                            <div className="flex flex-col items-center justify-center py-12 px-4">
+                            <div className="flex flex-col items-center justify-center px-4 py-12">
                                 <Package className="mb-4 h-12 w-12 text-muted-foreground" />
                                 <h3 className="text-lg font-medium">No products found</h3>
                                 <p className="mt-1 text-center text-sm text-muted-foreground">Try adjusting your filters</p>

@@ -407,8 +407,8 @@ export default function SettingsIndex() {
                                 <div className="rounded-lg border bg-muted/50 p-4">
                                     <h3 className="mb-2 font-semibold">Automated Backups</h3>
                                     <p className="mb-4 text-sm text-muted-foreground">
-                                        Database backups are automatically created daily at 2:00 AM (Asia/Manila timezone).
-                                        Backups are retained for 7 days and stored in <code className="rounded bg-background px-1 py-0.5 text-xs">storage/app/backups</code>.
+                                        Database backups are automatically created daily at 2:00 AM (Asia/Manila timezone). Backups are retained for 7
+                                        days and stored in <code className="rounded bg-background px-1 py-0.5 text-xs">storage/app/backups</code>.
                                     </p>
                                     <div className="space-y-2 text-sm">
                                         <div className="flex items-center gap-2">
@@ -433,12 +433,16 @@ export default function SettingsIndex() {
                                     <form
                                         onSubmit={(e) => {
                                             e.preventDefault();
-                                            router.post('/admin/database/backup', {}, {
-                                                preserveScroll: true,
-                                                onSuccess: () => {
-                                                    alert('Database backup initiated successfully!');
+                                            router.post(
+                                                '/admin/database/backup',
+                                                {},
+                                                {
+                                                    preserveScroll: true,
+                                                    onSuccess: () => {
+                                                        alert('Database backup initiated successfully!');
+                                                    },
                                                 },
-                                            });
+                                            );
                                         }}
                                     >
                                         <Button type="submit" variant="outline">
