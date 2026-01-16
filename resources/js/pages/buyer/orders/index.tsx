@@ -223,9 +223,14 @@ export default function Orders({ orders }: OrdersIndexProps) {
                                             <div className="flex-shrink-0">
                                                 {item.product_image ? (
                                                     <img
-                                                        src={`/storage/${item.product_image}`}
+                                                        src={item.product_image.startsWith('http') ? item.product_image : `/images/${item.product_image}`}
                                                         alt={item.product_name}
                                                         className="h-16 w-16 rounded-lg object-cover"
+                                                        onError={(e) => {
+                                                            const target = e.target as HTMLImageElement;
+                                                            target.onerror = null;
+                                                            target.src = '/placeholder.svg';
+                                                        }}
                                                     />
                                                 ) : (
                                                     <div className="flex h-16 w-16 items-center justify-center rounded-lg bg-gray-200">

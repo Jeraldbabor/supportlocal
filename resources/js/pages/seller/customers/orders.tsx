@@ -123,12 +123,16 @@ export default function CustomerOrders({ customer, orders, filters, available_st
     };
 
     const getMainImage = (images: string[]) => {
-        if (!images || images.length === 0) return '/images/placeholder-product.png';
+        if (!images || images.length === 0) return '/placeholder.svg';
         try {
             const parsedImages = typeof images === 'string' ? JSON.parse(images) : images;
-            return Array.isArray(parsedImages) && parsedImages.length > 0 ? `/storage/${parsedImages[0]}` : '/images/placeholder-product.png';
+            if (Array.isArray(parsedImages) && parsedImages.length > 0) {
+                const img = parsedImages[0];
+                return img.startsWith('http') ? img : `/images/${img}`;
+            }
+            return '/placeholder.svg';
         } catch {
-            return '/images/placeholder-product.png';
+            return '/placeholder.svg';
         }
     };
 
