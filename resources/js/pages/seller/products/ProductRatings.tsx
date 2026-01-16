@@ -300,7 +300,7 @@ export default function ProductRatings({ product, ratings, distribution, summary
                                     <div key={rating.id} className="border-b pb-6 last:border-b-0 last:pb-0">
                                         <div className="flex items-start gap-4">
                                             <Avatar className="h-10 w-10">
-                                                <AvatarImage src={rating.user.avatar_url || rating.user.profile_picture} alt={rating.user.name} />
+                                                <AvatarImage src={rating.user.avatar_url || undefined} alt={rating.user.name} />
                                                 <AvatarFallback>{getInitials(rating.user.name)}</AvatarFallback>
                                             </Avatar>
                                             <div className="flex-1">

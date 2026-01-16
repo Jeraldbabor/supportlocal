@@ -395,7 +395,7 @@ export default function Ratings({ ratings, sellerProducts, statistics, filters }
                                         <div className="flex items-start justify-between gap-4">
                                             <div className="flex gap-4">
                                                 <Avatar className="h-10 w-10">
-                                                    <AvatarImage src={rating.user.avatar_url || rating.user.profile_picture} alt={rating.user.name} />
+                                                    <AvatarImage src={rating.user.avatar_url || undefined} alt={rating.user.name} />
                                                     <AvatarFallback>{getInitials(rating.user.name)}</AvatarFallback>
                                                 </Avatar>
                                                 <div className="flex-1">

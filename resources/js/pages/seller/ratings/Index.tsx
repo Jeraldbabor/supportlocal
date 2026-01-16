@@ -347,7 +347,7 @@ export default function Index({ ratings, statistics, filters }: SellerRatingsPag
                                             <div className="flex gap-4">
                                                 <Avatar className="h-10 w-10">
                                                     <AvatarImage
-                                                        src={rating.user.avatar_url || rating.user.profile_picture || undefined}
+                                                        src={rating.user.avatar_url || undefined}
                                                         alt={rating.user.name}
                                                     />
                                                     <AvatarFallback>{getInitials(rating.user.name)}</AvatarFallback>
