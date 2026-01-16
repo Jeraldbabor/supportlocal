@@ -2,6 +2,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import AppLayout from '@/layouts/app-layout';
+import { formatDateForInput } from '@/utils/date';
 import { type BreadcrumbItem, type SharedData, type User } from '@/types';
 import { Head, useForm, usePage } from '@inertiajs/react';
 import { Camera, Mail, Save, Shield, Upload, User as UserIcon, X } from 'lucide-react';
@@ -36,7 +37,7 @@ export default function EditProfile() {
         email: user.email || '',
         phone_number: user.phone_number || '',
         address: user.address || '',
-        date_of_birth: user.date_of_birth || '',
+        date_of_birth: formatDateForInput(user.date_of_birth),
         delivery_address: user.delivery_address || '',
         delivery_phone: user.delivery_phone || '',
         delivery_notes: user.delivery_notes || '',

@@ -137,7 +137,7 @@ export default function MessagesDropdown({ currentUserId }: MessagesDropdownProp
 
     // Listen for new messages across all conversations
     useEffect(() => {
-        if (!currentUserId) return;
+        if (!currentUserId || !Echo) return;
 
         console.log('Setting up message listener for user:', currentUserId);
 
