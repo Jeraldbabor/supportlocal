@@ -37,6 +37,8 @@ export interface User {
     email: string;
     role?: string;
     avatar?: string;
+    avatar_url?: string; // Added for avatar URL accessor
+    profile_picture?: string; // Added for profile picture
     email_verified_at: string | null;
     created_at: string;
     updated_at: string;

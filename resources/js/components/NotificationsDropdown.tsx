@@ -107,7 +107,7 @@ export default function NotificationsDropdown({ userRole, initialUnreadCount = 0
 
         // Listen for Laravel notification broadcasts
         // Laravel broadcasts notifications when they implement ShouldBroadcast
-        const handler = (data: any) => {
+        const handler = (data: { notification?: { id?: string; type?: string } }) => {
             console.log('New notification received:', data);
             
             // Increment unread count
@@ -127,7 +127,8 @@ export default function NotificationsDropdown({ userRole, initialUnreadCount = 0
                 channel.stopListening('.Illuminate\\Notifications\\Events\\BroadcastNotificationCreated');
             }
         };
-    }, [currentUserId, isOpen, loadNotifications]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [currentUserId, isOpen]);
 
     // Periodic polling as fallback (every 30 seconds)
     useEffect(() => {
@@ -141,7 +142,8 @@ export default function NotificationsDropdown({ userRole, initialUnreadCount = 0
         }, 30000); // Check every 30 seconds
 
         return () => clearInterval(interval);
-    }, [currentUserId, isOpen, loadNotifications]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [currentUserId, isOpen]);
 
     // Close dropdown when clicking outside
     useEffect(() => {
