@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
-use Illuminate\Validation\Rules\File;
+use Illuminate\Validation\Rules\File as ValidationFile;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -150,7 +150,7 @@ class ProfileController extends Controller
         $request->validate([
             'avatar' => [
                 'required',
-                File::image()
+                ValidationFile::image()
                     ->max(2 * 1024) // 2MB
                     ->dimensions(Rule::dimensions()->minWidth(100)->minHeight(100)),
             ],
