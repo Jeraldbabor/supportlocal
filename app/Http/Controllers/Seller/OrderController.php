@@ -58,6 +58,9 @@ class OrderController extends Controller
             abort(403);
         }
 
+        // Load necessary relationships
+        $order->load(['orderItems.product', 'buyer']);
+
         // Check if order can be confirmed
         if (! $order->canBeConfirmed()) {
             if ($order->payment_method === Order::PAYMENT_GCASH && $order->payment_status !== Order::PAYMENT_PAID) {
@@ -115,10 +118,17 @@ class OrderController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
 
+            \Log::error('Order confirmation failed', [
+                'order_id' => $order->id,
+                'seller_id' => auth()->id(),
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
             return response()->json([
                 'success' => false,
-                'message' => $e->getMessage(),
-            ], 400);
+                'message' => $e->getMessage() ?: 'An error occurred while confirming the order. Please try again.',
+            ], 500);
         }
     }
 

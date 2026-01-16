@@ -1,6 +1,7 @@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { router } from '@inertiajs/react';
+import Echo from '@/lib/echo';
+import { router, usePage } from '@inertiajs/react';
 import { Bell, Check, FileText, Mail, X } from 'lucide-react';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 
@@ -35,6 +36,8 @@ export default function NotificationsDropdown({ userRole, initialUnreadCount = 0
     const [isLoading, setIsLoading] = useState(false);
     const [unreadCount, setUnreadCount] = useState(initialUnreadCount);
     const dropdownRef = useRef<HTMLDivElement>(null);
+    const { auth } = usePage<{ auth: { user?: { id: number } } }>().props;
+    const currentUserId = auth?.user?.id;
 
     const getNotificationRoute = () => {
         switch (userRole) {
@@ -80,12 +83,65 @@ export default function NotificationsDropdown({ userRole, initialUnreadCount = 0
         }
     }, [getApiRoute]);
 
-    // Load notifications when dropdown opens
+    // Load notifications initially on mount
+    useEffect(() => {
+        // Load notifications once on mount to get current state
+        loadNotifications();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []); // Only run once on mount
+
     useEffect(() => {
         if (isOpen) {
             loadNotifications();
         }
     }, [isOpen, loadNotifications]);
+
+    // Listen for new notifications in real-time using Echo
+    useEffect(() => {
+        if (!currentUserId || !Echo) return;
+
+        console.log('Setting up notification listener for user:', currentUserId);
+
+        // Subscribe to user's private channel for new notifications
+        const channel = Echo.private(`App.Models.User.${currentUserId}`);
+
+        // Listen for Laravel notification broadcasts
+        // Laravel broadcasts notifications when they implement ShouldBroadcast
+        const handler = (data: any) => {
+            console.log('New notification received:', data);
+            
+            // Increment unread count
+            setUnreadCount((prev) => prev + 1);
+
+            // If dropdown is open, reload notifications to show the new one
+            if (isOpen) {
+                loadNotifications();
+            }
+        };
+
+        // Listen for notification broadcasts (event name depends on notification class)
+        channel.listen('.Illuminate\\Notifications\\Events\\BroadcastNotificationCreated', handler);
+
+        return () => {
+            if (channel) {
+                channel.stopListening('.Illuminate\\Notifications\\Events\\BroadcastNotificationCreated');
+            }
+        };
+    }, [currentUserId, isOpen, loadNotifications]);
+
+    // Periodic polling as fallback (every 30 seconds)
+    useEffect(() => {
+        if (!currentUserId) return;
+
+        const interval = setInterval(() => {
+            // Only poll if dropdown is closed to avoid unnecessary requests
+            if (!isOpen) {
+                loadNotifications();
+            }
+        }, 30000); // Check every 30 seconds
+
+        return () => clearInterval(interval);
+    }, [currentUserId, isOpen, loadNotifications]);
 
     // Close dropdown when clicking outside
     useEffect(() => {

@@ -163,6 +163,7 @@ class ProductController extends Controller
         }
 
         // Calculate monthly sales for all products (for display in product cards)
+        // Calculate monthly sales with eager loading to prevent N+1
         $monthlySales = OrderItem::whereHas('order', function ($q) use ($monthStart) {
             $q->where('status', \App\Models\Order::STATUS_COMPLETED)
                 ->where('created_at', '>=', $monthStart);
@@ -178,7 +179,7 @@ class ProductController extends Controller
                 'price' => (float) $product->price,
                 'compare_price' => $product->compare_price ? (float) $product->compare_price : null,
                 'primary_image' => $product->featured_image,
-                'image' => $product->featured_image ? '/storage/'.$product->featured_image : '/placeholder.jpg',
+                'image' => \App\Helpers\ImageHelper::url($product->featured_image),
                 'average_rating' => $product->average_rating ? (float) $product->average_rating : null,
                 'review_count' => $product->review_count ?? 0,
                 'order_count' => (int) ($product->order_count ?? 0),
@@ -293,16 +294,19 @@ class ProductController extends Controller
             ->get();
 
         // Get ratings with user information (limited to first 5, frontend can load more)
+        // Eager load user relationship to prevent N+1 queries
         $ratings = $product->ratings()
-            ->with('user:id,name,profile_picture')
+            ->with(['user:id,name,profile_picture,avatar'])
             ->orderBy('created_at', 'desc')
             ->limit(5)
             ->get();
 
         // Check if current user has rated this product
+        // Eager load user relationship to prevent N+1 query
         $userRating = null;
         if (auth()->check()) {
             $userRating = $product->ratings()
+                ->with('user:id,name,profile_picture,avatar')
                 ->where('user_id', auth()->id())
                 ->first();
         }

@@ -130,19 +130,9 @@ class ProductController extends Controller
                 'is_featured' => $product->is_featured,
                 'is_digital' => $product->is_digital,
                 'requires_shipping' => $product->requires_shipping,
-                'images' => $product->images ? array_map(function ($img) {
-                    // Handle both full paths and relative paths
-                    if (str_starts_with($img, 'http')) {
-                        return $img;
-                    }
-                    if (str_starts_with($img, '/')) {
-                        return $img;
-                    }
-
-                    return asset('storage/'.$img);
-                }, $product->images) : null,
-                'featured_image' => $product->featured_image ? (str_starts_with($product->featured_image, 'http') || str_starts_with($product->featured_image, '/') ? $product->featured_image : asset('storage/'.$product->featured_image)) : null,
-                'primary_image' => $product->primary_image ? (str_starts_with($product->primary_image, 'http') || str_starts_with($product->primary_image, '/') ? $product->primary_image : asset('storage/'.$product->primary_image)) : null,
+                'images' => \App\Helpers\ImageHelper::urls($product->images),
+                'featured_image' => \App\Helpers\ImageHelper::url($product->featured_image),
+                'primary_image' => \App\Helpers\ImageHelper::url($product->primary_image),
                 'subcategories' => $product->subcategories,
                 'shipping_weight' => $product->shipping_weight,
                 'shipping_cost' => $product->shipping_cost,

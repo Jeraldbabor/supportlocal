@@ -127,7 +127,7 @@ export default function Cart() {
                                             <Link href={`/buyer/product/${item.product_id}`}>
                                                 {item.primary_image ? (
                                                     <img
-                                                        src={`/storage/${item.primary_image}`}
+                                                        src={`/images/${item.primary_image}`}
                                                         alt={item.name}
                                                         className="h-20 w-20 rounded-lg object-cover"
                                                     />
