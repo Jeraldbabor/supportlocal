@@ -310,15 +310,9 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         // First, check for uploaded profile picture
         if ($this->profile_picture) {
-            // Use Storage::url() which is more reliable, with fallback to asset()
-            try {
-                if (\Storage::disk('public')->exists($this->profile_picture)) {
-                    return \Storage::disk('public')->url($this->profile_picture);
-                }
-            } catch (\Exception $e) {
-                // Fallback to asset() if Storage::url() fails
-            }
-            return asset('storage/'.$this->profile_picture);
+            // Use /images/{path} route which works reliably in Railway/production
+            // This route serves files directly from storage/app/public without requiring symlinks
+            return url('/images/'.$this->profile_picture);
         }
 
         // Second, check for social media avatar

@@ -124,7 +124,10 @@ class ProfileController extends Controller
                 'profile_picture' => $path,
             ]);
 
-            return back()->with('message', 'Profile picture updated successfully.');
+            // Refresh user model to get updated avatar_url
+            $user->refresh();
+
+            return redirect()->route('user.profile.edit')->with('message', 'Profile picture updated successfully.');
         } catch (\Exception $e) {
             \Log::error('Avatar upload failed', [
                 'user_id' => $user->id,

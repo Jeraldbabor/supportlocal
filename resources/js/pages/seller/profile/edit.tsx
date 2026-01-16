@@ -37,6 +37,7 @@ export default function SellerProfileEdit() {
     const { user } = usePage<SellerProfileEditProps>().props;
     const [selectedAvatar, setSelectedAvatar] = useState<File | null>(null);
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+    const [imageError, setImageError] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const { data, setData, put, processing, errors, reset } = useForm({
@@ -128,8 +129,13 @@ export default function SellerProfileEdit() {
                                 <div className="h-32 w-32 overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700">
                                     {previewUrl ? (
                                         <img src={previewUrl} alt="Preview" className="h-full w-full object-cover" />
-                                    ) : user.avatar_url ? (
-                                        <img src={user.avatar_url} alt={user.name} className="h-full w-full object-cover" />
+                                    ) : user.avatar_url && !user.avatar_url.includes('ui-avatars.com') && !imageError ? (
+                                        <img 
+                                            src={user.avatar_url} 
+                                            alt={user.name} 
+                                            className="h-full w-full object-cover"
+                                            onError={() => setImageError(true)}
+                                        />
                                     ) : (
                                         <div className="flex h-full w-full items-center justify-center">
                                             <User className="h-16 w-16 text-gray-400" />
