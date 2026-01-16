@@ -24,6 +24,7 @@ jobs:
           php-version: 8.4
           tools: composer:v2
           coverage: xdebug
+          extensions: sqlite, pdo_sqlite
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -54,6 +55,7 @@ jobs:
           mkdir -p storage/framework/sessions
           mkdir -p storage/framework/views
           mkdir -p bootstrap/cache
+          chmod -R 775 storage bootstrap/cache
 
       - name: Clear All Caches
         run: |
@@ -72,5 +74,9 @@ jobs:
           php artisan --version
 
       - name: Tests
-        run: ./vendor/bin/pest --verbose
+        env:
+          APP_ENV: testing
+          DB_CONNECTION: sqlite
+          DB_DATABASE: ":memory:"
+        run: php artisan test --verbose
         timeout-minutes: 10
