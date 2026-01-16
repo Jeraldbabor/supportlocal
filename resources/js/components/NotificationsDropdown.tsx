@@ -1,0 +1,224 @@
+import { useNotifications } from '@/contexts/NotificationsContext';
+import { Button } from '@/components/ui/button';
+import { Bell } from 'lucide-react';
+import { Link, router } from '@inertiajs/react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+
+interface Notification {
+    id: string;
+    type: string;
+    data: {
+        title?: string;
+        message?: string;
+        action_url?: string;
+    };
+    read_at: string | null;
+    created_at: string;
+}
+
+interface NotificationsDropdownProps {
+    userRole?: 'buyer' | 'seller' | 'administrator';
+    initialUnreadCount?: number;
+    buttonClassName?: string;
+}
+
+export default function NotificationsDropdown({
+    userRole = 'buyer',
+    initialUnreadCount = 0,
+    buttonClassName = '',
+}: NotificationsDropdownProps) {
+    const [isOpen, setIsOpen] = useState(false);
+    const [notifications, setNotifications] = useState<Notification[]>([]);
+    const [isLoading, setIsLoading] = useState(false);
+    const dropdownRef = useRef<HTMLDivElement>(null);
+    const { unreadCount, markAsRead, refreshUnreadCount } = useNotifications();
+
+    const baseRoute = userRole === 'seller' ? 'seller' : userRole === 'administrator' ? 'admin' : 'buyer';
+
+    // Close dropdown when clicking outside
+    useEffect(() => {
+        function handleClickOutside(event: MouseEvent) {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+                setIsOpen(false);
+            }
+        }
+
+        if (isOpen) {
+            document.addEventListener('mousedown', handleClickOutside);
+            return () => {
+                document.removeEventListener('mousedown', handleClickOutside);
+            };
+        }
+    }, [isOpen]);
+
+    const loadNotifications = useCallback(async () => {
+        setIsLoading(true);
+        try {
+            const response = await fetch(`/${baseRoute}/notifications/recent`);
+            if (response.ok) {
+                const data = await response.json();
+                setNotifications(data.data || []);
+            } else {
+                console.error('Failed to load notifications:', response.status);
+            }
+        } catch (error) {
+            console.error('Failed to load notifications:', error);
+        } finally {
+            setIsLoading(false);
+        }
+    }, [baseRoute]);
+
+    // Load notifications when dropdown opens
+    useEffect(() => {
+        if (isOpen) {
+            loadNotifications();
+        }
+    }, [isOpen, loadNotifications]);
+
+    const handleNotificationClick = (notification: Notification) => {
+        // Mark as read if unread
+        if (!notification.read_at) {
+            markAsRead(notification.id);
+            // Optimistically update local state
+            setNotifications((prev) =>
+                prev.map((n) => (n.id === notification.id ? { ...n, read_at: new Date().toISOString() } : n)),
+            );
+        }
+
+        // Navigate to action URL or close dropdown
+        if (notification.data.action_url) {
+            router.visit(notification.data.action_url);
+            setIsOpen(false);
+        } else {
+            setIsOpen(false);
+        }
+    };
+
+    const handleMarkAllAsRead = () => {
+        router.post(
+            `/${baseRoute}/notifications/read-all`,
+            {},
+            {
+                preserveState: false,
+                preserveScroll: true,
+                onSuccess: () => {
+                    refreshUnreadCount();
+                    loadNotifications();
+                },
+            },
+        );
+    };
+
+    const unreadNotifications = notifications.filter((n) => !n.read_at);
+    const hasUnread = unreadCount > 0 || unreadNotifications.length > 0;
+
+    return (
+        <div className="relative" ref={dropdownRef}>
+            <button
+                onClick={() => setIsOpen(!isOpen)}
+                className={buttonClassName || 'group relative rounded-xl p-2 text-gray-600 transition-all duration-300 hover:bg-primary/5 hover:text-primary hover:shadow-sm focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 focus:outline-none'}
+                aria-label={`Notifications ${hasUnread ? `(${unreadCount} unread)` : ''}`}
+                aria-expanded={isOpen}
+            >
+                <Bell className="h-5 w-5 transition-transform duration-300 group-hover:scale-110" />
+                {hasUnread && (
+                    <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-gradient-to-r from-red-500 to-red-600 text-xs font-medium text-white shadow-sm">
+                        {unreadCount > 99 ? '99+' : unreadCount || unreadNotifications.length}
+                    </span>
+                )}
+                <span className="absolute inset-0 rounded-xl opacity-0 ring-primary/50 transition-all duration-300 group-hover:opacity-100 group-hover:ring-2 group-hover:ring-offset-2"></span>
+            </button>
+
+            {isOpen && (
+                <div className="absolute right-0 top-full z-50 mt-2 w-80 rounded-xl border border-gray-200/80 bg-white/95 shadow-xl ring-1 ring-black/5 backdrop-blur-sm">
+                    {/* Header */}
+                    <div className="flex items-center justify-between border-b border-gray-100 px-4 py-3">
+                        <h3 className="text-sm font-semibold text-gray-900">Notifications</h3>
+                        {hasUnread && (
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={handleMarkAllAsRead}
+                                className="text-xs text-primary hover:text-primary/80"
+                            >
+                                Mark all as read
+                            </Button>
+                        )}
+                    </div>
+
+                    {/* Notifications List */}
+                    <div className="max-h-96 overflow-y-auto">
+                        {isLoading ? (
+                            <div className="flex items-center justify-center py-8">
+                                <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent"></div>
+                            </div>
+                        ) : notifications.length === 0 ? (
+                            <div className="flex flex-col items-center justify-center py-8 text-center">
+                                <Bell className="h-8 w-8 text-gray-300 mb-2" />
+                                <p className="text-sm text-gray-500">No notifications</p>
+                            </div>
+                        ) : (
+                            <div className="divide-y divide-gray-100">
+                                {notifications.map((notification) => {
+                                    const isUnread = !notification.read_at;
+                                    return (
+                                        <button
+                                            key={notification.id}
+                                            onClick={() => handleNotificationClick(notification)}
+                                            className={`w-full text-left px-4 py-3 transition-colors duration-200 ${
+                                                isUnread
+                                                    ? 'bg-primary/5 hover:bg-primary/10'
+                                                    : 'hover:bg-gray-50'
+                                            }`}
+                                        >
+                                            <div className="flex items-start gap-3">
+                                                {isUnread && (
+                                                    <div className="mt-1.5 h-2 w-2 flex-shrink-0 rounded-full bg-primary"></div>
+                                                )}
+                                                <div className="flex-1 min-w-0">
+                                                    <p
+                                                        className={`text-sm font-medium ${
+                                                            isUnread ? 'text-gray-900' : 'text-gray-700'
+                                                        }`}
+                                                    >
+                                                        {notification.data.title || 'Notification'}
+                                                    </p>
+                                                    {notification.data.message && (
+                                                        <p className="mt-1 text-xs text-gray-500 line-clamp-2">
+                                                            {notification.data.message}
+                                                        </p>
+                                                    )}
+                                                    <p className="mt-1 text-xs text-gray-400">
+                                                        {new Date(notification.created_at).toLocaleDateString('en-US', {
+                                                            month: 'short',
+                                                            day: 'numeric',
+                                                            hour: 'numeric',
+                                                            minute: '2-digit',
+                                                        })}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Footer */}
+                    {notifications.length > 0 && (
+                        <div className="border-t border-gray-100 px-4 py-3">
+                            <Link
+                                href={`/${baseRoute}/notifications`}
+                                className="block w-full text-center text-sm font-medium text-primary hover:text-primary/80 transition-colors"
+                                onClick={() => setIsOpen(false)}
+                            >
+                                View all notifications
+                            </Link>
+                        </div>
+                    )}
+                </div>
+            )}
+        </div>
+    );
+}
