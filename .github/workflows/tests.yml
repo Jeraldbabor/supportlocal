@@ -49,7 +49,8 @@ jobs:
       - name: Prepare Storage Directories
         run: |
           mkdir -p storage/app/public
-          mkdir -p storage/framework/cache
+          mkdir -p storage/app/private
+          mkdir -p storage/framework/cache/data
           mkdir -p storage/framework/sessions
           mkdir -p storage/framework/views
           mkdir -p bootstrap/cache
@@ -61,4 +62,5 @@ jobs:
         run: php artisan storage:link || true
 
       - name: Tests
-        run: ./vendor/bin/pest
+        run: ./vendor/bin/pest --verbose
+        timeout-minutes: 10
