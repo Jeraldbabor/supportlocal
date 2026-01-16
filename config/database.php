@@ -86,7 +86,7 @@ return [
             'driver' => 'pgsql',
             'url' => env('DB_URL') ?: env('DATABASE_URL'),
             'host' => env('DB_HOST') ?: env('PGHOST', '127.0.0.1'),
-            'port' => (int) (env('DB_PORT') ?: env('PGPORT', '5432')),
+            'port' => (($port = (int) (env('DB_PORT') ?: env('PGPORT', '5432'))) > 0) ? $port : 5432,
             'database' => env('DB_DATABASE') ?: env('PGDATABASE', 'laravel'),
             'username' => env('DB_USERNAME') ?: env('PGUSER', 'root'),
             'password' => env('DB_PASSWORD') ?: env('PGPASSWORD', ''),
