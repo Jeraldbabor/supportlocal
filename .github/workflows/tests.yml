@@ -24,6 +24,7 @@ jobs:
           php-version: 8.4
           tools: composer:v2
           coverage: xdebug
+          extensions: sqlite, pdo_sqlite
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -37,6 +38,9 @@ jobs:
       - name: Install Dependencies
         run: composer install --no-interaction --prefer-dist --optimize-autoloader
 
+      - name: Generate Wayfinder Routes
+        run: php artisan wayfinder:generate || true
+
       - name: Build Assets
         run: npm run build
 
@@ -46,5 +50,38 @@ jobs:
       - name: Generate Application Key
         run: php artisan key:generate
 
-      - name: Tests
-        run: ./vendor/bin/pest
+      - name: Prepare Storage Directories
+        run: |
+          mkdir -p storage/app/public/products
+          mkdir -p storage/app/public/avatars
+          mkdir -p storage/app/public/chat-images
+          mkdir -p storage/app/public/seller-applications
+          mkdir -p storage/app/private
+          mkdir -p storage/framework/cache/data
+          mkdir -p storage/framework/sessions
+          mkdir -p storage/framework/views
+          mkdir -p bootstrap/cache
+          chmod -R 775 storage bootstrap/cache
+
+      - name: Clear All Caches
+        run: |
+          php artisan config:clear || true
+          php artisan route:clear || true
+          php artisan view:clear || true
+          php artisan cache:clear || true
+
+      - name: Create Storage Link
+        run: php artisan storage:link || true
+
+      - name: Verify Test Environment
+        run: |
+          php artisan config:show app.env || echo "Config check failed"
+          php -v
+          php artisan --version
+
+      - name: Clear Config Before Tests
+        run: php artisan config:clear
+
+      - name: Run Tests
+        run: php artisan test
+        timeout-minutes: 10

@@ -21,7 +21,7 @@ class SellerApplicationFactory extends Factory
     public function definition(): array
     {
         return [
-            'user_id' => User::factory()->create(['role' => User::ROLE_BUYER]),
+            'user_id' => User::factory()->buyer(),
             'business_description' => fake()->paragraph(5),
             'business_type' => fake()->randomElement([
                 'Handmade Crafts',
@@ -49,7 +49,7 @@ class SellerApplicationFactory extends Factory
         return $this->state(fn (array $attributes) => [
             'status' => SellerApplication::STATUS_APPROVED,
             'reviewed_at' => now(),
-            'reviewed_by' => User::factory()->create(['role' => User::ROLE_ADMINISTRATOR]),
+            'reviewed_by' => User::factory()->administrator(),
             'admin_notes' => 'Application approved.',
         ]);
     }
@@ -62,7 +62,7 @@ class SellerApplicationFactory extends Factory
         return $this->state(fn (array $attributes) => [
             'status' => SellerApplication::STATUS_REJECTED,
             'reviewed_at' => now(),
-            'reviewed_by' => User::factory()->create(['role' => User::ROLE_ADMINISTRATOR]),
+            'reviewed_by' => User::factory()->administrator(),
             'admin_notes' => 'Application rejected due to insufficient documentation.',
         ]);
     }

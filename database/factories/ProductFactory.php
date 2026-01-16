@@ -25,25 +25,8 @@ class ProductFactory extends Factory
         $comparePrice = $this->faker->boolean(30) ? $price + $this->faker->randomFloat(2, 5, 100) : null;
         $costPrice = $this->faker->randomFloat(2, 5, $price - 5);
 
-        // Try to find a seller, but fallback to any user if role column doesn't exist yet
-        try {
-            $sellerId = User::where('role', 'seller')->inRandomOrder()->first()?->id;
-        } catch (\Exception $e) {
-            // If role column doesn't exist, just use any user or create one
-            $sellerId = User::inRandomOrder()->first()?->id;
-        }
-
-        if (! $sellerId) {
-            // Create a user, with role if possible
-            try {
-                $sellerId = User::factory()->create(['role' => 'seller'])->id;
-            } catch (\Exception $e) {
-                $sellerId = User::factory()->create()->id;
-            }
-        }
-
         return [
-            'seller_id' => $sellerId,
+            'seller_id' => User::factory()->seller(),
             'name' => ucwords($name),
             'description' => $this->faker->paragraphs(3, true),
             'short_description' => $this->faker->sentence(12),
@@ -73,7 +56,7 @@ class ProductFactory extends Factory
             'meta_title' => $this->faker->sentence(6),
             'meta_description' => $this->faker->sentence(15),
             'tags' => $this->faker->words(rand(3, 8)),
-            'category_id' => ProductCategory::inRandomOrder()->first()?->id,
+            'category_id' => ProductCategory::factory(),
             'view_count' => $this->faker->numberBetween(0, 1000),
             'order_count' => $this->faker->numberBetween(0, 50),
             'average_rating' => $this->faker->boolean(70) ? $this->faker->randomFloat(1, 3.0, 5.0) : null,

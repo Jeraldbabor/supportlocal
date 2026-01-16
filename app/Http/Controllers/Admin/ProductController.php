@@ -62,7 +62,7 @@ class ProductController extends Controller
                 'order_count' => $product->order_count,
                 'average_rating' => $product->average_rating,
                 'review_count' => $product->review_count,
-                'primary_image' => $product->primary_image ? (str_starts_with($product->primary_image, 'http') || str_starts_with($product->primary_image, '/') ? $product->primary_image : asset('storage/'.$product->primary_image)) : null,
+                'primary_image' => \App\Helpers\ImageHelper::url($product->primary_image),
                 'seller' => $product->seller ? [
                     'id' => $product->seller->id,
                     'name' => $product->seller->name,

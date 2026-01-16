@@ -2,21 +2,12 @@ import { Breadcrumbs } from '@/components/breadcrumbs';
 import NotificationsDropdown from '@/components/NotificationsDropdown';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import UserRoleDisplay from '@/components/user-role-display';
-import { useNotifications } from '@/contexts/NotificationsContext';
 import { type BreadcrumbItem as BreadcrumbItemType } from '@/types';
 import { usePage } from '@inertiajs/react';
 
 export function AppSidebarHeader({ breadcrumbs = [] }: { breadcrumbs?: BreadcrumbItemType[] }) {
-    const { props } = usePage<{ auth?: { user?: { role?: string } }; unreadNotificationsCount?: number }>();
+    const { props } = usePage<{ auth?: { user?: { role?: string } } }>();
     const user = props.auth?.user;
-
-    let unreadCount = 0;
-    try {
-        const notificationsContext = useNotifications();
-        unreadCount = notificationsContext.unreadCount;
-    } catch {
-        unreadCount = props.unreadNotificationsCount || 0;
-    }
 
     const showNotifications = user?.role === 'seller' || user?.role === 'administrator' || user?.role === 'buyer';
 
@@ -29,7 +20,7 @@ export function AppSidebarHeader({ breadcrumbs = [] }: { breadcrumbs?: Breadcrum
                 </div>
             </div>
             <div className="flex flex-shrink-0 items-center gap-2 sm:gap-3">
-                {showNotifications && user?.role && <NotificationsDropdown userRole={user.role} initialUnreadCount={unreadCount} />}
+                {showNotifications && user?.role && <NotificationsDropdown userRole={user.role} />}
                 <UserRoleDisplay />
             </div>
         </header>

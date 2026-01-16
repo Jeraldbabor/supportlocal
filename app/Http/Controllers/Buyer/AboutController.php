@@ -45,7 +45,7 @@ class AboutController extends Controller
                     'name' => $user->name,
                     'specialty' => 'Artisan',
                     'image' => $user->profile_picture
-                        ? '/storage/'.$user->profile_picture
+                        ? \App\Helpers\ImageHelper::url($user->profile_picture)
                         : 'https://ui-avatars.com/api/?name='.urlencode($user->name).'&size=200&background=random',
                     'description' => 'A talented artisan creating unique handcrafted items.',
                     'location' => $location,

@@ -334,7 +334,7 @@ class PublicController extends Controller
                     'created_at' => $rating->created_at->format('M d, Y'),
                     'buyer_name' => $rating->user->name ?? 'Anonymous',
                     'buyer_avatar' => $rating->user->profile_picture
-                        ? '/storage/'.$rating->user->profile_picture
+                        ? \App\Helpers\ImageHelper::url($rating->user->profile_picture)
                         : 'https://ui-avatars.com/api/?name='.urlencode($rating->user->name ?? 'Anonymous').'&color=7F9CF5&background=EBF4FF',
                 ];
             });
@@ -458,10 +458,13 @@ class PublicController extends Controller
         }
 
         $artisans = $query->paginate(12)->through(function ($artisan) {
+            // Ensure avatar_url is available
+            $artisan->append('avatar_url');
             $profileImage = $artisan->profile_picture ?? null;
-            $imageUrl = $profileImage ? '/storage/'.$profileImage : null;
-            if (! $imageUrl) {
-                $imageUrl = 'https://ui-avatars.com/api/?name='.urlencode($artisan->name).'&color=7F9CF5&background=EBF4FF';
+            $imageUrl = $artisan->avatar_url ?? null;
+            if (! $imageUrl || str_contains($imageUrl, 'ui-avatars.com')) {
+                // If avatar_url is a default avatar, use it; otherwise generate one
+                $imageUrl = $artisan->avatar_url ?? 'https://ui-avatars.com/api/?name='.urlencode($artisan->name).'&color=7F9CF5&background=EBF4FF';
             }
 
             // Extract location from delivery fields or address
@@ -485,7 +488,7 @@ class PublicController extends Controller
                 'business_name' => null, // Not available in current schema
                 'bio' => null, // Not available in current schema
                 'image' => $imageUrl,
-                'profile_image' => $profileImage,
+                'profile_image' => $imageUrl, // Use the processed imageUrl which already has proper path
                 'location' => $location,
                 'phone' => $artisan->phone_number,
                 'products_count' => $artisan->products_count,
@@ -543,10 +546,13 @@ class PublicController extends Controller
             abort(404, 'Artisan not found');
         }
 
+        // Ensure avatar_url is available
+        $artisan->append('avatar_url');
         $profileImage = $artisan->profile_picture ?? null;
-        $imageUrl = $profileImage ? '/storage/'.$profileImage : null;
-        if (! $imageUrl) {
-            $imageUrl = 'https://ui-avatars.com/api/?name='.urlencode($artisan->name).'&color=7F9CF5&background=EBF4FF';
+        $imageUrl = $artisan->avatar_url ?? null;
+        if (! $imageUrl || str_contains($imageUrl, 'ui-avatars.com')) {
+            // If avatar_url is a default avatar, use it; otherwise generate one
+            $imageUrl = $artisan->avatar_url ?? 'https://ui-avatars.com/api/?name='.urlencode($artisan->name).'&color=7F9CF5&background=EBF4FF';
         }
 
         // Extract city from address if exists
@@ -568,7 +574,7 @@ class PublicController extends Controller
             'business_name' => null, // Not available in current schema
             'bio' => null, // Not available in current schema
             'image' => $imageUrl,
-            'profile_image' => $profileImage,
+            'profile_image' => $imageUrl, // Use the processed imageUrl which already has proper path
             'location' => $location,
             'phone' => $artisan->phone_number,
             'specialties' => [], // Not available in current schema
@@ -639,15 +645,20 @@ class PublicController extends Controller
         });
 
         // Get seller ratings with buyer comments and seller replies
+        // Ensure artisan has avatar_url
+        $artisan->append('avatar_url');
+        
         $ratings = $artisan->sellerRatings()
             ->with(['user' => function ($query) {
-                $query->select('id', 'name', 'profile_picture');
+                $query->select('id', 'name', 'profile_picture', 'avatar');
             }])
             ->whereNotNull('review')
             ->orderBy('created_at', 'desc')
             ->take(10)
             ->get()
             ->map(function ($rating) {
+                // Ensure user has avatar_url appended
+                $rating->user->append('avatar_url');
                 return [
                     'id' => $rating->id,
                     'rating' => $rating->rating,

@@ -3,7 +3,7 @@ import NotificationsDropdown from '@/components/NotificationsDropdown';
 import ProfileCompletionBanner from '@/components/ProfileCompletionBanner';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useCart } from '@/contexts/CartContext';
-import { NotificationsProvider, useNotifications } from '@/contexts/NotificationsContext';
+import { NotificationsProvider } from '@/contexts/NotificationsContext';
 import { type SharedData } from '@/types';
 import { Link, router, usePage } from '@inertiajs/react';
 import { Briefcase, ChevronDown, Contact, Heart, House, LogOut, Menu, Package, Phone, ShoppingCart, User, X } from 'lucide-react';
@@ -22,7 +22,6 @@ function BuyerLayoutContent({ children, title }: BuyerLayoutProps) {
     const mobileMenuButtonRef = useRef<HTMLButtonElement>(null);
 
     const { totalItems } = useCart();
-    const { unreadCount } = useNotifications();
     const { auth, profileCompletion, wishlistCount } = usePage<
         SharedData & {
             profileCompletion?: {
@@ -165,7 +164,6 @@ function BuyerLayoutContent({ children, title }: BuyerLayoutProps) {
                             {/* Notifications Dropdown */}
                             <NotificationsDropdown 
                                 userRole="buyer" 
-                                initialUnreadCount={unreadCount}
                                 buttonClassName="group relative rounded-xl p-2 text-gray-600 transition-all duration-300 hover:bg-primary/5 hover:text-primary hover:shadow-sm focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 focus:outline-none"
                             />
 

@@ -269,7 +269,9 @@ class SellerController extends Controller
         $seller->location = $seller->address ?? null;
         $seller->business_description = $seller->sellerApplication->business_description ?? null;
         $seller->business_name = $seller->sellerApplication->business_name ?? null;
-        $seller->profile_image = $seller->profile_picture; // Map profile_picture to profile_image
+        // Ensure avatar_url is available for frontend
+        $seller->append('avatar_url');
+        $seller->profile_image = $seller->avatar_url; // Use avatar_url which includes proper /images/ path
 
         // Get current user's rating for this seller
         $userRating = null;

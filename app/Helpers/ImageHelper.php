@@ -2,6 +2,9 @@
 
 namespace App\Helpers;
 
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
+
 class ImageHelper
 {
     /**
@@ -28,7 +31,23 @@ class ImageHelper
             return $path;
         }
 
+        // Check if S3 is configured - if so, use S3 URLs
+        // When FILESYSTEM_DISK=s3, files are stored in S3 and URLs should come from S3
+        $defaultDisk = config('filesystems.default');
+        if ($defaultDisk === 's3') {
+            try {
+                // Use the 'public' disk which should be configured for S3
+                return Storage::disk('public')->url($path);
+            } catch (\Exception $e) {
+                // Fallback to /images/ if S3 URL generation fails
+                Log::warning('Failed to generate S3 URL, falling back to /images/', ['path' => $path, 'error' => $e->getMessage()]);
+                return '/images/'.$path;
+            }
+        }
+
         // Use /images/ route which serves files directly from storage/app/public
+        // This works on Railway without symlinks, but files are lost on redeploy
+        // unless Railway Volume is mounted to /app/storage/app/public
         return '/images/'.$path;
     }
 
