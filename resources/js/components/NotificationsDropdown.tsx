@@ -18,13 +18,11 @@ interface Notification {
 
 interface NotificationsDropdownProps {
     userRole?: 'buyer' | 'seller' | 'administrator';
-    initialUnreadCount?: number;
     buttonClassName?: string;
 }
 
 export default function NotificationsDropdown({
     userRole = 'buyer',
-    initialUnreadCount = 0,
     buttonClassName = '',
 }: NotificationsDropdownProps) {
     const [isOpen, setIsOpen] = useState(false);

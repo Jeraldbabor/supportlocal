@@ -165,7 +165,6 @@ function BuyerLayoutContent({ children, title }: BuyerLayoutProps) {
                             {/* Notifications Dropdown */}
                             <NotificationsDropdown 
                                 userRole="buyer" 
-                                initialUnreadCount={unreadCount}
                                 buttonClassName="group relative rounded-xl p-2 text-gray-600 transition-all duration-300 hover:bg-primary/5 hover:text-primary hover:shadow-sm focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 focus:outline-none"
                             />
 
