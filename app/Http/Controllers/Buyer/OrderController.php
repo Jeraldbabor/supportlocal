@@ -12,6 +12,7 @@ use App\Notifications\PaymentProofUploaded;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Inertia\Inertia;
@@ -25,7 +26,10 @@ class OrderController extends Controller
     public function index(): Response
     {
         $orders = Order::where('user_id', auth()->id())
-            ->with(['orderItems.product', 'seller'])
+            ->with([
+                'orderItems.product.seller', // Eager load nested relationships
+                'seller',
+            ])
             ->orderBy('created_at', 'desc')
             ->paginate(10);
 
@@ -61,9 +65,22 @@ class OrderController extends Controller
             $totalAmount = 0;
             $orderItems = [];
 
+            // Get all product IDs
+            $productIds = array_column($items, 'product_id');
+            
+            // Eager load products with their sellers to avoid N+1 queries
+            $products = Product::with('seller')
+                ->whereIn('id', $productIds)
+                ->get()
+                ->keyBy('id');
+
             // Validate products and calculate total
             foreach ($items as $item) {
-                $product = Product::findOrFail($item['product_id']);
+                $product = $products->get($item['product_id']);
+                
+                if (!$product) {
+                    throw new \Exception("Product not found: {$item['product_id']}");
+                }
 
                 // Check stock availability
                 if ($product->quantity < $item['quantity']) {
@@ -84,6 +101,7 @@ class OrderController extends Controller
                     'unit_price' => $product->price,
                     'total_price' => $itemTotal,
                     'seller_id' => $product->seller_id,
+                    'product' => $product, // Store product object to avoid re-querying
                 ];
             }
 
@@ -104,13 +122,14 @@ class OrderController extends Controller
                 $sellerTotal = array_sum(array_column($sellerItems, 'total_price'));
 
                 // Calculate shipping fee from products (sum each unique product's shipping cost once)
+                // Use already loaded products instead of querying again
                 $shippingFee = 0;
                 $processedProducts = [];
                 foreach ($sellerItems as $item) {
                     $productId = $item['product_id'];
                     // Only add shipping cost once per unique product
                     if (! in_array($productId, $processedProducts)) {
-                        $product = Product::find($productId);
+                        $product = $item['product'] ?? $products->get($productId);
                         $shippingFee += $product->shipping_cost ?? 50;
                         $processedProducts[] = $productId;
                     }
@@ -143,15 +162,24 @@ class OrderController extends Controller
                     'status' => Order::STATUS_PENDING,
                 ]);
 
-                // Create order items
+                // Create order items (products already loaded, no need to query again)
                 foreach ($sellerItems as $item) {
-                    $product = Product::find($item['product_id']);
+                    $product = $item['product'] ?? $products->get($item['product_id']);
+                    
+                    if (!$product) {
+                        \Log::error('Product not found when creating order item', [
+                            'product_id' => $item['product_id'],
+                            'order_id' => $order->id,
+                        ]);
+                        continue;
+                    }
+
                     OrderItem::create([
                         'order_id' => $order->id,
                         'product_id' => $item['product_id'],
                         'product_name' => $product->name,
                         'product_image' => $product->primary_image,
-                        'seller_name' => $product->seller->name,
+                        'seller_name' => $product->seller->name ?? 'Unknown Seller',
                         'quantity' => $item['quantity'],
                         'price' => $item['unit_price'],
                         'total' => $item['total_price'],
@@ -160,13 +188,33 @@ class OrderController extends Controller
 
                 $createdOrders[] = $order;
 
-                // Notify seller of new order
+                // Notify seller of new order (queue the notification to avoid blocking)
                 $seller = User::find($sellerId);
                 if ($seller) {
                     // Load the buyer relationship for the notification
                     $order->load('buyer');
 
-                    $seller->notify(new NewOrderReceived($order));
+                    try {
+                        // Queue the notification instead of sending synchronously
+                        $seller->notify((new NewOrderReceived($order))->onQueue('notifications'));
+                    } catch (\Exception $e) {
+                        // If queuing fails, log but don't block order creation
+                        Log::warning('Failed to queue order notification', [
+                            'order_id' => $order->id,
+                            'seller_id' => $sellerId,
+                            'error' => $e->getMessage(),
+                        ]);
+                        // Fallback to synchronous notification if queue fails
+                        try {
+                            $seller->notify(new NewOrderReceived($order));
+                        } catch (\Exception $e2) {
+                            Log::error('Failed to send order notification synchronously', [
+                                'order_id' => $order->id,
+                                'seller_id' => $sellerId,
+                                'error' => $e2->getMessage(),
+                            ]);
+                        }
+                    }
                 }
             }
 
@@ -178,8 +226,22 @@ class OrderController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
 
+            // Log the full error for debugging
+            Log::error('Order creation failed', [
+                'user_id' => auth()->id(),
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+                'request_data' => $request->except(['items']), // Don't log full items array
+            ]);
+
+            // Return user-friendly error message
+            $errorMessage = 'Failed to place order. Please try again.';
+            if (config('app.debug')) {
+                $errorMessage = $e->getMessage();
+            }
+
             return back()
-                ->withErrors(['error' => $e->getMessage()])
+                ->withErrors(['error' => $errorMessage])
                 ->withInput();
         }
     }
