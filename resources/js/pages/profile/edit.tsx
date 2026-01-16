@@ -4,7 +4,7 @@ import { Input } from '@/components/ui/input';
 import AppLayout from '@/layouts/app-layout';
 import { formatDateForInput } from '@/utils/date';
 import { type BreadcrumbItem, type SharedData, type User } from '@/types';
-import { Head, useForm, usePage } from '@inertiajs/react';
+import { Head, router, useForm, usePage } from '@inertiajs/react';
 import { Camera, Mail, Save, Shield, Upload, User as UserIcon, X } from 'lucide-react';
 import { ChangeEvent, FormEvent, useRef } from 'react';
 
@@ -62,6 +62,8 @@ export default function EditProfile() {
         setData: setAvatarData,
         post: postAvatar,
         processing: avatarProcessing,
+        errors: avatarErrors,
+        reset: resetAvatar,
     } = useForm({
         avatar: null as File | null,
     });
@@ -81,12 +83,43 @@ export default function EditProfile() {
 
     const handleAvatarUpload = (e: ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
-        if (file) {
-            setAvatarData('avatar', file);
-            postAvatar('/profile/avatar', {
-                forceFormData: true,
-            });
+        if (!file) return;
+
+        // Validate file size (2MB max)
+        if (file.size > 2 * 1024 * 1024) {
+            alert('Image size must be less than 2MB');
+            if (fileInputRef.current) {
+                fileInputRef.current.value = '';
+            }
+            return;
         }
+
+        // Validate file type
+        const validTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif'];
+        if (!validTypes.includes(file.type)) {
+            alert('Only JPEG, PNG, JPG, and GIF images are allowed');
+            if (fileInputRef.current) {
+                fileInputRef.current.value = '';
+            }
+            return;
+        }
+
+        setAvatarData('avatar', file);
+        postAvatar('/profile/avatar', {
+            forceFormData: true,
+            onSuccess: () => {
+                resetAvatar();
+                // Reload the page data to show the new avatar
+                router.reload({ only: ['user'] });
+            },
+            onError: (errors) => {
+                console.error('Avatar upload error:', errors);
+                resetAvatar();
+                if (fileInputRef.current) {
+                    fileInputRef.current.value = '';
+                }
+            },
+        });
     };
 
     const handleDeleteAvatar = () => {
@@ -117,10 +150,27 @@ export default function EditProfile() {
                         </CardHeader>
                         <CardContent className="space-y-4">
                             <div className="flex flex-col items-center space-y-4">
-                                <img src={user.avatar_url} alt={user.name} className="h-24 w-24 rounded-full border-4 border-white shadow-lg" />
+                                <div className="relative">
+                                    <img 
+                                        src={user.avatar_url} 
+                                        alt={user.name} 
+                                        className="h-24 w-24 rounded-full border-4 border-white shadow-lg object-cover"
+                                        onError={(e) => {
+                                            // Fallback to placeholder if image fails to load
+                                            const target = e.target as HTMLImageElement;
+                                            target.src = 'https://ui-avatars.com/api/?name=' + encodeURIComponent(user.name) + '&color=7F9CF5&background=EBF4FF';
+                                        }}
+                                    />
+                                </div>
+
+                                {avatarErrors.avatar && (
+                                    <div className="rounded-md bg-red-50 p-3 text-sm text-red-600 dark:bg-red-900/20 dark:text-red-400">
+                                        {avatarErrors.avatar}
+                                    </div>
+                                )}
 
                                 <div className="flex flex-col gap-2">
-                                    <input ref={fileInputRef} type="file" accept="image/*" onChange={handleAvatarUpload} className="hidden" />
+                                    <input ref={fileInputRef} type="file" accept="image/jpeg,image/png,image/jpg,image/gif" onChange={handleAvatarUpload} className="hidden" />
 
                                     <Button variant="outline" size="sm" onClick={() => fileInputRef.current?.click()} disabled={avatarProcessing}>
                                         {avatarProcessing ? (

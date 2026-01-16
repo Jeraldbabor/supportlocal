@@ -475,20 +475,50 @@ require __DIR__.'/auth.php';
 // Image serving route for when storage symlink doesn't work
 Route::get('/images/{path}', function ($path) {
     try {
-        // Decode the path in case it's URL encoded
+        // Decode the path in case it's URL encoded (handles both encoded and unencoded)
         $decodedPath = urldecode($path);
+        
+        // Remove any leading slashes
+        $decodedPath = ltrim($decodedPath, '/');
+        
         $fullPath = storage_path('app/public/'.$decodedPath);
 
         // Security: prevent directory traversal
-        $resolvedPath = realpath($fullPath);
-        $storagePath = realpath(storage_path('app/public'));
-
-        if (! $resolvedPath || ! $storagePath || strpos($resolvedPath, $storagePath) !== 0) {
-            \Log::warning('Image path security check failed', ['path' => $decodedPath, 'resolved' => $resolvedPath]);
+        // First check if the file exists at the expected location
+        if (!file_exists($fullPath)) {
+            \Log::warning('Image file not found', [
+                'requested_path' => $path,
+                'decoded_path' => $decodedPath,
+                'full_path' => $fullPath,
+                'storage_base' => storage_path('app/public'),
+            ]);
             abort(404);
         }
 
-        if (file_exists($resolvedPath) && is_file($resolvedPath)) {
+        // Resolve the real path to prevent directory traversal
+        $resolvedPath = realpath($fullPath);
+        $storagePath = realpath(storage_path('app/public'));
+
+        if (! $resolvedPath || ! $storagePath) {
+            \Log::warning('Image path resolution failed', [
+                'full_path' => $fullPath,
+                'resolved_path' => $resolvedPath,
+                'storage_path' => $storagePath,
+            ]);
+            abort(404);
+        }
+
+        // Security check: ensure resolved path is within storage/public
+        if (strpos($resolvedPath, $storagePath) !== 0) {
+            \Log::warning('Image path security check failed - directory traversal attempt', [
+                'path' => $decodedPath,
+                'resolved' => $resolvedPath,
+                'storage_base' => $storagePath,
+            ]);
+            abort(404);
+        }
+
+        if (is_file($resolvedPath)) {
             try {
                 $mimeType = mime_content_type($resolvedPath);
             } catch (\Exception $e) {
@@ -509,7 +539,7 @@ Route::get('/images/{path}', function ($path) {
             ]);
         }
 
-        // Return 404 if file doesn't exist
+        // Return 404 if not a file
         abort(404);
     } catch (\Illuminate\Http\Exceptions\HttpResponseException $e) {
         throw $e;

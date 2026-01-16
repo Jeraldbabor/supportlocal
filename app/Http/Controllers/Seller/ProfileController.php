@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\File;
@@ -155,18 +156,38 @@ class ProfileController extends Controller
             ],
         ]);
 
-        // Delete old profile picture if it exists
-        if ($user->profile_picture) {
-            Storage::disk('public')->delete($user->profile_picture);
+        try {
+            // Ensure storage directory exists
+            $avatarsDir = storage_path('app/public/avatars');
+            if (!File::exists($avatarsDir)) {
+                File::makeDirectory($avatarsDir, 0755, true);
+            }
+
+            // Delete old profile picture if it exists
+            if ($user->profile_picture && Storage::disk('public')->exists($user->profile_picture)) {
+                Storage::disk('public')->delete($user->profile_picture);
+            }
+
+            // Store new profile picture
+            $path = $request->file('avatar')->store('avatars', 'public');
+
+            if (!$path) {
+                return redirect()->back()->withErrors(['avatar' => 'Failed to upload image. Please try again.']);
+            }
+
+            $user->update(['profile_picture' => $path]);
+
+            return redirect()->route('seller.profile.show')->with('success',
+                'Profile picture updated successfully!');
+        } catch (\Exception $e) {
+            \Log::error('Seller avatar upload failed', [
+                'user_id' => $user->id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            return redirect()->back()->withErrors(['avatar' => 'Failed to upload image: '.$e->getMessage()]);
         }
-
-        // Store new profile picture
-        $path = $request->file('avatar')->store('avatars', 'public');
-
-        $user->update(['profile_picture' => $path]);
-
-        return redirect()->route('seller.profile.show')->with('success',
-            'Profile picture updated successfully!');
     }
 
     /**
