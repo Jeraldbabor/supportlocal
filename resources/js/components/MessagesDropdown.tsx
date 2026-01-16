@@ -75,25 +75,25 @@ export default function MessagesDropdown({ currentUserId }: MessagesDropdownProp
         }
     }, []);
 
-    const loadConversations = useCallback(async () => {
+    const loadConversations = useCallback(async (force = false) => {
+        // Prevent duplicate calls if already loading
+        if (isLoading && !force) return;
+        
         setIsLoading(true);
         try {
             const response = await fetch('/api/chat/conversations');
             if (response.ok) {
                 const data = await response.json();
-                console.log('Loaded conversations:', data);
                 setConversations(data || []);
                 // Scroll to top when conversations are loaded
                 setTimeout(() => scrollToTop(), 100);
-            } else {
-                console.error('Failed to load conversations:', response.status);
             }
         } catch (error) {
             console.error('Failed to load conversations:', error);
         } finally {
             setIsLoading(false);
         }
-    }, [scrollToTop]);
+    }, [scrollToTop, isLoading]);
 
     const showNewMessageNotification = useCallback(
         (data: { message: { conversation_id: number; message: string; id: number }; sender: { name: string; avatar_url?: string } }) => {
@@ -139,42 +139,46 @@ export default function MessagesDropdown({ currentUserId }: MessagesDropdownProp
     useEffect(() => {
         if (!currentUserId || !Echo) return;
 
-        console.log('Setting up message listener for user:', currentUserId);
-
         // Subscribe to user's private channel for new messages
         const channel = Echo.private(`App.Models.User.${currentUserId}`);
+        let reloadTimeout: NodeJS.Timeout | null = null;
 
         channel.listen(
             'MessageSent',
             (data: { message: { conversation_id: number; message: string; id: number }; sender: { name: string; avatar_url?: string } }) => {
-                console.log('New message received:', data);
-
                 // Only show notification if not viewing this conversation
                 if (!showChatModal || selectedConversationId !== data.message.conversation_id) {
                     showNewMessageNotification(data);
                 }
 
-                // Update conversations list
-                console.log('Reloading conversations...');
-                loadConversations();
+                // Debounce reload to prevent multiple rapid calls
+                if (reloadTimeout) clearTimeout(reloadTimeout);
+                reloadTimeout = setTimeout(() => {
+                    loadConversations(true);
+                }, 500);
             },
         );
 
         return () => {
             channel.stopListening('MessageSent');
+            if (reloadTimeout) clearTimeout(reloadTimeout);
         };
-    }, [currentUserId, showChatModal, selectedConversationId, loadConversations, showNewMessageNotification]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [currentUserId, showChatModal, selectedConversationId, showNewMessageNotification]);
 
-    // Load conversations on mount
+    // Load conversations on mount only (removed duplicate effect)
     useEffect(() => {
-        loadConversations();
-    }, [loadConversations]);
+        loadConversations(true);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
+    // Refresh when dropdown opens
     useEffect(() => {
         if (isOpen) {
-            loadConversations();
+            loadConversations(true);
         }
-    }, [isOpen, loadConversations]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isOpen]);
 
     useEffect(() => {
         function handleClickOutside(event: MouseEvent) {

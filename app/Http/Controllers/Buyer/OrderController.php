@@ -51,6 +51,13 @@ class OrderController extends Controller
             'delivery_address' => 'required|string|max:500',
             'delivery_phone' => 'required|string|max:20',
             'delivery_notes' => 'nullable|string|max:255',
+            'delivery_province' => 'nullable|string|max:100',
+            'delivery_city' => 'nullable|string|max:100',
+            'delivery_barangay' => 'nullable|string|max:100',
+            'delivery_street' => 'nullable|string|max:255',
+            'delivery_building_details' => 'nullable|string|max:255',
+            'delivery_latitude' => 'nullable|numeric',
+            'delivery_longitude' => 'nullable|numeric',
             'gcash_reference' => 'required_if:payment_method,gcash|nullable|string|max:50',
         ]);
 

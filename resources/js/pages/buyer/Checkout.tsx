@@ -91,9 +91,34 @@ export default function Checkout({ user, buyNowItem }: CheckoutProps) {
             return;
         }
 
+        // Validate required fields
+        if (!data.delivery_province || !data.delivery_city || !data.delivery_barangay) {
+            setToastMessage('Please fill in Province, City, and Barangay fields.');
+            setToastType('error');
+            setShowToast(true);
+            return;
+        }
+
+        if (!data.delivery_phone) {
+            setToastMessage('Please provide a contact phone number.');
+            setToastType('error');
+            setShowToast(true);
+            return;
+        }
+
+        // Build the full delivery address from components
+        const addressParts = [
+            data.delivery_street,
+            data.delivery_building_details,
+            data.delivery_barangay,
+            data.delivery_city,
+            data.delivery_province,
+        ].filter(Boolean);
+        const fullDeliveryAddress = addressParts.join(', ');
+
         // Prepare the order data with items and delivery location
         const orderData = {
-            delivery_address: data.delivery_address,
+            delivery_address: fullDeliveryAddress,
             delivery_phone: data.delivery_phone,
             delivery_notes: data.delivery_notes,
             delivery_province: data.delivery_province,
