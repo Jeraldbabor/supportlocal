@@ -8,6 +8,8 @@ use App\Models\Conversation;
 use App\Models\Message;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 
 class ChatController extends Controller
@@ -153,7 +155,21 @@ class ChatController extends Controller
         // Handle image upload
         $imagePath = null;
         if ($request->hasFile('image')) {
-            $imagePath = $request->file('image')->store('chat-images', 'public');
+            // Ensure storage directory exists
+            $chatImagesDir = storage_path('app/public/chat-images');
+            if (!File::exists($chatImagesDir)) {
+                File::makeDirectory($chatImagesDir, 0755, true);
+            }
+
+            try {
+                $imagePath = $request->file('image')->store('chat-images', 'public');
+            } catch (\Exception $e) {
+                \Log::error('Chat image upload failed', [
+                    'conversation_id' => $conversationId,
+                    'error' => $e->getMessage(),
+                ]);
+                return response()->json(['error' => 'Failed to upload image'], 500);
+            }
         }
 
         // Create the message

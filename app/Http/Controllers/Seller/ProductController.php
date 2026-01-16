@@ -9,6 +9,7 @@ use App\Models\Product;
 use App\Models\ProductCategory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -119,9 +120,24 @@ class ProductController extends Controller
         // Handle image uploads
         $images = [];
         if ($request->hasFile('images')) {
+            // Ensure storage directory exists
+            $productsDir = storage_path('app/public/products');
+            if (!File::exists($productsDir)) {
+                File::makeDirectory($productsDir, 0755, true);
+            }
+
             foreach ($request->file('images') as $image) {
-                $path = $image->store('products', 'public');
-                $images[] = $path;
+                try {
+                    $path = $image->store('products', 'public');
+                    if ($path) {
+                        $images[] = $path;
+                    }
+                } catch (\Exception $e) {
+                    \Log::error('Product image upload failed', [
+                        'error' => $e->getMessage(),
+                    ]);
+                    // Continue with other images
+                }
             }
         }
 

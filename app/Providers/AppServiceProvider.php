@@ -5,6 +5,8 @@ namespace App\Providers;
 use App\Listeners\MergeGuestWishlist;
 use Illuminate\Auth\Events\Login;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 
@@ -32,10 +34,56 @@ class AppServiceProvider extends ServiceProvider
             URL::forceScheme('https');
         }
 
+        // Ensure storage directories exist and symlink is created
+        $this->ensureStorageSetup();
+
         // Merge guest wishlist when user logs in
         Event::listen(
             Login::class,
             MergeGuestWishlist::class
         );
+    }
+
+    /**
+     * Ensure storage directories exist and symlink is created
+     */
+    protected function ensureStorageSetup(): void
+    {
+        // Create storage directories if they don't exist
+        $storageDirs = [
+            storage_path('app/public'),
+            storage_path('app/public/avatars'),
+            storage_path('app/public/products'),
+            storage_path('app/public/chat-images'),
+            storage_path('app/public/payment-proofs'),
+        ];
+
+        foreach ($storageDirs as $dir) {
+            if (!File::exists($dir)) {
+                File::makeDirectory($dir, 0755, true);
+            }
+        }
+
+        // Create storage symlink if it doesn't exist
+        $link = public_path('storage');
+        $target = storage_path('app/public');
+
+        if (!File::exists($link)) {
+            try {
+                // Try to create symlink
+                if (PHP_OS_FAMILY !== 'Windows') {
+                    symlink($target, $link);
+                } else {
+                    // On Windows, use junction or copy
+                    if (function_exists('linkinfo')) {
+                        @symlink($target, $link);
+                    }
+                }
+            } catch (\Exception $e) {
+                // If symlink fails, log but don't break the app
+                // The /images/{path} route will handle serving files
+                \Log::warning('Failed to create storage symlink', ['error' => $e->getMessage()]);
+            }
+        }
     }
 }
