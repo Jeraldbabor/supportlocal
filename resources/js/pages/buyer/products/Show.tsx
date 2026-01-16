@@ -43,6 +43,7 @@ interface Rating {
         id: number;
         name: string;
         profile_picture: string | null;
+        avatar_url: string | null;
     };
 }
 
@@ -619,9 +620,9 @@ export default function Show({ product, relatedProducts, ratings: initialRatings
                                     <div className="flex items-start justify-between">
                                         <div className="flex items-center gap-3">
                                             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary">
-                                                {rating.user.profile_picture ? (
+                                                {rating.user.avatar_url ? (
                                                     <img
-                                                        src={`/images/${rating.user.profile_picture}`}
+                                                        src={rating.user.avatar_url}
                                                         alt={rating.user.name}
                                                         className="h-10 w-10 rounded-full object-cover"
                                                     />

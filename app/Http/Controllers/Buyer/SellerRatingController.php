@@ -18,10 +18,21 @@ class SellerRatingController extends Controller
     public function index(User $seller): JsonResponse
     {
         $ratings = $seller->sellerRatings()
-            ->with('user:id,name,profile_picture')
+            ->with(['user' => function ($query) {
+                $query->select('id', 'name', 'profile_picture', 'avatar');
+            }])
             ->select('id', 'seller_id', 'user_id', 'rating', 'review', 'seller_reply', 'seller_replied_at', 'created_at')
             ->orderBy('created_at', 'desc')
             ->paginate(10);
+
+        // Ensure avatar_url is appended for each user
+        $ratings->getCollection()->transform(function ($rating) {
+            if ($rating->user) {
+                $rating->user->append('avatar_url');
+            }
+
+            return $rating;
+        });
 
         // Get rating distribution
         $distribution = $seller->sellerRatings()
@@ -96,8 +107,13 @@ class SellerRatingController extends Controller
         $seller->updateAverageRating();
         $seller->refresh();
 
-        // Load user relationship
-        $rating->load('user:id,name,profile_picture');
+        // Load user relationship with avatar_url
+        $rating->load(['user' => function ($query) {
+            $query->select('id', 'name', 'profile_picture', 'avatar');
+        }]);
+        if ($rating->user) {
+            $rating->user->append('avatar_url');
+        }
 
         // Notify the seller
         $rating->load('seller');
@@ -148,8 +164,13 @@ class SellerRatingController extends Controller
         $seller->updateAverageRating();
         $seller->refresh();
 
-        // Load user relationship
-        $rating->load('user:id,name,profile_picture');
+        // Load user relationship with avatar_url
+        $rating->load(['user' => function ($query) {
+            $query->select('id', 'name', 'profile_picture', 'avatar');
+        }]);
+        if ($rating->user) {
+            $rating->user->append('avatar_url');
+        }
 
         return response()->json([
             'message' => 'Rating updated successfully!',

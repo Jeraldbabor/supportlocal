@@ -18,9 +18,20 @@ class ProductRatingController extends Controller
     public function index(Product $product): JsonResponse
     {
         $ratings = $product->ratings()
-            ->with('user:id,name,profile_picture')
+            ->with(['user' => function ($query) {
+                $query->select('id', 'name', 'profile_picture', 'avatar');
+            }])
             ->orderBy('created_at', 'desc')
             ->paginate(10);
+
+        // Ensure avatar_url is appended for each user
+        $ratings->getCollection()->transform(function ($rating) {
+            if ($rating->user) {
+                $rating->user->append('avatar_url');
+            }
+
+            return $rating;
+        });
 
         // Get rating distribution
         $distribution = $product->ratings()
@@ -80,8 +91,13 @@ class ProductRatingController extends Controller
         // Update product's average rating
         $product->updateAverageRating();
 
-        // Load user relationship
-        $rating->load('user:id,name,profile_picture');
+        // Load user relationship with avatar_url
+        $rating->load(['user' => function ($query) {
+            $query->select('id', 'name', 'profile_picture', 'avatar');
+        }]);
+        if ($rating->user) {
+            $rating->user->append('avatar_url');
+        }
 
         // Notify the seller
         $rating->load('product.seller');
@@ -131,8 +147,13 @@ class ProductRatingController extends Controller
         // Update product's average rating
         $product->updateAverageRating();
 
-        // Load user relationship
-        $rating->load('user:id,name,profile_picture');
+        // Load user relationship with avatar_url
+        $rating->load(['user' => function ($query) {
+            $query->select('id', 'name', 'profile_picture', 'avatar');
+        }]);
+        if ($rating->user) {
+            $rating->user->append('avatar_url');
+        }
 
         return response()->json([
             'message' => 'Rating updated successfully!',

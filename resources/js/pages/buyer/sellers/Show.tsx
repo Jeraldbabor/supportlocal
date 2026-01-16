@@ -55,6 +55,7 @@ interface SellerRating {
         id: number;
         name: string;
         profile_picture: string | null;
+        avatar_url: string | null;
     };
 }
 
@@ -450,9 +451,9 @@ export default function Show({ seller, products, filters, userRating: initialUse
                                     <div key={rating.id} className="border-b border-gray-200 pb-4 last:border-0">
                                         <div className="mb-2 flex items-start justify-between">
                                             <div className="flex items-center gap-3">
-                                                {rating.user.profile_picture ? (
+                                                {rating.user.avatar_url ? (
                                                     <img
-                                                        src={`/storage/${rating.user.profile_picture}`}
+                                                        src={rating.user.avatar_url}
                                                         alt={rating.user.name}
                                                         className="h-10 w-10 rounded-full object-cover"
                                                     />
