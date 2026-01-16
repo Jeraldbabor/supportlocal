@@ -179,7 +179,9 @@ class SellerController extends Controller
 
             $seller->business_description = $seller->sellerApplication->business_description ?? null;
             $seller->business_name = $seller->sellerApplication->business_name ?? null;
-            $seller->profile_image = $seller->profile_picture;
+            // Use avatar_url which handles the proper image path generation
+            $seller->append('avatar_url');
+            $seller->profile_image = $seller->avatar_url;
 
             return $seller;
         });

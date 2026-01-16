@@ -528,6 +528,11 @@ export default function Artisans({ artisans, locations = [], filters = {} }: Art
                                                                     src={artisan.profile_image || artisan.image}
                                                                     alt={artisan.name}
                                                                     className="h-12 w-12 rounded-full object-cover ring-2 ring-gray-100 transition-all group-hover:ring-orange-200 sm:h-14 sm:w-14 md:h-16 md:w-16"
+                                                                    onError={(e) => {
+                                                                        const target = e.target as HTMLImageElement;
+                                                                        target.onerror = null;
+                                                                        target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(artisan.name)}&color=EA580C&background=FED7AA`;
+                                                                    }}
                                                                 />
                                                             ) : (
                                                                 <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-orange-100 to-orange-200 ring-2 ring-gray-100 transition-all group-hover:ring-orange-200 sm:h-14 sm:w-14 md:h-16 md:w-16">

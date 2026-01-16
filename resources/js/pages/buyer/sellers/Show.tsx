@@ -270,7 +270,16 @@ export default function Show({ seller, products, filters, userRating: initialUse
                     <div className="flex flex-col space-y-4 md:flex-row md:items-start md:space-y-0 md:space-x-6">
                         <div className="flex-shrink-0">
                             {seller.profile_image ? (
-                                <img src={`/storage/${seller.profile_image}`} alt={seller.name} className="h-24 w-24 rounded-full object-cover" />
+                                <img
+                                    src={seller.profile_image.startsWith('http') ? seller.profile_image : `/images/${seller.profile_image}`}
+                                    alt={seller.name}
+                                    className="h-24 w-24 rounded-full object-cover"
+                                    onError={(e) => {
+                                        const target = e.target as HTMLImageElement;
+                                        target.onerror = null;
+                                        target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(seller.name)}&color=EA580C&background=FED7AA`;
+                                    }}
+                                />
                             ) : (
                                 <div className="flex h-24 w-24 items-center justify-center rounded-full bg-gray-200">
                                     <User className="h-12 w-12 text-gray-400" />
@@ -566,10 +575,15 @@ export default function Show({ seller, products, filters, userRating: initialUse
                                         <div className="relative aspect-square overflow-hidden rounded-t-xl bg-gray-100">
                                             {product.primary_image ? (
                                                 <img
-                                                    src={`/storage/${product.primary_image}`}
+                                                    src={product.primary_image.startsWith('http') ? product.primary_image : `/images/${product.primary_image}`}
                                                     alt={product.name}
                                                     className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-110"
                                                     onClick={() => handleProductClick(product.id)}
+                                                    onError={(e) => {
+                                                        const target = e.target as HTMLImageElement;
+                                                        target.onerror = null;
+                                                        target.src = '/placeholder.svg';
+                                                    }}
                                                 />
                                             ) : (
                                                 <div

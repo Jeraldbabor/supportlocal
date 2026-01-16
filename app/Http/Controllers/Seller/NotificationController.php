@@ -91,6 +91,12 @@ class NotificationController extends Controller
      */
     public function getRecent(Request $request)
     {
+        // If this is an Inertia request (e.g., direct browser navigation),
+        // redirect to the notifications index page instead
+        if ($request->header('X-Inertia')) {
+            return redirect()->route('seller.notifications.index');
+        }
+
         $limit = $request->get('limit', 10);
         
         $notifications = auth()->user()

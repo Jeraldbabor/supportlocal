@@ -55,7 +55,7 @@ export default function NotificationsDropdown({
             const response = await fetch(`/${baseRoute}/notifications/recent`);
             if (response.ok) {
                 const data = await response.json();
-                setNotifications(data.data || []);
+                setNotifications(data.notifications || []);
             } else {
                 console.error('Failed to load notifications:', response.status);
             }
