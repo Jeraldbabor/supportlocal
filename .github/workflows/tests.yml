@@ -38,6 +38,9 @@ jobs:
       - name: Install Dependencies
         run: composer install --no-interaction --prefer-dist --optimize-autoloader
 
+      - name: Generate Wayfinder Routes
+        run: php artisan wayfinder:generate || true
+
       - name: Build Assets
         run: npm run build
 
@@ -76,6 +79,6 @@ jobs:
       - name: Clear Config Before Tests
         run: php artisan config:clear
 
-      - name: Tests
-        run: composer test
+      - name: Run Tests
+        run: php artisan test
         timeout-minutes: 10
