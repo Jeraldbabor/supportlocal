@@ -1,4 +1,5 @@
 import AppLayout from '@/layouts/app-layout';
+import { formatDateForInput } from '@/utils/date';
 import { type BreadcrumbItem, type SharedData } from '@/types';
 import { Head, router, useForm, usePage } from '@inertiajs/react';
 import { AlertTriangle, Calendar, CreditCard, Mail, MapPin, Phone, Save, Upload, User, X } from 'lucide-react';
@@ -43,7 +44,7 @@ export default function SellerProfileEdit() {
         email: user.email || '',
         phone_number: user.phone_number || '',
         address: user.address || '',
-        date_of_birth: user.date_of_birth || '',
+        date_of_birth: formatDateForInput(user.date_of_birth),
         delivery_address: user.delivery_address || '',
         delivery_phone: user.delivery_phone || '',
         delivery_notes: user.delivery_notes || '',

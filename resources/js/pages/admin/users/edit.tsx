@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import AppLayout from '@/layouts/app-layout';
+import { formatDateForInput } from '@/utils/date';
 import { type BreadcrumbItem, type SharedData, type User } from '@/types';
 import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import { ArrowLeft, Edit, Save, Shield } from 'lucide-react';
@@ -39,7 +40,7 @@ export default function EditUser() {
         role: user.role || '',
         phone_number: user.phone_number || '',
         address: user.address || '',
-        date_of_birth: user.date_of_birth || '',
+        date_of_birth: formatDateForInput(user.date_of_birth),
         delivery_address: user.delivery_address || '',
         delivery_phone: user.delivery_phone || '',
         delivery_notes: user.delivery_notes || '',

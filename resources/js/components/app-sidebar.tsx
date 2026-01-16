@@ -181,14 +181,16 @@ export function AppSidebar() {
         loadUnreadCount();
 
         // Listen for new messages
-        const channel = Echo.private(`App.Models.User.${user.id}`);
-        channel.listen('MessageSent', () => {
-            loadUnreadCount();
-        });
+        if (Echo) {
+            const channel = Echo.private(`App.Models.User.${user.id}`);
+            channel.listen('MessageSent', () => {
+                loadUnreadCount();
+            });
 
-        return () => {
-            channel.stopListening('MessageSent');
-        };
+            return () => {
+                channel.stopListening('MessageSent');
+            };
+        }
     }, [user?.id]);
 
     return (
