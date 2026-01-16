@@ -394,12 +394,13 @@ function NotificationsContent({ notifications }: NotificationsProps) {
 }
 
 export default function NotificationsIndex({ notifications }: NotificationsProps) {
-    const { props } = usePage<{ unreadNotificationsCount?: number; auth: { user: { role: string } } }>();
+    const { props } = usePage<{ unreadNotificationsCount?: number; auth: { user: { id: number; role: string } } }>();
     const unreadNotificationsCount = props.unreadNotificationsCount || 0;
     const userRole = props.auth?.user?.role || 'buyer';
+    const userId = props.auth?.user?.id;
 
     return (
-        <NotificationsProvider initialUnreadCount={unreadNotificationsCount} userRole={userRole}>
+        <NotificationsProvider initialUnreadCount={unreadNotificationsCount} userRole={userRole} userId={userId}>
             <NotificationsContent notifications={notifications} />
         </NotificationsProvider>
     );

@@ -602,9 +602,10 @@ function BuyerLayoutContent({ children, title }: BuyerLayoutProps) {
 export default function BuyerLayout({ children, title }: BuyerLayoutProps) {
     const { props } = usePage<SharedData & { unreadNotificationsCount?: number }>();
     const unreadNotificationsCount = props.unreadNotificationsCount || 0;
+    const userId = props.auth?.user?.id;
 
     return (
-        <NotificationsProvider initialUnreadCount={unreadNotificationsCount} userRole="buyer">
+        <NotificationsProvider initialUnreadCount={unreadNotificationsCount} userRole="buyer" userId={userId}>
             <BuyerLayoutContent title={title}>{children}</BuyerLayoutContent>
         </NotificationsProvider>
     );

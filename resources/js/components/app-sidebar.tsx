@@ -3,7 +3,7 @@ import { NavUser } from '@/components/nav-user';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import Echo from '@/lib/echo';
 import { type NavItem, type SharedData } from '@/types';
-import { usePage } from '@inertiajs/react';
+import { router, usePage } from '@inertiajs/react';
 import {
     BarChart3,
     FileEdit,
@@ -157,11 +157,26 @@ export function AppSidebar() {
     const { auth, newContactMessagesCount } = usePage<SharedData & { newContactMessagesCount?: number }>().props;
     const user = auth.user;
     const [unreadMessagesCount, setUnreadMessagesCount] = useState(0);
+    // Track navigation to force re-subscription of Echo channels
+    const [navigationCount, setNavigationCount] = useState(0);
 
     // Get role-specific navigation items
     const mainNavItems = getRoleNavItems(user?.role);
 
+    // Listen for Inertia navigation to trigger re-subscription
+    useEffect(() => {
+        const handleNavigate = () => {
+            setNavigationCount((prev) => prev + 1);
+        };
+
+        const removeListener = router.on('navigate', handleNavigate);
+        return () => {
+            removeListener();
+        };
+    }, []);
+
     // Load unread messages count
+    // Re-subscribe after navigation to ensure fresh CSRF token authentication
     useEffect(() => {
         if (!user?.id) return;
 
@@ -189,9 +204,10 @@ export function AppSidebar() {
 
             return () => {
                 channel.stopListening('MessageSent');
+                Echo.leave(`private-App.Models.User.${user.id}`);
             };
         }
-    }, [user?.id]);
+    }, [user?.id, navigationCount]);
 
     return (
         <Sidebar collapsible="icon" variant="inset" className="border-r border-sidebar-border/50">

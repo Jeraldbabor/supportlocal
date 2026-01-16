@@ -10,6 +10,11 @@ declare global {
 
 window.Pusher = Pusher;
 
+// Helper to get fresh CSRF token - this is called dynamically for each auth request
+const getCsrfToken = (): string => {
+    return document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+};
+
 // Only initialize Echo if Pusher credentials are available
 const pusherKey = import.meta.env.VITE_PUSHER_APP_KEY;
 const pusherCluster = import.meta.env.VITE_PUSHER_APP_CLUSTER;
@@ -22,13 +27,47 @@ if (isValidPusherKey && isValidPusherCluster) {
     window.Echo = new Echo({
         broadcaster: 'pusher',
         key: pusherKey,
-        cluster: pusherCluster,
+        // Pass Pusher options as a single object to avoid deprecation warning
+        Pusher: Pusher,
+        wsHost: undefined,
+        wsPort: undefined,
+        wssPort: undefined,
         forceTLS: true,
+        disableStats: true,
+        enabledTransports: ['ws', 'wss'],
+        // Pusher-specific options
+        cluster: pusherCluster,
         authEndpoint: '/broadcasting/auth',
-        auth: {
-            headers: {
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
-            },
+        // Use authorizer function to get fresh CSRF token for each channel subscription
+        authorizer: (channel: { name: string }) => {
+            return {
+                authorize: (socketId: string, callback: (error: boolean | Error | null, authData?: { auth: string; channel_data?: string }) => void) => {
+                    fetch('/broadcasting/auth', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': getCsrfToken(),
+                        },
+                        body: JSON.stringify({
+                            socket_id: socketId,
+                            channel_name: channel.name,
+                        }),
+                    })
+                        .then((response) => {
+                            if (!response.ok) {
+                                throw new Error('Unauthorized');
+                            }
+                            return response.json();
+                        })
+                        .then((data) => {
+                            callback(null, data);
+                        })
+                        .catch((error) => {
+                            callback(error);
+                        });
+                },
+            };
         },
     });
 } else {
