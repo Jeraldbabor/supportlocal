@@ -205,7 +205,16 @@ export default function ArtisanProfile({ artisan, products, ratings, filters }: 
                     <div className="flex flex-col space-y-4 md:flex-row md:items-start md:space-y-0 md:space-x-6">
                         <div className="flex-shrink-0">
                             {artisan.image ? (
-                                <img src={artisan.image} alt={artisan.name} className="h-24 w-24 rounded-full object-cover" />
+                                <img
+                                    src={artisan.image}
+                                    alt={artisan.name}
+                                    className="h-24 w-24 rounded-full object-cover"
+                                    onError={(e) => {
+                                        const target = e.target as HTMLImageElement;
+                                        target.onerror = null;
+                                        target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(artisan.name)}&color=EA580C&background=FED7AA`;
+                                    }}
+                                />
                             ) : (
                                 <div className="flex h-24 w-24 items-center justify-center rounded-full bg-gray-200">
                                     <User className="h-12 w-12 text-gray-400" />
@@ -442,9 +451,14 @@ export default function ArtisanProfile({ artisan, products, ratings, filters }: 
                                         <div className="relative aspect-square overflow-hidden bg-gray-100">
                                             {product.primary_image ? (
                                                 <img
-                                                    src={`/storage/${product.primary_image}`}
+                                                    src={product.primary_image.startsWith('http') ? product.primary_image : `/images/${product.primary_image}`}
                                                     alt={product.name}
                                                     className="h-full w-full object-cover transition-transform group-hover:scale-105"
+                                                    onError={(e) => {
+                                                        const target = e.target as HTMLImageElement;
+                                                        target.onerror = null;
+                                                        target.src = '/placeholder.svg';
+                                                    }}
                                                 />
                                             ) : (
                                                 <div className="flex h-full w-full items-center justify-center bg-gray-200">
