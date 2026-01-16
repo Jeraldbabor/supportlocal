@@ -537,7 +537,11 @@ export default function Index({ sellers, locations = [], filters }: SellersIndex
                                                         <div className="flex-shrink-0">
                                                             {seller.profile_image ? (
                                                                 <img
-                                                                    src={seller.profile_image.startsWith('http') ? seller.profile_image : `/images/${seller.profile_image}`}
+                                                                    src={
+                                                                        seller.profile_image.startsWith('http')
+                                                                            ? seller.profile_image
+                                                                            : `/images/${seller.profile_image}`
+                                                                    }
                                                                     alt={seller.name}
                                                                     className="h-12 w-12 rounded-full object-cover ring-2 ring-gray-100 transition-all group-hover:ring-orange-200 sm:h-14 sm:w-14 md:h-16 md:w-16"
                                                                     onError={(e) => {

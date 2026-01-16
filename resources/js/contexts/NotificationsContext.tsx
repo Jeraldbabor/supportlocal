@@ -1,5 +1,6 @@
+import Echo from '@/lib/echo';
 import { router } from '@inertiajs/react';
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
 
 interface NotificationsContextType {
     unreadCount: number;
@@ -15,22 +16,26 @@ export function NotificationsProvider({
     children,
     initialUnreadCount = 0,
     userRole = 'buyer',
+    userId,
 }: {
     children: React.ReactNode;
     initialUnreadCount?: number;
     userRole?: string;
+    userId?: number;
 }) {
     const [unreadCount, setUnreadCount] = useState(initialUnreadCount);
+    // Track navigation to force re-subscription of Echo channels
+    const [navigationCount, setNavigationCount] = useState(0);
 
     // Update unread count when initialUnreadCount prop changes
     useEffect(() => {
         setUnreadCount(initialUnreadCount);
     }, [initialUnreadCount]);
 
-    const refreshUnreadCount = () => {
+    const refreshUnreadCount = useCallback(() => {
         // Reload the current page to get fresh data
         router.reload({ only: ['unreadNotificationsCount'] });
-    };
+    }, []);
 
     const clearBadge = () => {
         setUnreadCount(0);
@@ -74,18 +79,47 @@ export function NotificationsProvider({
         );
     };
 
-    // Listen for route changes to refresh notification count
+    // Listen for Inertia navigation to trigger re-subscription
     useEffect(() => {
-        const handleRouteChange = () => {
-            // Count will be updated automatically through usePage props
-            // No need for explicit refresh since we're using shared data
+        const handleNavigate = () => {
+            setNavigationCount((prev) => prev + 1);
         };
 
-        // Listen to Inertia navigation events
-        const removeListener = router.on('navigate', handleRouteChange);
-
-        return removeListener;
+        const removeListener = router.on('navigate', handleNavigate);
+        return () => {
+            removeListener();
+        };
     }, []);
+
+    // Listen for real-time notifications via Echo/WebSocket
+    // Re-subscribe after navigation to ensure fresh CSRF token authentication
+    useEffect(() => {
+        if (!userId || !Echo) return;
+
+        // Subscribe to user's private notification channel
+        const channel = Echo.private(`App.Models.User.${userId}`);
+
+        // Listen for database notifications (Laravel's broadcast notification)
+        channel.notification(() => {
+            // Increment unread count when new notification arrives
+            setUnreadCount((prev) => prev + 1);
+
+            // Optionally refresh to get the full notification data
+            // This ensures the notification list is updated if user is on the notifications page
+            refreshUnreadCount();
+        });
+
+        // Also listen for custom notification events that might be broadcast
+        channel.listen('.Illuminate\\Notifications\\Events\\BroadcastNotificationCreated', () => {
+            setUnreadCount((prev) => prev + 1);
+            refreshUnreadCount();
+        });
+
+        return () => {
+            channel.stopListening('.Illuminate\\Notifications\\Events\\BroadcastNotificationCreated');
+            Echo.leave(`private-App.Models.User.${userId}`);
+        };
+    }, [userId, refreshUnreadCount, navigationCount]);
 
     return (
         <NotificationsContext.Provider

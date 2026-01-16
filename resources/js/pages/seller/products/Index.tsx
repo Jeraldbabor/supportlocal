@@ -406,7 +406,11 @@ export default function ProductsIndex() {
                                         <div className="aspect-square overflow-hidden rounded-lg bg-gray-100 dark:bg-gray-800">
                                             {product.primary_image ? (
                                                 <img
-                                                    src={product.primary_image.startsWith('http') ? product.primary_image : `/images/${product.primary_image}`}
+                                                    src={
+                                                        product.primary_image.startsWith('http')
+                                                            ? product.primary_image
+                                                            : `/images/${product.primary_image}`
+                                                    }
                                                     alt={product.name}
                                                     className="h-full w-full object-cover transition-transform duration-200 group-hover:scale-105"
                                                     onError={(e) => {
@@ -576,7 +580,11 @@ export default function ProductsIndex() {
                                                                 {product.primary_image ? (
                                                                     <img
                                                                         className="h-10 w-10 rounded-lg object-cover"
-                                                                        src={product.primary_image.startsWith('http') ? product.primary_image : `/images/${product.primary_image}`}
+                                                                        src={
+                                                                            product.primary_image.startsWith('http')
+                                                                                ? product.primary_image
+                                                                                : `/images/${product.primary_image}`
+                                                                        }
                                                                         alt={product.name}
                                                                         onError={(e) => {
                                                                             const target = e.target as HTMLImageElement;

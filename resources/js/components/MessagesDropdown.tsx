@@ -3,6 +3,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import Echo from '@/lib/echo';
+import { router } from '@inertiajs/react';
 import { formatDistanceToNow } from 'date-fns';
 import { MessageSquare, Search, Trash2, X } from 'lucide-react';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
@@ -46,8 +47,22 @@ export default function MessagesDropdown({ currentUserId }: MessagesDropdownProp
     const conversationsListRef = useRef<HTMLDivElement>(null);
     const audioRef = useRef<HTMLAudioElement | null>(null);
     const [hasNotificationPermission, setHasNotificationPermission] = useState(false);
+    // Track navigation to force re-subscription of Echo channels
+    const [navigationCount, setNavigationCount] = useState(0);
 
     const totalUnread = conversations.reduce((sum, conv) => sum + conv.unread_count, 0);
+
+    // Listen for Inertia navigation to trigger re-subscription
+    useEffect(() => {
+        const handleNavigate = () => {
+            setNavigationCount((prev) => prev + 1);
+        };
+
+        const removeListener = router.on('navigate', handleNavigate);
+        return () => {
+            removeListener();
+        };
+    }, []);
 
     // Request notification permission on mount
     useEffect(() => {
@@ -75,25 +90,28 @@ export default function MessagesDropdown({ currentUserId }: MessagesDropdownProp
         }
     }, []);
 
-    const loadConversations = useCallback(async (force = false) => {
-        // Prevent duplicate calls if already loading
-        if (isLoading && !force) return;
-        
-        setIsLoading(true);
-        try {
-            const response = await fetch('/api/chat/conversations');
-            if (response.ok) {
-                const data = await response.json();
-                setConversations(data || []);
-                // Scroll to top when conversations are loaded
-                setTimeout(() => scrollToTop(), 100);
+    const loadConversations = useCallback(
+        async (force = false) => {
+            // Prevent duplicate calls if already loading
+            if (isLoading && !force) return;
+
+            setIsLoading(true);
+            try {
+                const response = await fetch('/api/chat/conversations');
+                if (response.ok) {
+                    const data = await response.json();
+                    setConversations(data || []);
+                    // Scroll to top when conversations are loaded
+                    setTimeout(() => scrollToTop(), 100);
+                }
+            } catch (error) {
+                console.error('Failed to load conversations:', error);
+            } finally {
+                setIsLoading(false);
             }
-        } catch (error) {
-            console.error('Failed to load conversations:', error);
-        } finally {
-            setIsLoading(false);
-        }
-    }, [scrollToTop, isLoading]);
+        },
+        [scrollToTop, isLoading],
+    );
 
     const showNewMessageNotification = useCallback(
         (data: { message: { conversation_id: number; message: string; id: number }; sender: { name: string; avatar_url?: string } }) => {
@@ -136,6 +154,7 @@ export default function MessagesDropdown({ currentUserId }: MessagesDropdownProp
     );
 
     // Listen for new messages across all conversations
+    // Re-subscribe after navigation to ensure fresh CSRF token authentication
     useEffect(() => {
         if (!currentUserId || !Echo) return;
 
@@ -161,10 +180,11 @@ export default function MessagesDropdown({ currentUserId }: MessagesDropdownProp
 
         return () => {
             channel.stopListening('MessageSent');
+            Echo.leave(`private-App.Models.User.${currentUserId}`);
             if (reloadTimeout) clearTimeout(reloadTimeout);
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [currentUserId, showChatModal, selectedConversationId, showNewMessageNotification]);
+    }, [currentUserId, showChatModal, selectedConversationId, showNewMessageNotification, navigationCount]);
 
     // Load conversations on mount only (removed duplicate effect)
     useEffect(() => {

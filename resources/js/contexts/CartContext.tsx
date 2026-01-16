@@ -45,7 +45,6 @@ export function CartProvider({ children, isAuthenticated: authProp }: CartProvid
     const [isAuthenticated, setIsAuthenticated] = useState(authProp || false);
     const [hasTransferredCart, setHasTransferredCart] = useState(false);
 
-
     // Load cart from backend (authenticated users)
     const loadAuthenticatedCart = useCallback(async () => {
         try {
@@ -161,7 +160,6 @@ export function CartProvider({ children, isAuthenticated: authProp }: CartProvid
     useEffect(() => {
         loadCart();
     }, [isAuthenticated, loadCart]);
-
 
     // Save guest cart to localStorage
     const saveGuestCart = (cartItems: CartItem[]) => {

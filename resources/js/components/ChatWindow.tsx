@@ -193,7 +193,6 @@ export default function ChatWindow({ conversationId, currentUserId }: ChatWindow
         }
     };
 
-
     const handleTyping = () => {
         // Send typing start event
         fetch(`/chat/conversation/${conversationId}/typing/start`, {

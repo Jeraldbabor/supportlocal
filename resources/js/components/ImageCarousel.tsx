@@ -42,7 +42,7 @@ export default function ImageCarousel({ products, title, autoPlay = true, interv
         setProgress(0);
         const progressInterval = setInterval(() => {
             setProgress((prev) => {
-                const newProgress = prev + (100 / (interval / 50));
+                const newProgress = prev + 100 / (interval / 50);
                 if (newProgress >= 100) {
                     return 0;
                 }
@@ -133,7 +133,7 @@ export default function ImageCarousel({ products, title, autoPlay = true, interv
                                             )}
 
                                             {/* Product Name with Gradient Text */}
-                                            <h2 className="text-xl font-extrabold leading-tight text-white drop-shadow-2xl sm:text-2xl md:text-3xl lg:text-4xl">
+                                            <h2 className="text-xl leading-tight font-extrabold text-white drop-shadow-2xl sm:text-2xl md:text-3xl lg:text-4xl">
                                                 <span className="bg-gradient-to-r from-white via-white to-amber-100 bg-clip-text text-transparent">
                                                     {product.name}
                                                 </span>
@@ -144,10 +144,7 @@ export default function ImageCarousel({ products, title, autoPlay = true, interv
                                                 <div className="flex items-center gap-2">
                                                     <div className="h-px w-6 bg-gradient-to-r from-amber-400 to-transparent sm:w-8"></div>
                                                     <p className="text-xs font-medium text-white/90 sm:text-sm lg:text-base">
-                                                        by{' '}
-                                                        <span className="font-bold text-amber-300 drop-shadow-lg">
-                                                            {product.artisan}
-                                                        </span>
+                                                        by <span className="font-bold text-amber-300 drop-shadow-lg">{product.artisan}</span>
                                                     </p>
                                                 </div>
                                             )}

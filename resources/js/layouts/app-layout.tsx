@@ -18,12 +18,13 @@ function AppLayoutContent({ children, breadcrumbs, ...props }: AppLayoutProps) {
 }
 
 export default function AppLayout({ children, breadcrumbs, ...props }: AppLayoutProps) {
-    const { props: pageProps } = usePage<{ unreadNotificationsCount?: number; auth: { user: { role: string } } }>();
+    const { props: pageProps } = usePage<{ unreadNotificationsCount?: number; auth: { user: { id: number; role: string } } }>();
     const unreadNotificationsCount = pageProps.unreadNotificationsCount || 0;
     const userRole = pageProps.auth?.user?.role || 'buyer';
+    const userId = pageProps.auth?.user?.id;
 
     return (
-        <NotificationsProvider initialUnreadCount={unreadNotificationsCount} userRole={userRole}>
+        <NotificationsProvider initialUnreadCount={unreadNotificationsCount} userRole={userRole} userId={userId}>
             <AppLayoutContent breadcrumbs={breadcrumbs} {...props}>
                 {children}
             </AppLayoutContent>

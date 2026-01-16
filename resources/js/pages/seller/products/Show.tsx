@@ -226,7 +226,11 @@ export default function ShowProduct({ product }: ShowProductProps) {
                                     {product.primary_image && (
                                         <div className="relative">
                                             <img
-                                                src={product.primary_image.startsWith('http') ? product.primary_image : `/images/${product.primary_image}`}
+                                                src={
+                                                    product.primary_image.startsWith('http')
+                                                        ? product.primary_image
+                                                        : `/images/${product.primary_image}`
+                                                }
                                                 alt={product.name}
                                                 className="h-64 w-full rounded-lg object-cover"
                                                 onError={(e) => {

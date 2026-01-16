@@ -2,8 +2,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import AppLayout from '@/layouts/app-layout';
-import { formatDateForInput } from '@/utils/date';
 import { type BreadcrumbItem, type SharedData, type User } from '@/types';
+import { formatDateForInput } from '@/utils/date';
 import { Head, router, useForm, usePage } from '@inertiajs/react';
 import { Camera, Mail, Save, Shield, Upload, User as UserIcon, X } from 'lucide-react';
 import { ChangeEvent, FormEvent, useRef } from 'react';
@@ -151,14 +151,17 @@ export default function EditProfile() {
                         <CardContent className="space-y-4">
                             <div className="flex flex-col items-center space-y-4">
                                 <div className="relative">
-                                    <img 
-                                        src={user.avatar_url} 
-                                        alt={user.name} 
-                                        className="h-24 w-24 rounded-full border-4 border-white shadow-lg object-cover"
+                                    <img
+                                        src={user.avatar_url}
+                                        alt={user.name}
+                                        className="h-24 w-24 rounded-full border-4 border-white object-cover shadow-lg"
                                         onError={(e) => {
                                             // Fallback to placeholder if image fails to load
                                             const target = e.target as HTMLImageElement;
-                                            target.src = 'https://ui-avatars.com/api/?name=' + encodeURIComponent(user.name) + '&color=7F9CF5&background=EBF4FF';
+                                            target.src =
+                                                'https://ui-avatars.com/api/?name=' +
+                                                encodeURIComponent(user.name) +
+                                                '&color=7F9CF5&background=EBF4FF';
                                         }}
                                     />
                                 </div>
@@ -170,7 +173,13 @@ export default function EditProfile() {
                                 )}
 
                                 <div className="flex flex-col gap-2">
-                                    <input ref={fileInputRef} type="file" accept="image/jpeg,image/png,image/jpg,image/gif" onChange={handleAvatarUpload} className="hidden" />
+                                    <input
+                                        ref={fileInputRef}
+                                        type="file"
+                                        accept="image/jpeg,image/png,image/jpg,image/gif"
+                                        onChange={handleAvatarUpload}
+                                        className="hidden"
+                                    />
 
                                     <Button variant="outline" size="sm" onClick={() => fileInputRef.current?.click()} disabled={avatarProcessing}>
                                         {avatarProcessing ? (

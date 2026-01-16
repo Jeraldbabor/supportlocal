@@ -106,7 +106,7 @@ export default function MainLayout({ children, title }: MainLayoutProps) {
                 <nav className="mx-auto w-full max-w-7xl px-3 sm:px-4 md:px-6 lg:px-8" role="navigation" aria-label="Main navigation">
                     <div className="flex h-14 items-center justify-between sm:h-16">
                         {/* Logo */}
-                        <div className="flex-shrink-0 min-w-0">
+                        <div className="min-w-0 flex-shrink-0">
                             <Link
                                 href="/"
                                 className="flex items-center gap-1.5 rounded-xl px-1.5 py-1.5 transition-all duration-300 hover:scale-105 focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 focus:outline-none active:scale-95 sm:gap-2 sm:px-2 sm:py-2"
@@ -138,7 +138,7 @@ export default function MainLayout({ children, title }: MainLayoutProps) {
                                         <Link
                                             key={item.name}
                                             href={item.href}
-                                            className={`group relative flex items-center gap-2 rounded-xl px-2.5 py-1.5 text-xs font-medium transition-all duration-300 focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 focus:outline-none whitespace-nowrap sm:px-3 sm:py-2 sm:text-sm ${
+                                            className={`group relative flex items-center gap-2 rounded-xl px-2.5 py-1.5 text-xs font-medium whitespace-nowrap transition-all duration-300 focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 focus:outline-none sm:px-3 sm:py-2 sm:text-sm ${
                                                 isActive
                                                     ? 'border border-primary/20 bg-gradient-to-r from-primary/10 to-primary/5 text-primary shadow-inner'
                                                     : 'text-gray-700 hover:bg-gray-50 hover:text-primary hover:shadow-sm'
@@ -277,7 +277,7 @@ export default function MainLayout({ children, title }: MainLayoutProps) {
                                     )}
                                 </div>
                             ) : (
-                                <div className="hidden items-center gap-1.5 md:flex sm:gap-2">
+                                <div className="hidden items-center gap-1.5 sm:gap-2 md:flex">
                                     <Link
                                         href="/login"
                                         className="rounded-xl px-2 py-1.5 text-xs font-medium text-gray-700 transition-all duration-300 hover:bg-gray-50 hover:text-primary focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 focus:outline-none sm:px-3 sm:py-2 sm:text-sm lg:px-4"
@@ -294,7 +294,7 @@ export default function MainLayout({ children, title }: MainLayoutProps) {
                             )}
 
                             {/* Mobile menu button */}
-                            <div className="ml-0.5 flex-shrink-0 lg:hidden sm:ml-1">
+                            <div className="ml-0.5 flex-shrink-0 sm:ml-1 lg:hidden">
                                 <button
                                     ref={mobileMenuButtonRef}
                                     onClick={() => setIsMenuOpen(!isMenuOpen)}

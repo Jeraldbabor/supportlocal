@@ -51,7 +51,9 @@ export default function OrderShow({ order }: OrderShowProps) {
     const [uploadError, setUploadError] = useState('');
     const [uploadSuccess, setUploadSuccess] = useState(false);
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
-    const [preview, setPreview] = useState<string | null>(order.payment_proof ? (order.payment_proof.startsWith('http') ? order.payment_proof : `/images/${order.payment_proof}`) : null);
+    const [preview, setPreview] = useState<string | null>(
+        order.payment_proof ? (order.payment_proof.startsWith('http') ? order.payment_proof : `/images/${order.payment_proof}`) : null,
+    );
 
     const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -190,9 +192,9 @@ export default function OrderShow({ order }: OrderShowProps) {
                 {/* Order Header */}
                 <div className="mb-6 rounded-lg border border-gray-200 bg-white p-3 shadow-sm sm:mb-8 sm:p-5">
                     <div className="flex flex-col space-y-3 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
-                        <div className="flex flex-col space-y-2 sm:flex-row sm:items-center sm:space-x-3 sm:space-y-0">
+                        <div className="flex flex-col space-y-2 sm:flex-row sm:items-center sm:space-y-0 sm:space-x-3">
                             <div className="min-w-0 flex-1">
-                                <h1 className="break-words text-lg font-bold text-gray-900 sm:text-xl md:text-2xl">Order #{order.order_number}</h1>
+                                <h1 className="text-lg font-bold break-words text-gray-900 sm:text-xl md:text-2xl">Order #{order.order_number}</h1>
                                 <p className="mt-0.5 text-xs text-gray-600 sm:text-sm">
                                     Placed on {new Date(order.created_at).toLocaleDateString()} at {new Date(order.created_at).toLocaleTimeString()}
                                 </p>
@@ -206,7 +208,9 @@ export default function OrderShow({ order }: OrderShowProps) {
                             <div className={`flex-shrink-0 rounded-lg border px-2.5 py-1.5 sm:px-3 sm:py-2 ${getStatusColor(order.status)}`}>
                                 <div className="flex items-center space-x-1.5 sm:space-x-2">
                                     {getStatusIcon(order.status, 'h-4 w-4 sm:h-5 sm:w-5')}
-                                    <span className="text-sm font-semibold sm:text-base md:text-lg">{order.status.charAt(0).toUpperCase() + order.status.slice(1)}</span>
+                                    <span className="text-sm font-semibold sm:text-base md:text-lg">
+                                        {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+                                    </span>
                                 </div>
                             </div>
                         </div>
@@ -315,13 +319,13 @@ export default function OrderShow({ order }: OrderShowProps) {
                                     </div>
                                     <div className="rounded-lg border border-gray-200 bg-gray-50 p-3 sm:p-4">
                                         <p className="mb-1 text-xs font-medium text-gray-700 sm:text-sm">Tracking Number</p>
-                                        <p className="break-all text-base font-semibold text-purple-600 sm:text-lg">{order.tracking_number}</p>
+                                        <p className="text-base font-semibold break-all text-purple-600 sm:text-lg">{order.tracking_number}</p>
                                     </div>
                                 </div>
                                 {order.waybill_number && (
                                     <div className="rounded-lg border border-gray-200 bg-gray-50 p-3 sm:p-4">
                                         <p className="mb-1 text-xs font-medium text-gray-700 sm:text-sm">Waybill Number</p>
-                                        <p className="break-all text-base font-semibold text-gray-900 sm:text-lg">{order.waybill_number}</p>
+                                        <p className="text-base font-semibold break-all text-gray-900 sm:text-lg">{order.waybill_number}</p>
                                     </div>
                                 )}
                                 {order.shipping_provider === 'jt_express' && order.tracking_number && (
@@ -350,7 +354,10 @@ export default function OrderShow({ order }: OrderShowProps) {
                     </h2>
                     <div className="space-y-3 sm:space-y-4">
                         {order.order_items.map((item) => (
-                            <div key={item.id} className="flex flex-col space-y-2 border-b border-gray-100 pb-3 last:border-b-0 last:pb-0 sm:flex-row sm:items-center sm:space-x-4 sm:space-y-0 sm:pb-4">
+                            <div
+                                key={item.id}
+                                className="flex flex-col space-y-2 border-b border-gray-100 pb-3 last:border-b-0 last:pb-0 sm:flex-row sm:items-center sm:space-y-0 sm:space-x-4 sm:pb-4"
+                            >
                                 {item.product_image ? (
                                     <img
                                         src={item.product_image.startsWith('http') ? item.product_image : `/images/${item.product_image}`}
@@ -368,7 +375,7 @@ export default function OrderShow({ order }: OrderShowProps) {
                                     </div>
                                 )}
                                 <div className="min-w-0 flex-1 text-center sm:text-left">
-                                    <h3 className="break-words text-sm font-semibold text-gray-900 sm:text-base">{item.product_name}</h3>
+                                    <h3 className="text-sm font-semibold break-words text-gray-900 sm:text-base">{item.product_name}</h3>
                                     <p className="mt-0.5 text-xs text-gray-600 sm:text-sm">Quantity: {item.quantity}</p>
                                     <p className="mt-0.5 text-xs text-gray-600 sm:text-sm">Unit Price: {formatPeso(item.price)}</p>
                                 </div>
@@ -398,7 +405,9 @@ export default function OrderShow({ order }: OrderShowProps) {
                         </h2>
                         {order.payment_status === 'pending' && !order.payment_proof && (
                             <div className="space-y-3 sm:space-y-4">
-                                <p className="text-xs text-gray-600 sm:text-sm">Please upload a screenshot or photo of your GCash payment confirmation.</p>
+                                <p className="text-xs text-gray-600 sm:text-sm">
+                                    Please upload a screenshot or photo of your GCash payment confirmation.
+                                </p>
                                 {uploadError && (
                                     <div className="rounded-lg border border-red-200 bg-red-50 p-3 sm:p-4">
                                         <p className="text-xs text-red-800 sm:text-sm">{uploadError}</p>
@@ -413,7 +422,9 @@ export default function OrderShow({ order }: OrderShowProps) {
                                 )}
                                 <div className="space-y-2.5 sm:space-y-3">
                                     <div>
-                                        <label className="mb-1.5 block text-xs font-medium text-gray-700 sm:mb-2 sm:text-sm">Select Payment Proof Image</label>
+                                        <label className="mb-1.5 block text-xs font-medium text-gray-700 sm:mb-2 sm:text-sm">
+                                            Select Payment Proof Image
+                                        </label>
                                         <input
                                             type="file"
                                             accept="image/*"

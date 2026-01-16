@@ -508,7 +508,9 @@ export default function OrderShow({ order }: OrderShowProps) {
                                     </div>
                                     <div className="min-w-0 flex-1">
                                         <p className="text-[10px] font-medium tracking-wide text-gray-500 uppercase sm:text-xs">Delivery Address</p>
-                                        <p className="mt-0.5 break-words text-sm font-semibold text-gray-900 sm:text-base">{order.delivery_address}</p>
+                                        <p className="mt-0.5 text-sm font-semibold break-words text-gray-900 sm:text-base">
+                                            {order.delivery_address}
+                                        </p>
                                     </div>
                                 </div>
                                 <div className="flex items-start gap-3 rounded-xl bg-gray-50 p-3 sm:gap-4 sm:p-4">
@@ -526,8 +528,12 @@ export default function OrderShow({ order }: OrderShowProps) {
                                             <FileText className="h-4 w-4 text-amber-600 sm:h-5 sm:w-5" />
                                         </div>
                                         <div className="min-w-0 flex-1">
-                                            <p className="text-[10px] font-medium tracking-wide text-amber-700 uppercase sm:text-xs">Special Instructions</p>
-                                            <p className="mt-0.5 break-words text-sm font-semibold text-amber-900 sm:text-base">{order.delivery_notes}</p>
+                                            <p className="text-[10px] font-medium tracking-wide text-amber-700 uppercase sm:text-xs">
+                                                Special Instructions
+                                            </p>
+                                            <p className="mt-0.5 text-sm font-semibold break-words text-amber-900 sm:text-base">
+                                                {order.delivery_notes}
+                                            </p>
                                         </div>
                                     </div>
                                 )}

@@ -100,7 +100,7 @@ function BuyerLayoutContent({ children, title }: BuyerLayoutProps) {
                 <nav className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8" role="navigation" aria-label="Main navigation">
                     <div className="flex h-16 items-center justify-between">
                         {/* Logo */}
-                        <div className="flex-shrink-0 min-w-0">
+                        <div className="min-w-0 flex-shrink-0">
                             <Link
                                 href="/buyer/dashboard"
                                 className="flex items-center gap-2 rounded-xl px-2 py-2 transition-all duration-300 hover:scale-105 focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 focus:outline-none active:scale-95"
@@ -132,7 +132,7 @@ function BuyerLayoutContent({ children, title }: BuyerLayoutProps) {
                                         <Link
                                             key={item.name}
                                             href={item.href}
-                                            className={`group relative flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium transition-all duration-300 focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 focus:outline-none whitespace-nowrap ${
+                                            className={`group relative flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium whitespace-nowrap transition-all duration-300 focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 focus:outline-none ${
                                                 isActive
                                                     ? 'border border-primary/20 bg-gradient-to-r from-primary/10 to-primary/5 text-primary shadow-inner'
                                                     : 'text-gray-700 hover:bg-gray-50 hover:text-primary hover:shadow-sm'
@@ -162,8 +162,8 @@ function BuyerLayoutContent({ children, title }: BuyerLayoutProps) {
                             <MessagesDropdown currentUserId={user.id} />
 
                             {/* Notifications Dropdown */}
-                            <NotificationsDropdown 
-                                userRole="buyer" 
+                            <NotificationsDropdown
+                                userRole="buyer"
                                 buttonClassName="group relative rounded-xl p-2 text-gray-600 transition-all duration-300 hover:bg-primary/5 hover:text-primary hover:shadow-sm focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 focus:outline-none"
                             />
 
@@ -211,10 +211,7 @@ function BuyerLayoutContent({ children, title }: BuyerLayoutProps) {
                                     aria-label="User menu"
                                 >
                                     <Avatar className="h-9 w-9 ring-2 ring-gray-100 transition-all duration-300 hover:ring-primary/30">
-                                        <AvatarImage
-                                            src={user?.avatar_url || user?.avatar || undefined}
-                                            alt={user?.name || 'User'}
-                                        />
+                                        <AvatarImage src={user?.avatar_url || user?.avatar || undefined} alt={user?.name || 'User'} />
                                         <AvatarFallback className="bg-gradient-to-br from-primary/20 to-primary/10 text-sm font-semibold text-primary">
                                             {user?.name
                                                 ? user.name
@@ -358,10 +355,7 @@ function BuyerLayoutContent({ children, title }: BuyerLayoutProps) {
                             <div className="mt-6 border-t border-gray-200 pt-4">
                                 <div className="flex items-center gap-4 rounded-xl bg-gray-50 px-4 py-3">
                                     <Avatar className="h-10 w-10">
-                                        <AvatarImage
-                                            src={user?.avatar_url || user?.avatar || undefined}
-                                            alt={user?.name || 'User'}
-                                        />
+                                        <AvatarImage src={user?.avatar_url || user?.avatar || undefined} alt={user?.name || 'User'} />
                                         <AvatarFallback className="bg-primary/10 font-semibold text-primary">
                                             {user?.name
                                                 ? user.name
@@ -602,9 +596,10 @@ function BuyerLayoutContent({ children, title }: BuyerLayoutProps) {
 export default function BuyerLayout({ children, title }: BuyerLayoutProps) {
     const { props } = usePage<SharedData & { unreadNotificationsCount?: number }>();
     const unreadNotificationsCount = props.unreadNotificationsCount || 0;
+    const userId = props.auth?.user?.id;
 
     return (
-        <NotificationsProvider initialUnreadCount={unreadNotificationsCount} userRole="buyer">
+        <NotificationsProvider initialUnreadCount={unreadNotificationsCount} userRole="buyer" userId={userId}>
             <BuyerLayoutContent title={title}>{children}</BuyerLayoutContent>
         </NotificationsProvider>
     );

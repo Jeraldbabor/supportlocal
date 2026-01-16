@@ -1,8 +1,8 @@
-import { useNotifications } from '@/contexts/NotificationsContext';
 import { Button } from '@/components/ui/button';
-import { Bell } from 'lucide-react';
+import { useNotifications } from '@/contexts/NotificationsContext';
 import { Link, router } from '@inertiajs/react';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { Bell } from 'lucide-react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 interface Notification {
     id: string;
@@ -21,10 +21,7 @@ interface NotificationsDropdownProps {
     buttonClassName?: string;
 }
 
-export default function NotificationsDropdown({
-    userRole = 'buyer',
-    buttonClassName = '',
-}: NotificationsDropdownProps) {
+export default function NotificationsDropdown({ userRole = 'buyer', buttonClassName = '' }: NotificationsDropdownProps) {
     const [isOpen, setIsOpen] = useState(false);
     const [notifications, setNotifications] = useState<Notification[]>([]);
     const [isLoading, setIsLoading] = useState(false);
@@ -78,9 +75,7 @@ export default function NotificationsDropdown({
         if (!notification.read_at) {
             markAsRead(notification.id);
             // Optimistically update local state
-            setNotifications((prev) =>
-                prev.map((n) => (n.id === notification.id ? { ...n, read_at: new Date().toISOString() } : n)),
-            );
+            setNotifications((prev) => prev.map((n) => (n.id === notification.id ? { ...n, read_at: new Date().toISOString() } : n)));
         }
 
         // Navigate to action URL or close dropdown
@@ -114,7 +109,10 @@ export default function NotificationsDropdown({
         <div className="relative" ref={dropdownRef}>
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className={buttonClassName || 'group relative rounded-xl p-2 text-gray-600 transition-all duration-300 hover:bg-primary/5 hover:text-primary hover:shadow-sm focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 focus:outline-none'}
+                className={
+                    buttonClassName ||
+                    'group relative rounded-xl p-2 text-gray-600 transition-all duration-300 hover:bg-primary/5 hover:text-primary hover:shadow-sm focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 focus:outline-none'
+                }
                 aria-label={`Notifications ${hasUnread ? `(${unreadCount} unread)` : ''}`}
                 aria-expanded={isOpen}
             >
@@ -128,17 +126,12 @@ export default function NotificationsDropdown({
             </button>
 
             {isOpen && (
-                <div className="absolute right-0 top-full z-50 mt-2 w-80 rounded-xl border border-gray-200/80 bg-white/95 shadow-xl ring-1 ring-black/5 backdrop-blur-sm">
+                <div className="absolute top-full right-0 z-50 mt-2 w-80 rounded-xl border border-gray-200/80 bg-white/95 shadow-xl ring-1 ring-black/5 backdrop-blur-sm">
                     {/* Header */}
                     <div className="flex items-center justify-between border-b border-gray-100 px-4 py-3">
                         <h3 className="text-sm font-semibold text-gray-900">Notifications</h3>
                         {hasUnread && (
-                            <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={handleMarkAllAsRead}
-                                className="text-xs text-primary hover:text-primary/80"
-                            >
+                            <Button variant="ghost" size="sm" onClick={handleMarkAllAsRead} className="text-xs text-primary hover:text-primary/80">
                                 Mark all as read
                             </Button>
                         )}
@@ -152,7 +145,7 @@ export default function NotificationsDropdown({
                             </div>
                         ) : notifications.length === 0 ? (
                             <div className="flex flex-col items-center justify-center py-8 text-center">
-                                <Bell className="h-8 w-8 text-gray-300 mb-2" />
+                                <Bell className="mb-2 h-8 w-8 text-gray-300" />
                                 <p className="text-sm text-gray-500">No notifications</p>
                             </div>
                         ) : (
@@ -163,28 +156,18 @@ export default function NotificationsDropdown({
                                         <button
                                             key={notification.id}
                                             onClick={() => handleNotificationClick(notification)}
-                                            className={`w-full text-left px-4 py-3 transition-colors duration-200 ${
-                                                isUnread
-                                                    ? 'bg-primary/5 hover:bg-primary/10'
-                                                    : 'hover:bg-gray-50'
+                                            className={`w-full px-4 py-3 text-left transition-colors duration-200 ${
+                                                isUnread ? 'bg-primary/5 hover:bg-primary/10' : 'hover:bg-gray-50'
                                             }`}
                                         >
                                             <div className="flex items-start gap-3">
-                                                {isUnread && (
-                                                    <div className="mt-1.5 h-2 w-2 flex-shrink-0 rounded-full bg-primary"></div>
-                                                )}
-                                                <div className="flex-1 min-w-0">
-                                                    <p
-                                                        className={`text-sm font-medium ${
-                                                            isUnread ? 'text-gray-900' : 'text-gray-700'
-                                                        }`}
-                                                    >
+                                                {isUnread && <div className="mt-1.5 h-2 w-2 flex-shrink-0 rounded-full bg-primary"></div>}
+                                                <div className="min-w-0 flex-1">
+                                                    <p className={`text-sm font-medium ${isUnread ? 'text-gray-900' : 'text-gray-700'}`}>
                                                         {notification.data.title || 'Notification'}
                                                     </p>
                                                     {notification.data.message && (
-                                                        <p className="mt-1 text-xs text-gray-500 line-clamp-2">
-                                                            {notification.data.message}
-                                                        </p>
+                                                        <p className="mt-1 line-clamp-2 text-xs text-gray-500">{notification.data.message}</p>
                                                     )}
                                                     <p className="mt-1 text-xs text-gray-400">
                                                         {new Date(notification.created_at).toLocaleDateString('en-US', {
@@ -208,7 +191,7 @@ export default function NotificationsDropdown({
                         <div className="border-t border-gray-100 px-4 py-3">
                             <Link
                                 href={`/${baseRoute}/notifications`}
-                                className="block w-full text-center text-sm font-medium text-primary hover:text-primary/80 transition-colors"
+                                className="block w-full text-center text-sm font-medium text-primary transition-colors hover:text-primary/80"
                                 onClick={() => setIsOpen(false)}
                             >
                                 View all notifications
