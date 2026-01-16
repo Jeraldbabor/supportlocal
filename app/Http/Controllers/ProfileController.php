@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
@@ -101,18 +102,38 @@ class ProfileController extends Controller
 
         $user = $request->user();
 
-        // Delete old profile picture
-        if ($user->profile_picture) {
-            Storage::disk('public')->delete($user->profile_picture);
+        try {
+            // Ensure storage directory exists
+            $avatarsDir = storage_path('app/public/avatars');
+            if (!File::exists($avatarsDir)) {
+                File::makeDirectory($avatarsDir, 0755, true);
+            }
+
+            // Delete old profile picture
+            if ($user->profile_picture && Storage::disk('public')->exists($user->profile_picture)) {
+                Storage::disk('public')->delete($user->profile_picture);
+            }
+
+            $path = $request->file('avatar')->store('avatars', 'public');
+
+            if (!$path) {
+                return back()->withErrors(['avatar' => 'Failed to upload image. Please try again.']);
+            }
+
+            $user->update([
+                'profile_picture' => $path,
+            ]);
+
+            return back()->with('message', 'Profile picture updated successfully.');
+        } catch (\Exception $e) {
+            \Log::error('Avatar upload failed', [
+                'user_id' => $user->id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            return back()->withErrors(['avatar' => 'Failed to upload image: '.$e->getMessage()]);
         }
-
-        $path = $request->file('avatar')->store('avatars', 'public');
-
-        $user->update([
-            'profile_picture' => $path,
-        ]);
-
-        return back()->with('message', 'Profile picture updated successfully.');
     }
 
     /**

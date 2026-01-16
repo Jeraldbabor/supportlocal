@@ -11,6 +11,7 @@ use App\Notifications\NewOrderReceived;
 use App\Notifications\PaymentProofUploaded;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Inertia\Inertia;
@@ -292,6 +293,12 @@ class OrderController extends Controller
         ]);
 
         try {
+            // Ensure storage directory exists
+            $paymentProofsDir = storage_path('app/public/payment-proofs');
+            if (!File::exists($paymentProofsDir)) {
+                File::makeDirectory($paymentProofsDir, 0755, true);
+            }
+
             // Delete old payment proof if exists
             if ($order->payment_proof) {
                 Storage::disk('public')->delete($order->payment_proof);
