@@ -525,7 +525,7 @@ export default function Artisans({ artisans, locations = [], filters = {} }: Art
                                                         <div className="flex-shrink-0">
                                                             {artisan.profile_image || artisan.image ? (
                                                                 <img
-                                                                    src={artisan.profile_image ? `/storage/${artisan.profile_image}` : artisan.image}
+                                                                    src={artisan.profile_image || artisan.image}
                                                                     alt={artisan.name}
                                                                     className="h-12 w-12 rounded-full object-cover ring-2 ring-gray-100 transition-all group-hover:ring-orange-200 sm:h-14 sm:w-14 md:h-16 md:w-16"
                                                                 />
