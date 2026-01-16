@@ -52,7 +52,10 @@ jobs:
 
       - name: Prepare Storage Directories
         run: |
-          mkdir -p storage/app/public
+          mkdir -p storage/app/public/products
+          mkdir -p storage/app/public/avatars
+          mkdir -p storage/app/public/chat-images
+          mkdir -p storage/app/public/seller-applications
           mkdir -p storage/app/private
           mkdir -p storage/framework/cache/data
           mkdir -p storage/framework/sessions

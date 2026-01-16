@@ -481,17 +481,25 @@ Route::get('/images/{path}', function ($path) {
         // Remove any leading slashes
         $decodedPath = ltrim($decodedPath, '/');
         
-        $fullPath = storage_path('app/public/'.$decodedPath);
+        // Ensure storage directory exists
+        $storageBase = storage_path('app/public');
+        if (!is_dir($storageBase)) {
+            \Illuminate\Support\Facades\File::makeDirectory($storageBase, 0755, true);
+        }
+        
+        $fullPath = $storageBase.'/'.$decodedPath;
 
         // Security: prevent directory traversal
         // First check if the file exists at the expected location
         if (!file_exists($fullPath)) {
-            \Log::warning('Image file not found', [
-                'requested_path' => $path,
-                'decoded_path' => $decodedPath,
-                'full_path' => $fullPath,
-                'storage_base' => storage_path('app/public'),
-            ]);
+            // Return placeholder image instead of 404 for better UX
+            $placeholderPath = public_path('placeholder.jpg');
+            if (file_exists($placeholderPath)) {
+                return response()->file($placeholderPath, [
+                    'Content-Type' => 'image/jpeg',
+                    'Cache-Control' => 'public, max-age=3600',
+                ]);
+            }
             abort(404);
         }
 
