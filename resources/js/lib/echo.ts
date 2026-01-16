@@ -20,8 +20,14 @@ const pusherKey = import.meta.env.VITE_PUSHER_APP_KEY;
 const pusherCluster = import.meta.env.VITE_PUSHER_APP_CLUSTER;
 
 // Validate that credentials exist and are not template strings
-const isValidPusherKey = pusherKey && typeof pusherKey === 'string' && pusherKey.length > 0 && !pusherKey.includes('${') && !pusherKey.includes('PUSHER_APP_KEY');
-const isValidPusherCluster = pusherCluster && typeof pusherCluster === 'string' && pusherCluster.length > 0 && !pusherCluster.includes('${') && !pusherCluster.includes('pusher_app_cluster');
+const isValidPusherKey =
+    pusherKey && typeof pusherKey === 'string' && pusherKey.length > 0 && !pusherKey.includes('${') && !pusherKey.includes('PUSHER_APP_KEY');
+const isValidPusherCluster =
+    pusherCluster &&
+    typeof pusherCluster === 'string' &&
+    pusherCluster.length > 0 &&
+    !pusherCluster.includes('${') &&
+    !pusherCluster.includes('pusher_app_cluster');
 
 if (isValidPusherKey && isValidPusherCluster) {
     window.Echo = new Echo({
@@ -41,12 +47,15 @@ if (isValidPusherKey && isValidPusherCluster) {
         // Use authorizer function to get fresh CSRF token for each channel subscription
         authorizer: (channel: { name: string }) => {
             return {
-                authorize: (socketId: string, callback: (error: boolean | Error | null, authData?: { auth: string; channel_data?: string }) => void) => {
+                authorize: (
+                    socketId: string,
+                    callback: (error: boolean | Error | null, authData?: { auth: string; channel_data?: string }) => void,
+                ) => {
                     fetch('/broadcasting/auth', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
-                            'Accept': 'application/json',
+                            Accept: 'application/json',
                             'X-CSRF-TOKEN': getCsrfToken(),
                         },
                         body: JSON.stringify({

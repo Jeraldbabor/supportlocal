@@ -100,10 +100,10 @@ export function NotificationsProvider({
         const channel = Echo.private(`App.Models.User.${userId}`);
 
         // Listen for database notifications (Laravel's broadcast notification)
-        channel.notification((notification: { id: string; type: string }) => {
+        channel.notification(() => {
             // Increment unread count when new notification arrives
             setUnreadCount((prev) => prev + 1);
-            
+
             // Optionally refresh to get the full notification data
             // This ensures the notification list is updated if user is on the notifications page
             refreshUnreadCount();

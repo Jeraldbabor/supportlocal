@@ -1,9 +1,9 @@
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { NotificationsProvider, useNotifications } from '@/contexts/NotificationsContext';
 import BuyerLayout from '@/layouts/BuyerLayout';
 import { Head, router, usePage } from '@inertiajs/react';
 import { Bell, Check, Clock, Filter, Trash2, X } from 'lucide-react';
 import { useCallback, useMemo, useState } from 'react';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 interface Notification {
     id: string;
@@ -42,9 +42,12 @@ function NotificationsContent({ notifications }: NotificationsProps) {
     const [filter, setFilter] = useState<'all' | 'unread' | 'read'>('all');
 
     // Check if notification is read (either from server or locally marked)
-    const isRead = useCallback((notification: Notification) => {
-        return notification.read_at !== null || localReadIds.has(notification.id);
-    }, [localReadIds]);
+    const isRead = useCallback(
+        (notification: Notification) => {
+            return notification.read_at !== null || localReadIds.has(notification.id);
+        },
+        [localReadIds],
+    );
 
     const handleMarkAsRead = (notificationId: string) => {
         // Immediately update local state for instant feedback
@@ -183,7 +186,10 @@ function NotificationsContent({ notifications }: NotificationsProps) {
                                     </button>
                                 )}
                                 {unreadCount > 0 && (
-                                    <button onClick={handleMarkAllAsReadLocal} className="text-sm font-medium text-amber-700 hover:text-amber-900 dark:text-amber-500 dark:hover:text-amber-400">
+                                    <button
+                                        onClick={handleMarkAllAsReadLocal}
+                                        className="text-sm font-medium text-amber-700 hover:text-amber-900 dark:text-amber-500 dark:hover:text-amber-400"
+                                    >
                                         Mark all as read
                                     </button>
                                 )}
@@ -197,7 +203,11 @@ function NotificationsContent({ notifications }: NotificationsProps) {
                             <div className="px-6 py-12 text-center">
                                 <Bell className="mx-auto h-12 w-12 text-gray-400" />
                                 <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-white">
-                                    {filter === 'unread' ? 'No unread notifications' : filter === 'read' ? 'No read notifications' : 'No notifications'}
+                                    {filter === 'unread'
+                                        ? 'No unread notifications'
+                                        : filter === 'read'
+                                          ? 'No read notifications'
+                                          : 'No notifications'}
                                 </h3>
                                 <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
                                     {filter === 'unread'
@@ -289,7 +299,8 @@ function NotificationsContent({ notifications }: NotificationsProps) {
                         <div className="border-t border-gray-200 px-6 py-4 dark:border-gray-700">
                             <div className="flex items-center justify-between">
                                 <div className="text-sm text-gray-700 dark:text-gray-300">
-                                    Showing {filteredNotifications.length} of {notifications.total} notifications (page {notifications.current_page} of {notifications.last_page})
+                                    Showing {filteredNotifications.length} of {notifications.total} notifications (page {notifications.current_page}{' '}
+                                    of {notifications.last_page})
                                 </div>
                                 <div className="flex space-x-2">
                                     {notifications.current_page > 1 && (

@@ -191,7 +191,6 @@ export default function BuyerChatModal({ conversationId, currentUserId, onClose,
         }
     };
 
-
     const handleTyping = () => {
         fetch(`/chat/conversation/${conversationId}/typing/start`, {
             method: 'POST',

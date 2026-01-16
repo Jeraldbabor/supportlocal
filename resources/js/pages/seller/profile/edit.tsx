@@ -1,6 +1,6 @@
 import AppLayout from '@/layouts/app-layout';
-import { formatDateForInput } from '@/utils/date';
 import { type BreadcrumbItem, type SharedData } from '@/types';
+import { formatDateForInput } from '@/utils/date';
 import { Head, router, useForm, usePage } from '@inertiajs/react';
 import { AlertTriangle, Calendar, CreditCard, Mail, MapPin, Phone, Save, Upload, User, X } from 'lucide-react';
 import { FormEventHandler, useRef, useState } from 'react';
@@ -130,9 +130,9 @@ export default function SellerProfileEdit() {
                                     {previewUrl ? (
                                         <img src={previewUrl} alt="Preview" className="h-full w-full object-cover" />
                                     ) : user.avatar_url && !user.avatar_url.includes('ui-avatars.com') && !imageError ? (
-                                        <img 
-                                            src={user.avatar_url} 
-                                            alt={user.name} 
+                                        <img
+                                            src={user.avatar_url}
+                                            alt={user.name}
                                             className="h-full w-full object-cover"
                                             onError={() => setImageError(true)}
                                         />

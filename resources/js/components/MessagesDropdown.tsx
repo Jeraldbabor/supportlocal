@@ -90,25 +90,28 @@ export default function MessagesDropdown({ currentUserId }: MessagesDropdownProp
         }
     }, []);
 
-    const loadConversations = useCallback(async (force = false) => {
-        // Prevent duplicate calls if already loading
-        if (isLoading && !force) return;
-        
-        setIsLoading(true);
-        try {
-            const response = await fetch('/api/chat/conversations');
-            if (response.ok) {
-                const data = await response.json();
-                setConversations(data || []);
-                // Scroll to top when conversations are loaded
-                setTimeout(() => scrollToTop(), 100);
+    const loadConversations = useCallback(
+        async (force = false) => {
+            // Prevent duplicate calls if already loading
+            if (isLoading && !force) return;
+
+            setIsLoading(true);
+            try {
+                const response = await fetch('/api/chat/conversations');
+                if (response.ok) {
+                    const data = await response.json();
+                    setConversations(data || []);
+                    // Scroll to top when conversations are loaded
+                    setTimeout(() => scrollToTop(), 100);
+                }
+            } catch (error) {
+                console.error('Failed to load conversations:', error);
+            } finally {
+                setIsLoading(false);
             }
-        } catch (error) {
-            console.error('Failed to load conversations:', error);
-        } finally {
-            setIsLoading(false);
-        }
-    }, [scrollToTop, isLoading]);
+        },
+        [scrollToTop, isLoading],
+    );
 
     const showNewMessageNotification = useCallback(
         (data: { message: { conversation_id: number; message: string; id: number }; sender: { name: string; avatar_url?: string } }) => {

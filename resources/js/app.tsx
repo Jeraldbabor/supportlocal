@@ -17,7 +17,7 @@ router.on('navigate', () => {
     if (Echo && Echo.connector && Echo.connector.pusher) {
         // Force reconnection to re-authenticate channels with fresh CSRF token
         const pusher = Echo.connector.pusher;
-        
+
         // If the connection is in a bad state, reconnect
         if (pusher.connection.state !== 'connected') {
             pusher.connect();

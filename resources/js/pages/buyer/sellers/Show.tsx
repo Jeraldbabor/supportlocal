@@ -575,7 +575,11 @@ export default function Show({ seller, products, filters, userRating: initialUse
                                         <div className="relative aspect-square overflow-hidden rounded-t-xl bg-gray-100">
                                             {product.primary_image ? (
                                                 <img
-                                                    src={product.primary_image.startsWith('http') ? product.primary_image : `/images/${product.primary_image}`}
+                                                    src={
+                                                        product.primary_image.startsWith('http')
+                                                            ? product.primary_image
+                                                            : `/images/${product.primary_image}`
+                                                    }
                                                     alt={product.name}
                                                     className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-110"
                                                     onClick={() => handleProductClick(product.id)}
