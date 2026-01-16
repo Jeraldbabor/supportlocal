@@ -73,10 +73,9 @@ jobs:
           php -v
           php artisan --version
 
+      - name: Clear Config Before Tests
+        run: php artisan config:clear
+
       - name: Tests
-        env:
-          APP_ENV: testing
-          DB_CONNECTION: sqlite
-          DB_DATABASE: ":memory:"
-        run: php artisan test --verbose
+        run: composer test
         timeout-minutes: 10
