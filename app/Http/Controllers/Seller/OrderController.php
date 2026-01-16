@@ -104,10 +104,18 @@ class OrderController extends Controller
                 'seller_confirmed_at' => now(),
             ]);
 
-            // Notify buyer
-            $order->buyer->notify(new OrderStatusUpdated($order, 'Your order has been confirmed by the seller'));
-
             DB::commit();
+
+            // Notify buyer (outside transaction so order confirmation succeeds even if notification fails)
+            try {
+                $order->buyer->notify(new OrderStatusUpdated($order, 'Your order has been confirmed by the seller'));
+            } catch (\Exception $notificationException) {
+                \Log::warning('Order confirmation notification failed', [
+                    'order_id' => $order->id,
+                    'buyer_id' => $order->buyer->id ?? null,
+                    'error' => $notificationException->getMessage(),
+                ]);
+            }
 
             return response()->json([
                 'success' => true,
@@ -175,12 +183,20 @@ class OrderController extends Controller
                 'cancelled_at' => now(),
             ]);
 
-            // Notify buyer
+            // Notify buyer (in try-catch so order rejection succeeds even if notification fails)
             $reason = $request->input('rejection_reason') ?
                 "Your order has been cancelled. Reason: {$request->input('rejection_reason')}" :
                 'Your order has been cancelled by the seller';
 
-            $order->buyer->notify(new OrderStatusUpdated($order, $reason));
+            try {
+                $order->buyer->notify(new OrderStatusUpdated($order, $reason));
+            } catch (\Exception $notificationException) {
+                \Log::warning('Order rejection notification failed', [
+                    'order_id' => $order->id,
+                    'buyer_id' => $order->buyer->id ?? null,
+                    'error' => $notificationException->getMessage(),
+                ]);
+            }
 
             return response()->json([
                 'success' => true,
@@ -230,9 +246,17 @@ class OrderController extends Controller
                 'shipped_at' => now(),
             ]);
 
-            // Notify buyer
+            // Notify buyer (in try-catch so shipping update succeeds even if notification fails)
             $shippingProviderName = $request->input('shipping_provider') === Order::SHIPPING_JT_EXPRESS ? 'J&T Express' : 'Other';
-            $order->buyer->notify(new OrderStatusUpdated($order, "Your order has been shipped via {$shippingProviderName}. Tracking Number: {$request->input('tracking_number')}"));
+            try {
+                $order->buyer->notify(new OrderStatusUpdated($order, "Your order has been shipped via {$shippingProviderName}. Tracking Number: {$request->input('tracking_number')}"));
+            } catch (\Exception $notificationException) {
+                \Log::warning('Order shipping notification failed', [
+                    'order_id' => $order->id,
+                    'buyer_id' => $order->buyer->id ?? null,
+                    'error' => $notificationException->getMessage(),
+                ]);
+            }
 
             return response()->json([
                 'success' => true,
@@ -273,8 +297,16 @@ class OrderController extends Controller
                 'completed_at' => now(),
             ]);
 
-            // Notify buyer
-            $order->buyer->notify(new OrderStatusUpdated($order, 'Your order has been completed and delivered'));
+            // Notify buyer (in try-catch so completion succeeds even if notification fails)
+            try {
+                $order->buyer->notify(new OrderStatusUpdated($order, 'Your order has been completed and delivered'));
+            } catch (\Exception $notificationException) {
+                \Log::warning('Order completion notification failed', [
+                    'order_id' => $order->id,
+                    'buyer_id' => $order->buyer->id ?? null,
+                    'error' => $notificationException->getMessage(),
+                ]);
+            }
 
             return response()->json([
                 'success' => true,
@@ -319,8 +351,16 @@ class OrderController extends Controller
                 'payment_verified_at' => now(),
             ]);
 
-            // Notify buyer
-            $order->buyer->notify(new PaymentVerified($order));
+            // Notify buyer (in try-catch so payment verification succeeds even if notification fails)
+            try {
+                $order->buyer->notify(new PaymentVerified($order));
+            } catch (\Exception $notificationException) {
+                \Log::warning('Payment verification notification failed', [
+                    'order_id' => $order->id,
+                    'buyer_id' => $order->buyer->id ?? null,
+                    'error' => $notificationException->getMessage(),
+                ]);
+            }
 
             return response()->json([
                 'success' => true,
@@ -374,8 +414,16 @@ class OrderController extends Controller
                 'payment_verified_at' => null,
             ]);
 
-            // Notify buyer
-            $order->buyer->notify(new PaymentRejected($order, $request->input('payment_verification_notes')));
+            // Notify buyer (in try-catch so payment rejection succeeds even if notification fails)
+            try {
+                $order->buyer->notify(new PaymentRejected($order, $request->input('payment_verification_notes')));
+            } catch (\Exception $notificationException) {
+                \Log::warning('Payment rejection notification failed', [
+                    'order_id' => $order->id,
+                    'buyer_id' => $order->buyer->id ?? null,
+                    'error' => $notificationException->getMessage(),
+                ]);
+            }
 
             return response()->json([
                 'success' => true,

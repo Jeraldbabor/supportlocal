@@ -46,11 +46,11 @@ Hello **{{ $notifiable->name }}**,
 @endcomponent
 
 @component('mail::panel')
-**Subtotal:** ₱{{ number_format($order->total_amount, 2) }}  
-@if($order->delivery_fee > 0)
-**Delivery Fee:** ₱{{ number_format($order->delivery_fee, 2) }}  
+**Subtotal:** ₱{{ number_format($order->subtotal, 2) }}  
+@if($order->shipping_fee > 0)
+**Shipping Fee:** ₱{{ number_format($order->shipping_fee, 2) }}  
 @endif
-**Total Amount:** **₱{{ number_format($order->total_amount + ($order->delivery_fee ?? 0), 2) }}**
+**Total Amount:** **₱{{ number_format($order->total_amount, 2) }}**
 @endcomponent
 
 ---
@@ -72,8 +72,8 @@ We hope you love your purchase! If you have a moment, please consider leaving a 
 @elseif($order->status === 'cancelled')
 ## ℹ️ Order Cancelled
 
-@if($order->cancellation_reason)
-**Reason:** {{ $order->cancellation_reason }}
+@if($order->rejection_reason)
+**Reason:** {{ $order->rejection_reason }}
 @endif
 
 If you have any questions, please contact the seller or our support team.
