@@ -38,10 +38,21 @@ class ChatController extends Controller
                 // Ensure avatar_url is included in the serialization
                 $otherUser->append('avatar_url');
 
+                // Transform product with proper image URLs
+                $product = $conversation->product ? [
+                    'id' => $conversation->product->id,
+                    'name' => $conversation->product->name,
+                    'image' => $conversation->product->featured_image 
+                        ? '/images/'.$conversation->product->featured_image
+                        : ($conversation->product->images && count($conversation->product->images) > 0
+                            ? '/images/'.$conversation->product->images[0]
+                            : null),
+                ] : null;
+
                 return [
                     'id' => $conversation->id,
                     'other_user' => $otherUser,
-                    'product' => $conversation->product,
+                    'product' => $product,
                     'last_message' => $conversation->lastMessage,
                     'last_message_at' => $conversation->last_message_at,
                     'unread_count' => $conversation->getUnreadCountForUser($user->id),
@@ -124,12 +135,23 @@ class ChatController extends Controller
         $otherUser = $conversation->getOtherParticipant($user->id);
         $otherUser->append('avatar_url');
 
+        // Transform product with proper image URLs
+        $product = $conversation->product ? [
+            'id' => $conversation->product->id,
+            'name' => $conversation->product->name,
+            'image' => $conversation->product->featured_image 
+                ? '/images/'.$conversation->product->featured_image
+                : ($conversation->product->images && count($conversation->product->images) > 0
+                    ? '/images/'.$conversation->product->images[0]
+                    : null),
+        ] : null;
+
         return response()->json([
             'messages' => $messages,
             'conversation' => [
                 'id' => $conversation->id,
                 'other_user' => $otherUser,
-                'product' => $conversation->product,
+                'product' => $product,
             ],
         ]);
     }
@@ -344,10 +366,21 @@ class ChatController extends Controller
                 // Ensure avatar_url is included in the serialization
                 $otherUser->append('avatar_url');
 
+                // Transform product with proper image URLs
+                $product = $conversation->product ? [
+                    'id' => $conversation->product->id,
+                    'name' => $conversation->product->name,
+                    'image' => $conversation->product->featured_image 
+                        ? '/images/'.$conversation->product->featured_image
+                        : ($conversation->product->images && count($conversation->product->images) > 0
+                            ? '/images/'.$conversation->product->images[0]
+                            : null),
+                ] : null;
+
                 return [
                     'id' => $conversation->id,
                     'other_user' => $otherUser,
-                    'product' => $conversation->product,
+                    'product' => $product,
                     'last_message' => $conversation->lastMessage,
                     'last_message_at' => $conversation->last_message_at,
                     'unread_count' => $conversation->getUnreadCountForUser($user->id),

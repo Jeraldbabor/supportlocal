@@ -166,6 +166,7 @@ class PublicController extends Controller
         }
 
         // Calculate monthly sales for all products (for display in product cards)
+        // Using whereHas with eager loading to prevent N+1 queries
         $monthlySales = OrderItem::whereHas('order', function ($q) use ($monthStart) {
             $q->where('status', \App\Models\Order::STATUS_COMPLETED)
                 ->where('created_at', '>=', $monthStart);
@@ -181,7 +182,7 @@ class PublicController extends Controller
                 'price' => (float) $product->price,
                 'compare_price' => $product->compare_price ? (float) $product->compare_price : null,
                 'primary_image' => $product->featured_image,
-                'image' => $product->featured_image ? '/storage/'.$product->featured_image : '/placeholder.jpg',
+                'image' => \App\Helpers\ImageHelper::url($product->featured_image),
                 'average_rating' => $product->average_rating ? (float) $product->average_rating : null,
                 'review_count' => $product->review_count ?? 0,
                 'order_count' => (int) ($product->order_count ?? 0),

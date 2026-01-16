@@ -558,7 +558,7 @@ export default function OrderShow({ order }: OrderShowProps) {
                                 >
                                     {item.product_image ? (
                                         <img
-                                            src={`/storage/${item.product_image}`}
+                                            src={`/images/${item.product_image}`}
                                             alt={item.product_name}
                                             className="h-24 w-24 rounded-xl object-cover shadow-md ring-2 ring-white"
                                         />
@@ -651,7 +651,7 @@ export default function OrderShow({ order }: OrderShowProps) {
                                             <div className="relative flex justify-center rounded-xl border-2 border-gray-200 bg-gray-50 p-4">
                                                 <div className="w-full max-w-md">
                                                     <img
-                                                        src={`/storage/${order.payment_proof}`}
+                                                        src={`/images/${order.payment_proof}`}
                                                         alt="Payment proof"
                                                         className="h-auto max-h-96 w-full rounded-lg object-contain shadow-sm"
                                                     />

@@ -285,7 +285,7 @@ export default function Show({ product, relatedProducts, ratings: initialRatings
                     <div className="space-y-4">
                         <div className="relative aspect-square overflow-hidden rounded-lg bg-gray-100">
                             {selectedImage ? (
-                                <img src={`/storage/${selectedImage}`} alt={product.name} className="h-full w-full object-cover" />
+                                <img src={`/images/${selectedImage}`} alt={product.name} className="h-full w-full object-cover" />
                             ) : (
                                 <div className="flex h-full w-full items-center justify-center bg-gray-200">
                                     <Package className="h-24 w-24 text-gray-400" />
@@ -302,7 +302,7 @@ export default function Show({ product, relatedProducts, ratings: initialRatings
                                         selectedImage === product.primary_image ? 'border-primary' : 'border-gray-200'
                                     }`}
                                 >
-                                    <img src={`/storage/${product.primary_image}`} alt={product.name} className="h-20 w-full object-cover" />
+                                    <img src={`/images/${product.primary_image}`} alt={product.name} className="h-20 w-full object-cover" />
                                 </button>
                                 {product.images.map((image, index) => (
                                     <button
@@ -312,7 +312,7 @@ export default function Show({ product, relatedProducts, ratings: initialRatings
                                             selectedImage === image ? 'border-primary' : 'border-gray-200'
                                         }`}
                                     >
-                                        <img src={`/storage/${image}`} alt={`${product.name} ${index + 1}`} className="h-20 w-full object-cover" />
+                                        <img src={`/images/${image}`} alt={`${product.name} ${index + 1}`} className="h-20 w-full object-cover" />
                                     </button>
                                 ))}
                             </div>
@@ -621,7 +621,7 @@ export default function Show({ product, relatedProducts, ratings: initialRatings
                                             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary">
                                                 {rating.user.profile_picture ? (
                                                     <img
-                                                        src={`/storage/${rating.user.profile_picture}`}
+                                                        src={`/images/${rating.user.profile_picture}`}
                                                         alt={rating.user.name}
                                                         className="h-10 w-10 rounded-full object-cover"
                                                     />
@@ -690,7 +690,7 @@ export default function Show({ product, relatedProducts, ratings: initialRatings
                                     <div className="relative aspect-square overflow-hidden bg-gray-100">
                                         {relatedProduct.primary_image ? (
                                             <img
-                                                src={`/storage/${relatedProduct.primary_image}`}
+                                                src={`/images/${relatedProduct.primary_image}`}
                                                 alt={relatedProduct.name}
                                                 className="h-full w-full object-cover transition-transform group-hover:scale-105"
                                             />

@@ -280,9 +280,9 @@ export default function BuyerChatModal({ conversationId, currentUserId, onClose,
                                         >
                                             {message.image && (
                                                 <div className="mb-2">
-                                                    <a href={`/storage/${message.image}`} target="_blank" rel="noopener noreferrer" className="block">
+                                                    <a href={`/images/${message.image}`} target="_blank" rel="noopener noreferrer" className="block">
                                                         <img
-                                                            src={`/storage/${message.image}`}
+                                                            src={`/images/${message.image}`}
                                                             alt="Uploaded image"
                                                             className="max-h-48 max-w-xs cursor-pointer rounded-lg object-cover transition-opacity hover:opacity-90"
                                                         />

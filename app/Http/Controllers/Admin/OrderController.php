@@ -170,7 +170,7 @@ class OrderController extends Controller
                     'product' => $item->product ? [
                         'id' => $item->product->id,
                         'name' => $item->product->name,
-                        'primary_image' => $item->product->primary_image ? (str_starts_with($item->product->primary_image, 'http') || str_starts_with($item->product->primary_image, '/') ? $item->product->primary_image : asset('storage/'.$item->product->primary_image)) : null,
+                        'primary_image' => \App\Helpers\ImageHelper::url($item->product->primary_image),
                     ] : null,
                 ]),
                 'created_at' => $order->created_at,

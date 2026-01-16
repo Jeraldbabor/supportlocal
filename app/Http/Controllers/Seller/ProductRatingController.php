@@ -144,7 +144,7 @@ class ProductRatingController extends Controller
                 'id' => $product->id,
                 'name' => $product->name,
                 'images' => $product->images ? array_map(function ($image) {
-                    return asset('storage/'.$image);
+                    return \App\Helpers\ImageHelper::url($image);
                 }, $product->images) : [],
                 'primary_image' => $product->primary_image,
                 'average_rating' => $product->average_rating ? (float) $product->average_rating : 0,
