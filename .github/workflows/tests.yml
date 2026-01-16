@@ -55,11 +55,21 @@ jobs:
           mkdir -p storage/framework/views
           mkdir -p bootstrap/cache
 
-      - name: Clear Config Cache
-        run: php artisan config:clear
+      - name: Clear All Caches
+        run: |
+          php artisan config:clear || true
+          php artisan route:clear || true
+          php artisan view:clear || true
+          php artisan cache:clear || true
 
       - name: Create Storage Link
         run: php artisan storage:link || true
+
+      - name: Verify Test Environment
+        run: |
+          php artisan config:show app.env || echo "Config check failed"
+          php -v
+          php artisan --version
 
       - name: Tests
         run: ./vendor/bin/pest --verbose
