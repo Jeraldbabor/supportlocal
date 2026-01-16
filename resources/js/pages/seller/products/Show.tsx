@@ -226,9 +226,14 @@ export default function ShowProduct({ product }: ShowProductProps) {
                                     {product.primary_image && (
                                         <div className="relative">
                                             <img
-                                                src={`/storage/${product.primary_image}`}
+                                                src={product.primary_image.startsWith('http') ? product.primary_image : `/images/${product.primary_image}`}
                                                 alt={product.name}
                                                 className="h-64 w-full rounded-lg object-cover"
+                                                onError={(e) => {
+                                                    const target = e.target as HTMLImageElement;
+                                                    target.onerror = null;
+                                                    target.src = '/placeholder.svg';
+                                                }}
                                             />
                                             <div className="absolute top-2 left-2 rounded bg-blue-500 px-2 py-1 text-xs text-white">Featured</div>
                                         </div>
@@ -240,9 +245,14 @@ export default function ShowProduct({ product }: ShowProductProps) {
                                             {product.images.slice(1).map((image, index) => (
                                                 <img
                                                     key={index}
-                                                    src={`/storage/${image}`}
+                                                    src={image.startsWith('http') ? image : `/images/${image}`}
                                                     alt={`${product.name} ${index + 2}`}
                                                     className="h-20 w-full rounded-lg object-cover"
+                                                    onError={(e) => {
+                                                        const target = e.target as HTMLImageElement;
+                                                        target.onerror = null;
+                                                        target.src = '/placeholder.svg';
+                                                    }}
                                                 />
                                             ))}
                                         </div>

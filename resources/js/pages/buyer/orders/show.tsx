@@ -51,7 +51,7 @@ export default function OrderShow({ order }: OrderShowProps) {
     const [uploadError, setUploadError] = useState('');
     const [uploadSuccess, setUploadSuccess] = useState(false);
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
-    const [preview, setPreview] = useState<string | null>(order.payment_proof ? `/storage/${order.payment_proof}` : null);
+    const [preview, setPreview] = useState<string | null>(order.payment_proof ? (order.payment_proof.startsWith('http') ? order.payment_proof : `/images/${order.payment_proof}`) : null);
 
     const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -353,9 +353,14 @@ export default function OrderShow({ order }: OrderShowProps) {
                             <div key={item.id} className="flex flex-col space-y-2 border-b border-gray-100 pb-3 last:border-b-0 last:pb-0 sm:flex-row sm:items-center sm:space-x-4 sm:space-y-0 sm:pb-4">
                                 {item.product_image ? (
                                     <img
-                                        src={`/storage/${item.product_image}`}
+                                        src={item.product_image.startsWith('http') ? item.product_image : `/images/${item.product_image}`}
                                         alt={item.product_name}
                                         className="h-16 w-16 flex-shrink-0 self-center rounded-lg object-cover sm:h-20 sm:w-20 sm:self-auto"
+                                        onError={(e) => {
+                                            const target = e.target as HTMLImageElement;
+                                            target.onerror = null;
+                                            target.src = '/placeholder.svg';
+                                        }}
                                     />
                                 ) : (
                                     <div className="flex h-16 w-16 flex-shrink-0 items-center justify-center self-center rounded-lg bg-gray-100 sm:h-20 sm:w-20 sm:self-auto">
@@ -455,9 +460,14 @@ export default function OrderShow({ order }: OrderShowProps) {
                                     <p className="mb-2 text-xs font-medium text-gray-700 sm:text-sm">Uploaded Payment Proof:</p>
                                     <div className="flex justify-center">
                                         <img
-                                            src={`/storage/${order.payment_proof}`}
+                                            src={order.payment_proof.startsWith('http') ? order.payment_proof : `/images/${order.payment_proof}`}
                                             alt="Payment proof"
                                             className="h-auto max-h-64 w-full max-w-md rounded-lg border border-gray-200 object-contain shadow-sm sm:max-h-96"
+                                            onError={(e) => {
+                                                const target = e.target as HTMLImageElement;
+                                                target.onerror = null;
+                                                target.src = '/placeholder.svg';
+                                            }}
                                         />
                                     </div>
                                 </div>
