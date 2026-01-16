@@ -46,5 +46,19 @@ jobs:
       - name: Generate Application Key
         run: php artisan key:generate
 
+      - name: Prepare Storage Directories
+        run: |
+          mkdir -p storage/app/public
+          mkdir -p storage/framework/cache
+          mkdir -p storage/framework/sessions
+          mkdir -p storage/framework/views
+          mkdir -p bootstrap/cache
+
+      - name: Clear Config Cache
+        run: php artisan config:clear
+
+      - name: Create Storage Link
+        run: php artisan storage:link || true
+
       - name: Tests
         run: ./vendor/bin/pest
