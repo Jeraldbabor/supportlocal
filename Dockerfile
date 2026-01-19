@@ -39,9 +39,9 @@ RUN composer dump-autoload --optimize
 RUN npm run build
 RUN php artisan view:cache
 
-# Copy and setup entrypoint
+# Copy and setup entrypoint (convert Windows line endings to Unix)
 COPY docker-entrypoint.sh /docker-entrypoint.sh
-RUN chmod +x /docker-entrypoint.sh
+RUN sed -i 's/\r$//' /docker-entrypoint.sh && chmod +x /docker-entrypoint.sh
 
 EXPOSE 8080
 

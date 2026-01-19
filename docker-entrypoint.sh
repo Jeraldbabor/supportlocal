@@ -1,11 +1,8 @@
 #!/bin/bash
 set -e
 
-# Convert PORT to integer (Railway passes it as string)
-APP_PORT=$((${PORT:-8080}))
-
 echo "Starting application..."
-echo "PORT: $APP_PORT"
+echo "PORT from env: $PORT"
 
 echo "Caching config..."
 php artisan config:cache
@@ -19,5 +16,7 @@ php artisan migrate --force
 echo "Creating storage link..."
 php artisan storage:link || true
 
-echo "Starting server on port $APP_PORT..."
-exec php artisan serve --host=0.0.0.0 --port=$APP_PORT
+# Use printf to ensure PORT is treated as integer
+PORT_NUM=$(printf '%d' "${PORT:-8080}")
+echo "Starting server on port $PORT_NUM..."
+exec php artisan serve --host=0.0.0.0 --port="$PORT_NUM"
