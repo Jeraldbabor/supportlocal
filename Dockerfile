@@ -41,5 +41,5 @@ RUN php artisan view:cache
 
 EXPOSE 8080
 
-# Start - config:cache runs here so env vars are available
-CMD php artisan config:cache && php artisan route:cache && php artisan migrate --force && php artisan storage:link && php artisan serve --host=0.0.0.0 --port=${PORT:-8080}
+# Start the application
+CMD bash -c "php artisan config:cache && php artisan route:cache && php artisan migrate --force && (php artisan storage:link || true) && php artisan serve --host=0.0.0.0 --port=\${PORT:-8080}"
