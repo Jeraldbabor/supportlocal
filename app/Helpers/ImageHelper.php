@@ -11,9 +11,8 @@ class ImageHelper
      * Get the public URL for an image stored in storage/app/public
      * Uses /images/ route which works reliably on Railway without symlinks
      *
-     * @param string|null $path The storage path (e.g., 'products/image.jpg')
-     * @param string|null $fallback Fallback URL if path is null/empty
-     * @return string
+     * @param  string|null  $path  The storage path (e.g., 'products/image.jpg')
+     * @param  string|null  $fallback  Fallback URL if path is null/empty
      */
     public static function url(?string $path, ?string $fallback = null): string
     {
@@ -28,6 +27,7 @@ class ImageHelper
             if (str_starts_with($path, '/storage/')) {
                 return str_replace('/storage/', '/images/', $path);
             }
+
             return $path;
         }
 
@@ -41,6 +41,7 @@ class ImageHelper
             } catch (\Exception $e) {
                 // Fallback to /images/ if S3 URL generation fails
                 Log::warning('Failed to generate S3 URL, falling back to /images/', ['path' => $path, 'error' => $e->getMessage()]);
+
                 return '/images/'.$path;
             }
         }
@@ -54,12 +55,11 @@ class ImageHelper
     /**
      * Convert an array of image paths to URLs
      *
-     * @param array|null $paths Array of storage paths
-     * @return array|null
+     * @param  array|null  $paths  Array of storage paths
      */
     public static function urls(?array $paths): ?array
     {
-        if (empty($paths) || !is_array($paths)) {
+        if (empty($paths) || ! is_array($paths)) {
             return null;
         }
 

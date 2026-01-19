@@ -9,7 +9,6 @@ use App\Models\Message;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 
 class ChatController extends Controller
@@ -42,7 +41,7 @@ class ChatController extends Controller
                 $product = $conversation->product ? [
                     'id' => $conversation->product->id,
                     'name' => $conversation->product->name,
-                    'image' => $conversation->product->featured_image 
+                    'image' => $conversation->product->featured_image
                         ? '/images/'.$conversation->product->featured_image
                         : ($conversation->product->images && count($conversation->product->images) > 0
                             ? '/images/'.$conversation->product->images[0]
@@ -139,7 +138,7 @@ class ChatController extends Controller
         $product = $conversation->product ? [
             'id' => $conversation->product->id,
             'name' => $conversation->product->name,
-            'image' => $conversation->product->featured_image 
+            'image' => $conversation->product->featured_image
                 ? '/images/'.$conversation->product->featured_image
                 : ($conversation->product->images && count($conversation->product->images) > 0
                     ? '/images/'.$conversation->product->images[0]
@@ -179,7 +178,7 @@ class ChatController extends Controller
         if ($request->hasFile('image')) {
             // Ensure storage directory exists
             $chatImagesDir = storage_path('app/public/chat-images');
-            if (!File::exists($chatImagesDir)) {
+            if (! File::exists($chatImagesDir)) {
                 File::makeDirectory($chatImagesDir, 0755, true);
             }
 
@@ -190,6 +189,7 @@ class ChatController extends Controller
                     'conversation_id' => $conversationId,
                     'error' => $e->getMessage(),
                 ]);
+
                 return response()->json(['error' => 'Failed to upload image'], 500);
             }
         }
@@ -370,7 +370,7 @@ class ChatController extends Controller
                 $product = $conversation->product ? [
                     'id' => $conversation->product->id,
                     'name' => $conversation->product->name,
-                    'image' => $conversation->product->featured_image 
+                    'image' => $conversation->product->featured_image
                         ? '/images/'.$conversation->product->featured_image
                         : ($conversation->product->images && count($conversation->product->images) > 0
                             ? '/images/'.$conversation->product->images[0]

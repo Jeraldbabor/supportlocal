@@ -67,7 +67,7 @@ class AppServiceProvider extends ServiceProvider
         ];
 
         foreach ($storageDirs as $dir) {
-            if (!File::exists($dir)) {
+            if (! File::exists($dir)) {
                 File::makeDirectory($dir, 0755, true);
             }
         }
@@ -76,7 +76,7 @@ class AppServiceProvider extends ServiceProvider
         $link = public_path('storage');
         $target = storage_path('app/public');
 
-        if (!File::exists($link)) {
+        if (! File::exists($link)) {
             try {
                 // Try to create symlink
                 if (PHP_OS_FAMILY !== 'Windows') {

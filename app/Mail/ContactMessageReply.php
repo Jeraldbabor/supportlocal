@@ -14,7 +14,9 @@ class ContactMessageReply extends Mailable
     use Queueable, SerializesModels;
 
     public $contactMessage;
+
     public $replyMessage;
+
     public $adminName;
 
     /**
@@ -32,8 +34,8 @@ class ContactMessageReply extends Mailable
      */
     public function envelope(): Envelope
     {
-        $subject = 'Re: ' . $this->contactMessage->subject;
-        
+        $subject = 'Re: '.$this->contactMessage->subject;
+
         return new Envelope(
             subject: $subject,
             replyTo: config('mail.from.address'),

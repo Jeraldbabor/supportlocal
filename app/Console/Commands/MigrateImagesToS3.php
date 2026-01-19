@@ -31,6 +31,7 @@ class MigrateImagesToS3 extends Command
         if (config('filesystems.default') !== 's3') {
             $this->error('S3 is not configured as the default filesystem disk.');
             $this->info('Set FILESYSTEM_DISK=s3 in your .env file');
+
             return 1;
         }
 
@@ -42,6 +43,7 @@ class MigrateImagesToS3 extends Command
 
         if ($totalFiles === 0) {
             $this->info('No files found in local storage.');
+
             return 0;
         }
 
@@ -63,10 +65,11 @@ class MigrateImagesToS3 extends Command
             try {
                 if (Storage::disk('s3')->exists($file)) {
                     $bar->advance();
+
                     continue; // Skip if already exists in S3
                 }
 
-                if (!$dryRun) {
+                if (! $dryRun) {
                     $contents = Storage::disk('public')->get($file);
                     Storage::disk('s3')->put($file, $contents);
                 }

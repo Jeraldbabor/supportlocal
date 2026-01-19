@@ -98,7 +98,7 @@ class NotificationController extends Controller
         }
 
         $limit = $request->get('limit', 10);
-        
+
         $notifications = auth()->user()
             ->notifications()
             ->orderBy('created_at', 'desc')
@@ -106,6 +106,7 @@ class NotificationController extends Controller
             ->get()
             ->map(function ($notification) {
                 $data = is_array($notification->data) ? $notification->data : json_decode($notification->data, true);
+
                 return [
                     'id' => $notification->id,
                     'type' => $notification->type,
