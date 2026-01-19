@@ -14,7 +14,7 @@ return [
     |
     */
 
-    'default' => env('MAIL_MAILER', 'log'),
+    'default' => env('MAIL_MAILER', 'resend'),
 
     /*
     |--------------------------------------------------------------------------
@@ -46,8 +46,12 @@ return [
             'username' => env('MAIL_USERNAME'),
             'password' => env('MAIL_PASSWORD'),
             'encryption' => env('MAIL_ENCRYPTION'),
-            'timeout' => null,
+            'timeout' => 5, // Fail fast after 5 seconds instead of waiting 60
             'local_domain' => env('MAIL_EHLO_DOMAIN', parse_url(env('APP_URL', 'http://localhost'), PHP_URL_HOST)),
+        ],
+
+        'mailgun' => [
+            'transport' => 'mailgun',
         ],
 
         'ses' => [
