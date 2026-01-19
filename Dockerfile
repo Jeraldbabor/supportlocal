@@ -39,10 +39,7 @@ RUN composer dump-autoload --optimize
 RUN npm run build
 RUN php artisan view:cache
 
-# Copy and setup entrypoint (convert Windows line endings to Unix)
-COPY docker-entrypoint.sh /docker-entrypoint.sh
-RUN sed -i 's/\r$//' /docker-entrypoint.sh && chmod +x /docker-entrypoint.sh
-
 EXPOSE 8080
 
-CMD ["/docker-entrypoint.sh"]
+# Run everything inline - no external script
+CMD ["sh", "-c", "php artisan config:cache && php artisan route:cache && php artisan migrate --force && (php artisan storage:link || true) && php -S 0.0.0.0:${PORT:-8080} -t /app/public"]
