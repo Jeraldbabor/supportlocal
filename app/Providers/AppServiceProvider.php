@@ -4,6 +4,8 @@ namespace App\Providers;
 
 use App\Listeners\MergeGuestWishlist;
 use Illuminate\Auth\Events\Login;
+use Illuminate\Auth\Events\Registered;
+use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
@@ -36,6 +38,12 @@ class AppServiceProvider extends ServiceProvider
 
         // Ensure storage directories exist and symlink is created
         $this->ensureStorageSetup();
+
+        // Send email verification when user registers
+        Event::listen(
+            Registered::class,
+            SendEmailVerificationNotification::class
+        );
 
         // Merge guest wishlist when user logs in
         Event::listen(
