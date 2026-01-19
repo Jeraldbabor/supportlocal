@@ -66,7 +66,15 @@ class RegisteredUserController extends Controller
             'role' => User::ROLE_BUYER, // Default all new users to buyer
         ]);
 
-        event(new Registered($user));
+        try {
+            $user->sendEmailVerificationNotification();
+        } catch (\Throwable $e) {
+            Log::error('Failed to send verification email', [
+                'user_id' => $user->id,
+                'email' => $user->email,
+                'error' => $e->getMessage(),
+            ]);
+        }
 
         Auth::login($user);
 
