@@ -647,7 +647,7 @@ class PublicController extends Controller
         // Get seller ratings with buyer comments and seller replies
         // Ensure artisan has avatar_url
         $artisan->append('avatar_url');
-        
+
         $ratings = $artisan->sellerRatings()
             ->with(['user' => function ($query) {
                 $query->select('id', 'name', 'profile_picture', 'avatar');
@@ -659,6 +659,7 @@ class PublicController extends Controller
             ->map(function ($rating) {
                 // Ensure user has avatar_url appended
                 $rating->user->append('avatar_url');
+
                 return [
                     'id' => $rating->id,
                     'rating' => $rating->rating,

@@ -105,7 +105,7 @@ class ProfileController extends Controller
         try {
             // Ensure storage directory exists
             $avatarsDir = storage_path('app/public/avatars');
-            if (!File::exists($avatarsDir)) {
+            if (! File::exists($avatarsDir)) {
                 File::makeDirectory($avatarsDir, 0755, true);
             }
 
@@ -116,7 +116,7 @@ class ProfileController extends Controller
 
             $path = $request->file('avatar')->store('avatars', 'public');
 
-            if (!$path) {
+            if (! $path) {
                 return back()->withErrors(['avatar' => 'Failed to upload image. Please try again.']);
             }
 

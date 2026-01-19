@@ -74,7 +74,7 @@ class OrderController extends Controller
 
             // Get all product IDs
             $productIds = array_column($items, 'product_id');
-            
+
             // Eager load products with their sellers to avoid N+1 queries
             $products = Product::with('seller')
                 ->whereIn('id', $productIds)
@@ -84,8 +84,8 @@ class OrderController extends Controller
             // Validate products and calculate total
             foreach ($items as $item) {
                 $product = $products->get($item['product_id']);
-                
-                if (!$product) {
+
+                if (! $product) {
                     throw new \Exception("Product not found: {$item['product_id']}");
                 }
 
@@ -172,12 +172,13 @@ class OrderController extends Controller
                 // Create order items (products already loaded, no need to query again)
                 foreach ($sellerItems as $item) {
                     $product = $item['product'] ?? $products->get($item['product_id']);
-                    
-                    if (!$product) {
+
+                    if (! $product) {
                         \Log::error('Product not found when creating order item', [
                             'product_id' => $item['product_id'],
                             'order_id' => $order->id,
                         ]);
+
                         continue;
                     }
 
@@ -353,7 +354,7 @@ class OrderController extends Controller
         try {
             // Ensure storage directory exists
             $paymentProofsDir = storage_path('app/public/payment-proofs');
-            if (!File::exists($paymentProofsDir)) {
+            if (! File::exists($paymentProofsDir)) {
                 File::makeDirectory($paymentProofsDir, 0755, true);
             }
 

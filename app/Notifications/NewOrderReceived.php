@@ -39,14 +39,15 @@ class NewOrderReceived extends Notification
         if (is_numeric($this->order)) {
             return \App\Models\Order::with('buyer')->findOrFail($this->order);
         }
-        
+
         // If order is already loaded with relationships, use it
         if ($this->order && $this->order->relationLoaded('buyer')) {
             return $this->order;
         }
-        
+
         // Otherwise reload with relationships (for queued notifications)
         $orderId = $this->order->id ?? $this->order;
+
         return \App\Models\Order::with('buyer')->findOrFail($orderId);
     }
 
@@ -56,7 +57,7 @@ class NewOrderReceived extends Notification
     public function toMail(object $notifiable): MailMessage
     {
         $order = $this->getOrder();
-        
+
         return (new MailMessage)
             ->subject('New Order Received - Order #'.$order->id)
             ->greeting('Hello '.$notifiable->name.'!')
@@ -76,7 +77,7 @@ class NewOrderReceived extends Notification
     public function toArray(object $notifiable): array
     {
         $order = $this->getOrder();
-        
+
         return [
             'title' => 'New Order Received',
             'message' => 'You have received a new order #'.$order->id.' from '.($order->buyer->name ?? 'Customer').'. Total: ₱'.number_format($order->total_amount, 2),

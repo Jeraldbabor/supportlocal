@@ -104,7 +104,7 @@ class ContactMessageController extends Controller
             'admin_notes' => $validated['admin_notes'] ?? $contactMessage->admin_notes,
         ]);
 
-        if ($validated['status'] === ContactMessage::STATUS_READ && !$contactMessage->read_at) {
+        if ($validated['status'] === ContactMessage::STATUS_READ && ! $contactMessage->read_at) {
             $contactMessage->markAsRead();
         }
 
@@ -122,7 +122,7 @@ class ContactMessageController extends Controller
 
         try {
             $admin = Auth::user();
-            
+
             // Send the email
             Mail::to($contactMessage->email)
                 ->send(new ContactMessageReply(
@@ -139,7 +139,7 @@ class ContactMessageController extends Controller
             return back()->with('success', 'Reply email sent successfully!');
         } catch (\Exception $e) {
             return back()->withErrors([
-                'reply' => 'Failed to send email: ' . $e->getMessage(),
+                'reply' => 'Failed to send email: '.$e->getMessage(),
             ]);
         }
     }

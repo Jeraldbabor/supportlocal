@@ -257,7 +257,7 @@ class SellerApplicationController extends Controller
         }
 
         $filePath = Storage::disk('private')->path($path);
-        
+
         // Check if file exists
         if (! file_exists($filePath)) {
             abort(404);

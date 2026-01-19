@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
 class PageContent extends Model
 {
@@ -13,20 +13,25 @@ class PageContent extends Model
      * Page type constants
      */
     const PAGE_TYPE_ABOUT = 'about';
+
     const PAGE_TYPE_CONTACT = 'contact';
 
     /**
      * Section constants for About page
      */
     const SECTION_MISSION = 'mission';
+
     const SECTION_VALUES = 'values';
+
     const SECTION_STORY = 'story';
+
     const SECTION_JOIN_US = 'join_us';
 
     /**
      * Section constants for Contact page
      */
     const SECTION_CONTACT_INFO = 'contact_info';
+
     const SECTION_FAQ = 'faq';
 
     /**

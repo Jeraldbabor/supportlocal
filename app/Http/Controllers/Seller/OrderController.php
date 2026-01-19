@@ -6,8 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\Product;
 use App\Notifications\OrderStatusUpdated;
-use App\Notifications\PaymentVerified;
 use App\Notifications\PaymentRejected;
+use App\Notifications\PaymentVerified;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -283,7 +283,7 @@ class OrderController extends Controller
         }
 
         // Check if order can be completed (must be confirmed or shipped)
-        if (!in_array($order->status, [Order::STATUS_CONFIRMED, Order::STATUS_SHIPPED])) {
+        if (! in_array($order->status, [Order::STATUS_CONFIRMED, Order::STATUS_SHIPPED])) {
             return response()->json([
                 'success' => false,
                 'message' => 'Order must be confirmed or shipped before it can be completed.',

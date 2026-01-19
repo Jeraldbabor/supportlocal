@@ -122,7 +122,7 @@ class ProductController extends Controller
         if ($request->hasFile('images')) {
             // Ensure storage directory exists
             $productsDir = storage_path('app/public/products');
-            if (!File::exists($productsDir)) {
+            if (! File::exists($productsDir)) {
                 File::makeDirectory($productsDir, 0755, true);
             }
 

@@ -14,7 +14,7 @@ return [
     |
     */
 
-    'default' => env('MAIL_MAILER', 'resend'),
+    'default' => env('MAIL_MAILER', 'smtp'),
 
     /*
     |--------------------------------------------------------------------------
@@ -29,8 +29,8 @@ return [
     | when delivering an email. You may specify which one you're using for
     | your mailers below. You may also add additional mailers if needed.
     |
-    | Supported: "smtp", "sendmail", "mailgun", "ses", "ses-v2",
-    |            "postmark", "resend", "log", "array",
+    | Supported: "smtp", "sendmail", "ses", "ses-v2",
+    |            "postmark", "log", "array",
     |            "failover", "roundrobin"
     |
     */
@@ -50,10 +50,6 @@ return [
             'local_domain' => env('MAIL_EHLO_DOMAIN', parse_url(env('APP_URL', 'http://localhost'), PHP_URL_HOST)),
         ],
 
-        'mailgun' => [
-            'transport' => 'mailgun',
-        ],
-
         'ses' => [
             'transport' => 'ses',
         ],
@@ -64,10 +60,6 @@ return [
             // 'client' => [
             //     'timeout' => 5,
             // ],
-        ],
-
-        'resend' => [
-            'transport' => 'resend',
         ],
 
         'sendmail' => [

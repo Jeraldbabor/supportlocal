@@ -225,6 +225,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         // Database Backup Routes (Admin only)
         Route::post('/admin/database/backup', function () {
             Artisan::call('db:backup', ['--retention' => 7]);
+
             return redirect()->back()->with('success', 'Database backup initiated successfully.');
         })->name('admin.database.backup');
 
@@ -477,21 +478,21 @@ Route::get('/images/{path}', function ($path) {
     try {
         // Decode the path in case it's URL encoded (handles both encoded and unencoded)
         $decodedPath = urldecode($path);
-        
+
         // Remove any leading slashes
         $decodedPath = ltrim($decodedPath, '/');
-        
+
         // Ensure storage directory exists
         $storageBase = storage_path('app/public');
-        if (!is_dir($storageBase)) {
+        if (! is_dir($storageBase)) {
             \Illuminate\Support\Facades\File::makeDirectory($storageBase, 0755, true);
         }
-        
+
         $fullPath = $storageBase.'/'.$decodedPath;
 
         // Security: prevent directory traversal
         // First check if the file exists at the expected location
-        if (!file_exists($fullPath)) {
+        if (! file_exists($fullPath)) {
             // Return placeholder image instead of 404 for better UX
             $placeholderPath = public_path('placeholder.jpg');
             if (file_exists($placeholderPath)) {
