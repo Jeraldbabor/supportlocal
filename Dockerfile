@@ -23,6 +23,9 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 WORKDIR /app
 
+# Cache bust - change this value to force rebuild
+ARG CACHEBUST=2
+
 # Copy composer files and install PHP dependencies
 COPY composer.json composer.lock ./
 RUN composer install --no-dev --optimize-autoloader --no-scripts --no-interaction
