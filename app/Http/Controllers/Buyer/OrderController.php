@@ -195,32 +195,21 @@ class OrderController extends Controller
 
                 $createdOrders[] = $order;
 
-                // Notify seller of new order (queue the notification to avoid blocking)
+                // Notify seller of new order
                 $seller = User::find($sellerId);
                 if ($seller) {
                     // Load the buyer relationship for the notification
                     $order->load('buyer');
 
                     try {
-                        // Queue the notification instead of sending synchronously
-                        $seller->notify((new NewOrderReceived($order))->onQueue('notifications'));
+                        $seller->notify(new NewOrderReceived($order));
                     } catch (\Exception $e) {
-                        // If queuing fails, log but don't block order creation
-                        Log::warning('Failed to queue order notification', [
+                        // Log but don't block order creation if notification fails
+                        Log::error('Failed to send order notification', [
                             'order_id' => $order->id,
                             'seller_id' => $sellerId,
                             'error' => $e->getMessage(),
                         ]);
-                        // Fallback to synchronous notification if queue fails
-                        try {
-                            $seller->notify(new NewOrderReceived($order));
-                        } catch (\Exception $e2) {
-                            Log::error('Failed to send order notification synchronously', [
-                                'order_id' => $order->id,
-                                'seller_id' => $sellerId,
-                                'error' => $e2->getMessage(),
-                            ]);
-                        }
                     }
                 }
             }
