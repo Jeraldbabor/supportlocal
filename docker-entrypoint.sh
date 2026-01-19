@@ -16,7 +16,7 @@ php artisan migrate --force
 echo "Creating storage link..."
 php artisan storage:link || true
 
-# Use printf to ensure PORT is treated as integer
-PORT_NUM=$(printf '%d' "${PORT:-8080}")
-echo "Starting server on port $PORT_NUM..."
-exec php artisan serve --host=0.0.0.0 --port="$PORT_NUM"
+# Use PHP built-in server directly (avoids Laravel's port type issue)
+PORT_NUM=${PORT:-8080}
+echo "Starting PHP server on port $PORT_NUM..."
+exec php -S 0.0.0.0:$PORT_NUM -t /app/public /app/public/index.php
