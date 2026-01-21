@@ -30,7 +30,7 @@
             }
         </style>
 
-        <title inertia>{{ config('APP_NAME', 'Laravel') }}</title>
+        <title inertia>{{ config('app.name', 'Laravel') }}</title>
 
         <!-- CSRF Token -->
         <meta name="csrf-token" content="{{ csrf_token() }}">
