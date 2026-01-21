@@ -278,9 +278,7 @@ class PublicController extends Controller
             'id' => $product->id,
             'name' => $product->name,
             'price' => (float) $product->price,
-            'images' => $product->images ? array_map(function ($img) {
-                return '/images/'.$img;
-            }, $product->images) : ['/placeholder.jpg', '/placeholder.jpg', '/placeholder.jpg'],
+            'images' => $product->image_urls ?: ['/placeholder.jpg'],
             'artisan' => $product->seller->name ?? 'Unknown Artisan',
             'artisan_id' => $product->seller_id,
             'artisan_image' => $product->seller->avatar_url,
@@ -311,7 +309,7 @@ class PublicController extends Controller
                     'id' => $relatedProduct->id,
                     'name' => $relatedProduct->name,
                     'price' => (float) $relatedProduct->price,
-                    'image' => $relatedProduct->primary_image ? '/images/'.$relatedProduct->primary_image : '/placeholder.jpg',
+                    'image' => $relatedProduct->primary_image ?: '/placeholder.jpg',
                     'artisan' => $relatedProduct->seller->name ?? 'Unknown Artisan',
                     'artisan_image' => $relatedProduct->seller->avatar_url,
                     'average_rating' => $relatedProduct->average_rating ? (float) $relatedProduct->average_rating : null,

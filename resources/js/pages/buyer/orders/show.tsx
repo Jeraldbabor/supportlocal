@@ -51,9 +51,7 @@ export default function OrderShow({ order }: OrderShowProps) {
     const [uploadError, setUploadError] = useState('');
     const [uploadSuccess, setUploadSuccess] = useState(false);
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
-    const [preview, setPreview] = useState<string | null>(
-        order.payment_proof ? (order.payment_proof.startsWith('http') ? order.payment_proof : `/images/${order.payment_proof}`) : null,
-    );
+    const [preview, setPreview] = useState<string | null>(order.payment_proof_url || null);
 
     const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -361,9 +359,7 @@ export default function OrderShow({ order }: OrderShowProps) {
                                 {item.product_image ? (
                                     <img
                                         src={
-                                            item.product_image.startsWith('http') || item.product_image.startsWith('/')
-                                                ? item.product_image
-                                                : `/images/${item.product_image}`
+                                            item.product_image_url || item.product_image
                                         }
                                         alt={item.product_name}
                                         className="h-16 w-16 flex-shrink-0 self-center rounded-lg object-cover sm:h-20 sm:w-20 sm:self-auto"
@@ -475,7 +471,7 @@ export default function OrderShow({ order }: OrderShowProps) {
                                     <p className="mb-2 text-xs font-medium text-gray-700 sm:text-sm">Uploaded Payment Proof:</p>
                                     <div className="flex justify-center">
                                         <img
-                                            src={order.payment_proof.startsWith('http') ? order.payment_proof : `/images/${order.payment_proof}`}
+                                            src={order.payment_proof_url || order.payment_proof}
                                             alt="Payment proof"
                                             className="h-auto max-h-64 w-full max-w-md rounded-lg border border-gray-200 object-contain shadow-sm sm:max-h-96"
                                             onError={(e) => {

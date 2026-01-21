@@ -214,10 +214,8 @@ class CategoryController extends Controller
         // Handle image upload
         if ($request->hasFile('image')) {
             // Delete old image
-            if ($category->image && Storage::disk('public')->exists($category->image)) {
-                Storage::disk('public')->delete($category->image);
-            }
-            $validated['image'] = $request->file('image')->store('categories', 'public');
+            \App\Helpers\ImageHelper::delete($category->image);
+            $validated['image'] = \App\Helpers\ImageHelper::store($request->file('image'), 'categories');
         }
 
         $category->update($validated);
@@ -242,9 +240,7 @@ class CategoryController extends Controller
         }
 
         // Delete image if exists
-        if ($category->image && Storage::disk('public')->exists($category->image)) {
-            Storage::disk('public')->delete($category->image);
-        }
+        \App\Helpers\ImageHelper::delete($category->image);
 
         $category->delete();
 

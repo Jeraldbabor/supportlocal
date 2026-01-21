@@ -268,15 +268,11 @@ class ProductController extends Controller
         // Delete product images
         if ($product->images) {
             foreach ($product->images as $image) {
-                if (Storage::disk('public')->exists($image)) {
-                    Storage::disk('public')->delete($image);
-                }
+                \App\Helpers\ImageHelper::delete($image);
             }
         }
 
-        if ($product->featured_image && Storage::disk('public')->exists($product->featured_image)) {
-            Storage::disk('public')->delete($product->featured_image);
-        }
+        \App\Helpers\ImageHelper::delete($product->featured_image);
 
         $product->delete();
 
@@ -346,15 +342,11 @@ class ProductController extends Controller
             // Delete product images
             if ($product->images) {
                 foreach ($product->images as $image) {
-                    if (Storage::disk('public')->exists($image)) {
-                        Storage::disk('public')->delete($image);
-                    }
+                    \App\Helpers\ImageHelper::delete($image);
                 }
             }
 
-            if ($product->featured_image && Storage::disk('public')->exists($product->featured_image)) {
-                Storage::disk('public')->delete($product->featured_image);
-            }
+            \App\Helpers\ImageHelper::delete($product->featured_image);
 
             $product->delete();
         }

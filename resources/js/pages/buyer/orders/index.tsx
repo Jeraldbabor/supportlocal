@@ -224,9 +224,7 @@ export default function Orders({ orders }: OrdersIndexProps) {
                                                 {item.product_image ? (
                                                     <img
                                                         src={
-                                                            item.product_image.startsWith('http') || item.product_image.startsWith('/')
-                                                                ? item.product_image
-                                                                : `/images/${item.product_image}`
+                                                            item.product_image_url || item.product_image
                                                         }
                                                         alt={item.product_name}
                                                         className="h-16 w-16 rounded-lg object-cover"

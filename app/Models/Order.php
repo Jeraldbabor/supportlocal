@@ -108,6 +108,25 @@ class Order extends Model
     ];
 
     /**
+     * The accessors to append to the model's array form.
+     */
+    protected $appends = [
+        'payment_proof_url',
+    ];
+
+    /**
+     * Get the payment proof URL.
+     */
+    public function getPaymentProofUrlAttribute(): ?string
+    {
+        if (!$this->payment_proof) {
+            return null;
+        }
+
+        return \App\Helpers\ImageHelper::url($this->payment_proof);
+    }
+
+    /**
      * Get the buyer that owns the order.
      */
     public function buyer(): BelongsTo

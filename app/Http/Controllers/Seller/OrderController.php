@@ -407,9 +407,7 @@ class OrderController extends Controller
 
         try {
             // Delete payment proof
-            if ($order->payment_proof) {
-                Storage::disk('public')->delete($order->payment_proof);
-            }
+            \App\Helpers\ImageHelper::delete($order->payment_proof);
 
             $order->update([
                 'payment_status' => Order::PAYMENT_FAILED,
