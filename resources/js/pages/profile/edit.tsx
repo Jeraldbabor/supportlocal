@@ -113,7 +113,10 @@ export default function EditProfile() {
                 router.reload({ only: ['user'] });
             },
             onError: (errors) => {
-                console.error('Avatar upload error:', errors);
+                console.error('Avatar upload error:', JSON.stringify(errors, null, 2));
+                // Show the actual error to user
+                const errorMessage = errors.avatar || Object.values(errors)[0] || 'Failed to upload avatar. Please try again.';
+                alert(errorMessage);
                 resetAvatar();
                 if (fileInputRef.current) {
                     fileInputRef.current.value = '';

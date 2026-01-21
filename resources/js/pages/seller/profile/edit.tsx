@@ -72,6 +72,13 @@ export default function SellerProfileEdit() {
                     setSelectedAvatar(null);
                     setPreviewUrl(null);
                 },
+                onError: (errors) => {
+                    console.error('Avatar upload error:', JSON.stringify(errors, null, 2));
+                    const errorMessage = errors.avatar || Object.values(errors)[0] || 'Failed to upload avatar. Please try again.';
+                    alert(errorMessage);
+                    setSelectedAvatar(null);
+                    setPreviewUrl(null);
+                },
             });
         }
     };
