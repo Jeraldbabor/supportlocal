@@ -451,11 +451,7 @@ export default function ArtisanProfile({ artisan, products, ratings, filters }: 
                                         <div className="relative aspect-square overflow-hidden bg-gray-100">
                                             {product.primary_image ? (
                                                 <img
-                                                    src={
-                                                        product.primary_image.startsWith('http')
-                                                            ? product.primary_image
-                                                            : `/images/${product.primary_image}`
-                                                    }
+                                                    src={product.primary_image}
                                                     alt={product.name}
                                                     className="h-full w-full object-cover transition-transform group-hover:scale-105"
                                                     onError={(e) => {

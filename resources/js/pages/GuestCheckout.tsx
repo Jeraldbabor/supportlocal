@@ -132,15 +132,7 @@ export default function GuestCheckout() {
                                     <div key={item.id} className="flex items-center gap-4">
                                         <div className="h-16 w-16 overflow-hidden rounded-lg bg-gray-100">
                                             {item.primary_image ? (
-                                                <img
-                                                    src={
-                                                        item.primary_image.startsWith('http') || item.primary_image.startsWith('/')
-                                                            ? item.primary_image
-                                                            : `/images/${item.primary_image}`
-                                                    }
-                                                    alt={item.name}
-                                                    className="h-full w-full object-cover"
-                                                />
+                                                <img src={item.primary_image} alt={item.name} className="h-full w-full object-cover" />
                                             ) : (
                                                 <div className="flex h-full w-full items-center justify-center">
                                                     <ShoppingBag className="h-6 w-6 text-gray-400" />

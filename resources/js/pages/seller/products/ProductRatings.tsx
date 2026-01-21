@@ -192,17 +192,9 @@ export default function ProductRatings({ product, ratings, distribution, summary
                         Back to Products
                     </Link>
                     <div className="flex items-start gap-4">
-                        {(product.primary_image || (product.images && product.images.length > 0)) && (
+                        {(product.primary_image || product.image_urls?.length) && (
                             <img
-                                src={
-                                    product.primary_image
-                                        ? product.primary_image.startsWith('http')
-                                            ? product.primary_image
-                                            : `/images/${product.primary_image}`
-                                        : product.images![0].startsWith('http')
-                                          ? product.images![0]
-                                          : `/images/${product.images![0]}`
-                                }
+                                src={product.primary_image || product.image_urls?.[0] || '/placeholder.svg'}
                                 alt={product.name}
                                 className="h-20 w-20 rounded-lg object-cover"
                                 onError={(e) => {

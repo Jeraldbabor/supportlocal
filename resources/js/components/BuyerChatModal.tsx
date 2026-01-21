@@ -277,11 +277,11 @@ export default function BuyerChatModal({ conversationId, currentUserId, onClose,
                                                     : 'rounded-bl-sm border border-gray-200 bg-white'
                                             }`}
                                         >
-                                            {message.image && (
+                                            {message.image_url && (
                                                 <div className="mb-2">
-                                                    <a href={`/images/${message.image}`} target="_blank" rel="noopener noreferrer" className="block">
+                                                    <a href={message.image_url} target="_blank" rel="noopener noreferrer" className="block">
                                                         <img
-                                                            src={`/images/${message.image}`}
+                                                            src={message.image_url}
                                                             alt="Uploaded image"
                                                             className="max-h-48 max-w-xs cursor-pointer rounded-lg object-cover transition-opacity hover:opacity-90"
                                                         />
