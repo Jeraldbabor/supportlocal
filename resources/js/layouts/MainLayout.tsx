@@ -100,9 +100,9 @@ export default function MainLayout({ children, title }: MainLayoutProps) {
     ];
 
     return (
-        <div className="min-h-screen overflow-x-hidden bg-background">
+        <div className="min-h-screen overflow-x-hidden bg-white" style={{ colorScheme: 'light' }}>
             {/* Navigation Header */}
-            <header className="sticky top-0 z-50 w-full border-b border-gray-200/80 bg-white/95 shadow-sm backdrop-blur-sm">
+            <header className="sticky top-0 z-50 w-full border-b border-gray-200 bg-white shadow-sm">
                 <nav className="mx-auto w-full max-w-7xl px-3 sm:px-4 md:px-6 lg:px-8" role="navigation" aria-label="Main navigation">
                     <div className="flex h-14 items-center justify-between sm:h-16">
                         {/* Logo */}
@@ -237,7 +237,7 @@ export default function MainLayout({ children, title }: MainLayoutProps) {
                                     {/* User Dropdown Menu */}
                                     {isUserMenuOpen && (
                                         <div
-                                            className="absolute top-full right-0 z-50 mt-3 w-56 rounded-xl border border-gray-200/80 bg-white/95 py-2 shadow-xl ring-1 ring-black/5 backdrop-blur-sm"
+                                            className="absolute top-full right-0 z-50 mt-3 w-56 rounded-xl border border-gray-200 bg-white py-2 shadow-xl ring-1 ring-black/5"
                                             role="menu"
                                             aria-orientation="vertical"
                                         >
@@ -322,7 +322,7 @@ export default function MainLayout({ children, title }: MainLayoutProps) {
                         }`}
                         ref={mobileMenuRef}
                     >
-                        <div className="border-t border-gray-200/80 bg-white/95 px-3 py-3 shadow-lg backdrop-blur-sm sm:px-4 sm:py-4">
+                        <div className="border-t border-gray-200 bg-white px-3 py-3 shadow-lg sm:px-4 sm:py-4">
                             <div className="space-y-1.5 sm:space-y-2">
                                 {navigation.map((item) => {
                                     const Icon = item.icon;
@@ -408,15 +408,15 @@ export default function MainLayout({ children, title }: MainLayoutProps) {
 
             {/* Page Title */}
             {title && (
-                <div className="bg-gray-50 py-4 sm:py-6 md:py-8">
+                <div className="bg-slate-50 py-4 sm:py-6 md:py-8">
                     <div className="mx-auto w-full max-w-7xl px-3 sm:px-4 md:px-6 lg:px-8">
-                        <h1 className="text-xl font-bold text-gray-900 sm:text-2xl md:text-3xl">{title}</h1>
+                        <h1 className="text-xl font-bold text-slate-900 sm:text-2xl md:text-3xl">{title}</h1>
                     </div>
                 </div>
             )}
 
             {/* Main Content */}
-            <main className="flex-1 overflow-x-hidden">{children}</main>
+            <main className="flex-1 overflow-x-hidden bg-white">{children}</main>
 
             {/* Footer */}
             <footer className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white">

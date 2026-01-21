@@ -3,6 +3,7 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes">
+        <meta name="color-scheme" content="light">
 
         {{-- Inline script to detect system dark mode preference and apply it immediately --}}
         <script>
@@ -23,6 +24,7 @@
         <style>
             html {
                 background-color: oklch(1 0 0);
+                color-scheme: light;
             }
 
             html.dark {
