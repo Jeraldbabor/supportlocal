@@ -68,15 +68,15 @@ export default function PageContentIndex() {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Page Content Management" />
-            <div className="flex flex-col gap-6">
-                <div className="flex items-center justify-between">
+            <div className="flex flex-col gap-4 p-3 sm:gap-6 sm:p-4" style={{ colorScheme: 'light' }}>
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                     <div>
-                        <h1 className="text-3xl font-bold tracking-tight">Page Content Management</h1>
-                        <p className="text-muted-foreground">Customize your About and Contact pages</p>
+                        <h1 className="text-xl font-bold tracking-tight text-gray-900 sm:text-2xl lg:text-3xl">Page Content Management</h1>
+                        <p className="text-sm text-gray-500">Customize your About and Contact pages</p>
                     </div>
                     <Link
                         href={`/admin/page-content/edit?page=${currentPage}`}
-                        className="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-primary/90"
+                        className="inline-flex items-center justify-center gap-2 rounded-md bg-orange-500 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-orange-600 sm:w-auto"
                     >
                         <Plus className="h-4 w-4" />
                         Add Content
@@ -84,24 +84,24 @@ export default function PageContentIndex() {
                 </div>
 
                 <Tabs value={currentPage} onValueChange={handlePageChange} className="w-full">
-                    <TabsList>
-                        <TabsTrigger value="about">About Page</TabsTrigger>
-                        <TabsTrigger value="contact">Contact Page</TabsTrigger>
+                    <TabsList className="bg-gray-100">
+                        <TabsTrigger value="about" className="data-[state=active]:bg-white data-[state=active]:text-gray-900">About Page</TabsTrigger>
+                        <TabsTrigger value="contact" className="data-[state=active]:bg-white data-[state=active]:text-gray-900">Contact Page</TabsTrigger>
                     </TabsList>
 
-                    <TabsContent value="about" className="space-y-4">
+                    <TabsContent value="about" className="mt-4 space-y-4">
                         <Card>
                             <CardHeader>
-                                <CardTitle>About Page Content</CardTitle>
+                                <CardTitle className="text-base text-gray-900 sm:text-lg">About Page Content</CardTitle>
                             </CardHeader>
                             <CardContent>
                                 {contents.length === 0 ? (
-                                    <div className="py-8 text-center text-muted-foreground">
-                                        <FileText className="mx-auto mb-4 h-12 w-12 opacity-50" />
-                                        <p>No content found for the About page.</p>
+                                    <div className="py-8 text-center">
+                                        <FileText className="mx-auto mb-4 h-12 w-12" style={{ color: '#9ca3af' }} />
+                                        <p className="text-gray-500">No content found for the About page.</p>
                                         <Link
                                             href="/admin/page-content/edit?page=about"
-                                            className="mt-4 inline-flex items-center gap-2 text-primary hover:underline"
+                                            className="mt-4 inline-flex items-center gap-2 text-orange-600 hover:underline"
                                         >
                                             <Plus className="h-4 w-4" />
                                             Add your first content section
@@ -111,22 +111,22 @@ export default function PageContentIndex() {
                                     <div className="space-y-6">
                                         {Object.entries(groupedContents).map(([section, sectionContents]) => (
                                             <div key={section} className="space-y-2">
-                                                <h3 className="text-lg font-semibold">{getSectionDisplayName(section)}</h3>
+                                                <h3 className="text-base font-semibold text-gray-900 sm:text-lg">{getSectionDisplayName(section)}</h3>
                                                 <div className="space-y-2">
                                                     {sectionContents.map((content) => (
-                                                        <div key={content.id} className="flex items-center justify-between rounded-lg border p-4">
+                                                        <div key={content.id} className="flex flex-col gap-3 rounded-lg border border-gray-200 bg-white p-3 sm:flex-row sm:items-center sm:justify-between sm:p-4">
                                                             <div className="flex-1">
-                                                                <div className="flex items-center gap-2">
-                                                                    <h4 className="font-medium">{content.title || 'Untitled'}</h4>
+                                                                <div className="flex flex-wrap items-center gap-2">
+                                                                    <h4 className="font-medium text-gray-900">{content.title || 'Untitled'}</h4>
                                                                     {content.is_active ? (
-                                                                        <Badge variant="default">Active</Badge>
+                                                                        <Badge className="bg-green-100 text-green-800">Active</Badge>
                                                                     ) : (
-                                                                        <Badge variant="secondary">Inactive</Badge>
+                                                                        <Badge className="bg-gray-100 text-gray-800">Inactive</Badge>
                                                                     )}
-                                                                    <Badge variant="outline">Order: {content.sort_order}</Badge>
+                                                                    <Badge variant="outline" className="border-gray-300 text-gray-700">Order: {content.sort_order}</Badge>
                                                                 </div>
                                                                 {content.content && (
-                                                                    <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">
+                                                                    <p className="mt-1 line-clamp-2 text-sm text-gray-500">
                                                                         {content.content.replace(/<[^>]*>/g, '').substring(0, 100)}...
                                                                     </p>
                                                                 )}
@@ -134,7 +134,7 @@ export default function PageContentIndex() {
                                                             <div className="flex items-center gap-2">
                                                                 <Link
                                                                     href={`/admin/page-content/${content.id}/edit`}
-                                                                    className="inline-flex items-center gap-1 rounded-md px-3 py-1.5 text-sm font-medium text-primary hover:bg-primary/10"
+                                                                    className="inline-flex items-center gap-1 rounded-md px-3 py-1.5 text-sm font-medium text-orange-600 hover:bg-orange-50"
                                                                 >
                                                                     <Edit className="h-4 w-4" />
                                                                     Edit
@@ -144,7 +144,7 @@ export default function PageContentIndex() {
                                                                     size="sm"
                                                                     onClick={() => handleDelete(content.id)}
                                                                     disabled={isDeleting === content.id}
-                                                                    className="text-destructive hover:text-destructive"
+                                                                    className="text-red-600 hover:text-red-700 hover:bg-red-50"
                                                                 >
                                                                     <Trash2 className="h-4 w-4" />
                                                                 </Button>
@@ -160,23 +160,23 @@ export default function PageContentIndex() {
                         </Card>
                     </TabsContent>
 
-                    <TabsContent value="contact" className="space-y-4">
+                    <TabsContent value="contact" className="mt-4 space-y-4">
                         <Card>
                             <CardHeader>
-                                <CardTitle>Contact Page Content</CardTitle>
-                                <p className="mt-2 text-sm text-muted-foreground">
+                                <CardTitle className="text-base text-gray-900 sm:text-lg">Contact Page Content</CardTitle>
+                                <p className="mt-2 text-sm text-gray-500">
                                     Customize your contact information including email, phone, address, and business hours. Click "Edit" on the
                                     "Contact Information" section to update these details.
                                 </p>
                             </CardHeader>
                             <CardContent>
                                 {contents.length === 0 ? (
-                                    <div className="py-8 text-center text-muted-foreground">
-                                        <FileText className="mx-auto mb-4 h-12 w-12 opacity-50" />
-                                        <p>No content found for the Contact page.</p>
+                                    <div className="py-8 text-center">
+                                        <FileText className="mx-auto mb-4 h-12 w-12" style={{ color: '#9ca3af' }} />
+                                        <p className="text-gray-500">No content found for the Contact page.</p>
                                         <Link
                                             href="/admin/page-content/edit?page=contact"
-                                            className="mt-4 inline-flex items-center gap-2 text-primary hover:underline"
+                                            className="mt-4 inline-flex items-center gap-2 text-orange-600 hover:underline"
                                         >
                                             <Plus className="h-4 w-4" />
                                             Add your first content section
@@ -186,10 +186,10 @@ export default function PageContentIndex() {
                                     <div className="space-y-6">
                                         {Object.entries(groupedContents).map(([section, sectionContents]) => (
                                             <div key={section} className="space-y-2">
-                                                <div className="flex items-center justify-between">
-                                                    <h3 className="text-lg font-semibold">{getSectionDisplayName(section)}</h3>
+                                                <div className="flex flex-wrap items-center justify-between gap-2">
+                                                    <h3 className="text-base font-semibold text-gray-900 sm:text-lg">{getSectionDisplayName(section)}</h3>
                                                     {section === 'contact_info' && (
-                                                        <Badge variant="outline" className="text-xs">
+                                                        <Badge variant="outline" className="border-gray-300 text-xs text-gray-700">
                                                             Customize Contact Details
                                                         </Badge>
                                                     )}
@@ -198,30 +198,30 @@ export default function PageContentIndex() {
                                                     {sectionContents.map((content) => (
                                                         <div
                                                             key={content.id}
-                                                            className={`flex items-center justify-between rounded-lg border p-4 ${
+                                                            className={`flex flex-col gap-3 rounded-lg border p-3 sm:flex-row sm:items-center sm:justify-between sm:p-4 ${
                                                                 section === 'contact_info'
-                                                                    ? 'border-blue-200 bg-blue-50/50 dark:border-blue-800 dark:bg-blue-950/20'
-                                                                    : ''
+                                                                    ? 'border-blue-200 bg-blue-50'
+                                                                    : 'border-gray-200 bg-white'
                                                             }`}
                                                         >
                                                             <div className="flex-1">
-                                                                <div className="flex items-center gap-2">
-                                                                    <h4 className="font-medium">{content.title || 'Untitled'}</h4>
+                                                                <div className="flex flex-wrap items-center gap-2">
+                                                                    <h4 className="font-medium text-gray-900">{content.title || 'Untitled'}</h4>
                                                                     {content.is_active ? (
-                                                                        <Badge variant="default">Active</Badge>
+                                                                        <Badge className="bg-green-100 text-green-800">Active</Badge>
                                                                     ) : (
-                                                                        <Badge variant="secondary">Inactive</Badge>
+                                                                        <Badge className="bg-gray-100 text-gray-800">Inactive</Badge>
                                                                     )}
-                                                                    <Badge variant="outline">Order: {content.sort_order}</Badge>
+                                                                    <Badge variant="outline" className="border-gray-300 text-gray-700">Order: {content.sort_order}</Badge>
                                                                 </div>
                                                                 {section === 'contact_info' && (
-                                                                    <p className="mt-2 text-sm text-muted-foreground">
+                                                                    <p className="mt-2 text-sm text-gray-500">
                                                                         Click <strong>Edit</strong> to customize Email, Phone, Address, and Business
                                                                         Hours
                                                                     </p>
                                                                 )}
                                                                 {content.content && section !== 'contact_info' && (
-                                                                    <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">
+                                                                    <p className="mt-1 line-clamp-2 text-sm text-gray-500">
                                                                         {content.content.replace(/<[^>]*>/g, '').substring(0, 100)}...
                                                                     </p>
                                                                 )}
@@ -229,7 +229,7 @@ export default function PageContentIndex() {
                                                             <div className="flex items-center gap-2">
                                                                 <Link
                                                                     href={`/admin/page-content/${content.id}/edit`}
-                                                                    className="inline-flex items-center gap-1 rounded-md px-3 py-1.5 text-sm font-medium text-primary hover:bg-primary/10"
+                                                                    className="inline-flex items-center gap-1 rounded-md px-3 py-1.5 text-sm font-medium text-orange-600 hover:bg-orange-50"
                                                                 >
                                                                     <Edit className="h-4 w-4" />
                                                                     Edit
@@ -239,7 +239,7 @@ export default function PageContentIndex() {
                                                                     size="sm"
                                                                     onClick={() => handleDelete(content.id)}
                                                                     disabled={isDeleting === content.id}
-                                                                    className="text-destructive hover:text-destructive"
+                                                                    className="text-red-600 hover:text-red-700 hover:bg-red-50"
                                                                 >
                                                                     <Trash2 className="h-4 w-4" />
                                                                 </Button>

@@ -117,56 +117,56 @@ export default function SellerProfileShow() {
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Seller Profile" />
 
-            <div className="flex h-full flex-1 flex-col gap-6 overflow-x-auto rounded-xl p-4">
+            <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-3 sm:gap-6 sm:p-4" style={{ colorScheme: 'light' }}>
                 {/* Profile Header */}
-                <div className="rounded-xl border bg-gradient-to-r from-blue-50 to-indigo-50 p-6 dark:from-blue-950/20 dark:to-indigo-950/20">
-                    <div className="flex items-start justify-between">
-                        <div className="flex items-center gap-6">
+                <div className="rounded-xl border border-blue-200 bg-gradient-to-r from-blue-50 to-indigo-50 p-4 sm:p-6">
+                    <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                        <div className="flex flex-col items-center gap-4 sm:flex-row sm:items-center sm:gap-6">
                             {/* Avatar */}
                             <div className="relative">
-                                <div className="h-24 w-24 overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700">
+                                <div className="h-20 w-20 overflow-hidden rounded-full bg-gray-200 sm:h-24 sm:w-24">
                                     {user.avatar_url ? (
                                         <img src={user.avatar_url} alt={user.name} className="h-full w-full object-cover" />
                                     ) : (
                                         <div className="flex h-full w-full items-center justify-center">
-                                            <User className="h-10 w-10 text-gray-400" />
+                                            <User className="h-8 w-8 text-gray-400 sm:h-10 sm:w-10" />
                                         </div>
                                     )}
                                 </div>
                                 <Link
                                     href="/seller/profile/edit"
-                                    className="absolute -right-1 -bottom-1 rounded-full bg-blue-500 p-2 text-white transition-colors hover:bg-blue-600"
+                                    className="absolute -right-1 -bottom-1 rounded-full bg-blue-500 p-1.5 text-white transition-colors hover:bg-blue-600 sm:p-2"
                                 >
-                                    <Camera className="h-4 w-4" />
+                                    <Camera className="h-3 w-3 sm:h-4 sm:w-4" />
                                 </Link>
                             </div>
 
                             {/* Profile Info */}
-                            <div>
-                                <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">{user.name}</h1>
-                                <div className="mt-2 flex items-center gap-2">
-                                    <span className="inline-flex items-center rounded-full bg-blue-100 px-3 py-1 text-sm font-medium text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                            <div className="text-center sm:text-left">
+                                <h1 className="text-xl font-bold text-gray-900 sm:text-2xl lg:text-3xl">{user.name}</h1>
+                                <div className="mt-2 flex flex-wrap items-center justify-center gap-2 sm:justify-start">
+                                    <span className="inline-flex items-center rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-800 sm:px-3 sm:py-1 sm:text-sm">
                                         {user.role_display}
                                     </span>
                                     {user.email_verified_at && (
-                                        <span className="inline-flex items-center rounded-full bg-green-100 px-3 py-1 text-sm font-medium text-green-800 dark:bg-green-900 dark:text-green-200">
-                                            <CheckCircle className="mr-1 h-3 w-3" />
+                                        <span className="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800 sm:px-3 sm:py-1 sm:text-sm">
+                                            <CheckCircle className="mr-1 h-3 w-3" style={{ color: '#16a34a' }} />
                                             Verified
                                         </span>
                                     )}
                                 </div>
-                                <p className="mt-2 flex items-center gap-2 text-gray-600 dark:text-gray-300">
-                                    <Mail className="h-4 w-4" />
-                                    {user.email}
+                                <p className="mt-2 flex items-center justify-center gap-2 text-sm text-gray-600 sm:justify-start sm:text-base">
+                                    <Mail className="h-4 w-4" style={{ color: '#6b7280' }} />
+                                    <span className="truncate">{user.email}</span>
                                 </p>
-                                <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">Member since {user.created_at}</p>
+                                <p className="mt-1 text-xs text-gray-500 sm:text-sm">Member since {user.created_at}</p>
                             </div>
                         </div>
 
                         {/* Edit Button */}
                         <Link
                             href="/seller/profile/edit"
-                            className="inline-flex items-center gap-2 rounded-lg bg-blue-500 px-4 py-2 text-white transition-colors hover:bg-blue-600"
+                            className="inline-flex items-center justify-center gap-2 rounded-lg bg-blue-500 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-600 sm:text-base"
                         >
                             <Edit className="h-4 w-4" />
                             Edit Profile
@@ -175,53 +175,53 @@ export default function SellerProfileShow() {
                 </div>
 
                 {/* Profile Stats */}
-                <div className="grid gap-4 md:grid-cols-4">
-                    <div className="rounded-xl border bg-white p-4 dark:bg-gray-800">
-                        <div className="flex items-center gap-3">
-                            <div className="rounded-full bg-blue-100 p-2 dark:bg-blue-900">
-                                <TrendingUp className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
+                    <div className="rounded-xl border border-gray-200 bg-white p-3 sm:p-4">
+                        <div className="flex items-center gap-2 sm:gap-3">
+                            <div className="rounded-full bg-blue-100 p-1.5 sm:p-2">
+                                <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5" style={{ color: '#2563eb' }} />
                             </div>
-                            <div>
-                                <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Profile Score</p>
-                                <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{profileStats.profile_score}%</p>
+                            <div className="min-w-0 flex-1">
+                                <p className="text-xs font-medium text-gray-600 sm:text-sm">Profile Score</p>
+                                <p className="text-lg font-bold text-gray-900 sm:text-2xl">{profileStats.profile_score}%</p>
                             </div>
                         </div>
                     </div>
 
-                    <div className="rounded-xl border bg-white p-4 dark:bg-gray-800">
-                        <div className="flex items-center gap-3">
-                            <div className="rounded-full bg-green-100 p-2 dark:bg-green-900">
-                                <Target className="h-5 w-5 text-green-600 dark:text-green-400" />
+                    <div className="rounded-xl border border-gray-200 bg-white p-3 sm:p-4">
+                        <div className="flex items-center gap-2 sm:gap-3">
+                            <div className="rounded-full bg-green-100 p-1.5 sm:p-2">
+                                <Target className="h-4 w-4 sm:h-5 sm:w-5" style={{ color: '#16a34a' }} />
                             </div>
-                            <div>
-                                <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Completed Fields</p>
-                                <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                            <div className="min-w-0 flex-1">
+                                <p className="text-xs font-medium text-gray-600 sm:text-sm">Completed Fields</p>
+                                <p className="text-lg font-bold text-gray-900 sm:text-2xl">
                                     {profileStats.fields_completed}/{profileStats.total_fields}
                                 </p>
                             </div>
                         </div>
                     </div>
 
-                    <div className="rounded-xl border bg-white p-4 dark:bg-gray-800">
-                        <div className="flex items-center gap-3">
-                            <div className="rounded-full bg-purple-100 p-2 dark:bg-purple-900">
-                                <Calendar className="h-5 w-5 text-purple-600 dark:text-purple-400" />
+                    <div className="rounded-xl border border-gray-200 bg-white p-3 sm:p-4">
+                        <div className="flex items-center gap-2 sm:gap-3">
+                            <div className="rounded-full bg-purple-100 p-1.5 sm:p-2">
+                                <Calendar className="h-4 w-4 sm:h-5 sm:w-5" style={{ color: '#9333ea' }} />
                             </div>
-                            <div>
-                                <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Days as Seller</p>
-                                <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{profileStats.days_as_seller}</p>
+                            <div className="min-w-0 flex-1">
+                                <p className="text-xs font-medium text-gray-600 sm:text-sm">Days as Seller</p>
+                                <p className="text-lg font-bold text-gray-900 sm:text-2xl">{profileStats.days_as_seller}</p>
                             </div>
                         </div>
                     </div>
 
-                    <div className="rounded-xl border bg-white p-4 dark:bg-gray-800">
-                        <div className="flex items-center gap-3">
-                            <div className="rounded-full bg-yellow-100 p-2 dark:bg-yellow-900">
-                                <Star className="h-5 w-5 text-yellow-600 dark:text-yellow-400" />
+                    <div className="rounded-xl border border-gray-200 bg-white p-3 sm:p-4">
+                        <div className="flex items-center gap-2 sm:gap-3">
+                            <div className="rounded-full bg-yellow-100 p-1.5 sm:p-2">
+                                <Star className="h-4 w-4 sm:h-5 sm:w-5" style={{ color: '#ca8a04' }} />
                             </div>
-                            <div>
-                                <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Business Status</p>
-                                <p className="text-sm font-bold text-gray-900 dark:text-gray-100">
+                            <div className="min-w-0 flex-1">
+                                <p className="text-xs font-medium text-gray-600 sm:text-sm">Business Status</p>
+                                <p className="text-sm font-bold text-gray-900 sm:text-base">
                                     {profileStats.business_approved ? 'Approved' : 'Pending'}
                                 </p>
                             </div>
@@ -230,62 +230,62 @@ export default function SellerProfileShow() {
                 </div>
 
                 {/* Main Content */}
-                <div className="grid gap-6 lg:grid-cols-3">
+                <div className="grid gap-4 sm:gap-6 lg:grid-cols-3">
                     {/* Personal Information */}
                     <div className="lg:col-span-2">
-                        <div className="rounded-xl border bg-white p-6 dark:bg-gray-800">
-                            <h3 className="mb-6 text-lg font-semibold text-gray-900 dark:text-gray-100">Personal Information</h3>
+                        <div className="rounded-xl border border-gray-200 bg-white p-4 sm:p-6">
+                            <h3 className="mb-4 text-base font-semibold text-gray-900 sm:mb-6 sm:text-lg">Personal Information</h3>
 
-                            <div className="grid gap-6 md:grid-cols-2">
+                            <div className="grid gap-4 sm:gap-6 md:grid-cols-2">
                                 <div>
-                                    <label className="mb-2 block text-sm font-medium text-gray-600 dark:text-gray-300">
-                                        <Phone className="mr-2 inline h-4 w-4" />
+                                    <label className="mb-1.5 flex items-center gap-1.5 text-xs font-medium text-gray-600 sm:mb-2 sm:text-sm">
+                                        <Phone className="h-3.5 w-3.5 sm:h-4 sm:w-4" style={{ color: '#6b7280' }} />
                                         Phone Number
                                     </label>
-                                    <p className="text-gray-900 dark:text-gray-100">{user.phone_number || 'Not provided'}</p>
+                                    <p className="text-sm text-gray-900 sm:text-base">{user.phone_number || 'Not provided'}</p>
                                 </div>
 
                                 <div>
-                                    <label className="mb-2 block text-sm font-medium text-gray-600 dark:text-gray-300">
-                                        <Calendar className="mr-2 inline h-4 w-4" />
+                                    <label className="mb-1.5 flex items-center gap-1.5 text-xs font-medium text-gray-600 sm:mb-2 sm:text-sm">
+                                        <Calendar className="h-3.5 w-3.5 sm:h-4 sm:w-4" style={{ color: '#6b7280' }} />
                                         Date of Birth
                                     </label>
-                                    <p className="text-gray-900 dark:text-gray-100">{user.date_of_birth || 'Not provided'}</p>
+                                    <p className="text-sm text-gray-900 sm:text-base">{user.date_of_birth || 'Not provided'}</p>
                                 </div>
 
                                 <div className="md:col-span-2">
-                                    <label className="mb-2 block text-sm font-medium text-gray-600 dark:text-gray-300">
-                                        <MapPin className="mr-2 inline h-4 w-4" />
+                                    <label className="mb-1.5 flex items-center gap-1.5 text-xs font-medium text-gray-600 sm:mb-2 sm:text-sm">
+                                        <MapPin className="h-3.5 w-3.5 sm:h-4 sm:w-4" style={{ color: '#6b7280' }} />
                                         Address
                                     </label>
-                                    <p className="text-gray-900 dark:text-gray-100">{user.address || 'Not provided'}</p>
+                                    <p className="text-sm text-gray-900 sm:text-base">{user.address || 'Not provided'}</p>
                                 </div>
                             </div>
 
-                            <h4 className="text-md mt-8 mb-4 font-semibold text-gray-900 dark:text-gray-100">Delivery Information</h4>
-                            <div className="grid gap-6 md:grid-cols-2">
+                            <h4 className="mt-6 mb-3 text-sm font-semibold text-gray-900 sm:mt-8 sm:mb-4 sm:text-base">Delivery Information</h4>
+                            <div className="grid gap-4 sm:gap-6 md:grid-cols-2">
                                 <div>
-                                    <label className="mb-2 block text-sm font-medium text-gray-600 dark:text-gray-300">Delivery Phone</label>
-                                    <p className="text-gray-900 dark:text-gray-100">{user.delivery_phone || 'Same as primary'}</p>
+                                    <label className="mb-1.5 block text-xs font-medium text-gray-600 sm:mb-2 sm:text-sm">Delivery Phone</label>
+                                    <p className="text-sm text-gray-900 sm:text-base">{user.delivery_phone || 'Same as primary'}</p>
                                 </div>
 
                                 <div>
-                                    <label className="mb-2 block text-sm font-medium text-gray-600 dark:text-gray-300">
-                                        <CreditCard className="mr-2 inline h-4 w-4" />
+                                    <label className="mb-1.5 flex items-center gap-1.5 text-xs font-medium text-gray-600 sm:mb-2 sm:text-sm">
+                                        <CreditCard className="h-3.5 w-3.5 sm:h-4 sm:w-4" style={{ color: '#6b7280' }} />
                                         GCash Number
                                     </label>
-                                    <p className="text-gray-900 dark:text-gray-100">{user.gcash_number || 'Not provided'}</p>
+                                    <p className="text-sm text-gray-900 sm:text-base">{user.gcash_number || 'Not provided'}</p>
                                 </div>
 
                                 <div className="md:col-span-2">
-                                    <label className="mb-2 block text-sm font-medium text-gray-600 dark:text-gray-300">Delivery Address</label>
-                                    <p className="text-gray-900 dark:text-gray-100">{user.delivery_address || 'Same as primary address'}</p>
+                                    <label className="mb-1.5 block text-xs font-medium text-gray-600 sm:mb-2 sm:text-sm">Delivery Address</label>
+                                    <p className="text-sm text-gray-900 sm:text-base">{user.delivery_address || 'Same as primary address'}</p>
                                 </div>
 
                                 {user.delivery_notes && (
                                     <div className="md:col-span-2">
-                                        <label className="mb-2 block text-sm font-medium text-gray-600 dark:text-gray-300">Delivery Notes</label>
-                                        <p className="text-gray-900 dark:text-gray-100">{user.delivery_notes}</p>
+                                        <label className="mb-1.5 block text-xs font-medium text-gray-600 sm:mb-2 sm:text-sm">Delivery Notes</label>
+                                        <p className="text-sm text-gray-900 sm:text-base">{user.delivery_notes}</p>
                                     </div>
                                 )}
                             </div>
@@ -293,47 +293,47 @@ export default function SellerProfileShow() {
 
                         {/* Business Information */}
                         {sellerApplication && (
-                            <div className="mt-6 rounded-xl border bg-white p-6 dark:bg-gray-800">
-                                <div className="mb-6 flex items-center justify-between">
-                                    <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Business Information</h3>
-                                    <Link href="/seller/profile/business" className="text-sm font-medium text-blue-500 hover:text-blue-600">
+                            <div className="mt-4 rounded-xl border border-gray-200 bg-white p-4 sm:mt-6 sm:p-6">
+                                <div className="mb-4 flex flex-col gap-2 sm:mb-6 sm:flex-row sm:items-center sm:justify-between">
+                                    <h3 className="text-base font-semibold text-gray-900 sm:text-lg">Business Information</h3>
+                                    <Link href="/seller/profile/business" className="text-sm font-medium text-blue-600 hover:text-blue-700">
                                         Edit Business Info
                                     </Link>
                                 </div>
 
                                 <div className="space-y-4">
                                     <div>
-                                        <label className="mb-2 block text-sm font-medium text-gray-600 dark:text-gray-300">
-                                            <Store className="mr-2 inline h-4 w-4" />
+                                        <label className="mb-1.5 flex items-center gap-1.5 text-xs font-medium text-gray-600 sm:mb-2 sm:text-sm">
+                                            <Store className="h-3.5 w-3.5 sm:h-4 sm:w-4" style={{ color: '#6b7280' }} />
                                             Business Type
                                         </label>
-                                        <p className="text-gray-900 dark:text-gray-100">{sellerApplication.business_type}</p>
+                                        <p className="text-sm text-gray-900 sm:text-base">{sellerApplication.business_type}</p>
                                     </div>
 
                                     <div>
-                                        <label className="mb-2 block text-sm font-medium text-gray-600 dark:text-gray-300">
+                                        <label className="mb-1.5 block text-xs font-medium text-gray-600 sm:mb-2 sm:text-sm">
                                             Business Description
                                         </label>
-                                        <p className="text-gray-900 dark:text-gray-100">{sellerApplication.business_description}</p>
+                                        <p className="text-sm text-gray-900 sm:text-base">{sellerApplication.business_description}</p>
                                     </div>
 
-                                    <div className="flex items-center justify-between border-t pt-4">
+                                    <div className="flex flex-col gap-2 border-t border-gray-200 pt-4 sm:flex-row sm:items-center sm:justify-between">
                                         <div>
-                                            <p className="text-sm text-gray-600 dark:text-gray-300">Application Status</p>
+                                            <p className="text-xs text-gray-600 sm:text-sm">Application Status</p>
                                             <span
-                                                className={`inline-flex items-center rounded-full px-3 py-1 text-sm font-medium ${
+                                                className={`mt-1 inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium sm:px-3 sm:py-1 sm:text-sm ${
                                                     sellerApplication.status === 'approved'
-                                                        ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
+                                                        ? 'bg-green-100 text-green-800'
                                                         : sellerApplication.status === 'rejected'
-                                                          ? 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
-                                                          : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'
+                                                          ? 'bg-red-100 text-red-800'
+                                                          : 'bg-yellow-100 text-yellow-800'
                                                 }`}
                                             >
                                                 {sellerApplication.status.charAt(0).toUpperCase() + sellerApplication.status.slice(1)}
                                             </span>
                                         </div>
                                         {sellerApplication.reviewed_at && (
-                                            <p className="text-sm text-gray-500 dark:text-gray-400">Reviewed on {sellerApplication.reviewed_at}</p>
+                                            <p className="text-xs text-gray-500 sm:text-sm">Reviewed on {sellerApplication.reviewed_at}</p>
                                         )}
                                     </div>
                                 </div>
@@ -342,34 +342,34 @@ export default function SellerProfileShow() {
                     </div>
 
                     {/* Recent Activity */}
-                    <div className="rounded-xl border bg-white p-6 dark:bg-gray-800">
-                        <h3 className="mb-6 text-lg font-semibold text-gray-900 dark:text-gray-100">Recent Activity</h3>
+                    <div className="rounded-xl border border-gray-200 bg-white p-4 sm:p-6">
+                        <h3 className="mb-4 text-base font-semibold text-gray-900 sm:mb-6 sm:text-lg">Recent Activity</h3>
 
                         {recentActivity && recentActivity.length > 0 ? (
-                            <div className="space-y-4">
+                            <div className="space-y-3 sm:space-y-4">
                                 {recentActivity.map((activity, index) => {
                                     const IconComponent = getIconComponent(activity.icon);
                                     return (
                                         <div
                                             key={index}
-                                            className="flex items-start gap-3 border-b border-gray-100 pb-4 last:border-0 last:pb-0 dark:border-gray-700"
+                                            className="flex items-start gap-2.5 border-b border-gray-100 pb-3 last:border-0 last:pb-0 sm:gap-3 sm:pb-4"
                                         >
-                                            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900">
-                                                <IconComponent className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                                            <div className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-blue-100 sm:h-8 sm:w-8">
+                                                <IconComponent className="h-3.5 w-3.5 text-blue-600 sm:h-4 sm:w-4" />
                                             </div>
                                             <div className="min-w-0 flex-1">
-                                                <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{activity.title}</p>
-                                                <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">{activity.description}</p>
-                                                <p className="mt-1 text-xs text-gray-400 dark:text-gray-500">{activity.date}</p>
+                                                <p className="text-xs font-medium text-gray-900 sm:text-sm">{activity.title}</p>
+                                                <p className="mt-0.5 text-xs text-gray-500">{activity.description}</p>
+                                                <p className="mt-1 text-xs text-gray-400">{activity.date}</p>
                                             </div>
                                         </div>
                                     );
                                 })}
                             </div>
                         ) : (
-                            <div className="py-8 text-center">
-                                <Clock className="mx-auto mb-4 h-12 w-12 text-gray-400" />
-                                <p className="text-gray-500 dark:text-gray-400">No recent activity</p>
+                            <div className="py-6 text-center sm:py-8">
+                                <Clock className="mx-auto mb-3 h-10 w-10 sm:mb-4 sm:h-12 sm:w-12" style={{ color: '#9ca3af' }} />
+                                <p className="text-sm text-gray-500">No recent activity</p>
                             </div>
                         )}
                     </div>

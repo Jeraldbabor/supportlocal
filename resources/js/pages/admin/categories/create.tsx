@@ -49,7 +49,7 @@ export default function CategoryCreate() {
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Create Category" />
 
-            <div className="flex flex-col gap-6">
+            <div className="flex flex-col gap-4 p-3 sm:gap-6 sm:p-4" style={{ colorScheme: 'light' }}>
                 <div className="flex items-center justify-between">
                     <Link href="/admin/categories">
                         <Button variant="ghost">
@@ -59,31 +59,31 @@ export default function CategoryCreate() {
                     </Link>
                 </div>
 
-                <form onSubmit={handleSubmit} className="max-w-2xl space-y-6">
+                <form onSubmit={handleSubmit} className="max-w-2xl space-y-4 sm:space-y-6">
                     <Card>
                         <CardHeader>
-                            <CardTitle>Category Information</CardTitle>
-                            <CardDescription>Create a new product category</CardDescription>
+                            <CardTitle className="text-gray-900">Category Information</CardTitle>
+                            <CardDescription className="text-gray-500">Create a new product category</CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
                             <div className="space-y-2">
-                                <Label htmlFor="name">Category Name *</Label>
+                                <Label htmlFor="name" className="text-gray-700">Category Name *</Label>
                                 <Input id="name" name="name" required />
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="slug">Slug</Label>
+                                <Label htmlFor="slug" className="text-gray-700">Slug</Label>
                                 <Input id="slug" name="slug" placeholder="Auto-generated from name" />
-                                <p className="text-xs text-muted-foreground">Leave empty to auto-generate from name</p>
+                                <p className="text-xs text-gray-500">Leave empty to auto-generate from name</p>
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="description">Description</Label>
+                                <Label htmlFor="description" className="text-gray-700">Description</Label>
                                 <Textarea id="description" name="description" rows={4} />
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="parent_id">Parent Category</Label>
+                                <Label htmlFor="parent_id" className="text-gray-700">Parent Category</Label>
                                 <Select name="parent_id" defaultValue="none">
                                     <SelectTrigger>
                                         <SelectValue placeholder="Select parent category (optional)" />
@@ -101,51 +101,51 @@ export default function CategoryCreate() {
 
                             <div className="grid gap-4 md:grid-cols-2">
                                 <div className="space-y-2">
-                                    <Label htmlFor="icon">Icon</Label>
+                                    <Label htmlFor="icon" className="text-gray-700">Icon</Label>
                                     <Input id="icon" name="icon" placeholder="e.g., package, shopping-bag" />
                                 </div>
                                 <div className="space-y-2">
-                                    <Label htmlFor="color">Color</Label>
+                                    <Label htmlFor="color" className="text-gray-700">Color</Label>
                                     <Input id="color" name="color" placeholder="e.g., #FF5733, blue" />
                                 </div>
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="sort_order">Sort Order</Label>
+                                <Label htmlFor="sort_order" className="text-gray-700">Sort Order</Label>
                                 <Input id="sort_order" name="sort_order" type="number" defaultValue="0" />
                             </div>
 
                             <div className="flex items-center space-x-2">
                                 <Switch id="is_active" name="is_active" defaultChecked />
-                                <Label htmlFor="is_active">Active</Label>
+                                <Label htmlFor="is_active" className="text-gray-700">Active</Label>
                             </div>
                         </CardContent>
                     </Card>
 
                     <Card>
                         <CardHeader>
-                            <CardTitle>SEO Settings</CardTitle>
-                            <CardDescription>Search engine optimization settings</CardDescription>
+                            <CardTitle className="text-gray-900">SEO Settings</CardTitle>
+                            <CardDescription className="text-gray-500">Search engine optimization settings</CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
                             <div className="space-y-2">
-                                <Label htmlFor="meta_title">Meta Title</Label>
+                                <Label htmlFor="meta_title" className="text-gray-700">Meta Title</Label>
                                 <Input id="meta_title" name="meta_title" />
                             </div>
                             <div className="space-y-2">
-                                <Label htmlFor="meta_description">Meta Description</Label>
+                                <Label htmlFor="meta_description" className="text-gray-700">Meta Description</Label>
                                 <Textarea id="meta_description" name="meta_description" rows={3} />
                             </div>
                         </CardContent>
                     </Card>
 
-                    <div className="flex gap-2">
-                        <Button type="submit" disabled={isSubmitting}>
+                    <div className="flex flex-col gap-2 sm:flex-row">
+                        <Button type="submit" disabled={isSubmitting} className="flex-1 sm:flex-initial">
                             <Save className="mr-2 h-4 w-4" />
                             {isSubmitting ? 'Creating...' : 'Create Category'}
                         </Button>
                         <Link href="/admin/categories">
-                            <Button type="button" variant="outline">
+                            <Button type="button" variant="outline" className="w-full sm:w-auto">
                                 Cancel
                             </Button>
                         </Link>

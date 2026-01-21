@@ -96,21 +96,21 @@ export default function SellerProfileEdit() {
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Edit Profile" />
 
-            <div className="flex h-full flex-1 flex-col gap-6 overflow-x-auto rounded-xl p-4">
+            <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-3 sm:gap-6 sm:p-4" style={{ colorScheme: 'light' }}>
                 {/* Header */}
-                <div className="rounded-xl border bg-gradient-to-r from-blue-50 to-indigo-50 p-6 dark:from-blue-950/20 dark:to-indigo-950/20">
-                    <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Edit Profile</h1>
-                    <p className="mt-2 text-gray-600 dark:text-gray-300">Update your personal information and preferences</p>
+                <div className="rounded-xl border border-blue-200 bg-gradient-to-r from-blue-50 to-indigo-50 p-4 sm:p-6">
+                    <h1 className="text-xl font-bold text-gray-900 sm:text-2xl">Edit Profile</h1>
+                    <p className="mt-1 text-sm text-gray-600 sm:mt-2 sm:text-base">Update your personal information and preferences</p>
                 </div>
 
                 {/* Profile Completeness */}
-                <div className="rounded-xl border bg-white p-6 dark:bg-gray-800">
-                    <div className="mb-4 flex items-center justify-between">
-                        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Profile Completeness</h3>
-                        <span className="text-2xl font-bold text-blue-600 dark:text-blue-400">{user.profile_completeness}%</span>
+                <div className="rounded-xl border border-gray-200 bg-white p-4 sm:p-6">
+                    <div className="mb-3 flex items-center justify-between sm:mb-4">
+                        <h3 className="text-base font-semibold text-gray-900 sm:text-lg">Profile Completeness</h3>
+                        <span className="text-xl font-bold text-blue-600 sm:text-2xl">{user.profile_completeness}%</span>
                     </div>
 
-                    <div className="mb-4 h-2 w-full rounded-full bg-gray-200 dark:bg-gray-700">
+                    <div className="mb-3 h-2 w-full rounded-full bg-gray-200 sm:mb-4">
                         <div
                             className="h-2 rounded-full bg-blue-500 transition-all duration-500"
                             style={{ width: `${user.profile_completeness}%` }}
@@ -118,26 +118,26 @@ export default function SellerProfileEdit() {
                     </div>
 
                     {user.missing_fields && user.missing_fields.length > 0 && (
-                        <div className="rounded-lg bg-amber-50 p-3 dark:bg-amber-950/20">
-                            <div className="mb-2 flex items-center gap-2">
-                                <AlertTriangle className="h-4 w-4 text-amber-600 dark:text-amber-400" />
-                                <p className="text-sm font-medium text-amber-700 dark:text-amber-300">Missing Information</p>
+                        <div className="rounded-lg bg-amber-50 p-3">
+                            <div className="mb-1.5 flex items-center gap-2 sm:mb-2">
+                                <AlertTriangle className="h-4 w-4" style={{ color: '#d97706' }} />
+                                <p className="text-sm font-medium text-amber-700">Missing Information</p>
                             </div>
-                            <p className="text-sm text-amber-600 dark:text-amber-400">
+                            <p className="text-xs text-amber-600 sm:text-sm">
                                 Complete these fields to improve your profile: {user.missing_fields.join(', ')}
                             </p>
                         </div>
                     )}
                 </div>
 
-                <div className="grid gap-6 lg:grid-cols-3">
+                <div className="grid gap-4 sm:gap-6 lg:grid-cols-3">
                     {/* Avatar Upload */}
-                    <div className="rounded-xl border bg-white p-6 dark:bg-gray-800">
-                        <h3 className="mb-4 text-lg font-semibold text-gray-900 dark:text-gray-100">Profile Picture</h3>
+                    <div className="rounded-xl border border-gray-200 bg-white p-4 sm:p-6">
+                        <h3 className="mb-3 text-base font-semibold text-gray-900 sm:mb-4 sm:text-lg">Profile Picture</h3>
 
-                        <div className="flex flex-col items-center space-y-4">
+                        <div className="flex flex-col items-center space-y-3 sm:space-y-4">
                             <div className="relative">
-                                <div className="h-32 w-32 overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700">
+                                <div className="h-24 w-24 overflow-hidden rounded-full bg-gray-200 sm:h-32 sm:w-32">
                                     {previewUrl ? (
                                         <img src={previewUrl} alt="Preview" className="h-full w-full object-cover" />
                                     ) : user.avatar_url && !user.avatar_url.includes('ui-avatars.com') && !imageError ? (
@@ -149,7 +149,7 @@ export default function SellerProfileEdit() {
                                         />
                                     ) : (
                                         <div className="flex h-full w-full items-center justify-center">
-                                            <User className="h-16 w-16 text-gray-400" />
+                                            <User className="h-12 w-12 text-gray-400 sm:h-16 sm:w-16" />
                                         </div>
                                     )}
                                 </div>
@@ -168,13 +168,13 @@ export default function SellerProfileEdit() {
 
                             <input ref={fileInputRef} type="file" accept="image/*" onChange={handleAvatarSelect} className="hidden" />
 
-                            <div className="flex gap-2">
+                            <div className="flex flex-wrap justify-center gap-2">
                                 <button
                                     type="button"
                                     onClick={() => fileInputRef.current?.click()}
-                                    className="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
+                                    className="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
                                 >
-                                    <Upload className="h-4 w-4" />
+                                    <Upload className="h-4 w-4" style={{ color: '#374151' }} />
                                     Choose Photo
                                 </button>
 
@@ -191,191 +191,191 @@ export default function SellerProfileEdit() {
                                 )}
                             </div>
 
-                            <p className="text-center text-xs text-gray-500 dark:text-gray-400">JPG, PNG or GIF (max 2MB)</p>
+                            <p className="text-center text-xs text-gray-500">JPG, PNG or GIF (max 2MB)</p>
                         </div>
                     </div>
 
                     {/* Profile Form */}
                     <div className="lg:col-span-2">
-                        <form onSubmit={handleSubmit} className="space-y-6">
+                        <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
                             {/* Personal Information */}
-                            <div className="rounded-xl border bg-white p-6 dark:bg-gray-800">
-                                <h3 className="mb-6 text-lg font-semibold text-gray-900 dark:text-gray-100">Personal Information</h3>
+                            <div className="rounded-xl border border-gray-200 bg-white p-4 sm:p-6">
+                                <h3 className="mb-4 text-base font-semibold text-gray-900 sm:mb-6 sm:text-lg">Personal Information</h3>
 
-                                <div className="grid gap-6 md:grid-cols-2">
+                                <div className="grid gap-4 sm:gap-6 md:grid-cols-2">
                                     <div>
-                                        <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                            <User className="mr-2 inline h-4 w-4" />
+                                        <label className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-gray-700 sm:mb-2">
+                                            <User className="h-4 w-4" style={{ color: '#6b7280' }} />
                                             Full Name *
                                         </label>
                                         <input
                                             type="text"
                                             value={data.name}
                                             onChange={(e) => setData('name', e.target.value)}
-                                            className="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100"
+                                            className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500"
                                             required
                                         />
-                                        {errors.name && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.name}</p>}
+                                        {errors.name && <p className="mt-1 text-xs text-red-600 sm:text-sm">{errors.name}</p>}
                                     </div>
 
                                     <div>
-                                        <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                            <Mail className="mr-2 inline h-4 w-4" />
+                                        <label className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-gray-700 sm:mb-2">
+                                            <Mail className="h-4 w-4" style={{ color: '#6b7280' }} />
                                             Email Address *
                                         </label>
                                         <input
                                             type="email"
                                             value={data.email}
                                             onChange={(e) => setData('email', e.target.value)}
-                                            className="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100"
+                                            className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500"
                                             required
                                         />
-                                        {errors.email && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.email}</p>}
+                                        {errors.email && <p className="mt-1 text-xs text-red-600 sm:text-sm">{errors.email}</p>}
                                     </div>
 
                                     <div>
-                                        <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                            <Phone className="mr-2 inline h-4 w-4" />
+                                        <label className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-gray-700 sm:mb-2">
+                                            <Phone className="h-4 w-4" style={{ color: '#6b7280' }} />
                                             Phone Number *
                                         </label>
                                         <input
                                             type="tel"
                                             value={data.phone_number}
                                             onChange={(e) => setData('phone_number', e.target.value)}
-                                            className="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100"
+                                            className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500"
                                             required
                                         />
-                                        {errors.phone_number && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.phone_number}</p>}
+                                        {errors.phone_number && <p className="mt-1 text-xs text-red-600 sm:text-sm">{errors.phone_number}</p>}
                                     </div>
 
                                     <div>
-                                        <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                            <Calendar className="mr-2 inline h-4 w-4" />
+                                        <label className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-gray-700 sm:mb-2">
+                                            <Calendar className="h-4 w-4" style={{ color: '#6b7280' }} />
                                             Date of Birth
                                         </label>
                                         <input
                                             type="date"
                                             value={data.date_of_birth}
                                             onChange={(e) => setData('date_of_birth', e.target.value)}
-                                            className="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100"
+                                            className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500"
                                         />
                                         {errors.date_of_birth && (
-                                            <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.date_of_birth}</p>
+                                            <p className="mt-1 text-xs text-red-600 sm:text-sm">{errors.date_of_birth}</p>
                                         )}
                                     </div>
 
                                     <div className="md:col-span-2">
-                                        <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                            <MapPin className="mr-2 inline h-4 w-4" />
+                                        <label className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-gray-700 sm:mb-2">
+                                            <MapPin className="h-4 w-4" style={{ color: '#6b7280' }} />
                                             Address *
                                         </label>
                                         <textarea
                                             value={data.address}
                                             onChange={(e) => setData('address', e.target.value)}
                                             rows={3}
-                                            className="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100"
+                                            className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500"
                                             required
                                         />
-                                        {errors.address && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.address}</p>}
+                                        {errors.address && <p className="mt-1 text-xs text-red-600 sm:text-sm">{errors.address}</p>}
                                     </div>
                                 </div>
                             </div>
 
                             {/* Delivery & Payment Information */}
-                            <div className="rounded-xl border bg-white p-6 dark:bg-gray-800">
-                                <h3 className="mb-6 text-lg font-semibold text-gray-900 dark:text-gray-100">Delivery & Payment Information</h3>
+                            <div className="rounded-xl border border-gray-200 bg-white p-4 sm:p-6">
+                                <h3 className="mb-4 text-base font-semibold text-gray-900 sm:mb-6 sm:text-lg">Delivery & Payment Information</h3>
 
-                                <div className="grid gap-6 md:grid-cols-2">
+                                <div className="grid gap-4 sm:gap-6 md:grid-cols-2">
                                     <div>
-                                        <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                            <Phone className="mr-2 inline h-4 w-4" />
+                                        <label className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-gray-700 sm:mb-2">
+                                            <Phone className="h-4 w-4" style={{ color: '#6b7280' }} />
                                             Delivery Phone
                                         </label>
                                         <input
                                             type="tel"
                                             value={data.delivery_phone}
                                             onChange={(e) => setData('delivery_phone', e.target.value)}
-                                            className="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100"
+                                            className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500"
                                             placeholder="Leave empty to use primary phone"
                                         />
                                         {errors.delivery_phone && (
-                                            <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.delivery_phone}</p>
+                                            <p className="mt-1 text-xs text-red-600 sm:text-sm">{errors.delivery_phone}</p>
                                         )}
                                     </div>
 
                                     <div>
-                                        <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                            <CreditCard className="mr-2 inline h-4 w-4" />
+                                        <label className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-gray-700 sm:mb-2">
+                                            <CreditCard className="h-4 w-4" style={{ color: '#6b7280' }} />
                                             GCash Number
                                         </label>
                                         <input
                                             type="tel"
                                             value={data.gcash_number}
                                             onChange={(e) => setData('gcash_number', e.target.value)}
-                                            className="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100"
+                                            className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500"
                                             placeholder="09XXXXXXXXX"
                                         />
-                                        {errors.gcash_number && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.gcash_number}</p>}
+                                        {errors.gcash_number && <p className="mt-1 text-xs text-red-600 sm:text-sm">{errors.gcash_number}</p>}
                                     </div>
 
                                     <div>
-                                        <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">GCash Account Name</label>
+                                        <label className="mb-1.5 block text-sm font-medium text-gray-700 sm:mb-2">GCash Account Name</label>
                                         <input
                                             type="text"
                                             value={data.gcash_name}
                                             onChange={(e) => setData('gcash_name', e.target.value)}
-                                            className="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100"
+                                            className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500"
                                             placeholder="Name registered on GCash"
                                         />
-                                        {errors.gcash_name && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.gcash_name}</p>}
+                                        {errors.gcash_name && <p className="mt-1 text-xs text-red-600 sm:text-sm">{errors.gcash_name}</p>}
                                     </div>
 
                                     <div className="md:col-span-2">
-                                        <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                            <MapPin className="mr-2 inline h-4 w-4" />
+                                        <label className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-gray-700 sm:mb-2">
+                                            <MapPin className="h-4 w-4" style={{ color: '#6b7280' }} />
                                             Delivery Address
                                         </label>
                                         <textarea
                                             value={data.delivery_address}
                                             onChange={(e) => setData('delivery_address', e.target.value)}
                                             rows={3}
-                                            className="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100"
+                                            className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500"
                                             placeholder="Leave empty to use primary address"
                                         />
                                         {errors.delivery_address && (
-                                            <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.delivery_address}</p>
+                                            <p className="mt-1 text-xs text-red-600 sm:text-sm">{errors.delivery_address}</p>
                                         )}
                                     </div>
 
                                     <div className="md:col-span-2">
-                                        <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Delivery Notes</label>
+                                        <label className="mb-1.5 block text-sm font-medium text-gray-700 sm:mb-2">Delivery Notes</label>
                                         <textarea
                                             value={data.delivery_notes}
                                             onChange={(e) => setData('delivery_notes', e.target.value)}
                                             rows={3}
-                                            className="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100"
+                                            className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500"
                                             placeholder="Any special delivery instructions..."
                                         />
                                         {errors.delivery_notes && (
-                                            <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.delivery_notes}</p>
+                                            <p className="mt-1 text-xs text-red-600 sm:text-sm">{errors.delivery_notes}</p>
                                         )}
                                     </div>
                                 </div>
                             </div>
 
                             {/* Submit Button */}
-                            <div className="flex items-center justify-end gap-4">
+                            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end sm:gap-4">
                                 <button
                                     type="button"
                                     onClick={() => reset()}
-                                    className="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
+                                    className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 sm:w-auto"
                                 >
                                     Reset
                                 </button>
                                 <button
                                     type="submit"
                                     disabled={processing}
-                                    className="inline-flex items-center gap-2 rounded-lg bg-blue-500 px-4 py-2 text-sm font-medium text-white hover:bg-blue-600 disabled:opacity-50"
+                                    className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-blue-500 px-4 py-2 text-sm font-medium text-white hover:bg-blue-600 disabled:opacity-50 sm:w-auto"
                                 >
                                     <Save className="h-4 w-4" />
                                     {processing ? 'Saving...' : 'Save Changes'}
