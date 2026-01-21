@@ -294,10 +294,8 @@ export default function BuyerProfile({ user }: BuyerProfileProps) {
 
     const getProfilePictureUrl = () => {
         if (previewUrl) return previewUrl;
-        // Use avatar_url if available (already includes /images/ prefix for profile pictures)
+        // Use avatar_url if available (returns full R2 URL)
         if (user?.avatar_url) return user.avatar_url;
-        if (user.profile_picture) return `/images/${user.profile_picture}`;
-        if (user.avatar) return user.avatar;
         return null;
     };
 
