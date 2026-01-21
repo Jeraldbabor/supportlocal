@@ -120,8 +120,6 @@ class ProductController extends Controller
         // Handle image uploads
         $images = [];
         if ($request->hasFile('images')) {
-            // Ensure storage directory exists
-            $productsDir = storage_path('app/public/products');
             foreach ($request->file('images') as $image) {
                 try {
                     $path = \App\Helpers\ImageHelper::store($image, 'products');
@@ -224,10 +222,14 @@ class ProductController extends Controller
         if ($request->hasFile('new_images')) {
             foreach ($request->file('new_images') as $image) {
                 $path = \App\Helpers\ImageHelper::store($image, 'products');
-                $currentImages[] = $path;
+                if ($path) {
+                    $currentImages[] = $path;
+                }
             }
         }
 
+        // Filter out any false/null values from images array
+        $currentImages = array_filter($currentImages, fn ($img) => is_string($img) && !empty($img));
         $validated['images'] = array_values($currentImages);
         $validated['featured_image'] = $validated['images'][0] ?? null;
 
