@@ -226,11 +226,7 @@ export default function ShowProduct({ product }: ShowProductProps) {
                                     {product.primary_image && (
                                         <div className="relative">
                                             <img
-                                                src={
-                                                    product.primary_image.startsWith('http')
-                                                        ? product.primary_image
-                                                        : `/images/${product.primary_image}`
-                                                }
+                                                src={product.primary_image}
                                                 alt={product.name}
                                                 className="h-64 w-full rounded-lg object-cover"
                                                 onError={(e) => {
@@ -244,12 +240,12 @@ export default function ShowProduct({ product }: ShowProductProps) {
                                     )}
 
                                     {/* Additional Images */}
-                                    {product.images.length > 1 && (
+                                    {product.image_urls && product.image_urls.length > 1 && (
                                         <div className="grid grid-cols-3 gap-2">
-                                            {product.images.slice(1).filter((img): img is string => typeof img === 'string' && img.length > 0).map((image, index) => (
+                                            {product.image_urls.slice(1).map((image, index) => (
                                                 <img
                                                     key={index}
-                                                    src={image.startsWith('http') ? image : `/images/${image}`}
+                                                    src={image}
                                                     alt={`${product.name} ${index + 2}`}
                                                     className="h-20 w-full rounded-lg object-cover"
                                                     onError={(e) => {
