@@ -134,11 +134,7 @@ class ChatController extends Controller
         $product = $conversation->product ? [
             'id' => $conversation->product->id,
             'name' => $conversation->product->name,
-            'image' => $conversation->product->featured_image
-                ? '/images/'.$conversation->product->featured_image
-                : ($conversation->product->images && count($conversation->product->images) > 0
-                    ? '/images/'.$conversation->product->images[0]
-                    : null),
+            'image' => \App\Helpers\ImageHelper::url($conversation->product->featured_image),
         ] : null;
 
         return response()->json([
