@@ -64,22 +64,26 @@ export default function SellerProfileEdit() {
 
     const handleAvatarUpload = () => {
         if (selectedAvatar) {
-            router.post('/seller/profile/avatar', {
-                avatar: selectedAvatar,
-            }, {
-                forceFormData: true,
-                onSuccess: () => {
-                    setSelectedAvatar(null);
-                    setPreviewUrl(null);
+            router.post(
+                '/seller/profile/avatar',
+                {
+                    avatar: selectedAvatar,
                 },
-                onError: (errors) => {
-                    console.error('Avatar upload error:', JSON.stringify(errors, null, 2));
-                    const errorMessage = errors.avatar || Object.values(errors)[0] || 'Failed to upload avatar. Please try again.';
-                    alert(errorMessage);
-                    setSelectedAvatar(null);
-                    setPreviewUrl(null);
+                {
+                    forceFormData: true,
+                    onSuccess: () => {
+                        setSelectedAvatar(null);
+                        setPreviewUrl(null);
+                    },
+                    onError: (errors) => {
+                        console.error('Avatar upload error:', JSON.stringify(errors, null, 2));
+                        const errorMessage = errors.avatar || Object.values(errors)[0] || 'Failed to upload avatar. Please try again.';
+                        alert(errorMessage);
+                        setSelectedAvatar(null);
+                        setPreviewUrl(null);
+                    },
                 },
-            });
+            );
         }
     };
 

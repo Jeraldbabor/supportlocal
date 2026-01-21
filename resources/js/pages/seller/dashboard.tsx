@@ -775,11 +775,15 @@ export default function SellerDashboard() {
                             </div>
                             <div className="flex items-center justify-between">
                                 <span className="text-sm text-gray-600 dark:text-gray-300">Platform Fee ({revenue.commission_rate}%)</span>
-                                <span className="font-semibold text-orange-600 dark:text-orange-400">-{formatCurrency(revenue.total_commission || 0)}</span>
+                                <span className="font-semibold text-orange-600 dark:text-orange-400">
+                                    -{formatCurrency(revenue.total_commission || 0)}
+                                </span>
                             </div>
                             <div className="flex items-center justify-between border-t border-gray-200 pt-3 dark:border-gray-700">
                                 <span className="text-sm font-medium text-gray-700 dark:text-gray-200">Net Earnings</span>
-                                <span className="font-bold text-green-600 dark:text-green-400">{formatCurrency(revenue.net_total || revenue.total)}</span>
+                                <span className="font-bold text-green-600 dark:text-green-400">
+                                    {formatCurrency(revenue.net_total || revenue.total)}
+                                </span>
                             </div>
                             <div className="flex items-center justify-between">
                                 <span className="text-sm text-gray-600 dark:text-gray-300">Avg. Order Value</span>
@@ -787,7 +791,9 @@ export default function SellerDashboard() {
                             </div>
                             <div className="flex items-center justify-between">
                                 <span className="text-sm text-gray-600 dark:text-gray-300">This Week (Net)</span>
-                                <span className="font-semibold text-blue-600 dark:text-blue-400">{formatCurrency(revenue.net_this_week || revenue.this_week)}</span>
+                                <span className="font-semibold text-blue-600 dark:text-blue-400">
+                                    {formatCurrency(revenue.net_this_week || revenue.this_week)}
+                                </span>
                             </div>
                             <div className="flex items-center justify-between">
                                 <span className="text-sm text-gray-600 dark:text-gray-300">Growth (MTD)</span>

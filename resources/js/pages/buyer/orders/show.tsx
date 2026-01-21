@@ -358,9 +358,7 @@ export default function OrderShow({ order }: OrderShowProps) {
                             >
                                 {item.product_image ? (
                                     <img
-                                        src={
-                                            item.product_image_url || item.product_image
-                                        }
+                                        src={item.product_image_url || item.product_image}
                                         alt={item.product_name}
                                         className="h-16 w-16 flex-shrink-0 self-center rounded-lg object-cover sm:h-20 sm:w-20 sm:self-auto"
                                         onError={(e) => {

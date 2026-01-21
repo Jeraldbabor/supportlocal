@@ -47,7 +47,7 @@ class OrderItem extends Model
      */
     public function getProductImageUrlAttribute(): ?string
     {
-        if (!$this->product_image) {
+        if (! $this->product_image) {
             return '/placeholder.jpg';
         }
 

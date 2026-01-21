@@ -119,7 +119,7 @@ class Order extends Model
      */
     public function getPaymentProofUrlAttribute(): ?string
     {
-        if (!$this->payment_proof) {
+        if (! $this->payment_proof) {
             return null;
         }
 
