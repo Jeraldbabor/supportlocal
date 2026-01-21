@@ -64,10 +64,10 @@ export default function SellerProfileEdit() {
 
     const handleAvatarUpload = () => {
         if (selectedAvatar) {
-            const formData = new FormData();
-            formData.append('avatar', selectedAvatar);
-
-            router.post('/seller/profile/avatar', formData, {
+            router.post('/seller/profile/avatar', {
+                avatar: selectedAvatar,
+            }, {
+                forceFormData: true,
                 onSuccess: () => {
                     setSelectedAvatar(null);
                     setPreviewUrl(null);
