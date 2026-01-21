@@ -215,8 +215,8 @@ export function AppSidebar() {
     }, [user?.id, navigationCount]);
 
     return (
-        <Sidebar collapsible="icon" variant="inset" className="border-r border-sidebar-border/50">
-            <SidebarHeader className="border-b border-sidebar-border/50 py-4">
+        <Sidebar collapsible="icon" variant="inset" className="border-r border-gray-200">
+            <SidebarHeader className="border-b border-gray-200 py-4">
                 <SidebarMenu>
                     <SidebarMenuItem>
                         <SidebarMenuButton size="lg" asChild className="px-3 transition-colors duration-200">
@@ -228,11 +228,11 @@ export function AppSidebar() {
                 </SidebarMenu>
             </SidebarHeader>
 
-            <SidebarContent className="bg-gradient-to-b from-sidebar/50 to-sidebar py-4">
+            <SidebarContent className="bg-gradient-to-b from-slate-50/50 to-slate-50 py-4">
                 <NavMain items={mainNavItems} unreadMessagesCount={unreadMessagesCount} newContactMessagesCount={newContactMessagesCount || 0} />
             </SidebarContent>
 
-            <SidebarFooter className="border-t border-sidebar-border/50 py-3">
+            <SidebarFooter className="border-t border-gray-200 py-3">
                 <NavUser />
             </SidebarFooter>
         </Sidebar>
