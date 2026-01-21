@@ -374,7 +374,11 @@ export default function Orders({ orders }: OrdersProps) {
                                                 >
                                                     {item.product_image ? (
                                                         <img
-                                                            src={`/images/${item.product_image}`}
+                                                            src={
+                                                                item.product_image.startsWith('http') || item.product_image.startsWith('/')
+                                                                    ? item.product_image
+                                                                    : `/images/${item.product_image}`
+                                                            }
                                                             alt={item.product_name}
                                                             className="h-16 w-16 rounded-xl object-cover shadow-sm ring-1 ring-gray-200"
                                                         />

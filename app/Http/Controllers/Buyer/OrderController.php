@@ -186,7 +186,7 @@ class OrderController extends Controller
                         'order_id' => $order->id,
                         'product_id' => $item['product_id'],
                         'product_name' => $product->name,
-                        'product_image' => $product->primary_image,
+                        'product_image' => \App\Helpers\ImageHelper::url($product->primary_image),
                         'seller_name' => $product->seller->name ?? 'Unknown Seller',
                         'quantity' => $item['quantity'],
                         'price' => $item['unit_price'],

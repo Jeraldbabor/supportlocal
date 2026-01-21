@@ -535,7 +535,11 @@ export default function Checkout({ user, buyNowItem }: CheckoutProps) {
                                             <div className="flex-shrink-0">
                                                 {item.primary_image ? (
                                                     <img
-                                                        src={`/storage/${item.primary_image}`}
+                                                        src={
+                                                            item.primary_image.startsWith('http') || item.primary_image.startsWith('/')
+                                                                ? item.primary_image
+                                                                : `/images/${item.primary_image}`
+                                                        }
                                                         alt={item.name}
                                                         className="h-12 w-12 rounded-lg object-cover"
                                                     />

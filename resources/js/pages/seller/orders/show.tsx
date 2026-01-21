@@ -564,7 +564,11 @@ export default function OrderShow({ order }: OrderShowProps) {
                                 >
                                     {item.product_image ? (
                                         <img
-                                            src={`/images/${item.product_image}`}
+                                            src={
+                                                item.product_image.startsWith('http') || item.product_image.startsWith('/')
+                                                    ? item.product_image
+                                                    : `/images/${item.product_image}`
+                                            }
                                             alt={item.product_name}
                                             className="h-24 w-24 rounded-xl object-cover shadow-md ring-2 ring-white"
                                         />

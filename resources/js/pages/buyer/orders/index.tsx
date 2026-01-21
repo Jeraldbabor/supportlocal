@@ -224,7 +224,7 @@ export default function Orders({ orders }: OrdersIndexProps) {
                                                 {item.product_image ? (
                                                     <img
                                                         src={
-                                                            item.product_image.startsWith('http')
+                                                            item.product_image.startsWith('http') || item.product_image.startsWith('/')
                                                                 ? item.product_image
                                                                 : `/images/${item.product_image}`
                                                         }

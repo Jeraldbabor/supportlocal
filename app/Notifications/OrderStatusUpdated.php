@@ -79,8 +79,10 @@ class OrderStatusUpdated extends Notification
         return match ($this->order->status) {
             Order::STATUS_PENDING => "📦 Order #{$orderId} - Awaiting Confirmation",
             Order::STATUS_CONFIRMED => "✅ Order #{$orderId} - Confirmed!",
+            Order::STATUS_SHIPPED => "🚚 Order #{$orderId} - Shipped!",
+            Order::STATUS_DELIVERED => "📬 Order #{$orderId} - Delivered!",
             Order::STATUS_CANCELLED => "❌ Order #{$orderId} - Cancelled",
-            Order::STATUS_COMPLETED => "🎉 Order #{$orderId} - Delivered!",
+            Order::STATUS_COMPLETED => "🎉 Order #{$orderId} - Completed!",
             default => "📦 Order #{$orderId} - Status Update",
         };
     }
@@ -93,8 +95,10 @@ class OrderStatusUpdated extends Notification
         return match ($this->order->status) {
             Order::STATUS_PENDING => 'Order Awaiting Confirmation',
             Order::STATUS_CONFIRMED => 'Order Confirmed! 🎉',
+            Order::STATUS_SHIPPED => 'Order Shipped! 🚚',
+            Order::STATUS_DELIVERED => 'Order Delivered! 📬',
             Order::STATUS_CANCELLED => 'Order Cancelled',
-            Order::STATUS_COMPLETED => 'Order Delivered! 🎉',
+            Order::STATUS_COMPLETED => 'Order Completed! 🎉',
             default => 'Order Status Updated',
         };
     }
@@ -109,8 +113,10 @@ class OrderStatusUpdated extends Notification
         return match ($this->order->status) {
             Order::STATUS_PENDING => 'Your order has been received and is awaiting confirmation from the seller.',
             Order::STATUS_CONFIRMED => "Great news! Your order has been confirmed by {$sellerName} and is being prepared.",
+            Order::STATUS_SHIPPED => "Your order is on its way! {$sellerName} has shipped your package.",
+            Order::STATUS_DELIVERED => "Your order has been delivered! We hope you enjoy your purchase from {$sellerName}.",
             Order::STATUS_CANCELLED => 'We\'re sorry, but your order has been cancelled.',
-            Order::STATUS_COMPLETED => "Your order has been successfully delivered! Thank you for supporting {$sellerName}.",
+            Order::STATUS_COMPLETED => "Your order has been successfully completed! Thank you for supporting {$sellerName}.",
             default => 'Your order status has been updated.',
         };
     }

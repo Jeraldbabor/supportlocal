@@ -95,10 +95,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/seller/products/{product}/ratings/{rating}/reply', [App\Http\Controllers\Seller\ProductRatingController::class, 'storeReply'])->name('seller.products.ratings.reply.store');
         Route::delete('/seller/products/{product}/ratings/{rating}/reply', [App\Http\Controllers\Seller\ProductRatingController::class, 'deleteReply'])->name('seller.products.ratings.reply.delete');
 
-        // Seller Rating Routes (ratings on the seller themselves)
+        // Product Reviews Routes (ratings on seller's products)
         Route::get('/seller/seller-ratings', [App\Http\Controllers\Seller\SellerRatingController::class, 'index'])->name('seller.seller-ratings.index');
-        Route::post('/seller/seller-ratings/{rating}/reply', [App\Http\Controllers\Seller\SellerRatingController::class, 'storeReply'])->name('seller.seller-ratings.reply.store');
-        Route::delete('/seller/seller-ratings/{rating}/reply', [App\Http\Controllers\Seller\SellerRatingController::class, 'deleteReply'])->name('seller.seller-ratings.reply.delete');
+        Route::post('/seller/seller-ratings/{rating}/reply', [App\Http\Controllers\Seller\SellerRatingController::class, 'storeReply'])
+            ->name('seller.seller-ratings.reply.store')
+            ->whereNumber('rating');
+        Route::delete('/seller/seller-ratings/{rating}/reply', [App\Http\Controllers\Seller\SellerRatingController::class, 'deleteReply'])
+            ->name('seller.seller-ratings.reply.delete')
+            ->whereNumber('rating');
 
         Route::get('/seller/dashboard', [App\Http\Controllers\Seller\DashboardController::class, 'index'])->name('seller.dashboard');
 
@@ -360,7 +364,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
                         'name' => $product->name,
                         'price' => (float) $product->price,
                         'quantity' => (int) $quantity,
-                        'primary_image' => $product->featured_image ?? $product->primary_image,
+                        'primary_image' => \App\Helpers\ImageHelper::url($product->featured_image ?? $product->primary_image),
                         'seller' => [
                             'id' => $product->seller->id,
                             'name' => $product->seller->business_name ?? $product->seller->name,
