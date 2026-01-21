@@ -9,8 +9,6 @@ import { CartProvider } from './contexts/CartContext';
 import { initializeTheme } from './hooks/use-appearance';
 import Echo from './lib/echo'; // Initialize Echo for real-time features
 
-const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
-
 // Re-establish Echo connections after Inertia navigation
 // This ensures WebSocket channels are properly re-authenticated with fresh CSRF tokens
 router.on('navigate', () => {
@@ -37,6 +35,8 @@ function AppShell({ Component, props }: { Component: React.ComponentType<Record<
         </CartProvider>
     );
 }
+
+const appName = 'SupportLocal';
 
 createInertiaApp({
     title: (title) => (title ? `${title} - ${appName}` : appName),
