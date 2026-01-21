@@ -140,6 +140,7 @@ class Product extends Model
      */
     protected $appends = [
         'primary_image',
+        'image_urls',
         'formatted_price',
         'formatted_compare_price',
     ];
@@ -348,19 +349,40 @@ class Product extends Model
     }
 
     /**
-     * Get the primary image
+     * Get the primary image URL
      */
     public function getPrimaryImageAttribute(): ?string
     {
+        $path = null;
+        
         if ($this->featured_image) {
-            return $this->featured_image;
+            $path = $this->featured_image;
+        } elseif ($this->images && count($this->images) > 0) {
+            $path = $this->images[0];
         }
 
-        if ($this->images && count($this->images) > 0) {
-            return $this->images[0];
+        if ($path && is_string($path)) {
+            return \App\Helpers\ImageHelper::url($path);
         }
 
         return null;
+    }
+
+    /**
+     * Get all image URLs (converted from paths)
+     */
+    public function getImageUrlsAttribute(): array
+    {
+        if (!$this->images || !is_array($this->images)) {
+            return [];
+        }
+
+        return array_values(array_filter(array_map(function ($path) {
+            if (is_string($path) && !empty($path)) {
+                return \App\Helpers\ImageHelper::url($path);
+            }
+            return null;
+        }, $this->images)));
     }
 
     /**
