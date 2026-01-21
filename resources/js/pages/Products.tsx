@@ -964,21 +964,22 @@ export default function Products({ products, categories = [], sellers = [], loca
                                                         <button
                                                             onClick={(e) => handleAddToCart(e, product)}
                                                             disabled={isOutOfStock(product) || isLoading}
-                                                            className={`flex-1 rounded bg-orange-500 px-2 py-1.5 text-xs font-medium text-white transition-colors ${
+                                                            className={`flex flex-1 items-center justify-center gap-1 rounded py-2 text-xs font-medium transition-colors ${
                                                                 isOutOfStock(product) || isLoading
-                                                                    ? 'cursor-not-allowed bg-gray-300'
-                                                                    : 'hover:bg-orange-600'
+                                                                    ? 'cursor-not-allowed bg-gray-300 text-gray-500'
+                                                                    : 'bg-orange-500 text-white hover:bg-orange-600'
                                                             }`}
+                                                            style={{ colorScheme: 'light' }}
                                                         >
-                                                            <ShoppingCart className="mx-auto h-4 w-4" />
+                                                            <ShoppingCart className="h-4 w-4" style={{ color: isOutOfStock(product) || isLoading ? '#6b7280' : '#ffffff' }} />
                                                         </button>
                                                         <button
                                                             onClick={(e) => handleBuyNow(e, product)}
                                                             disabled={isOutOfStock(product) || isLoading}
-                                                            className={`rounded border border-orange-500 px-3 py-1.5 text-xs font-medium text-orange-500 transition-colors ${
+                                                            className={`rounded border px-3 py-2 text-xs font-medium transition-colors ${
                                                                 isOutOfStock(product) || isLoading
-                                                                    ? 'cursor-not-allowed border-gray-300 text-gray-300'
-                                                                    : 'hover:bg-orange-50'
+                                                                    ? 'cursor-not-allowed border-gray-300 text-gray-400'
+                                                                    : 'border-orange-500 text-orange-600 hover:bg-orange-50'
                                                             }`}
                                                         >
                                                             Buy
