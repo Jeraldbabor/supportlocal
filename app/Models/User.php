@@ -310,9 +310,7 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         // First, check for uploaded profile picture
         if ($this->profile_picture) {
-            // Use /images/{path} route which works reliably in Railway/production
-            // This route serves files directly from storage/app/public without requiring symlinks
-            return url('/images/'.$this->profile_picture);
+            return \App\Helpers\ImageHelper::url($this->profile_picture);
         }
 
         // Second, check for social media avatar
