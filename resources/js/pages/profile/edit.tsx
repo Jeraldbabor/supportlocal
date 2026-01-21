@@ -103,29 +103,33 @@ export default function EditProfile() {
         }
 
         // Use router.post directly with the file to avoid state timing issues
-        router.post('/profile/avatar', {
-            avatar: file,
-        }, {
-            forceFormData: true,
-            onSuccess: () => {
-                resetAvatar();
-                if (fileInputRef.current) {
-                    fileInputRef.current.value = '';
-                }
-                // Reload the page data to show the new avatar
-                router.reload({ only: ['user'] });
+        router.post(
+            '/profile/avatar',
+            {
+                avatar: file,
             },
-            onError: (errors) => {
-                console.error('Avatar upload error:', JSON.stringify(errors, null, 2));
-                // Show the actual error to user
-                const errorMessage = errors.avatar || Object.values(errors)[0] || 'Failed to upload avatar. Please try again.';
-                alert(errorMessage);
-                resetAvatar();
-                if (fileInputRef.current) {
-                    fileInputRef.current.value = '';
-                }
+            {
+                forceFormData: true,
+                onSuccess: () => {
+                    resetAvatar();
+                    if (fileInputRef.current) {
+                        fileInputRef.current.value = '';
+                    }
+                    // Reload the page data to show the new avatar
+                    router.reload({ only: ['user'] });
+                },
+                onError: (errors) => {
+                    console.error('Avatar upload error:', JSON.stringify(errors, null, 2));
+                    // Show the actual error to user
+                    const errorMessage = errors.avatar || Object.values(errors)[0] || 'Failed to upload avatar. Please try again.';
+                    alert(errorMessage);
+                    resetAvatar();
+                    if (fileInputRef.current) {
+                        fileInputRef.current.value = '';
+                    }
+                },
             },
-        });
+        );
     };
 
     const handleDeleteAvatar = () => {

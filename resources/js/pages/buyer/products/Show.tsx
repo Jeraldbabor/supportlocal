@@ -11,6 +11,7 @@ interface Product {
     price: number;
     description: string;
     primary_image: string;
+    image_urls: string[];
     images: string[];
     seller: {
         id: number;
@@ -286,7 +287,7 @@ export default function Show({ product, relatedProducts, ratings: initialRatings
                     <div className="space-y-4">
                         <div className="relative aspect-square overflow-hidden rounded-lg bg-gray-100">
                             {selectedImage ? (
-                                <img src={`/images/${selectedImage}`} alt={product.name} className="h-full w-full object-cover" />
+                                <img src={selectedImage} alt={product.name} className="h-full w-full object-cover" />
                             ) : (
                                 <div className="flex h-full w-full items-center justify-center bg-gray-200">
                                     <Package className="h-24 w-24 text-gray-400" />
@@ -295,17 +296,9 @@ export default function Show({ product, relatedProducts, ratings: initialRatings
                         </div>
 
                         {/* Image Thumbnails */}
-                        {product.images && product.images.length > 0 && (
+                        {product.image_urls && product.image_urls.length > 0 && (
                             <div className="grid grid-cols-4 gap-2">
-                                <button
-                                    onClick={() => setSelectedImage(product.primary_image)}
-                                    className={`relative overflow-hidden rounded-md border-2 ${
-                                        selectedImage === product.primary_image ? 'border-primary' : 'border-gray-200'
-                                    }`}
-                                >
-                                    <img src={`/images/${product.primary_image}`} alt={product.name} className="h-20 w-full object-cover" />
-                                </button>
-                                {product.images.map((image, index) => (
+                                {product.image_urls.map((image, index) => (
                                     <button
                                         key={index}
                                         onClick={() => setSelectedImage(image)}
@@ -313,7 +306,7 @@ export default function Show({ product, relatedProducts, ratings: initialRatings
                                             selectedImage === image ? 'border-primary' : 'border-gray-200'
                                         }`}
                                     >
-                                        <img src={`/images/${image}`} alt={`${product.name} ${index + 1}`} className="h-20 w-full object-cover" />
+                                        <img src={image} alt={`${product.name} ${index + 1}`} className="h-20 w-full object-cover" />
                                     </button>
                                 ))}
                             </div>
@@ -691,7 +684,7 @@ export default function Show({ product, relatedProducts, ratings: initialRatings
                                     <div className="relative aspect-square overflow-hidden bg-gray-100">
                                         {relatedProduct.primary_image ? (
                                             <img
-                                                src={`/images/${relatedProduct.primary_image}`}
+                                                src={relatedProduct.primary_image}
                                                 alt={relatedProduct.name}
                                                 className="h-full w-full object-cover transition-transform group-hover:scale-105"
                                             />

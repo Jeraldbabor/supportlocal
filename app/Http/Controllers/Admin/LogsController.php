@@ -29,7 +29,7 @@ class LogsController extends Controller
         }
         if (! File::exists($logFile)) {
             // Create empty log file and add initial entry
-            File::put($logFile, '['.date('Y-m-d H:i:s').'] local.INFO: Application logs initialized {"message":"Log monitoring is now active"}' . "\n");
+            File::put($logFile, '['.date('Y-m-d H:i:s').'] local.INFO: Application logs initialized {"message":"Log monitoring is now active"}'."\n");
         }
 
         if (File::exists($logFile)) {
@@ -224,7 +224,7 @@ class LogsController extends Controller
         $logFile = storage_path('logs/laravel.log');
 
         // Clear file content but keep the file
-        File::put($logFile, '['.date('Y-m-d H:i:s').'] local.INFO: Logs cleared by administrator' . "\n");
+        File::put($logFile, '['.date('Y-m-d H:i:s').'] local.INFO: Logs cleared by administrator'."\n");
 
         return back()->with('message', 'Log file cleared successfully.');
     }

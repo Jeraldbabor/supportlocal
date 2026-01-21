@@ -9,7 +9,6 @@ use App\Models\Product;
 use App\Models\ProductCategory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -229,7 +228,7 @@ class ProductController extends Controller
         }
 
         // Filter out any false/null values from images array
-        $currentImages = array_filter($currentImages, fn ($img) => is_string($img) && !empty($img));
+        $currentImages = array_filter($currentImages, fn ($img) => is_string($img) && ! empty($img));
         $validated['images'] = array_values($currentImages);
         $validated['featured_image'] = $validated['images'][0] ?? null;
 

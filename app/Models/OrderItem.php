@@ -36,6 +36,25 @@ class OrderItem extends Model
     ];
 
     /**
+     * The accessors to append to the model's array form.
+     */
+    protected $appends = [
+        'product_image_url',
+    ];
+
+    /**
+     * Get the product image URL.
+     */
+    public function getProductImageUrlAttribute(): ?string
+    {
+        if (! $this->product_image) {
+            return '/placeholder.jpg';
+        }
+
+        return \App\Helpers\ImageHelper::url($this->product_image);
+    }
+
+    /**
      * Get the order that owns the order item.
      */
     public function order(): BelongsTo

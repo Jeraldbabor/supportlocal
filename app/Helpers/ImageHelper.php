@@ -43,6 +43,7 @@ class ImageHelper
             if (str_starts_with($path, '/storage/')) {
                 return str_replace('/storage/', '/images/', $path);
             }
+
             return $path;
         }
 
@@ -51,14 +52,15 @@ class ImageHelper
             // Use the public R2 URL directly (not the S3 API endpoint)
             $r2PublicUrl = config('filesystems.disks.r2.url');
             if ($r2PublicUrl) {
-                return rtrim($r2PublicUrl, '/') . '/' . ltrim($path, '/');
+                return rtrim($r2PublicUrl, '/').'/'.ltrim($path, '/');
             }
-            
+
             // Fallback to Storage URL if no public URL configured
             try {
                 return Storage::disk('r2')->url($path);
             } catch (\Exception $e) {
                 Log::warning('Failed to generate R2 URL', ['path' => $path, 'error' => $e->getMessage()]);
+
                 // Fallback to local
                 return '/images/'.$path;
             }
@@ -89,7 +91,7 @@ class ImageHelper
      *
      * @param  \Illuminate\Http\UploadedFile  $file
      * @param  string  $folder  Folder name (e.g., 'products', 'avatars')
-     * @return string|false  The stored path or false on failure
+     * @return string|false The stored path or false on failure
      */
     public static function store($file, string $folder): string|false
     {
@@ -111,6 +113,7 @@ class ImageHelper
             return Storage::disk(self::getDisk())->delete($path);
         } catch (\Exception $e) {
             Log::warning('Failed to delete file', ['path' => $path, 'error' => $e->getMessage()]);
+
             return false;
         }
     }

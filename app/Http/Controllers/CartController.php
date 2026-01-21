@@ -48,7 +48,7 @@ class CartController extends Controller
                     'id' => $product->id,
                     'name' => $product->name,
                     'price' => (float) $product->price,
-                    'image' => $product->primary_image ? '/images/'.$product->primary_image : '/placeholder.jpg',
+                    'image' => $product->primary_image ?: '/placeholder.jpg',
                     'artisan' => $product->seller->name ?? 'Unknown Artisan',
                     'artisan_image' => $product->seller->avatar_url ?? null,
                     'quantity' => $quantity,

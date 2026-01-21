@@ -136,7 +136,7 @@ export default function Index({
     };
 
     const handlePriceFilter = () => {
-        const newFilters: Record<string, string | boolean | null> = { ...filters };
+        const newFilters: Record<string, string | number | boolean | null> = { ...filters };
         if (minPrice) newFilters.min_price = minPrice;
         if (maxPrice) newFilters.max_price = maxPrice;
         if (!minPrice) delete newFilters.min_price;
@@ -819,7 +819,7 @@ export default function Index({
                                                 <div className="relative aspect-square w-full overflow-hidden bg-gray-100">
                                                     {product.primary_image || product.image ? (
                                                         <img
-                                                            src={product.primary_image ? `/images/${product.primary_image}` : product.image}
+                                                            src={product.primary_image || product.image}
                                                             alt={product.name}
                                                             className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
                                                             onError={(e) => {
@@ -992,7 +992,13 @@ export default function Index({
             {showToast && <Toast message={toastMessage} type="success" onClose={() => setShowToast(false)} />}
 
             {/* Add to Cart Modal */}
-            <AddToCartModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} product={modalProduct} onAddToCart={handleModalAddToCart} />
+            <AddToCartModal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                product={modalProduct as any}
+                onAddToCart={handleModalAddToCart}
+            />
         </BuyerLayout>
     );
 }

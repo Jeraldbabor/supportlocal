@@ -354,7 +354,7 @@ class Product extends Model
     public function getPrimaryImageAttribute(): ?string
     {
         $path = null;
-        
+
         if ($this->featured_image) {
             $path = $this->featured_image;
         } elseif ($this->images && count($this->images) > 0) {
@@ -373,14 +373,15 @@ class Product extends Model
      */
     public function getImageUrlsAttribute(): array
     {
-        if (!$this->images || !is_array($this->images)) {
+        if (! $this->images || ! is_array($this->images)) {
             return [];
         }
 
         return array_values(array_filter(array_map(function ($path) {
-            if (is_string($path) && !empty($path)) {
+            if (is_string($path) && ! empty($path)) {
                 return \App\Helpers\ImageHelper::url($path);
             }
+
             return null;
         }, $this->images)));
     }

@@ -188,9 +188,7 @@ class ProfileController extends Controller
         }
 
         // Delete profile picture if exists
-        if ($user->profile_picture) {
-            Storage::disk('public')->delete($user->profile_picture);
-        }
+        \App\Helpers\ImageHelper::delete($user->profile_picture);
 
         // Logout and delete the user
         auth()->logout();

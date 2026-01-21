@@ -6,7 +6,6 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rules\File;
 use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
@@ -81,13 +80,13 @@ class BuyerProfileController extends Controller
         // Handle profile picture upload
         if ($request->hasFile('profile_picture')) {
             // Delete old profile picture if exists
-            if ($user->profile_picture) {
-                Storage::disk('public')->delete($user->profile_picture);
-            }
+            \App\Helpers\ImageHelper::delete($user->profile_picture);
 
             // Store new profile picture
-            $path = $request->file('profile_picture')->store('profile-pictures', 'public');
-            $updateData['profile_picture'] = $path;
+            $path = \App\Helpers\ImageHelper::store($request->file('profile_picture'), 'profile-pictures');
+            if ($path) {
+                $updateData['profile_picture'] = $path;
+            }
         }
 
         $user->update($updateData);
@@ -106,7 +105,7 @@ class BuyerProfileController extends Controller
         $user = Auth::user();
 
         if ($user->profile_picture) {
-            Storage::disk('public')->delete($user->profile_picture);
+            \App\Helpers\ImageHelper::delete($user->profile_picture);
             $user->update(['profile_picture' => null]);
         }
 
@@ -168,9 +167,7 @@ class BuyerProfileController extends Controller
         }
 
         // Delete profile picture if exists
-        if ($user->profile_picture) {
-            Storage::disk('public')->delete($user->profile_picture);
-        }
+        \App\Helpers\ImageHelper::delete($user->profile_picture);
 
         // Log out the user
         Auth::logout();

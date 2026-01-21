@@ -10,7 +10,6 @@ use App\Notifications\PaymentRejected;
 use App\Notifications\PaymentVerified;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -407,9 +406,7 @@ class OrderController extends Controller
 
         try {
             // Delete payment proof
-            if ($order->payment_proof) {
-                Storage::disk('public')->delete($order->payment_proof);
-            }
+            \App\Helpers\ImageHelper::delete($order->payment_proof);
 
             $order->update([
                 'payment_status' => Order::PAYMENT_FAILED,
