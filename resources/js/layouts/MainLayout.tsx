@@ -109,7 +109,7 @@ export default function MainLayout({ children, title }: MainLayoutProps) {
                         <div className="min-w-0 flex-shrink-0">
                             <Link
                                 href="/"
-                                className="flex items-center gap-1.5 rounded-xl px-1.5 py-1.5 transition-all duration-300 hover:scale-105 focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 focus:outline-none active:scale-95 sm:gap-2 sm:px-2 sm:py-2"
+                                className="flex items-center gap-1.5 rounded-xl px-1.5 py-1.5 transition-all duration-300 hover:scale-105 focus:ring-2 focus:ring-orange-500/50 focus:ring-offset-2 focus:outline-none active:scale-95 sm:gap-2 sm:px-2 sm:py-2"
                                 aria-label="Support Local - Go to homepage"
                             >
                                 <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-amber-500 to-orange-600 shadow-md sm:h-10 sm:w-10">
@@ -166,7 +166,7 @@ export default function MainLayout({ children, title }: MainLayoutProps) {
                         <div className="flex flex-shrink-0 items-center space-x-0.5 sm:space-x-1">
                             <Link
                                 href="/buyer/notifications"
-                                className="group relative flex-shrink-0 rounded-xl p-1.5 text-gray-600 transition-all duration-300 hover:bg-primary/5 hover:text-primary hover:shadow-sm focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 focus:outline-none sm:p-2"
+                                className="group relative flex-shrink-0 rounded-xl p-1.5 text-gray-600 transition-all duration-300 hover:bg-orange-50 hover:text-orange-600 hover:shadow-sm focus:ring-2 focus:ring-orange-500/50 focus:ring-offset-2 focus:outline-none sm:p-2"
                                 aria-label={`Notifications ${unreadCount > 0 ? `(${unreadCount} unread)` : ''}`}
                             >
                                 <Bell className="h-4 w-4 transition-transform duration-300 group-hover:scale-110 sm:h-5 sm:w-5" />
@@ -175,13 +175,13 @@ export default function MainLayout({ children, title }: MainLayoutProps) {
                                         {unreadCount > 9 ? '9+' : unreadCount}
                                     </span>
                                 )}
-                                <span className="absolute inset-0 rounded-xl opacity-0 ring-primary/50 transition-all duration-300 group-hover:opacity-100 group-hover:ring-2 group-hover:ring-offset-2"></span>
+                                <span className="absolute inset-0 rounded-xl opacity-0 ring-orange-500/50 transition-all duration-300 group-hover:opacity-100 group-hover:ring-2 group-hover:ring-offset-2"></span>
                             </Link>
 
                             {/* Wishlist Icon */}
                             <Link
                                 href="/wishlist"
-                                className="group relative flex-shrink-0 rounded-xl p-1.5 text-gray-600 transition-all duration-300 hover:bg-primary/5 hover:text-primary hover:shadow-sm focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 focus:outline-none sm:p-2"
+                                className="group relative flex-shrink-0 rounded-xl p-1.5 text-gray-600 transition-all duration-300 hover:bg-orange-50 hover:text-orange-600 hover:shadow-sm focus:ring-2 focus:ring-orange-500/50 focus:ring-offset-2 focus:outline-none sm:p-2"
                                 aria-label={`Wishlist ${(wishlistCount ?? 0) > 0 ? `(${wishlistCount} items)` : '(empty)'}`}
                             >
                                 <Heart className="h-4 w-4 transition-transform duration-300 group-hover:scale-110 sm:h-5 sm:w-5" />
@@ -190,14 +190,14 @@ export default function MainLayout({ children, title }: MainLayoutProps) {
                                         {wishlistCount! > 99 ? '99+' : wishlistCount}
                                     </span>
                                 )}
-                                <span className="absolute inset-0 rounded-xl opacity-0 ring-primary/50 transition-all duration-300 group-hover:opacity-100 group-hover:ring-2 group-hover:ring-offset-2"></span>
+                                <span className="absolute inset-0 rounded-xl opacity-0 ring-orange-500/50 transition-all duration-300 group-hover:opacity-100 group-hover:ring-2 group-hover:ring-offset-2"></span>
                             </Link>
 
                             {/* Cart Icon */}
                             <Link
                                 href="/cart"
                                 onClick={handleCartClick}
-                                className="group relative flex-shrink-0 rounded-xl p-1.5 text-gray-600 transition-all duration-300 hover:bg-primary/5 hover:text-primary hover:shadow-sm focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 focus:outline-none sm:p-2"
+                                className="group relative flex-shrink-0 rounded-xl p-1.5 text-gray-600 transition-all duration-300 hover:bg-orange-50 hover:text-orange-600 hover:shadow-sm focus:ring-2 focus:ring-orange-500/50 focus:ring-offset-2 focus:outline-none sm:p-2"
                                 aria-label={`Shopping cart ${totalItems > 0 ? `(${totalItems} items)` : '(empty)'}`}
                             >
                                 <ShoppingCart className="h-4 w-4 transition-transform duration-300 group-hover:scale-110 sm:h-5 sm:w-5" />
@@ -206,7 +206,7 @@ export default function MainLayout({ children, title }: MainLayoutProps) {
                                         {totalItems > 99 ? '99+' : totalItems}
                                     </span>
                                 )}
-                                <span className="absolute inset-0 rounded-xl opacity-0 ring-primary/50 transition-all duration-300 group-hover:opacity-100 group-hover:ring-2 group-hover:ring-offset-2"></span>
+                                <span className="absolute inset-0 rounded-xl opacity-0 ring-orange-500/50 transition-all duration-300 group-hover:opacity-100 group-hover:ring-2 group-hover:ring-offset-2"></span>
                             </Link>
 
                             {/* User Authentication Section */}
@@ -214,9 +214,9 @@ export default function MainLayout({ children, title }: MainLayoutProps) {
                                 <div className="relative hidden flex-shrink-0 md:block" ref={userMenuRef}>
                                     <button
                                         onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                                        className={`flex items-center space-x-1.5 rounded-xl px-2 py-1.5 transition-all duration-300 focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 focus:outline-none sm:space-x-2 sm:px-3 sm:py-2 ${
+                                        className={`flex items-center space-x-1.5 rounded-xl px-2 py-1.5 transition-all duration-300 focus:ring-2 focus:ring-orange-500/50 focus:ring-offset-2 focus:outline-none sm:space-x-2 sm:px-3 sm:py-2 ${
                                             isUserMenuOpen
-                                                ? 'bg-gradient-to-r from-primary/10 to-primary/5 shadow-md ring-2 ring-primary/20'
+                                                ? 'bg-gradient-to-r from-orange-100 to-amber-50 shadow-md ring-2 ring-orange-200'
                                                 : 'hover:bg-gray-50 hover:shadow-sm'
                                         }`}
                                         aria-expanded={isUserMenuOpen}
@@ -229,7 +229,7 @@ export default function MainLayout({ children, title }: MainLayoutProps) {
                                         </div>
                                         <ChevronDown
                                             className={`h-3.5 w-3.5 text-gray-400 transition-all duration-300 sm:h-4 sm:w-4 ${
-                                                isUserMenuOpen ? 'rotate-180 text-primary' : 'group-hover:text-primary'
+                                                isUserMenuOpen ? 'rotate-180 text-orange-600' : 'group-hover:text-orange-600'
                                             }`}
                                         />
                                     </button>
@@ -251,11 +251,11 @@ export default function MainLayout({ children, title }: MainLayoutProps) {
                                             <div className="py-2">
                                                 <Link
                                                     href="/dashboard"
-                                                    className="group mx-2 flex items-center rounded-lg px-4 py-3 text-sm font-medium text-gray-700 transition-all duration-300 hover:bg-primary/5 hover:text-primary focus:bg-primary/5 focus:text-primary focus:outline-none"
+                                                    className="group mx-2 flex items-center rounded-lg px-4 py-3 text-sm font-medium text-gray-700 transition-all duration-300 hover:bg-orange-50 hover:text-orange-700 focus:bg-orange-50 focus:text-orange-700 focus:outline-none"
                                                     onClick={() => setIsUserMenuOpen(false)}
                                                     role="menuitem"
                                                 >
-                                                    <User className="mr-3 h-4 w-4 text-gray-400 transition-colors duration-300 group-hover:text-primary" />
+                                                    <User className="mr-3 h-4 w-4 text-gray-400 transition-colors duration-300 group-hover:text-orange-600" />
                                                     Dashboard
                                                 </Link>
 
@@ -280,13 +280,13 @@ export default function MainLayout({ children, title }: MainLayoutProps) {
                                 <div className="hidden items-center gap-1.5 sm:gap-2 md:flex">
                                     <Link
                                         href="/login"
-                                        className="rounded-xl px-2 py-1.5 text-xs font-medium text-gray-700 transition-all duration-300 hover:bg-gray-50 hover:text-primary focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 focus:outline-none sm:px-3 sm:py-2 sm:text-sm lg:px-4"
+                                        className="rounded-xl px-2 py-1.5 text-xs font-medium text-gray-700 transition-all duration-300 hover:bg-gray-50 hover:text-orange-600 focus:ring-2 focus:ring-orange-500/50 focus:ring-offset-2 focus:outline-none sm:px-3 sm:py-2 sm:text-sm lg:px-4"
                                     >
                                         Log in
                                     </Link>
                                     <Link
                                         href="/register"
-                                        className="rounded-xl border border-primary/20 bg-gradient-to-r from-primary/5 to-primary/10 px-2 py-1.5 text-xs font-medium text-primary transition-all duration-300 hover:from-primary/10 hover:to-primary/20 hover:shadow-sm focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 focus:outline-none sm:px-3 sm:py-2 sm:text-sm lg:px-4"
+                                        className="rounded-xl border border-orange-200 bg-gradient-to-r from-orange-50 to-amber-50 px-2 py-1.5 text-xs font-medium text-orange-700 transition-all duration-300 hover:from-orange-100 hover:to-amber-100 hover:shadow-sm focus:ring-2 focus:ring-orange-500/50 focus:ring-offset-2 focus:outline-none sm:px-3 sm:py-2 sm:text-sm lg:px-4"
                                     >
                                         Get Started
                                     </Link>
@@ -298,7 +298,7 @@ export default function MainLayout({ children, title }: MainLayoutProps) {
                                 <button
                                     ref={mobileMenuButtonRef}
                                     onClick={() => setIsMenuOpen(!isMenuOpen)}
-                                    className="rounded-xl p-1.5 text-gray-600 transition-all duration-300 hover:bg-primary/5 hover:text-primary focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 focus:outline-none sm:p-2"
+                                    className="rounded-xl p-1.5 text-gray-600 transition-all duration-300 hover:bg-orange-50 hover:text-orange-600 focus:ring-2 focus:ring-orange-500/50 focus:ring-offset-2 focus:outline-none sm:p-2"
                                     aria-expanded={isMenuOpen}
                                     aria-label="Toggle navigation menu"
                                 >
@@ -363,7 +363,7 @@ export default function MainLayout({ children, title }: MainLayoutProps) {
                                         <div className="mt-3 space-y-2">
                                             <Link
                                                 href="/dashboard"
-                                                className="flex items-center gap-3 rounded-xl px-4 py-3 text-gray-700 transition-all duration-300 hover:bg-primary/5 hover:text-primary"
+                                                className="flex items-center gap-3 rounded-xl px-4 py-3 text-gray-700 transition-all duration-300 hover:bg-orange-50 hover:text-orange-700"
                                                 onClick={() => setIsMenuOpen(false)}
                                             >
                                                 <User className="h-5 w-5" />
@@ -386,14 +386,14 @@ export default function MainLayout({ children, title }: MainLayoutProps) {
                                     <div className="space-y-3">
                                         <Link
                                             href="/login"
-                                            className="flex items-center justify-center rounded-xl px-4 py-3 text-gray-700 transition-all duration-300 hover:bg-gray-50 hover:text-primary"
+                                            className="flex items-center justify-center rounded-xl px-4 py-3 text-gray-700 transition-all duration-300 hover:bg-gray-50 hover:text-orange-600"
                                             onClick={() => setIsMenuOpen(false)}
                                         >
                                             Log in
                                         </Link>
                                         <Link
                                             href="/register"
-                                            className="flex items-center justify-center rounded-xl border border-primary/20 bg-gradient-to-r from-primary/5 to-primary/10 px-4 py-3 text-primary transition-all duration-300 hover:from-primary/10 hover:to-primary/20"
+                                            className="flex items-center justify-center rounded-xl border border-orange-200 bg-gradient-to-r from-orange-50 to-amber-50 px-4 py-3 text-orange-700 transition-all duration-300 hover:from-orange-100 hover:to-amber-100"
                                             onClick={() => setIsMenuOpen(false)}
                                         >
                                             Get Started
