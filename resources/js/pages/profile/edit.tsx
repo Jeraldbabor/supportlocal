@@ -59,8 +59,6 @@ export default function EditProfile() {
     });
 
     const {
-        setData: setAvatarData,
-        post: postAvatar,
         processing: avatarProcessing,
         errors: avatarErrors,
         reset: resetAvatar,
