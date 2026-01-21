@@ -133,15 +133,17 @@ export default function Orders({ orders }: OrdersIndexProps) {
                 <Head title="My Orders" />
 
                 <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8">
-                    <div className="py-16 text-center">
-                        <div className="mx-auto mb-6 h-24 w-24 text-gray-400">
+                    <div className="py-12 text-center sm:py-16">
+                        <div className="mx-auto mb-4 h-20 w-20 text-gray-300 sm:mb-6 sm:h-24 sm:w-24">
                             <Package className="h-full w-full" />
                         </div>
-                        <h2 className="mb-4 text-2xl font-bold text-gray-900">No orders yet</h2>
-                        <p className="mb-8 text-gray-600">You haven't placed any orders yet. Start shopping to see your orders here.</p>
+                        <h2 className="mb-3 text-xl font-bold text-gray-900 sm:mb-4 sm:text-2xl">No orders yet</h2>
+                        <p className="mx-auto mb-6 max-w-sm text-sm text-gray-600 sm:mb-8 sm:text-base">
+                            You haven't placed any orders yet. Start shopping to see your orders here.
+                        </p>
                         <Link
                             href="/buyer/products"
-                            className="hover:bg-primary-dark inline-flex items-center gap-2 rounded-lg bg-primary px-6 py-3 font-medium text-white transition-colors"
+                            className="inline-flex items-center gap-2 rounded-lg bg-orange-600 px-5 py-3 font-medium text-white transition-colors hover:bg-orange-700 sm:px-6"
                         >
                             <Package className="h-5 w-5" />
                             Start Shopping
@@ -156,17 +158,17 @@ export default function Orders({ orders }: OrdersIndexProps) {
         <BuyerLayout>
             <Head title="My Orders" />
 
-            <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
-                <div className="mb-8 flex items-center justify-between">
+            <div className="mx-auto max-w-6xl px-3 py-4 sm:px-6 sm:py-8 lg:px-8">
+                <div className="mb-4 flex flex-col gap-3 sm:mb-8 sm:flex-row sm:items-center sm:justify-between">
                     <div>
-                        <h1 className="text-3xl font-bold text-gray-900">My Orders</h1>
-                        <p className="mt-2 text-gray-600">Track and manage your orders</p>
+                        <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl">My Orders</h1>
+                        <p className="mt-1 text-sm text-gray-600 sm:mt-2 sm:text-base">Track and manage your orders</p>
                     </div>
 
                     {orders.data.some((order) => canDelete(order.status)) && (
                         <button
                             onClick={() => setShowClearAllConfirm(true)}
-                            className="inline-flex items-center gap-2 rounded-lg border border-red-300 bg-white px-4 py-2 text-sm font-medium text-red-700 transition-colors hover:bg-red-50"
+                            className="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-red-200 bg-white px-4 py-2.5 text-sm font-medium text-red-600 transition-colors hover:bg-red-50 sm:w-auto"
                             disabled={isDeleting}
                         >
                             <Trash2 className="h-4 w-4" />
@@ -175,36 +177,27 @@ export default function Orders({ orders }: OrdersIndexProps) {
                     )}
                 </div>
 
-                <div className="space-y-6">
+                <div className="space-y-4 sm:space-y-6">
                     {orders.data.map((order) => (
-                        <div key={order.id} className="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm">
+                        <div key={order.id} className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
                             {/* Order Header */}
-                            <div className="border-b border-gray-200 bg-gray-50 px-6 py-4">
-                                <div className="flex items-center justify-between">
-                                    <div className="flex items-center space-x-4">
+                            <div className="border-b border-gray-200 bg-gray-50 px-4 py-3 sm:px-6 sm:py-4">
+                                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                                    {/* Order Info */}
+                                    <div className="flex items-start justify-between sm:block">
                                         <div>
-                                            <h3 className="text-lg font-semibold text-gray-900">Order #{order.order_number}</h3>
-                                            <p className="text-sm text-gray-600">Placed on {new Date(order.created_at).toLocaleDateString()}</p>
+                                            <h3 className="text-base font-semibold text-gray-900 sm:text-lg">
+                                                Order #<span className="break-all">{order.order_number}</span>
+                                            </h3>
+                                            <p className="mt-0.5 text-xs text-gray-500 sm:text-sm">
+                                                Placed on {new Date(order.created_at).toLocaleDateString()}
+                                            </p>
                                         </div>
-                                        <div className="flex items-center space-x-2">
-                                            {getStatusIcon(order.status)}
-                                            <span className={`rounded-full px-3 py-1 text-sm font-medium ${getStatusColor(order.status)}`}>
-                                                {getStatusText(order.status)}
-                                            </span>
-                                        </div>
-                                    </div>
-                                    <div className="flex items-center space-x-4">
-                                        <div className="text-right">
-                                            <div className="text-lg font-bold text-gray-900">{formatPeso(order.total_amount)}</div>
-                                            <div className="text-sm text-gray-600">
-                                                {order.order_items?.length || 0} item{(order.order_items?.length || 0) !== 1 ? 's' : ''}
-                                            </div>
-                                        </div>
-
+                                        {/* Mobile delete button */}
                                         {canDelete(order.status) && (
                                             <button
                                                 onClick={() => setShowDeleteConfirm(order.id)}
-                                                className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-red-300 bg-white text-red-500 transition-colors hover:bg-red-50 hover:text-red-700"
+                                                className="ml-2 inline-flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full border border-red-200 bg-white text-red-500 transition-colors hover:bg-red-50 sm:hidden"
                                                 disabled={isDeleting}
                                                 title="Delete Order"
                                             >
@@ -212,20 +205,51 @@ export default function Orders({ orders }: OrdersIndexProps) {
                                             </button>
                                         )}
                                     </div>
+
+                                    {/* Status and Price Row */}
+                                    <div className="flex items-center justify-between gap-3 sm:gap-4">
+                                        <div className="flex items-center gap-1.5 sm:gap-2">
+                                            {getStatusIcon(order.status)}
+                                            <span className={`rounded-full px-2.5 py-1 text-xs font-medium sm:px-3 sm:text-sm ${getStatusColor(order.status)}`}>
+                                                {getStatusText(order.status)}
+                                            </span>
+                                        </div>
+
+                                        <div className="flex items-center gap-3">
+                                            <div className="text-right">
+                                                <div className="text-base font-bold text-gray-900 sm:text-lg">{formatPeso(order.total_amount)}</div>
+                                                <div className="text-xs text-gray-500 sm:text-sm">
+                                                    {order.order_items?.length || 0} item{(order.order_items?.length || 0) !== 1 ? 's' : ''}
+                                                </div>
+                                            </div>
+
+                                            {/* Desktop delete button */}
+                                            {canDelete(order.status) && (
+                                                <button
+                                                    onClick={() => setShowDeleteConfirm(order.id)}
+                                                    className="hidden h-9 w-9 items-center justify-center rounded-full border border-red-200 bg-white text-red-500 transition-colors hover:bg-red-50 hover:text-red-700 sm:inline-flex"
+                                                    disabled={isDeleting}
+                                                    title="Delete Order"
+                                                >
+                                                    <X className="h-4 w-4" />
+                                                </button>
+                                            )}
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 
                             {/* Order Items */}
-                            <div className="px-6 py-4">
-                                <div className="space-y-4">
+                            <div className="px-4 py-3 sm:px-6 sm:py-4">
+                                <div className="space-y-3 sm:space-y-4">
                                     {order.order_items?.map((item) => (
-                                        <div key={item.id} className="flex items-center space-x-4">
+                                        <div key={item.id} className="flex items-start gap-3 sm:items-center sm:gap-4">
                                             <div className="flex-shrink-0">
                                                 {item.product_image ? (
                                                     <img
                                                         src={item.product_image_url || item.product_image}
                                                         alt={item.product_name}
-                                                        className="h-16 w-16 rounded-lg object-cover"
+                                                        className="h-14 w-14 rounded-lg object-cover sm:h-16 sm:w-16"
                                                         onError={(e) => {
                                                             const target = e.target as HTMLImageElement;
                                                             target.onerror = null;
@@ -233,22 +257,22 @@ export default function Orders({ orders }: OrdersIndexProps) {
                                                         }}
                                                     />
                                                 ) : (
-                                                    <div className="flex h-16 w-16 items-center justify-center rounded-lg bg-gray-200">
-                                                        <Package className="h-8 w-8 text-gray-400" />
+                                                    <div className="flex h-14 w-14 items-center justify-center rounded-lg bg-gray-100 sm:h-16 sm:w-16">
+                                                        <Package className="h-6 w-6 text-gray-400 sm:h-8 sm:w-8" />
                                                     </div>
                                                 )}
                                             </div>
 
                                             <div className="min-w-0 flex-1">
-                                                <h4 className="line-clamp-1 text-sm font-medium text-gray-900">{item.product_name}</h4>
-                                                <p className="text-sm text-gray-600">Sold by {item.seller_name}</p>
-                                                <p className="text-sm text-gray-600">
+                                                <h4 className="line-clamp-2 text-sm font-medium text-gray-900">{item.product_name}</h4>
+                                                <p className="mt-0.5 text-xs text-gray-500 sm:text-sm">Sold by {item.seller_name}</p>
+                                                <p className="mt-0.5 text-xs text-gray-500 sm:text-sm">
                                                     Quantity: {item.quantity} × {formatPeso(item.price)}
                                                 </p>
                                             </div>
 
-                                            <div className="text-right">
-                                                <div className="text-sm font-medium text-gray-900">{formatPeso(item.total)}</div>
+                                            <div className="flex-shrink-0 text-right">
+                                                <div className="text-sm font-semibold text-gray-900">{formatPeso(item.total)}</div>
                                             </div>
                                         </div>
                                     ))}
@@ -256,19 +280,27 @@ export default function Orders({ orders }: OrdersIndexProps) {
                             </div>
 
                             {/* Order Footer */}
-                            <div className="border-t border-gray-200 bg-gray-50 px-6 py-4">
-                                <div className="flex items-center justify-between">
-                                    <div className="flex items-center space-x-4">
-                                        <div className="text-sm text-gray-600">
-                                            <span className="font-medium">Payment:</span> {order.payment_method}
+                            <div className="border-t border-gray-200 bg-gray-50 px-4 py-3 sm:px-6 sm:py-4">
+                                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+                                    {/* Payment Info */}
+                                    <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
+                                        <div className="text-xs text-gray-600 sm:text-sm">
+                                            <span className="font-medium">Payment:</span>{' '}
+                                            <span className="capitalize">{order.payment_method}</span>
                                         </div>
-                                        {order.seller_confirmed_at && <div className="text-sm text-green-600">✓ Confirmed by seller</div>}
+                                        {order.seller_confirmed_at && (
+                                            <div className="text-xs text-green-600 sm:text-sm">
+                                                <CheckCircle className="mr-1 inline h-3.5 w-3.5" />
+                                                Confirmed by seller
+                                            </div>
+                                        )}
                                     </div>
 
-                                    <div className="flex items-center space-x-3">
+                                    {/* Action Buttons */}
+                                    <div className="flex flex-wrap items-center gap-2 sm:gap-3">
                                         <Link
                                             href={`/buyer/orders/${order.id}`}
-                                            className="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
+                                            className="inline-flex flex-1 items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 sm:flex-none"
                                         >
                                             <Eye className="h-4 w-4" />
                                             View Details
@@ -277,7 +309,7 @@ export default function Orders({ orders }: OrdersIndexProps) {
                                         {order.status === 'completed' && order.order_items?.length > 0 && (
                                             <Link
                                                 href={`/buyer/product/${order.order_items[0].product_id}`}
-                                                className="hover:bg-primary-dark inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white transition-colors"
+                                                className="inline-flex flex-1 items-center justify-center gap-2 rounded-lg bg-gray-900 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-gray-800 sm:flex-none"
                                             >
                                                 <MessageSquare className="h-4 w-4" />
                                                 Leave Review
@@ -292,14 +324,14 @@ export default function Orders({ orders }: OrdersIndexProps) {
 
                 {/* Pagination */}
                 {orders.last_page > 1 && (
-                    <div className="mt-8 flex justify-center">
-                        <div className="flex space-x-2">
+                    <div className="mt-6 flex justify-center sm:mt-8">
+                        <div className="flex flex-wrap justify-center gap-1.5 sm:gap-2">
                             {orders.links.map((link, index) => (
                                 <Link
                                     key={index}
                                     href={link.url || '#'}
-                                    className={`rounded-md px-3 py-2 text-sm ${
-                                        link.active ? 'bg-primary text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                    className={`rounded-lg px-3 py-2 text-sm font-medium ${
+                                        link.active ? 'bg-orange-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                                     } ${!link.url ? 'cursor-not-allowed opacity-50' : ''}`}
                                     dangerouslySetInnerHTML={{ __html: link.label }}
                                 />

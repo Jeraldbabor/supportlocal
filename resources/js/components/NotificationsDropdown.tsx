@@ -111,7 +111,7 @@ export default function NotificationsDropdown({ userRole = 'buyer', buttonClassN
                 onClick={() => setIsOpen(!isOpen)}
                 className={
                     buttonClassName ||
-                    'group relative rounded-xl p-2 text-gray-600 transition-all duration-300 hover:bg-primary/5 hover:text-primary hover:shadow-sm focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 focus:outline-none'
+                    'group relative rounded-xl p-2 text-gray-600 transition-all duration-300 hover:bg-orange-50 hover:text-orange-600 hover:shadow-sm focus:ring-2 focus:ring-orange-500/50 focus:ring-offset-2 focus:outline-none'
                 }
                 aria-label={`Notifications ${hasUnread ? `(${unreadCount} unread)` : ''}`}
                 aria-expanded={isOpen}
@@ -122,83 +122,88 @@ export default function NotificationsDropdown({ userRole = 'buyer', buttonClassN
                         {unreadCount > 99 ? '99+' : unreadCount || unreadNotifications.length}
                     </span>
                 )}
-                <span className="absolute inset-0 rounded-xl opacity-0 ring-primary/50 transition-all duration-300 group-hover:opacity-100 group-hover:ring-2 group-hover:ring-offset-2"></span>
+                <span className="absolute inset-0 rounded-xl opacity-0 ring-orange-500/50 transition-all duration-300 group-hover:opacity-100 group-hover:ring-2 group-hover:ring-offset-2"></span>
             </button>
 
             {isOpen && (
-                <div className="absolute top-full right-0 z-50 mt-2 w-80 rounded-xl border border-gray-200/80 bg-white/95 shadow-xl ring-1 ring-black/5 backdrop-blur-sm">
-                    {/* Header */}
-                    <div className="flex items-center justify-between border-b border-gray-100 px-4 py-3">
-                        <h3 className="text-sm font-semibold text-gray-900">Notifications</h3>
-                        {hasUnread && (
-                            <Button variant="ghost" size="sm" onClick={handleMarkAllAsRead} className="text-xs text-primary hover:text-primary/80">
-                                Mark all as read
-                            </Button>
-                        )}
-                    </div>
-
-                    {/* Notifications List */}
-                    <div className="max-h-96 overflow-y-auto">
-                        {isLoading ? (
-                            <div className="flex items-center justify-center py-8">
-                                <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent"></div>
-                            </div>
-                        ) : notifications.length === 0 ? (
-                            <div className="flex flex-col items-center justify-center py-8 text-center">
-                                <Bell className="mb-2 h-8 w-8 text-gray-300" />
-                                <p className="text-sm text-gray-500">No notifications</p>
-                            </div>
-                        ) : (
-                            <div className="divide-y divide-gray-100">
-                                {notifications.map((notification) => {
-                                    const isUnread = !notification.read_at;
-                                    return (
-                                        <button
-                                            key={notification.id}
-                                            onClick={() => handleNotificationClick(notification)}
-                                            className={`w-full px-4 py-3 text-left transition-colors duration-200 ${
-                                                isUnread ? 'bg-primary/5 hover:bg-primary/10' : 'hover:bg-gray-50'
-                                            }`}
-                                        >
-                                            <div className="flex items-start gap-3">
-                                                {isUnread && <div className="mt-1.5 h-2 w-2 flex-shrink-0 rounded-full bg-primary"></div>}
-                                                <div className="min-w-0 flex-1">
-                                                    <p className={`text-sm font-medium ${isUnread ? 'text-gray-900' : 'text-gray-700'}`}>
-                                                        {notification.data.title || 'Notification'}
-                                                    </p>
-                                                    {notification.data.message && (
-                                                        <p className="mt-1 line-clamp-2 text-xs text-gray-500">{notification.data.message}</p>
-                                                    )}
-                                                    <p className="mt-1 text-xs text-gray-400">
-                                                        {new Date(notification.created_at).toLocaleDateString('en-US', {
-                                                            month: 'short',
-                                                            day: 'numeric',
-                                                            hour: 'numeric',
-                                                            minute: '2-digit',
-                                                        })}
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        </button>
-                                    );
-                                })}
-                            </div>
-                        )}
-                    </div>
-
-                    {/* Footer */}
-                    {notifications.length > 0 && (
-                        <div className="border-t border-gray-100 px-4 py-3">
-                            <Link
-                                href={`/${baseRoute}/notifications`}
-                                className="block w-full text-center text-sm font-medium text-primary transition-colors hover:text-primary/80"
-                                onClick={() => setIsOpen(false)}
-                            >
-                                View all notifications
-                            </Link>
+                <>
+                    {/* Mobile overlay */}
+                    <div className="fixed inset-0 z-40 bg-black/20 sm:hidden" onClick={() => setIsOpen(false)} />
+                    
+                    <div className="fixed left-2 right-2 top-16 z-50 mx-auto max-w-sm rounded-xl border border-gray-200 bg-white shadow-xl sm:absolute sm:left-auto sm:top-full sm:right-0 sm:mx-0 sm:mt-2 sm:w-80">
+                        {/* Header */}
+                        <div className="flex items-center justify-between border-b border-gray-100 px-4 py-3">
+                            <h3 className="text-sm font-semibold text-gray-900">Notifications</h3>
+                            {hasUnread && (
+                                <Button variant="ghost" size="sm" onClick={handleMarkAllAsRead} className="text-xs text-orange-600 hover:text-orange-700">
+                                    Mark all as read
+                                </Button>
+                            )}
                         </div>
-                    )}
-                </div>
+
+                        {/* Notifications List */}
+                        <div className="max-h-80 overflow-y-auto sm:max-h-96">
+                            {isLoading ? (
+                                <div className="flex items-center justify-center py-8">
+                                    <div className="h-6 w-6 animate-spin rounded-full border-2 border-orange-500 border-t-transparent"></div>
+                                </div>
+                            ) : notifications.length === 0 ? (
+                                <div className="flex flex-col items-center justify-center py-8 text-center">
+                                    <Bell className="mb-2 h-8 w-8 text-gray-300" />
+                                    <p className="text-sm text-gray-500">No notifications</p>
+                                </div>
+                            ) : (
+                                <div className="divide-y divide-gray-100">
+                                    {notifications.map((notification) => {
+                                        const isUnread = !notification.read_at;
+                                        return (
+                                            <button
+                                                key={notification.id}
+                                                onClick={() => handleNotificationClick(notification)}
+                                                className={`w-full px-4 py-3 text-left transition-colors duration-200 ${
+                                                    isUnread ? 'bg-orange-50 hover:bg-orange-100' : 'hover:bg-gray-50'
+                                                }`}
+                                            >
+                                                <div className="flex items-start gap-3">
+                                                    {isUnread && <div className="mt-1.5 h-2 w-2 flex-shrink-0 rounded-full bg-orange-500"></div>}
+                                                    <div className="min-w-0 flex-1">
+                                                        <p className={`text-sm font-medium ${isUnread ? 'text-gray-900' : 'text-gray-700'}`}>
+                                                            {notification.data.title || 'Notification'}
+                                                        </p>
+                                                        {notification.data.message && (
+                                                            <p className="mt-1 line-clamp-2 text-xs text-gray-500">{notification.data.message}</p>
+                                                        )}
+                                                        <p className="mt-1 text-xs text-gray-400">
+                                                            {new Date(notification.created_at).toLocaleDateString('en-US', {
+                                                                month: 'short',
+                                                                day: 'numeric',
+                                                                hour: 'numeric',
+                                                                minute: '2-digit',
+                                                            })}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Footer */}
+                        {notifications.length > 0 && (
+                            <div className="border-t border-gray-100 px-4 py-3">
+                                <Link
+                                    href={`/${baseRoute}/notifications`}
+                                    className="block w-full text-center text-sm font-medium text-orange-600 transition-colors hover:text-orange-700"
+                                    onClick={() => setIsOpen(false)}
+                                >
+                                    View all notifications
+                                </Link>
+                            </div>
+                        )}
+                    </div>
+                </>
             )}
         </div>
     );
