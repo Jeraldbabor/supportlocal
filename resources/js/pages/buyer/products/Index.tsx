@@ -992,6 +992,7 @@ export default function Index({
             {showToast && <Toast message={toastMessage} type="success" onClose={() => setShowToast(false)} />}
 
             {/* Add to Cart Modal */}
+            {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
             <AddToCartModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} product={modalProduct as any} onAddToCart={handleModalAddToCart} />
         </BuyerLayout>
     );
