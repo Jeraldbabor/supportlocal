@@ -136,7 +136,7 @@ export default function Index({
     };
 
     const handlePriceFilter = () => {
-        const newFilters: Record<string, string | boolean | null> = { ...filters };
+        const newFilters: Record<string, string | number | boolean | null> = { ...filters };
         if (minPrice) newFilters.min_price = minPrice;
         if (maxPrice) newFilters.max_price = maxPrice;
         if (!minPrice) delete newFilters.min_price;
@@ -992,7 +992,7 @@ export default function Index({
             {showToast && <Toast message={toastMessage} type="success" onClose={() => setShowToast(false)} />}
 
             {/* Add to Cart Modal */}
-            <AddToCartModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} product={modalProduct} onAddToCart={handleModalAddToCart} />
+            <AddToCartModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} product={modalProduct as any} onAddToCart={handleModalAddToCart} />
         </BuyerLayout>
     );
 }

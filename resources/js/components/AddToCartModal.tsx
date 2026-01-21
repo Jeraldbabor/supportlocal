@@ -8,6 +8,7 @@ interface Product {
     primary_image?: string;
     image?: string;
     stock_quantity?: number;
+    quantity?: number;
     seller?: {
         id: number;
         name: string;
@@ -17,7 +18,7 @@ interface Product {
     short_description?: string;
     average_rating?: number | null;
     review_count?: number;
-    category?: string | { id: number; name: string };
+    category?: string | { id: number; name: string } | null;
     sku?: string;
 }
 
