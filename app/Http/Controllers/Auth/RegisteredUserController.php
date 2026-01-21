@@ -66,6 +66,16 @@ class RegisteredUserController extends Controller
             'role' => User::ROLE_BUYER, // Default all new users to buyer
         ]);
 
+        // Log user registration activity
+        Log::info('New user registered', [
+            'user_id' => $user->id,
+            'name' => $user->name,
+            'email' => $user->email,
+            'role' => $user->role,
+            'ip_address' => $request->ip(),
+            'user_agent' => $request->userAgent(),
+        ]);
+
         try {
             $user->sendEmailVerificationNotification();
         } catch (\Throwable $e) {

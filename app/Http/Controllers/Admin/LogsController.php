@@ -22,6 +22,16 @@ class LogsController extends Controller
         $perPage = 100;
         $filter = $request->get('filter', 'all'); // all, error, warning, info, debug
 
+        // Ensure log directory and file exist
+        $logDir = storage_path('logs');
+        if (! File::isDirectory($logDir)) {
+            File::makeDirectory($logDir, 0755, true);
+        }
+        if (! File::exists($logFile)) {
+            // Create empty log file and add initial entry
+            File::put($logFile, '['.date('Y-m-d H:i:s').'] local.INFO: Application logs initialized {"message":"Log monitoring is now active"}' . "\n");
+        }
+
         if (File::exists($logFile)) {
             $file = new \SplFileObject($logFile);
             $file->seek(PHP_INT_MAX);
@@ -194,8 +204,13 @@ class LogsController extends Controller
     {
         $logFile = storage_path('logs/laravel.log');
 
+        // Create file if it doesn't exist
         if (! File::exists($logFile)) {
-            abort(404, 'Log file not found');
+            $logDir = storage_path('logs');
+            if (! File::isDirectory($logDir)) {
+                File::makeDirectory($logDir, 0755, true);
+            }
+            File::put($logFile, '');
         }
 
         return response()->download($logFile, 'laravel-'.date('Y-m-d').'.log');
@@ -208,9 +223,8 @@ class LogsController extends Controller
     {
         $logFile = storage_path('logs/laravel.log');
 
-        if (File::exists($logFile)) {
-            File::put($logFile, '');
-        }
+        // Clear file content but keep the file
+        File::put($logFile, '['.date('Y-m-d H:i:s').'] local.INFO: Logs cleared by administrator' . "\n");
 
         return back()->with('message', 'Log file cleared successfully.');
     }
