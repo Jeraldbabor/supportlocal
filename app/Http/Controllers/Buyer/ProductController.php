@@ -173,13 +173,15 @@ class ProductController extends Controller
             ->pluck('monthly_sales', 'product_id');
 
         $products = $query->paginate(12)->withQueryString()->through(function ($product) use ($monthlySales) {
+            $imageUrl = \App\Helpers\ImageHelper::url($product->featured_image);
+
             return [
                 'id' => $product->id,
                 'name' => $product->name,
                 'price' => (float) $product->price,
                 'compare_price' => $product->compare_price ? (float) $product->compare_price : null,
-                'primary_image' => $product->featured_image,
-                'image' => \App\Helpers\ImageHelper::url($product->featured_image),
+                'primary_image' => $imageUrl,
+                'image' => $imageUrl,
                 'average_rating' => $product->average_rating ? (float) $product->average_rating : null,
                 'review_count' => $product->review_count ?? 0,
                 'order_count' => (int) ($product->order_count ?? 0),
