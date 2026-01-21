@@ -572,7 +572,7 @@ function BuyerLayoutContent({ children, title }: BuyerLayoutProps) {
                     <div className="mt-8 border-t border-gray-800 pt-6 sm:mt-12 sm:pt-8">
                         <div className="flex flex-col items-center justify-between gap-4 text-center md:flex-row md:text-left">
                             <p className="text-sm text-gray-400">
-                                &copy; {new Date().getFullYear()} Support Local. Empowering buyers and artisans. Made with ❤️
+                                &copy; {new Date().getFullYear()} Support Local. Empowering buyers and artisans. Crafted with ❤️ for artisans, Develop and Maintain by @Jerald B Babor.
                             </p>
                             <div className="flex flex-wrap justify-center gap-4 text-sm sm:gap-6 md:justify-start">
                                 <Link href="/privacy" className="text-gray-400 transition-colors hover:text-amber-400">
