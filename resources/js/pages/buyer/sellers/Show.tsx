@@ -271,7 +271,7 @@ export default function Show({ seller, products, filters, userRating: initialUse
                         <div className="flex-shrink-0">
                             {seller.profile_image ? (
                                 <img
-                                    src={seller.profile_image.startsWith('http') ? seller.profile_image : `/images/${seller.profile_image}`}
+                                    src={seller.profile_image}
                                     alt={seller.name}
                                     className="h-24 w-24 rounded-full object-cover"
                                     onError={(e) => {
@@ -575,11 +575,7 @@ export default function Show({ seller, products, filters, userRating: initialUse
                                         <div className="relative aspect-square overflow-hidden rounded-t-xl bg-gray-100">
                                             {product.primary_image ? (
                                                 <img
-                                                    src={
-                                                        product.primary_image.startsWith('http')
-                                                            ? product.primary_image
-                                                            : `/images/${product.primary_image}`
-                                                    }
+                                                    src={product.primary_image}
                                                     alt={product.name}
                                                     className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-110"
                                                     onClick={() => handleProductClick(product.id)}

@@ -126,11 +126,7 @@ export default function Cart() {
                                         <div className="flex-shrink-0">
                                             <Link href={`/buyer/product/${item.product_id}`}>
                                                 {item.primary_image ? (
-                                                    <img
-                                                        src={`/images/${item.primary_image}`}
-                                                        alt={item.name}
-                                                        className="h-20 w-20 rounded-lg object-cover"
-                                                    />
+                                                    <img src={item.primary_image} alt={item.name} className="h-20 w-20 rounded-lg object-cover" />
                                                 ) : (
                                                     <div className="flex h-20 w-20 items-center justify-center rounded-lg bg-gray-200">
                                                         <ShoppingBag className="h-8 w-8 text-gray-400" />

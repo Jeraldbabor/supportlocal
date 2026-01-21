@@ -24,7 +24,23 @@ class Message extends Model
         'read_at' => 'datetime',
     ];
 
+    protected $appends = [
+        'image_url',
+    ];
+
     protected $with = ['sender'];
+
+    /**
+     * Get the image URL.
+     */
+    public function getImageUrlAttribute(): ?string
+    {
+        if (! $this->image) {
+            return null;
+        }
+
+        return \App\Helpers\ImageHelper::url($this->image);
+    }
 
     /**
      * Get the conversation that owns the message.

@@ -534,15 +534,7 @@ export default function Checkout({ user, buyNowItem }: CheckoutProps) {
                                         <div key={item.id} className="flex items-center space-x-3">
                                             <div className="flex-shrink-0">
                                                 {item.primary_image ? (
-                                                    <img
-                                                        src={
-                                                            item.primary_image.startsWith('http') || item.primary_image.startsWith('/')
-                                                                ? item.primary_image
-                                                                : `/images/${item.primary_image}`
-                                                        }
-                                                        alt={item.name}
-                                                        className="h-12 w-12 rounded-lg object-cover"
-                                                    />
+                                                    <img src={item.primary_image} alt={item.name} className="h-12 w-12 rounded-lg object-cover" />
                                                 ) : (
                                                     <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-gray-200">
                                                         <ShoppingBag className="h-6 w-6 text-gray-400" />

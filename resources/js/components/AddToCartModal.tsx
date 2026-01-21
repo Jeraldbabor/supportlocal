@@ -116,7 +116,7 @@ export default function AddToCartModal({ isOpen, onClose, product, onAddToCart, 
                             <div className="relative aspect-square overflow-hidden rounded-2xl bg-gradient-to-br from-gray-100 to-gray-50 shadow-inner">
                                 {product.primary_image || product.image ? (
                                     <img
-                                        src={product.primary_image ? `/images/${product.primary_image}` : product.image}
+                                        src={product.primary_image || product.image}
                                         alt={product.name}
                                         className="h-full w-full object-cover"
                                         onError={(e) => {
