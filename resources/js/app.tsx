@@ -54,7 +54,7 @@ createInertiaApp({
         );
     },
     progress: {
-        color: '#4B5563',
+        color: '#EA580C', // Orange-600 to match brand
     },
 });
 
