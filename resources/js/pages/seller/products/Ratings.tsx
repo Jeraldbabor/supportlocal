@@ -1,9 +1,4 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Textarea } from '@/components/ui/textarea';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/react';
@@ -92,6 +87,7 @@ export default function Ratings({ ratings, sellerProducts, statistics, filters }
     const [replyingToId, setReplyingToId] = useState<number | null>(null);
     const [replyText, setReplyText] = useState('');
     const [submitting, setSubmitting] = useState(false);
+    const [showFilters, setShowFilters] = useState(false);
 
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
@@ -129,7 +125,14 @@ export default function Ratings({ ratings, sellerProducts, statistics, filters }
         return (
             <div className="flex items-center gap-0.5">
                 {[1, 2, 3, 4, 5].map((star) => (
-                    <Star key={star} className={`${sizeClasses[size]} ${star <= rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} />
+                    <Star 
+                        key={star} 
+                        className={sizeClasses[size]}
+                        style={{ 
+                            color: star <= rating ? '#facc15' : '#d1d5db',
+                            fill: star <= rating ? '#facc15' : '#e5e7eb'
+                        }}
+                    />
                 ))}
             </div>
         );
@@ -219,170 +222,172 @@ export default function Ratings({ ratings, sellerProducts, statistics, filters }
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Product Ratings" />
 
-            <div className="space-y-6">
+            <div className="space-y-4 p-3 sm:space-y-6 sm:p-4" style={{ colorScheme: 'light' }}>
                 {/* Header */}
-                <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-                    <div>
-                        <h1 className="text-3xl font-bold tracking-tight">Product Ratings</h1>
-                        <p className="text-muted-foreground">View and analyze customer reviews for your products</p>
-                    </div>
+                <div>
+                    <h1 className="text-xl font-bold tracking-tight text-gray-900 sm:text-2xl lg:text-3xl">Product Ratings</h1>
+                    <p className="text-sm text-gray-600">View and analyze customer reviews for your products</p>
                 </div>
 
                 {/* Statistics Cards */}
-                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                    <Card>
-                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Total Reviews</CardTitle>
-                            <MessageSquare className="h-4 w-4 text-muted-foreground" />
-                        </CardHeader>
-                        <CardContent>
-                            <div className="text-2xl font-bold">{statistics.total_reviews}</div>
-                            <p className="text-xs text-muted-foreground">{statistics.recent_reviews_count} in last 30 days</p>
-                        </CardContent>
-                    </Card>
+                <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
+                    <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+                        <div className="flex items-center justify-between">
+                            <p className="text-xs font-medium text-gray-600 sm:text-sm">Total Reviews</p>
+                            <MessageSquare className="h-4 w-4 sm:h-5 sm:w-5" style={{ color: '#6b7280' }} />
+                        </div>
+                        <p className="mt-2 text-xl font-bold text-gray-900 sm:text-2xl">{statistics.total_reviews}</p>
+                        <p className="text-xs text-gray-500">{statistics.recent_reviews_count} in last 30 days</p>
+                    </div>
 
-                    <Card>
-                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Average Rating</CardTitle>
-                            <Star className="h-4 w-4 text-yellow-400" />
-                        </CardHeader>
-                        <CardContent>
-                            <div className="flex items-center gap-2">
-                                <div className="text-2xl font-bold">{statistics.average_rating.toFixed(1)}</div>
-                                {renderStars(Math.round(statistics.average_rating), 'sm')}
-                            </div>
-                            <p className="text-xs text-muted-foreground">Out of 5 stars</p>
-                        </CardContent>
-                    </Card>
+                    <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+                        <div className="flex items-center justify-between">
+                            <p className="text-xs font-medium text-gray-600 sm:text-sm">Average Rating</p>
+                            <Star className="h-4 w-4 sm:h-5 sm:w-5" style={{ color: '#facc15', fill: '#facc15' }} />
+                        </div>
+                        <div className="mt-2 flex items-center gap-2">
+                            <p className="text-xl font-bold text-gray-900 sm:text-2xl">{statistics.average_rating.toFixed(1)}</p>
+                            {renderStars(Math.round(statistics.average_rating), 'sm')}
+                        </div>
+                        <p className="text-xs text-gray-500">Out of 5 stars</p>
+                    </div>
 
-                    <Card>
-                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">5-Star Reviews</CardTitle>
-                            <TrendingUp className="h-4 w-4 text-green-500" />
-                        </CardHeader>
-                        <CardContent>
-                            <div className="text-2xl font-bold">{statistics.distribution.find((d) => d.rating === 5)?.count || 0}</div>
-                            <p className="text-xs text-muted-foreground">
-                                {statistics.distribution.find((d) => d.rating === 5)?.percentage || 0}% of total
-                            </p>
-                        </CardContent>
-                    </Card>
+                    <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+                        <div className="flex items-center justify-between">
+                            <p className="text-xs font-medium text-gray-600 sm:text-sm">5-Star Reviews</p>
+                            <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5" style={{ color: '#22c55e' }} />
+                        </div>
+                        <p className="mt-2 text-xl font-bold text-green-600 sm:text-2xl">
+                            {statistics.distribution.find((d) => d.rating === 5)?.count || 0}
+                        </p>
+                        <p className="text-xs text-gray-500">
+                            {statistics.distribution.find((d) => d.rating === 5)?.percentage || 0}% of total
+                        </p>
+                    </div>
 
-                    <Card>
-                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Products Reviewed</CardTitle>
-                            <Package className="h-4 w-4 text-muted-foreground" />
-                        </CardHeader>
-                        <CardContent>
-                            <div className="text-2xl font-bold">{sellerProducts.length}</div>
-                            <p className="text-xs text-muted-foreground">Total products with reviews</p>
-                        </CardContent>
-                    </Card>
+                    <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+                        <div className="flex items-center justify-between">
+                            <p className="text-xs font-medium text-gray-600 sm:text-sm">Products Reviewed</p>
+                            <Package className="h-4 w-4 sm:h-5 sm:w-5" style={{ color: '#6b7280' }} />
+                        </div>
+                        <p className="mt-2 text-xl font-bold text-gray-900 sm:text-2xl">{sellerProducts.length}</p>
+                        <p className="text-xs text-gray-500">Total products with reviews</p>
+                    </div>
                 </div>
 
                 {/* Rating Distribution */}
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Rating Distribution</CardTitle>
-                        <CardDescription>Overview of customer ratings across all products</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="space-y-3">
-                            {statistics.distribution.map((dist) => (
-                                <div key={dist.rating} className="flex items-center gap-4">
-                                    <div className="flex w-16 items-center gap-1">
-                                        <span className="text-sm font-medium">{dist.rating}</span>
-                                        <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
-                                    </div>
-                                    <div className="flex-1">
-                                        <div className="h-2 overflow-hidden rounded-full bg-gray-200">
-                                            <div className="h-full bg-yellow-400 transition-all" style={{ width: `${dist.percentage}%` }} />
-                                        </div>
-                                    </div>
-                                    <div className="flex w-24 items-center justify-between text-sm">
-                                        <span className="text-muted-foreground">{dist.count}</span>
-                                        <span className="font-medium">{dist.percentage}%</span>
+                <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm sm:p-6">
+                    <h2 className="text-base font-semibold text-gray-900 sm:text-lg">Rating Distribution</h2>
+                    <p className="text-xs text-gray-500 sm:text-sm">Overview of customer ratings across all products</p>
+                    <div className="mt-4 space-y-3">
+                        {statistics.distribution.map((dist) => (
+                            <div key={dist.rating} className="flex items-center gap-3 sm:gap-4">
+                                <div className="flex w-12 items-center gap-1 sm:w-16">
+                                    <span className="text-sm font-medium text-gray-900">{dist.rating}</span>
+                                    <Star className="h-3 w-3" style={{ color: '#facc15', fill: '#facc15' }} />
+                                </div>
+                                <div className="flex-1">
+                                    <div className="h-2 overflow-hidden rounded-full bg-gray-200">
+                                        <div 
+                                            className="h-full rounded-full bg-yellow-400 transition-all" 
+                                            style={{ width: `${dist.percentage}%` }} 
+                                        />
                                     </div>
                                 </div>
-                            ))}
-                        </div>
-                    </CardContent>
-                </Card>
+                                <div className="flex w-16 items-center justify-between text-xs sm:w-24 sm:text-sm">
+                                    <span className="text-gray-500">{dist.count}</span>
+                                    <span className="font-medium text-gray-900">{dist.percentage}%</span>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
 
                 {/* Filters */}
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Filter Reviews</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <form onSubmit={handleSearch} className="space-y-4">
-                            <div className="grid gap-4 md:grid-cols-3">
-                                <div className="relative">
-                                    <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                                    <Input
-                                        placeholder="Search reviews, customers, products..."
-                                        value={searchTerm}
-                                        onChange={(e) => setSearchTerm(e.target.value)}
-                                        className="pl-10"
-                                    />
-                                </div>
-
-                                <Select value={selectedProduct} onValueChange={setSelectedProduct}>
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="All Products" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="all">All Products</SelectItem>
-                                        {sellerProducts.map((product) => (
-                                            <SelectItem key={product.id} value={product.id.toString()}>
-                                                {product.name}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-
-                                <Select value={selectedRating} onValueChange={setSelectedRating}>
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="All Ratings" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="all">All Ratings</SelectItem>
-                                        <SelectItem value="5">5 Stars</SelectItem>
-                                        <SelectItem value="4">4 Stars</SelectItem>
-                                        <SelectItem value="3">3 Stars</SelectItem>
-                                        <SelectItem value="2">2 Stars</SelectItem>
-                                        <SelectItem value="1">1 Star</SelectItem>
-                                    </SelectContent>
-                                </Select>
+                <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm sm:p-6">
+                    <div className="flex items-center justify-between">
+                        <h2 className="text-base font-semibold text-gray-900 sm:text-lg">Filter Reviews</h2>
+                        <button
+                            onClick={() => setShowFilters(!showFilters)}
+                            className="flex items-center gap-1 rounded-lg border border-gray-200 px-3 py-1.5 text-xs font-medium text-gray-700 transition-colors hover:bg-gray-50 sm:hidden"
+                        >
+                            <Filter className="h-3.5 w-3.5" style={{ color: '#6b7280' }} />
+                            {showFilters ? 'Hide' : 'Show'}
+                        </button>
+                    </div>
+                    
+                    <form onSubmit={handleSearch} className={`mt-4 space-y-4 ${showFilters ? 'block' : 'hidden sm:block'}`}>
+                        <div className="grid gap-3 sm:gap-4 md:grid-cols-3">
+                            <div className="relative">
+                                <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" style={{ color: '#9ca3af' }} />
+                                <input
+                                    type="text"
+                                    placeholder="Search reviews, customers, products..."
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                    className="w-full rounded-lg border border-gray-300 bg-white py-2.5 pr-4 pl-10 text-sm text-gray-900 placeholder-gray-400 focus:border-orange-400 focus:ring-2 focus:ring-orange-100 focus:outline-none"
+                                />
                             </div>
 
-                            <div className="flex gap-2">
-                                <Button type="submit" size="sm">
-                                    <Filter className="mr-2 h-4 w-4" />
-                                    Apply Filters
-                                </Button>
-                                <Button type="button" variant="outline" size="sm" onClick={clearFilters}>
-                                    Clear Filters
-                                </Button>
-                            </div>
-                        </form>
-                    </CardContent>
-                </Card>
+                            <select
+                                value={selectedProduct}
+                                onChange={(e) => setSelectedProduct(e.target.value)}
+                                className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm text-gray-700 focus:border-orange-400 focus:ring-2 focus:ring-orange-100 focus:outline-none"
+                            >
+                                <option value="all">All Products</option>
+                                {sellerProducts.map((product) => (
+                                    <option key={product.id} value={product.id.toString()}>
+                                        {product.name}
+                                    </option>
+                                ))}
+                            </select>
+
+                            <select
+                                value={selectedRating}
+                                onChange={(e) => setSelectedRating(e.target.value)}
+                                className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm text-gray-700 focus:border-orange-400 focus:ring-2 focus:ring-orange-100 focus:outline-none"
+                            >
+                                <option value="all">All Ratings</option>
+                                <option value="5">5 Stars</option>
+                                <option value="4">4 Stars</option>
+                                <option value="3">3 Stars</option>
+                                <option value="2">2 Stars</option>
+                                <option value="1">1 Star</option>
+                            </select>
+                        </div>
+
+                        <div className="flex flex-col gap-2 sm:flex-row">
+                            <button 
+                                type="submit" 
+                                className="inline-flex items-center justify-center gap-2 rounded-lg bg-orange-500 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-orange-600"
+                            >
+                                <Filter className="h-4 w-4" style={{ color: '#ffffff' }} />
+                                Apply Filters
+                            </button>
+                            <button 
+                                type="button" 
+                                onClick={clearFilters}
+                                className="inline-flex items-center justify-center rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
+                            >
+                                Clear Filters
+                            </button>
+                        </div>
+                    </form>
+                </div>
 
                 {/* Reviews List */}
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Customer Reviews</CardTitle>
-                        <CardDescription>
-                            Showing {ratings.data.length} of {ratings.total} reviews
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent>
+                <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm sm:p-6">
+                    <h2 className="text-base font-semibold text-gray-900 sm:text-lg">Customer Reviews</h2>
+                    <p className="text-xs text-gray-500 sm:text-sm">
+                        Showing {ratings.data.length} of {ratings.total} reviews
+                    </p>
+                    
+                    <div className="mt-4">
                         {ratings.data.length === 0 ? (
                             <div className="py-12 text-center">
-                                <MessageSquare className="mx-auto h-12 w-12 text-muted-foreground" />
-                                <h3 className="mt-4 text-lg font-semibold">No reviews found</h3>
-                                <p className="mt-2 text-sm text-muted-foreground">
+                                <MessageSquare className="mx-auto h-12 w-12" style={{ color: '#9ca3af' }} />
+                                <h3 className="mt-4 text-lg font-semibold text-gray-900">No reviews found</h3>
+                                <p className="mt-2 text-sm text-gray-500">
                                     {filters.search || filters.product_id || filters.rating
                                         ? 'Try adjusting your filters'
                                         : 'Your products have not received any reviews yet'}
@@ -391,115 +396,123 @@ export default function Ratings({ ratings, sellerProducts, statistics, filters }
                         ) : (
                             <div className="space-y-6">
                                 {ratings.data.map((rating) => (
-                                    <div key={rating.id} className="border-b pb-6 last:border-b-0 last:pb-0">
-                                        <div className="flex items-start justify-between gap-4">
-                                            <div className="flex gap-4">
-                                                <Avatar className="h-10 w-10">
-                                                    <AvatarImage src={rating.user.avatar_url || undefined} alt={rating.user.name} />
-                                                    <AvatarFallback>{getInitials(rating.user.name)}</AvatarFallback>
-                                                </Avatar>
-                                                <div className="flex-1">
-                                                    <div className="flex items-center gap-2">
-                                                        <h4 className="font-semibold">{rating.user.name}</h4>
-                                                        {renderStars(rating.rating, 'sm')}
-                                                    </div>
-                                                    <p className="text-sm text-muted-foreground">{formatDate(rating.created_at)}</p>
-                                                    <Link
-                                                        href={`/seller/products/${rating.product.id}`}
-                                                        className="mt-1 inline-flex items-center text-sm text-primary hover:underline"
-                                                    >
-                                                        {rating.product.name}
-                                                    </Link>
+                                    <div key={rating.id} className="border-b border-gray-200 pb-6 last:border-b-0 last:pb-0">
+                                        <div className="flex items-start gap-3 sm:gap-4">
+                                            <Avatar className="h-10 w-10 flex-shrink-0 ring-2 ring-gray-100">
+                                                <AvatarImage src={rating.user.avatar_url || undefined} alt={rating.user.name} />
+                                                <AvatarFallback className="bg-orange-100 text-sm font-medium text-orange-700">
+                                                    {getInitials(rating.user.name)}
+                                                </AvatarFallback>
+                                            </Avatar>
+                                            <div className="min-w-0 flex-1">
+                                                <div className="flex flex-wrap items-center gap-2">
+                                                    <h4 className="font-semibold text-gray-900">{rating.user.name}</h4>
+                                                    {renderStars(rating.rating, 'sm')}
                                                 </div>
+                                                <p className="text-xs text-gray-500 sm:text-sm">{formatDate(rating.created_at)}</p>
+                                                <Link
+                                                    href={`/seller/products/${rating.product.id}`}
+                                                    className="mt-1 inline-flex items-center text-sm text-orange-600 hover:text-orange-700 hover:underline"
+                                                >
+                                                    {rating.product.name}
+                                                </Link>
                                             </div>
                                         </div>
-                                        {rating.review && <p className="mt-3 pl-14 text-sm text-gray-700">{rating.review}</p>}
+                                        
+                                        {rating.review && (
+                                            <p className="mt-3 text-sm text-gray-700 sm:ml-14">{rating.review}</p>
+                                        )}
 
                                         {/* Seller Reply Section */}
-                                        <div className="mt-3 pl-14">
+                                        <div className="mt-4 sm:ml-14">
                                             {rating.seller_reply ? (
-                                                <div className="rounded-lg bg-blue-50 p-3 dark:bg-blue-950/20">
-                                                    <div className="flex items-start justify-between">
-                                                        <div className="flex-1">
-                                                            <div className="flex items-center gap-2">
-                                                                <Reply className="h-4 w-4 text-blue-600" />
-                                                                <span className="text-sm font-semibold text-blue-600">Your Reply</span>
+                                                <div className="rounded-lg border border-blue-200 bg-blue-50 p-3 sm:p-4">
+                                                    <div className="flex items-start justify-between gap-2">
+                                                        <div className="min-w-0 flex-1">
+                                                            <div className="flex flex-wrap items-center gap-2">
+                                                                <Reply className="h-4 w-4 flex-shrink-0" style={{ color: '#2563eb' }} />
+                                                                <span className="text-sm font-semibold text-blue-700">Your Reply</span>
                                                                 {rating.seller_replied_at && (
-                                                                    <span className="text-xs text-muted-foreground">
+                                                                    <span className="text-xs text-gray-500">
                                                                         {formatDate(rating.seller_replied_at)}
                                                                     </span>
                                                                 )}
                                                             </div>
-                                                            <p className="mt-2 text-sm text-gray-700">{rating.seller_reply}</p>
+                                                            <p className="mt-2 text-sm text-blue-900">{rating.seller_reply}</p>
                                                         </div>
-                                                        <Button
-                                                            variant="ghost"
-                                                            size="sm"
+                                                        <button
                                                             onClick={() => handleDeleteReply(rating.id, rating.product_id)}
-                                                            className="text-red-600 hover:text-red-700"
+                                                            className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg text-red-600 transition-colors hover:bg-red-100"
                                                         >
-                                                            <Trash2 className="h-4 w-4" />
-                                                        </Button>
+                                                            <Trash2 className="h-4 w-4" style={{ color: '#dc2626' }} />
+                                                        </button>
                                                     </div>
                                                 </div>
                                             ) : (
-                                                <div>
+                                                <>
                                                     {replyingToId === rating.id ? (
-                                                        <div className="space-y-2">
-                                                            <Textarea
+                                                        <div className="space-y-3">
+                                                            <textarea
                                                                 placeholder="Write your reply to the customer..."
                                                                 value={replyText}
                                                                 onChange={(e) => setReplyText(e.target.value)}
                                                                 rows={3}
-                                                                className="resize-none"
+                                                                className="w-full resize-none rounded-lg border border-gray-300 bg-white p-3 text-sm text-gray-900 placeholder-gray-400 focus:border-orange-400 focus:ring-2 focus:ring-orange-100 focus:outline-none"
                                                             />
-                                                            <div className="flex gap-2">
-                                                                <Button
+                                                            <div className="flex flex-col gap-2 sm:flex-row">
+                                                                <button
                                                                     onClick={() => handleReplySubmit(rating.id, rating.product_id)}
                                                                     disabled={!replyText.trim() || submitting}
-                                                                    size="sm"
+                                                                    className="inline-flex items-center justify-center gap-2 rounded-lg bg-orange-500 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-orange-600 disabled:opacity-50"
                                                                 >
-                                                                    <Send className="mr-2 h-4 w-4" />
+                                                                    <Send className="h-4 w-4" style={{ color: '#ffffff' }} />
                                                                     {submitting ? 'Posting...' : 'Post Reply'}
-                                                                </Button>
-                                                                <Button
-                                                                    variant="outline"
+                                                                </button>
+                                                                <button
                                                                     onClick={() => {
                                                                         setReplyingToId(null);
                                                                         setReplyText('');
                                                                     }}
-                                                                    size="sm"
+                                                                    className="inline-flex items-center justify-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
                                                                 >
                                                                     Cancel
-                                                                </Button>
+                                                                </button>
                                                             </div>
                                                         </div>
                                                     ) : (
-                                                        <Button variant="outline" size="sm" onClick={() => setReplyingToId(rating.id)}>
-                                                            <Reply className="mr-2 h-4 w-4" />
+                                                        <button 
+                                                            onClick={() => setReplyingToId(rating.id)}
+                                                            className="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
+                                                        >
+                                                            <Reply className="h-4 w-4" style={{ color: '#6b7280' }} />
                                                             Reply to Customer
-                                                        </Button>
+                                                        </button>
                                                     )}
-                                                </div>
+                                                </>
                                             )}
                                         </div>
                                     </div>
                                 ))}
                             </div>
                         )}
-                    </CardContent>
-                </Card>
+                    </div>
+                </div>
 
                 {/* Pagination */}
                 {ratings.total > ratings.per_page && (
-                    <div className="flex items-center justify-center gap-2">
+                    <div className="flex flex-wrap justify-center gap-1">
                         {ratings.links.map((link, index) => (
-                            <Button
+                            <button
                                 key={index}
-                                variant={link.active ? 'default' : 'outline'}
-                                size="sm"
                                 disabled={!link.url}
                                 onClick={() => link.url && router.get(link.url)}
+                                className={`rounded-lg px-3 py-2 text-sm ${
+                                    link.active
+                                        ? 'bg-orange-500 text-white'
+                                        : link.url
+                                          ? 'border border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
+                                          : 'cursor-not-allowed bg-gray-100 text-gray-400'
+                                }`}
                                 dangerouslySetInnerHTML={{ __html: link.label }}
                             />
                         ))}
