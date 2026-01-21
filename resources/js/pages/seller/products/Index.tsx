@@ -118,13 +118,14 @@ export default function ProductsIndex() {
     const { products, categories, stats, filters, statuses, stockStatuses } = usePage<ProductsPageProps>().props;
     const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
     const [searchTerm, setSearchTerm] = useState(filters.search || '');
+    const [showFilters, setShowFilters] = useState(false);
 
     // Defensive check for products structure
     if (!products || !products.data) {
         return (
             <AppLayout>
                 <Head title="Products" />
-                <div className="p-6">
+                <div className="p-6" style={{ colorScheme: 'light' }}>
                     <div className="text-center">
                         <p className="text-gray-500">Loading products...</p>
                     </div>
@@ -136,28 +137,28 @@ export default function ProductsIndex() {
     const getStatusIcon = (status: string) => {
         switch (status) {
             case 'active':
-                return <CheckCircle className="h-4 w-4 text-green-500" />;
+                return <CheckCircle className="h-4 w-4" style={{ color: '#22c55e' }} />;
             case 'draft':
-                return <Clock className="h-4 w-4 text-yellow-500" />;
+                return <Clock className="h-4 w-4" style={{ color: '#eab308' }} />;
             case 'inactive':
-                return <AlertTriangle className="h-4 w-4 text-red-500" />;
+                return <AlertTriangle className="h-4 w-4" style={{ color: '#ef4444' }} />;
             case 'archived':
-                return <Archive className="h-4 w-4 text-gray-500" />;
+                return <Archive className="h-4 w-4" style={{ color: '#6b7280' }} />;
             default:
-                return <Package className="h-4 w-4 text-gray-500" />;
+                return <Package className="h-4 w-4" style={{ color: '#6b7280' }} />;
         }
     };
 
     const getStockStatusColor = (stockStatus: string) => {
         switch (stockStatus) {
             case 'in_stock':
-                return 'text-green-600 bg-green-50 border-green-200 dark:text-green-400 dark:bg-green-950/50 dark:border-green-800';
+                return 'text-green-700 bg-green-100 border-green-300';
             case 'low_stock':
-                return 'text-yellow-600 bg-yellow-50 border-yellow-200 dark:text-yellow-400 dark:bg-yellow-950/50 dark:border-yellow-800';
+                return 'text-yellow-700 bg-yellow-100 border-yellow-300';
             case 'out_of_stock':
-                return 'text-red-600 bg-red-50 border-red-200 dark:text-red-400 dark:bg-red-950/50 dark:border-red-800';
+                return 'text-red-700 bg-red-100 border-red-300';
             default:
-                return 'text-gray-600 bg-gray-50 border-gray-200 dark:text-gray-400 dark:bg-gray-950/50 dark:border-gray-800';
+                return 'text-gray-700 bg-gray-100 border-gray-300';
         }
     };
 
@@ -220,190 +221,265 @@ export default function ProductsIndex() {
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Products - Seller Dashboard" />
 
-            <div className="flex h-full flex-1 flex-col gap-6 overflow-x-auto rounded-xl p-4">
+            <div className="flex h-full flex-1 flex-col gap-4 overflow-x-hidden rounded-xl bg-white p-3 sm:gap-6 sm:p-4" style={{ colorScheme: 'light' }}>
                 {/* Header Section */}
-                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                     <div>
-                        <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">Products</h1>
-                        <p className="text-gray-600 dark:text-gray-300">Manage your handcrafted products and inventory</p>
+                        <h1 className="text-xl font-bold text-gray-900 sm:text-2xl lg:text-3xl">Products</h1>
+                        <p className="text-sm text-gray-600 sm:text-base">Manage your handcrafted products and inventory</p>
                     </div>
                     <Link
                         href="/seller/products/create"
-                        className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600"
+                        className="inline-flex items-center justify-center gap-2 rounded-lg bg-orange-500 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-orange-600"
                     >
-                        <Plus className="h-4 w-4" />
+                        <Plus className="h-4 w-4" style={{ color: '#ffffff' }} />
                         Add Product
                     </Link>
                 </div>
 
                 {/* Stats Cards */}
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
                     <button
                         onClick={() => handleFilter('stock_status', '')}
-                        className={`rounded-lg border p-4 text-left transition-all hover:shadow-md ${
+                        className={`rounded-lg border p-3 text-left transition-all hover:shadow-md sm:p-4 ${
                             !filters.stock_status && !filters.status
-                                ? 'border-blue-500 bg-blue-50 ring-2 ring-blue-200 dark:bg-blue-950/50'
-                                : 'border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900'
+                                ? 'border-orange-400 bg-orange-50 ring-2 ring-orange-200'
+                                : 'border-gray-200 bg-white'
                         }`}
                     >
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Total Products</p>
-                                <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{stats.total}</p>
+                                <p className="text-xs font-medium text-gray-600 sm:text-sm">Total Products</p>
+                                <p className="text-xl font-bold text-gray-900 sm:text-2xl">{stats.total}</p>
                             </div>
-                            <Package className="h-8 w-8 text-blue-500" />
+                            <Package className="h-6 w-6 sm:h-8 sm:w-8" style={{ color: '#3b82f6' }} />
                         </div>
                     </button>
                     <button
                         onClick={() => handleFilter('status', 'active')}
-                        className={`rounded-lg border p-4 text-left transition-all hover:shadow-md ${
+                        className={`rounded-lg border p-3 text-left transition-all hover:shadow-md sm:p-4 ${
                             filters.status === 'active'
-                                ? 'border-green-500 bg-green-50 ring-2 ring-green-200 dark:bg-green-950/50'
-                                : 'border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900'
+                                ? 'border-green-400 bg-green-50 ring-2 ring-green-200'
+                                : 'border-gray-200 bg-white'
                         }`}
                     >
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Active Products</p>
-                                <p className="text-2xl font-bold text-green-600">{stats.active}</p>
+                                <p className="text-xs font-medium text-gray-600 sm:text-sm">Active</p>
+                                <p className="text-xl font-bold text-green-600 sm:text-2xl">{stats.active}</p>
                             </div>
-                            <CheckCircle className="h-8 w-8 text-green-500" />
+                            <CheckCircle className="h-6 w-6 sm:h-8 sm:w-8" style={{ color: '#22c55e' }} />
                         </div>
                     </button>
                     <button
                         onClick={() => handleFilter('stock_status', 'low_stock')}
-                        className={`rounded-lg border p-4 text-left transition-all hover:shadow-md ${
+                        className={`rounded-lg border p-3 text-left transition-all hover:shadow-md sm:p-4 ${
                             filters.stock_status === 'low_stock'
-                                ? 'border-yellow-500 bg-yellow-50 ring-2 ring-yellow-200 dark:bg-yellow-950/50'
-                                : 'border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900'
+                                ? 'border-yellow-400 bg-yellow-50 ring-2 ring-yellow-200'
+                                : 'border-gray-200 bg-white'
                         }`}
                     >
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Low Stock</p>
-                                <p className="text-2xl font-bold text-yellow-600">{stats.low_stock}</p>
+                                <p className="text-xs font-medium text-gray-600 sm:text-sm">Low Stock</p>
+                                <p className="text-xl font-bold text-yellow-600 sm:text-2xl">{stats.low_stock}</p>
                             </div>
-                            <AlertTriangle className="h-8 w-8 text-yellow-500" />
+                            <AlertTriangle className="h-6 w-6 sm:h-8 sm:w-8" style={{ color: '#eab308' }} />
                         </div>
                     </button>
                     <button
                         onClick={() => handleFilter('stock_status', 'out_of_stock')}
-                        className={`rounded-lg border p-4 text-left transition-all hover:shadow-md ${
+                        className={`rounded-lg border p-3 text-left transition-all hover:shadow-md sm:p-4 ${
                             filters.stock_status === 'out_of_stock'
-                                ? 'border-red-500 bg-red-50 ring-2 ring-red-200 dark:bg-red-950/50'
-                                : 'border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900'
+                                ? 'border-red-400 bg-red-50 ring-2 ring-red-200'
+                                : 'border-gray-200 bg-white'
                         }`}
                     >
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Out of Stock</p>
-                                <p className="text-2xl font-bold text-red-600">{stats.out_of_stock}</p>
+                                <p className="text-xs font-medium text-gray-600 sm:text-sm">Out of Stock</p>
+                                <p className="text-xl font-bold text-red-600 sm:text-2xl">{stats.out_of_stock}</p>
                             </div>
-                            <AlertTriangle className="h-8 w-8 text-red-500" />
+                            <AlertTriangle className="h-6 w-6 sm:h-8 sm:w-8" style={{ color: '#ef4444' }} />
                         </div>
                     </button>
                 </div>
 
                 {/* Filters and Search */}
-                <div className="flex flex-col gap-4 rounded-lg border bg-white p-4 sm:flex-row sm:items-center dark:bg-gray-900">
-                    <form onSubmit={handleSearch} className="flex flex-1 gap-2">
-                        <div className="relative flex-1">
-                            <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-400" />
-                            <input
-                                type="text"
-                                placeholder="Search products..."
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                                className="w-full rounded-lg border border-gray-300 bg-white py-2 pr-4 pl-10 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300"
-                            />
-                        </div>
-                        <button type="submit" className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700">
-                            Search
+                <div className="rounded-lg border border-gray-200 bg-gray-50 p-3 sm:p-4">
+                    {/* Search and Filter Toggle (Mobile) */}
+                    <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+                        <form onSubmit={handleSearch} className="flex flex-1 gap-2">
+                            <div className="relative flex-1">
+                                <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" style={{ color: '#9ca3af' }} />
+                                <input
+                                    type="text"
+                                    placeholder="Search products..."
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                    className="w-full rounded-lg border border-gray-300 bg-white py-2.5 pr-4 pl-10 text-sm text-gray-900 placeholder-gray-400 focus:border-orange-400 focus:ring-2 focus:ring-orange-100 focus:outline-none"
+                                />
+                            </div>
+                            <button 
+                                type="submit" 
+                                className="rounded-lg bg-orange-500 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-orange-600"
+                            >
+                                Search
+                            </button>
+                        </form>
+
+                        {/* Mobile Filter Toggle */}
+                        <button
+                            onClick={() => setShowFilters(!showFilters)}
+                            className="flex items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 sm:hidden"
+                        >
+                            Filters
+                            <TrendingDown className={`h-4 w-4 transition-transform ${showFilters ? 'rotate-180' : ''}`} style={{ color: '#6b7280' }} />
                         </button>
-                    </form>
 
-                    <div className="flex gap-2">
-                        <select
-                            value={filters.category || ''}
-                            onChange={(e) => handleFilter('category', e.target.value)}
-                            className="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-800"
-                        >
-                            <option value="">All Categories</option>
-                            {categories.map((category) => (
-                                <option key={category.id} value={category.id}>
-                                    {category.name}
-                                </option>
-                            ))}
-                        </select>
-
-                        <select
-                            value={filters.status || ''}
-                            onChange={(e) => handleFilter('status', e.target.value)}
-                            className="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-800"
-                        >
-                            <option value="">All Status</option>
-                            {Object.entries(statuses).map(([key, label]) => (
-                                <option key={key} value={key}>
-                                    {label}
-                                </option>
-                            ))}
-                        </select>
-
-                        <select
-                            value={filters.stock_status || ''}
-                            onChange={(e) => handleFilter('stock_status', e.target.value)}
-                            className="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-800"
-                        >
-                            <option value="">All Stock Status</option>
-                            {Object.entries(stockStatuses).map(([key, label]) => (
-                                <option key={key} value={key}>
-                                    {label}
-                                </option>
-                            ))}
-                        </select>
-
-                        <div className="flex rounded-lg border border-gray-300 dark:border-gray-600">
-                            <button
-                                onClick={() => setViewMode('grid')}
-                                className={`p-2 ${viewMode === 'grid' ? 'bg-blue-50 text-blue-600 dark:bg-blue-950' : 'text-gray-500'}`}
+                        {/* Desktop Filters */}
+                        <div className="hidden gap-2 sm:flex">
+                            <select
+                                value={filters.category || ''}
+                                onChange={(e) => handleFilter('category', e.target.value)}
+                                className="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-700 focus:border-orange-400 focus:ring-2 focus:ring-orange-100 focus:outline-none"
                             >
-                                <Grid className="h-4 w-4" />
-                            </button>
-                            <button
-                                onClick={() => setViewMode('list')}
-                                className={`p-2 ${viewMode === 'list' ? 'bg-blue-50 text-blue-600 dark:bg-blue-950' : 'text-gray-500'}`}
+                                <option value="">All Categories</option>
+                                {categories.map((category) => (
+                                    <option key={category.id} value={category.id}>
+                                        {category.name}
+                                    </option>
+                                ))}
+                            </select>
+
+                            <select
+                                value={filters.status || ''}
+                                onChange={(e) => handleFilter('status', e.target.value)}
+                                className="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-700 focus:border-orange-400 focus:ring-2 focus:ring-orange-100 focus:outline-none"
                             >
-                                <List className="h-4 w-4" />
-                            </button>
+                                <option value="">All Status</option>
+                                {Object.entries(statuses).map(([key, label]) => (
+                                    <option key={key} value={key}>
+                                        {label}
+                                    </option>
+                                ))}
+                            </select>
+
+                            <select
+                                value={filters.stock_status || ''}
+                                onChange={(e) => handleFilter('stock_status', e.target.value)}
+                                className="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-700 focus:border-orange-400 focus:ring-2 focus:ring-orange-100 focus:outline-none"
+                            >
+                                <option value="">All Stock</option>
+                                {Object.entries(stockStatuses).map(([key, label]) => (
+                                    <option key={key} value={key}>
+                                        {label}
+                                    </option>
+                                ))}
+                            </select>
+
+                            <div className="flex rounded-lg border border-gray-300 bg-white">
+                                <button
+                                    onClick={() => setViewMode('grid')}
+                                    className={`p-2.5 transition-colors ${viewMode === 'grid' ? 'bg-orange-100 text-orange-600' : 'text-gray-500 hover:bg-gray-50'}`}
+                                >
+                                    <Grid className="h-4 w-4" style={{ color: viewMode === 'grid' ? '#ea580c' : '#6b7280' }} />
+                                </button>
+                                <button
+                                    onClick={() => setViewMode('list')}
+                                    className={`p-2.5 transition-colors ${viewMode === 'list' ? 'bg-orange-100 text-orange-600' : 'text-gray-500 hover:bg-gray-50'}`}
+                                >
+                                    <List className="h-4 w-4" style={{ color: viewMode === 'list' ? '#ea580c' : '#6b7280' }} />
+                                </button>
+                            </div>
                         </div>
                     </div>
+
+                    {/* Mobile Filters (Expandable) */}
+                    {showFilters && (
+                        <div className="mt-3 flex flex-col gap-2 border-t border-gray-200 pt-3 sm:hidden">
+                            <select
+                                value={filters.category || ''}
+                                onChange={(e) => handleFilter('category', e.target.value)}
+                                className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm text-gray-700 focus:border-orange-400 focus:ring-2 focus:ring-orange-100 focus:outline-none"
+                            >
+                                <option value="">All Categories</option>
+                                {categories.map((category) => (
+                                    <option key={category.id} value={category.id}>
+                                        {category.name}
+                                    </option>
+                                ))}
+                            </select>
+
+                            <select
+                                value={filters.status || ''}
+                                onChange={(e) => handleFilter('status', e.target.value)}
+                                className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm text-gray-700 focus:border-orange-400 focus:ring-2 focus:ring-orange-100 focus:outline-none"
+                            >
+                                <option value="">All Status</option>
+                                {Object.entries(statuses).map(([key, label]) => (
+                                    <option key={key} value={key}>
+                                        {label}
+                                    </option>
+                                ))}
+                            </select>
+
+                            <select
+                                value={filters.stock_status || ''}
+                                onChange={(e) => handleFilter('stock_status', e.target.value)}
+                                className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm text-gray-700 focus:border-orange-400 focus:ring-2 focus:ring-orange-100 focus:outline-none"
+                            >
+                                <option value="">All Stock Status</option>
+                                {Object.entries(stockStatuses).map(([key, label]) => (
+                                    <option key={key} value={key}>
+                                        {label}
+                                    </option>
+                                ))}
+                            </select>
+
+                            <div className="flex rounded-lg border border-gray-300 bg-white">
+                                <button
+                                    onClick={() => setViewMode('grid')}
+                                    className={`flex-1 p-2.5 text-sm font-medium transition-colors ${viewMode === 'grid' ? 'bg-orange-100 text-orange-600' : 'text-gray-500'}`}
+                                >
+                                    <Grid className="mx-auto h-4 w-4" style={{ color: viewMode === 'grid' ? '#ea580c' : '#6b7280' }} />
+                                </button>
+                                <button
+                                    onClick={() => setViewMode('list')}
+                                    className={`flex-1 p-2.5 text-sm font-medium transition-colors ${viewMode === 'list' ? 'bg-orange-100 text-orange-600' : 'text-gray-500'}`}
+                                >
+                                    <List className="mx-auto h-4 w-4" style={{ color: viewMode === 'list' ? '#ea580c' : '#6b7280' }} />
+                                </button>
+                            </div>
+                        </div>
+                    )}
                 </div>
 
                 {/* Products Grid/List */}
                 {products.data.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 bg-white p-12 dark:bg-gray-900">
-                        <Package className="h-12 w-12 text-gray-400" />
-                        <h3 className="mt-4 text-lg font-medium text-gray-900 dark:text-gray-100">No products found</h3>
-                        <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">Get started by creating your first handcrafted product.</p>
+                    <div className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 p-8 sm:p-12">
+                        <Package className="h-12 w-12" style={{ color: '#9ca3af' }} />
+                        <h3 className="mt-4 text-lg font-medium text-gray-900">No products found</h3>
+                        <p className="mt-2 text-center text-sm text-gray-500">Get started by creating your first handcrafted product.</p>
                         <Link
                             href="/seller/products/create"
-                            className="mt-4 inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+                            className="mt-4 inline-flex items-center gap-2 rounded-lg bg-orange-500 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-orange-600"
                         >
-                            <Plus className="h-4 w-4" />
+                            <Plus className="h-4 w-4" style={{ color: '#ffffff' }} />
                             Add Product
                         </Link>
                     </div>
                 ) : (
                     <>
                         {viewMode === 'grid' ? (
-                            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                                 {products.data.map((product) => (
                                     <div
                                         key={product.id}
-                                        className="group relative rounded-lg border bg-white p-4 shadow-sm hover:shadow-md dark:bg-gray-900"
+                                        className="group relative rounded-xl border border-gray-200 bg-white p-3 shadow-sm transition-shadow hover:shadow-md sm:p-4"
                                     >
                                         {/* Product Image */}
-                                        <div className="aspect-square overflow-hidden rounded-lg bg-gray-100 dark:bg-gray-800">
+                                        <div className="aspect-square overflow-hidden rounded-lg bg-gray-100">
                                             {product.primary_image ? (
                                                 <img
                                                     src={product.primary_image}
@@ -417,40 +493,35 @@ export default function ProductsIndex() {
                                                 />
                                             ) : (
                                                 <div className="flex h-full items-center justify-center">
-                                                    <Package className="h-12 w-12 text-gray-400" />
-                                                    <span className="sr-only">No image available</span>
+                                                    <Package className="h-12 w-12" style={{ color: '#9ca3af' }} />
                                                 </div>
                                             )}
                                         </div>
 
                                         {/* Product Info */}
-                                        <div className="mt-4">
-                                            <div className="flex items-start justify-between">
-                                                <h3 className="line-clamp-2 text-sm font-medium text-gray-900 dark:text-gray-100">{product.name}</h3>
-                                                <div className="flex items-center gap-1">
+                                        <div className="mt-3 sm:mt-4">
+                                            <div className="flex items-start justify-between gap-2">
+                                                <h3 className="line-clamp-2 text-sm font-medium text-gray-900">{product.name}</h3>
+                                                <div className="flex flex-shrink-0 items-center gap-1">
                                                     {getStatusIcon(product.status)}
-                                                    {product.is_featured && <Star className="h-4 w-4 text-yellow-500" />}
+                                                    {product.is_featured && <Star className="h-4 w-4" style={{ color: '#eab308' }} />}
                                                 </div>
                                             </div>
 
-                                            <div className="mt-2 flex items-center gap-2">
-                                                <span className="text-lg font-bold text-gray-900 dark:text-gray-100">{product.formatted_price}</span>
+                                            <div className="mt-2 flex flex-wrap items-center gap-2">
+                                                <span className="text-base font-bold text-gray-900 sm:text-lg">{product.formatted_price}</span>
                                                 {product.formatted_compare_price && (
-                                                    <>
-                                                        <span className="text-sm text-gray-500 line-through">{product.formatted_compare_price}</span>
-                                                        {product.discount_percentage && (
-                                                            <span className="rounded bg-red-100 px-2 py-1 text-xs font-medium text-red-600">
-                                                                -{product.discount_percentage}%
-                                                            </span>
-                                                        )}
-                                                    </>
+                                                    <span className="text-xs text-gray-500 line-through sm:text-sm">{product.formatted_compare_price}</span>
+                                                )}
+                                                {product.discount_percentage && (
+                                                    <span className="rounded bg-red-100 px-1.5 py-0.5 text-xs font-medium text-red-600">
+                                                        -{product.discount_percentage}%
+                                                    </span>
                                                 )}
                                             </div>
 
-                                            <div className="mt-2 flex items-center justify-between text-sm">
-                                                <span
-                                                    className={`rounded-full border px-2 py-1 text-xs font-medium ${getStockStatusColor(product.stock_status)}`}
-                                                >
+                                            <div className="mt-2 flex items-center justify-between text-xs sm:text-sm">
+                                                <span className={`rounded-full border px-2 py-0.5 text-xs font-medium ${getStockStatusColor(product.stock_status)}`}>
                                                     {stockStatuses[product.stock_status]} ({product.quantity})
                                                 </span>
                                                 <span className="text-gray-500">{product.view_count} views</span>
@@ -458,9 +529,9 @@ export default function ProductsIndex() {
 
                                             {/* Rating Display */}
                                             {product.review_count > 0 && (
-                                                <div className="mt-2 flex items-center gap-1 text-sm">
-                                                    <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
-                                                    <span className="font-medium text-gray-900 dark:text-gray-100">
+                                                <div className="mt-2 flex items-center gap-1 text-xs sm:text-sm">
+                                                    <Star className="h-3 w-3" style={{ color: '#facc15', fill: '#facc15' }} />
+                                                    <span className="font-medium text-gray-900">
                                                         {product.average_rating ? Number(product.average_rating).toFixed(1) : '0.0'}
                                                     </span>
                                                     <span className="text-gray-500">({product.review_count})</span>
@@ -469,36 +540,37 @@ export default function ProductsIndex() {
                                         </div>
 
                                         {/* Actions */}
-                                        <div className="mt-4 flex gap-2">
+                                        <div className="mt-3 flex gap-1.5 sm:mt-4 sm:gap-2">
                                             <Link
                                                 href={`/seller/products/${product.id}`}
-                                                className="flex-1 rounded-lg bg-gray-100 px-3 py-2 text-center text-xs font-medium text-gray-700 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
+                                                className="flex flex-1 items-center justify-center rounded-lg bg-gray-100 px-2 py-2 text-xs font-medium text-gray-700 transition-colors hover:bg-gray-200"
                                             >
-                                                <Eye className="mx-auto h-4 w-4" />
+                                                <Eye className="h-4 w-4" style={{ color: '#374151' }} />
                                             </Link>
                                             <Link
                                                 href={`/seller/products/${product.id}/edit`}
-                                                className="flex-1 rounded-lg bg-blue-100 px-3 py-2 text-center text-xs font-medium text-blue-700 hover:bg-blue-200 dark:bg-blue-900 dark:text-blue-300"
+                                                className="flex flex-1 items-center justify-center rounded-lg bg-blue-100 px-2 py-2 text-xs font-medium transition-colors hover:bg-blue-200"
                                             >
-                                                <Edit className="mx-auto h-4 w-4" />
+                                                <Edit className="h-4 w-4" style={{ color: '#1d4ed8' }} />
                                             </Link>
                                             {product.review_count > 0 && (
                                                 <Link
                                                     href={`/seller/products/${product.id}/ratings`}
-                                                    className="flex-1 rounded-lg bg-yellow-100 px-3 py-2 text-center text-xs font-medium text-yellow-700 hover:bg-yellow-200 dark:bg-yellow-900 dark:text-yellow-300"
+                                                    className="flex flex-1 items-center justify-center rounded-lg bg-yellow-100 px-2 py-2 text-xs font-medium transition-colors hover:bg-yellow-200"
                                                     title="View Ratings"
                                                 >
-                                                    <Star className="mx-auto h-4 w-4" />
+                                                    <Star className="h-4 w-4" style={{ color: '#a16207' }} />
                                                 </Link>
                                             )}
                                             <button
                                                 onClick={() => toggleStatus(product)}
-                                                className="flex-1 rounded-lg bg-green-100 px-3 py-2 text-center text-xs font-medium text-green-700 hover:bg-green-200 dark:bg-green-900 dark:text-green-300"
+                                                className="flex flex-1 items-center justify-center rounded-lg bg-green-100 px-2 py-2 text-xs font-medium transition-colors hover:bg-green-200"
+                                                title={product.status === 'active' ? 'Deactivate' : 'Activate'}
                                             >
                                                 {product.status === 'active' ? (
-                                                    <TrendingDown className="mx-auto h-4 w-4" />
+                                                    <TrendingDown className="h-4 w-4" style={{ color: '#15803d' }} />
                                                 ) : (
-                                                    <TrendingUp className="mx-auto h-4 w-4" />
+                                                    <TrendingUp className="h-4 w-4" style={{ color: '#15803d' }} />
                                                 )}
                                             </button>
                                         </div>
@@ -506,12 +578,12 @@ export default function ProductsIndex() {
                                 ))}
                             </div>
                         ) : (
-                            <div className="rounded-lg border bg-white dark:bg-gray-900">
+                            <div className="rounded-lg border border-gray-200 bg-white">
                                 <div className="overflow-x-auto">
-                                    <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                                        <thead className="bg-gray-50 dark:bg-gray-800">
+                                    <table className="min-w-full divide-y divide-gray-200">
+                                        <thead className="bg-gray-50">
                                             <tr>
-                                                <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">
+                                                <th className="px-4 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase sm:px-6">
                                                     <button
                                                         onClick={() => handleSort('name')}
                                                         className="flex items-center gap-1 hover:text-gray-700"
@@ -519,13 +591,13 @@ export default function ProductsIndex() {
                                                         Product
                                                         {filters.sort === 'name' &&
                                                             (filters.direction === 'asc' ? (
-                                                                <TrendingUp className="h-3 w-3" />
+                                                                <TrendingUp className="h-3 w-3" style={{ color: '#6b7280' }} />
                                                             ) : (
-                                                                <TrendingDown className="h-3 w-3" />
+                                                                <TrendingDown className="h-3 w-3" style={{ color: '#6b7280' }} />
                                                             ))}
                                                     </button>
                                                 </th>
-                                                <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">
+                                                <th className="hidden px-4 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase sm:table-cell sm:px-6">
                                                     <button
                                                         onClick={() => handleSort('price')}
                                                         className="flex items-center gap-1 hover:text-gray-700"
@@ -533,49 +605,32 @@ export default function ProductsIndex() {
                                                         Price
                                                         {filters.sort === 'price' &&
                                                             (filters.direction === 'asc' ? (
-                                                                <TrendingUp className="h-3 w-3" />
+                                                                <TrendingUp className="h-3 w-3" style={{ color: '#6b7280' }} />
                                                             ) : (
-                                                                <TrendingDown className="h-3 w-3" />
+                                                                <TrendingDown className="h-3 w-3" style={{ color: '#6b7280' }} />
                                                             ))}
                                                     </button>
                                                 </th>
-                                                <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">
+                                                <th className="hidden px-4 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase md:table-cell sm:px-6">
                                                     Stock
                                                 </th>
-                                                <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">
+                                                <th className="hidden px-4 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase lg:table-cell sm:px-6">
                                                     Status
                                                 </th>
-                                                <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">
-                                                    Rating
-                                                </th>
-                                                <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">
-                                                    <button
-                                                        onClick={() => handleSort('created_at')}
-                                                        className="flex items-center gap-1 hover:text-gray-700"
-                                                    >
-                                                        Created
-                                                        {filters.sort === 'created_at' &&
-                                                            (filters.direction === 'asc' ? (
-                                                                <TrendingUp className="h-3 w-3" />
-                                                            ) : (
-                                                                <TrendingDown className="h-3 w-3" />
-                                                            ))}
-                                                    </button>
-                                                </th>
-                                                <th className="px-6 py-3 text-right text-xs font-medium tracking-wider text-gray-500 uppercase">
+                                                <th className="px-4 py-3 text-right text-xs font-medium tracking-wider text-gray-500 uppercase sm:px-6">
                                                     Actions
                                                 </th>
                                             </tr>
                                         </thead>
-                                        <tbody className="divide-y divide-gray-200 bg-white dark:divide-gray-700 dark:bg-gray-900">
+                                        <tbody className="divide-y divide-gray-200 bg-white">
                                             {products.data.map((product) => (
-                                                <tr key={product.id} className="hover:bg-gray-50 dark:hover:bg-gray-800">
-                                                    <td className="px-6 py-4 whitespace-nowrap">
+                                                <tr key={product.id} className="hover:bg-gray-50">
+                                                    <td className="px-4 py-3 sm:px-6 sm:py-4">
                                                         <div className="flex items-center">
-                                                            <div className="h-10 w-10 flex-shrink-0">
+                                                            <div className="h-10 w-10 flex-shrink-0 sm:h-12 sm:w-12">
                                                                 {product.primary_image ? (
                                                                     <img
-                                                                        className="h-10 w-10 rounded-lg object-cover"
+                                                                        className="h-10 w-10 rounded-lg object-cover sm:h-12 sm:w-12"
                                                                         src={product.primary_image}
                                                                         alt={product.name}
                                                                         onError={(e) => {
@@ -585,87 +640,68 @@ export default function ProductsIndex() {
                                                                         }}
                                                                     />
                                                                 ) : (
-                                                                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gray-100">
-                                                                        <Package className="h-5 w-5 text-gray-400" />
+                                                                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gray-100 sm:h-12 sm:w-12">
+                                                                        <Package className="h-5 w-5" style={{ color: '#9ca3af' }} />
                                                                     </div>
                                                                 )}
                                                             </div>
-                                                            <div className="ml-4">
-                                                                <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                                                            <div className="ml-3 min-w-0 sm:ml-4">
+                                                                <div className="truncate text-sm font-medium text-gray-900">
                                                                     {product.name}
                                                                 </div>
-                                                                <div className="text-sm text-gray-500 dark:text-gray-400">SKU: {product.sku}</div>
+                                                                <div className="text-xs text-gray-500 sm:text-sm">SKU: {product.sku}</div>
+                                                                {/* Mobile price */}
+                                                                <div className="text-sm font-medium text-gray-900 sm:hidden">{product.formatted_price}</div>
                                                             </div>
                                                         </div>
                                                     </td>
-                                                    <td className="px-6 py-4 whitespace-nowrap">
-                                                        <div className="text-sm text-gray-900 dark:text-gray-100">{product.formatted_price}</div>
+                                                    <td className="hidden whitespace-nowrap px-4 py-3 sm:table-cell sm:px-6 sm:py-4">
+                                                        <div className="text-sm text-gray-900">{product.formatted_price}</div>
                                                         {product.formatted_compare_price && (
-                                                            <div className="text-sm text-gray-500 line-through">
+                                                            <div className="text-xs text-gray-500 line-through">
                                                                 {product.formatted_compare_price}
                                                             </div>
                                                         )}
                                                     </td>
-                                                    <td className="px-6 py-4 whitespace-nowrap">
-                                                        <span
-                                                            className={`inline-flex rounded-full px-2 text-xs leading-5 font-semibold ${getStockStatusColor(product.stock_status)}`}
-                                                        >
+                                                    <td className="hidden whitespace-nowrap px-4 py-3 md:table-cell sm:px-6 sm:py-4">
+                                                        <span className={`inline-flex rounded-full border px-2 py-0.5 text-xs font-medium ${getStockStatusColor(product.stock_status)}`}>
                                                             {product.quantity} {stockStatuses[product.stock_status]}
                                                         </span>
                                                     </td>
-                                                    <td className="px-6 py-4 whitespace-nowrap">
+                                                    <td className="hidden whitespace-nowrap px-4 py-3 lg:table-cell sm:px-6 sm:py-4">
                                                         <div className="flex items-center gap-2">
                                                             {getStatusIcon(product.status)}
-                                                            <span className="text-sm text-gray-900 dark:text-gray-100">
+                                                            <span className="text-sm text-gray-900">
                                                                 {statuses[product.status]}
                                                             </span>
-                                                            {product.is_featured && <Star className="h-4 w-4 text-yellow-500" />}
+                                                            {product.is_featured && <Star className="h-4 w-4" style={{ color: '#eab308' }} />}
                                                         </div>
                                                     </td>
-                                                    <td className="px-6 py-4 whitespace-nowrap">
-                                                        {product.review_count > 0 ? (
-                                                            <Link
-                                                                href={`/seller/products/${product.id}/ratings`}
-                                                                className="flex items-center gap-1 text-sm hover:text-blue-600"
-                                                            >
-                                                                <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
-                                                                <span className="font-medium">
-                                                                    {product.average_rating ? Number(product.average_rating).toFixed(1) : '0.0'}
-                                                                </span>
-                                                                <span className="text-gray-500">({product.review_count})</span>
-                                                            </Link>
-                                                        ) : (
-                                                            <span className="text-sm text-gray-400">No reviews</span>
-                                                        )}
-                                                    </td>
-                                                    <td className="px-6 py-4 text-sm whitespace-nowrap text-gray-500">
-                                                        {new Date(product.created_at).toLocaleDateString()}
-                                                    </td>
-                                                    <td className="px-6 py-4 text-right text-sm font-medium whitespace-nowrap">
+                                                    <td className="whitespace-nowrap px-4 py-3 text-right sm:px-6 sm:py-4">
                                                         <div className="flex items-center justify-end gap-1">
                                                             <Link
                                                                 href={`/seller/products/${product.id}`}
-                                                                className="p-1 text-gray-600 hover:text-gray-900"
+                                                                className="rounded-lg p-1.5 transition-colors hover:bg-gray-100"
                                                             >
-                                                                <Eye className="h-4 w-4" />
+                                                                <Eye className="h-4 w-4" style={{ color: '#4b5563' }} />
                                                             </Link>
                                                             <Link
                                                                 href={`/seller/products/${product.id}/edit`}
-                                                                className="p-1 text-blue-600 hover:text-blue-900"
+                                                                className="rounded-lg p-1.5 transition-colors hover:bg-blue-50"
                                                             >
-                                                                <Edit className="h-4 w-4" />
+                                                                <Edit className="h-4 w-4" style={{ color: '#2563eb' }} />
                                                             </Link>
                                                             <button
                                                                 onClick={() => duplicateProduct(product)}
-                                                                className="p-1 text-green-600 hover:text-green-900"
+                                                                className="rounded-lg p-1.5 transition-colors hover:bg-green-50"
                                                             >
-                                                                <Copy className="h-4 w-4" />
+                                                                <Copy className="h-4 w-4" style={{ color: '#16a34a' }} />
                                                             </button>
                                                             <button
                                                                 onClick={() => deleteProduct(product)}
-                                                                className="p-1 text-red-600 hover:text-red-900"
+                                                                className="rounded-lg p-1.5 transition-colors hover:bg-red-50"
                                                             >
-                                                                <Trash2 className="h-4 w-4" />
+                                                                <Trash2 className="h-4 w-4" style={{ color: '#dc2626' }} />
                                                             </button>
                                                         </div>
                                                     </td>
@@ -679,11 +715,11 @@ export default function ProductsIndex() {
 
                         {/* Pagination */}
                         {products?.last_page > 1 && (
-                            <div className="flex items-center justify-between">
-                                <div className="text-sm text-gray-700 dark:text-gray-300">
+                            <div className="flex flex-col items-center gap-3 sm:flex-row sm:justify-between">
+                                <div className="text-sm text-gray-600">
                                     Showing {products.from} to {products.to} of {products.total} results
                                 </div>
-                                <div className="flex gap-1">
+                                <div className="flex flex-wrap justify-center gap-1">
                                     {products.links.map((link, index) => (
                                         <button
                                             key={index}
@@ -691,7 +727,7 @@ export default function ProductsIndex() {
                                             disabled={!link.url}
                                             className={`rounded-lg px-3 py-2 text-sm ${
                                                 link.active
-                                                    ? 'bg-blue-600 text-white'
+                                                    ? 'bg-orange-500 text-white'
                                                     : link.url
                                                       ? 'border border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
                                                       : 'cursor-not-allowed bg-gray-100 text-gray-400'

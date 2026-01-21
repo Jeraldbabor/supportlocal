@@ -19,16 +19,17 @@ export function NavUser() {
                     <DropdownMenuTrigger asChild>
                         <SidebarMenuButton
                             size="lg"
-                            className="group mx-2 rounded-lg px-3 py-3 text-sidebar-accent-foreground transition-all duration-200 hover:bg-sidebar-accent/70 data-[state=open]:bg-sidebar-accent"
+                            className="group mx-2 rounded-lg px-3 py-3 text-gray-700 transition-all duration-200 hover:bg-gray-100 data-[state=open]:bg-gray-100"
                         >
                             <UserInfo user={auth.user} />
-                            <ChevronsUpDown className="ml-auto size-4 transition-transform duration-200 group-hover:translate-y-0.5" />
+                            <ChevronsUpDown className="ml-auto size-4 text-gray-500 transition-transform duration-200 group-hover:translate-y-0.5" />
                         </SidebarMenuButton>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent
-                        className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg shadow-lg"
+                        className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg bg-white shadow-lg border border-gray-200"
                         align="end"
                         side={isMobile ? 'bottom' : state === 'collapsed' ? 'left' : 'bottom'}
+                        style={{ colorScheme: 'light' }}
                     >
                         <UserMenuContent user={auth.user} />
                     </DropdownMenuContent>

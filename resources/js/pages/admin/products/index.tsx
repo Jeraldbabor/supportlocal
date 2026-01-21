@@ -119,28 +119,28 @@ export default function ProductsIndex() {
     const getStatusColor = (status: string) => {
         switch (status) {
             case 'active':
-                return 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400';
+                return 'bg-green-100 text-green-800';
             case 'inactive':
-                return 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400';
+                return 'bg-gray-100 text-gray-800';
             case 'draft':
-                return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400';
+                return 'bg-yellow-100 text-yellow-800';
             case 'archived':
-                return 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400';
+                return 'bg-red-100 text-red-800';
             default:
-                return 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400';
+                return 'bg-gray-100 text-gray-800';
         }
     };
 
     const getStockStatusColor = (status: string) => {
         switch (status) {
             case 'in_stock':
-                return 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400';
+                return 'bg-green-100 text-green-800';
             case 'low_stock':
-                return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400';
+                return 'bg-yellow-100 text-yellow-800';
             case 'out_of_stock':
-                return 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400';
+                return 'bg-red-100 text-red-800';
             default:
-                return 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400';
+                return 'bg-gray-100 text-gray-800';
         }
     };
 
@@ -148,16 +148,16 @@ export default function ProductsIndex() {
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Product Management" />
 
-            <div className="flex flex-col gap-4 sm:gap-6">
+            <div className="flex flex-col gap-4 p-3 sm:gap-6 sm:p-4" style={{ colorScheme: 'light' }}>
                 {/* Stats Cards */}
                 <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4 lg:grid-cols-8">
                     <Card className="transition-all duration-200 hover:shadow-md">
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                             <CardTitle className="text-xs font-medium sm:text-sm">Total Products</CardTitle>
-                            <Package className="h-3 w-3 text-muted-foreground sm:h-4 sm:w-4" />
+                            <Package className="h-3 w-3 sm:h-4 sm:w-4" style={{ color: '#6b7280' }} />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-xl font-bold sm:text-2xl">{stats.total}</div>
+                            <div className="text-xl font-bold text-gray-900 sm:text-2xl">{stats.total}</div>
                         </CardContent>
                     </Card>
 
@@ -209,10 +209,10 @@ export default function ProductsIndex() {
                     <Card className="transition-all duration-200 hover:shadow-md">
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                             <CardTitle className="text-xs font-medium sm:text-sm">Featured</CardTitle>
-                            <Star className="h-3 w-3 text-yellow-600 sm:h-4 sm:w-4" />
+                            <Star className="h-3 w-3 sm:h-4 sm:w-4" style={{ color: '#ca8a04' }} />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-xl font-bold sm:text-2xl">{stats.featured}</div>
+                            <div className="text-xl font-bold text-gray-900 sm:text-2xl">{stats.featured}</div>
                         </CardContent>
                     </Card>
 
@@ -229,8 +229,8 @@ export default function ProductsIndex() {
                 {/* Header */}
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                     <div>
-                        <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">Product Management</h1>
-                        <p className="mt-1 text-sm text-muted-foreground sm:text-base">Manage all products in the system</p>
+                        <h1 className="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">Product Management</h1>
+                        <p className="mt-1 text-sm text-gray-500 sm:text-base">Manage all products in the system</p>
                     </div>
                 </div>
 
@@ -239,9 +239,9 @@ export default function ProductsIndex() {
                     <CardContent className="pt-4 sm:pt-6">
                         <div className="flex flex-col gap-3 sm:gap-4 md:flex-row md:items-end">
                             <div className="flex-1">
-                                <label className="mb-1.5 block text-xs font-medium sm:text-sm">Search</label>
+                                <label className="mb-1.5 block text-xs font-medium text-gray-700 sm:text-sm">Search</label>
                                 <div className="relative">
-                                    <Search className="absolute top-1/2 left-2.5 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                                    <Search className="absolute top-1/2 left-2.5 h-4 w-4 -translate-y-1/2" style={{ color: '#9ca3af' }} />
                                     <Input
                                         placeholder="Search products..."
                                         value={searchTerm}
@@ -253,7 +253,7 @@ export default function ProductsIndex() {
                             </div>
 
                             <div className="w-full md:w-48">
-                                <label className="mb-1.5 block text-xs font-medium sm:text-sm">Status</label>
+                                <label className="mb-1.5 block text-xs font-medium text-gray-700 sm:text-sm">Status</label>
                                 <Select value={selectedStatus} onValueChange={setSelectedStatus}>
                                     <SelectTrigger>
                                         <SelectValue placeholder="All Status" />
@@ -270,7 +270,7 @@ export default function ProductsIndex() {
                             </div>
 
                             <div className="w-full md:w-48">
-                                <label className="mb-1.5 block text-xs font-medium sm:text-sm">Stock Status</label>
+                                <label className="mb-1.5 block text-xs font-medium text-gray-700 sm:text-sm">Stock Status</label>
                                 <Select value={selectedStockStatus} onValueChange={setSelectedStockStatus}>
                                     <SelectTrigger>
                                         <SelectValue placeholder="All Stock Status" />
@@ -305,7 +305,7 @@ export default function ProductsIndex() {
                         {/* Desktop Table View */}
                         <div className="hidden overflow-x-auto md:block">
                             <table className="w-full">
-                                <thead className="border-b bg-gray-50 dark:bg-gray-800">
+                                <thead className="border-b border-gray-200 bg-gray-50">
                                     <tr>
                                         <th className="px-4 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase lg:px-6">
                                             Product
@@ -330,9 +330,9 @@ export default function ProductsIndex() {
                                         </th>
                                     </tr>
                                 </thead>
-                                <tbody className="divide-y divide-gray-200 bg-white dark:divide-gray-700 dark:bg-gray-900">
+                                <tbody className="divide-y divide-gray-200 bg-white">
                                     {products.data.map((product) => (
-                                        <tr key={product.id} className="transition-colors hover:bg-gray-50 dark:hover:bg-gray-800">
+                                        <tr key={product.id} className="transition-colors hover:bg-gray-50">
                                             <td className="px-4 py-4 lg:px-6">
                                                 <div className="flex items-center gap-3">
                                                     {product.primary_image ? (
@@ -350,16 +350,16 @@ export default function ProductsIndex() {
                                                         />
                                                     ) : null}
                                                     {!product.primary_image && (
-                                                        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-800">
-                                                            <Package className="h-6 w-6 text-gray-400" />
+                                                        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-gray-100">
+                                                            <Package className="h-6 w-6" style={{ color: '#9ca3af' }} />
                                                         </div>
                                                     )}
                                                     <div className="min-w-0">
-                                                        <div className="truncate font-medium">{product.name}</div>
-                                                        <div className="text-sm text-muted-foreground">SKU: {product.sku}</div>
+                                                        <div className="truncate font-medium text-gray-900">{product.name}</div>
+                                                        <div className="text-sm text-gray-500">SKU: {product.sku}</div>
                                                         {product.is_featured && (
                                                             <Badge variant="outline" className="mt-1 text-xs">
-                                                                <Star className="mr-1 h-3 w-3" />
+                                                                <Star className="mr-1 h-3 w-3" style={{ color: '#ca8a04' }} />
                                                                 Featured
                                                             </Badge>
                                                         )}
@@ -369,22 +369,22 @@ export default function ProductsIndex() {
                                             <td className="px-4 py-4 lg:px-6">
                                                 {product.seller ? (
                                                     <div>
-                                                        <div className="text-sm font-medium">{product.seller.name}</div>
-                                                        <div className="text-xs text-muted-foreground">{product.category?.name || 'No category'}</div>
+                                                        <div className="text-sm font-medium text-gray-900">{product.seller.name}</div>
+                                                        <div className="text-xs text-gray-500">{product.category?.name || 'No category'}</div>
                                                     </div>
                                                 ) : (
-                                                    <span className="text-sm text-muted-foreground">N/A</span>
+                                                    <span className="text-sm text-gray-500">N/A</span>
                                                 )}
                                             </td>
                                             <td className="px-4 py-4 lg:px-6">
-                                                <div className="font-medium">{product.formatted_price}</div>
+                                                <div className="font-medium text-gray-900">{product.formatted_price}</div>
                                             </td>
                                             <td className="px-4 py-4 lg:px-6">
                                                 <div className="flex flex-col gap-1">
                                                     <Badge className={getStockStatusColor(product.stock_status)}>
                                                         {stockStatuses[product.stock_status] || product.stock_status}
                                                     </Badge>
-                                                    <span className="text-xs text-muted-foreground">Qty: {product.quantity}</span>
+                                                    <span className="text-xs text-gray-500">Qty: {product.quantity}</span>
                                                 </div>
                                             </td>
                                             <td className="px-4 py-4 lg:px-6">
@@ -392,8 +392,8 @@ export default function ProductsIndex() {
                                             </td>
                                             <td className="px-4 py-4 lg:px-6">
                                                 <div className="flex items-center gap-1">
-                                                    <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                                                    <span className="text-sm">
+                                                    <Star className="h-4 w-4" style={{ color: '#facc15', fill: '#facc15' }} />
+                                                    <span className="text-sm text-gray-900">
                                                         {product.average_rating != null && typeof product.average_rating === 'number'
                                                             ? product.average_rating.toFixed(1)
                                                             : 'N/A'}{' '}
@@ -405,20 +405,20 @@ export default function ProductsIndex() {
                                                 <DropdownMenu>
                                                     <DropdownMenuTrigger asChild>
                                                         <Button variant="ghost" className="h-8 w-8 p-0">
-                                                            <MoreHorizontal className="h-4 w-4" />
+                                                            <MoreHorizontal className="h-4 w-4" style={{ color: '#374151' }} />
                                                         </Button>
                                                     </DropdownMenuTrigger>
                                                     <DropdownMenuContent align="end">
                                                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
                                                         <DropdownMenuItem asChild>
                                                             <Link href={`/admin/products/${product.id}`}>
-                                                                <Eye className="mr-2 h-4 w-4" />
+                                                                <Eye className="mr-2 h-4 w-4" style={{ color: '#374151' }} />
                                                                 View Details
                                                             </Link>
                                                         </DropdownMenuItem>
                                                         <DropdownMenuItem asChild>
                                                             <Link href={`/admin/products/${product.id}/edit`}>
-                                                                <Edit className="mr-2 h-4 w-4" />
+                                                                <Edit className="mr-2 h-4 w-4" style={{ color: '#2563eb' }} />
                                                                 Edit Product
                                                             </Link>
                                                         </DropdownMenuItem>
@@ -426,18 +426,18 @@ export default function ProductsIndex() {
                                                         <DropdownMenuItem onClick={() => handleToggleStatus(product.id)}>
                                                             {product.status === 'active' ? (
                                                                 <>
-                                                                    <TrendingDown className="mr-2 h-4 w-4" />
+                                                                    <TrendingDown className="mr-2 h-4 w-4" style={{ color: '#dc2626' }} />
                                                                     Deactivate
                                                                 </>
                                                             ) : (
                                                                 <>
-                                                                    <TrendingUp className="mr-2 h-4 w-4" />
+                                                                    <TrendingUp className="mr-2 h-4 w-4" style={{ color: '#16a34a' }} />
                                                                     Activate
                                                                 </>
                                                             )}
                                                         </DropdownMenuItem>
                                                         <DropdownMenuItem onClick={() => handleToggleFeatured(product.id)}>
-                                                            <Star className="mr-2 h-4 w-4" />
+                                                            <Star className="mr-2 h-4 w-4" style={{ color: '#ca8a04' }} />
                                                             {product.is_featured ? 'Unfeature' : 'Feature'}
                                                         </DropdownMenuItem>
                                                         <DropdownMenuSeparator />
@@ -457,7 +457,7 @@ export default function ProductsIndex() {
                         {/* Mobile Card View */}
                         <div className="space-y-3 p-4 md:hidden">
                             {products.data.map((product) => (
-                                <div key={product.id} className="rounded-lg border bg-card p-4 shadow-sm transition-all hover:shadow-md">
+                                <div key={product.id} className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm transition-all hover:shadow-md">
                                     <div className="flex items-start justify-between gap-3">
                                         <div className="flex min-w-0 flex-1 items-start gap-3">
                                             {product.primary_image ? (
@@ -471,17 +471,17 @@ export default function ProductsIndex() {
                                                     }}
                                                 />
                                             ) : (
-                                                <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-800">
-                                                    <Package className="h-6 w-6 text-gray-400" />
+                                                <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-lg bg-gray-100">
+                                                    <Package className="h-6 w-6" style={{ color: '#9ca3af' }} />
                                                 </div>
                                             )}
                                             <div className="min-w-0 flex-1">
-                                                <div className="font-medium">{product.name}</div>
-                                                <div className="mt-0.5 text-sm text-muted-foreground">SKU: {product.sku}</div>
+                                                <div className="font-medium text-gray-900">{product.name}</div>
+                                                <div className="mt-0.5 text-sm text-gray-500">SKU: {product.sku}</div>
                                                 <div className="mt-2 flex flex-wrap items-center gap-2">
                                                     {product.is_featured && (
                                                         <Badge variant="outline" className="text-xs">
-                                                            <Star className="mr-1 h-3 w-3" />
+                                                            <Star className="mr-1 h-3 w-3" style={{ color: '#ca8a04' }} />
                                                             Featured
                                                         </Badge>
                                                     )}
@@ -492,13 +492,13 @@ export default function ProductsIndex() {
                                                         {stockStatuses[product.stock_status] || product.stock_status}
                                                     </Badge>
                                                 </div>
-                                                <div className="mt-2 space-y-1 text-xs text-muted-foreground">
+                                                <div className="mt-2 space-y-1 text-xs text-gray-500">
                                                     <div>Price: {product.formatted_price}</div>
                                                     <div>Stock: {product.quantity} units</div>
                                                     {product.seller && <div>Seller: {product.seller.name}</div>}
                                                     {product.category && <div>Category: {product.category.name}</div>}
                                                     <div className="flex items-center gap-1">
-                                                        <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
+                                                        <Star className="h-3 w-3" style={{ color: '#facc15', fill: '#facc15' }} />
                                                         <span>
                                                             {product.average_rating != null && typeof product.average_rating === 'number'
                                                                 ? product.average_rating.toFixed(1)
@@ -512,20 +512,20 @@ export default function ProductsIndex() {
                                         <DropdownMenu>
                                             <DropdownMenuTrigger asChild>
                                                 <Button variant="ghost" className="h-8 w-8 shrink-0 p-0">
-                                                    <MoreHorizontal className="h-4 w-4" />
+                                                    <MoreHorizontal className="h-4 w-4" style={{ color: '#374151' }} />
                                                 </Button>
                                             </DropdownMenuTrigger>
                                             <DropdownMenuContent align="end">
                                                 <DropdownMenuLabel>Actions</DropdownMenuLabel>
                                                 <DropdownMenuItem asChild>
                                                     <Link href={`/admin/products/${product.id}`}>
-                                                        <Eye className="mr-2 h-4 w-4" />
+                                                        <Eye className="mr-2 h-4 w-4" style={{ color: '#374151' }} />
                                                         View Details
                                                     </Link>
                                                 </DropdownMenuItem>
                                                 <DropdownMenuItem asChild>
                                                     <Link href={`/admin/products/${product.id}/edit`}>
-                                                        <Edit className="mr-2 h-4 w-4" />
+                                                        <Edit className="mr-2 h-4 w-4" style={{ color: '#2563eb' }} />
                                                         Edit Product
                                                     </Link>
                                                 </DropdownMenuItem>
@@ -533,18 +533,18 @@ export default function ProductsIndex() {
                                                 <DropdownMenuItem onClick={() => handleToggleStatus(product.id)}>
                                                     {product.status === 'active' ? (
                                                         <>
-                                                            <TrendingDown className="mr-2 h-4 w-4" />
+                                                            <TrendingDown className="mr-2 h-4 w-4" style={{ color: '#dc2626' }} />
                                                             Deactivate
                                                         </>
                                                     ) : (
                                                         <>
-                                                            <TrendingUp className="mr-2 h-4 w-4" />
+                                                            <TrendingUp className="mr-2 h-4 w-4" style={{ color: '#16a34a' }} />
                                                             Activate
                                                         </>
                                                     )}
                                                 </DropdownMenuItem>
                                                 <DropdownMenuItem onClick={() => handleToggleFeatured(product.id)}>
-                                                    <Star className="mr-2 h-4 w-4" />
+                                                    <Star className="mr-2 h-4 w-4" style={{ color: '#ca8a04' }} />
                                                     {product.is_featured ? 'Unfeature' : 'Feature'}
                                                 </DropdownMenuItem>
                                                 <DropdownMenuSeparator />
@@ -561,9 +561,9 @@ export default function ProductsIndex() {
 
                         {products.data.length === 0 && (
                             <div className="flex flex-col items-center justify-center px-4 py-12">
-                                <Package className="mb-4 h-12 w-12 text-muted-foreground" />
-                                <h3 className="text-lg font-medium">No products found</h3>
-                                <p className="mt-1 text-center text-sm text-muted-foreground">Try adjusting your filters</p>
+                                <Package className="mb-4 h-12 w-12" style={{ color: '#9ca3af' }} />
+                                <h3 className="text-lg font-medium text-gray-900">No products found</h3>
+                                <p className="mt-1 text-center text-sm text-gray-500">Try adjusting your filters</p>
                             </div>
                         )}
                     </CardContent>
@@ -579,7 +579,7 @@ export default function ProductsIndex() {
                                         key={index}
                                         href={link.url}
                                         className={`rounded-md px-2 py-1.5 text-xs transition-colors sm:px-3 sm:py-2 sm:text-sm ${
-                                            link.active ? 'bg-primary text-primary-foreground' : 'border bg-background hover:bg-muted'
+                                            link.active ? 'bg-orange-500 text-white' : 'border border-gray-200 bg-white text-gray-700 hover:bg-gray-50'
                                         }`}
                                         dangerouslySetInnerHTML={{ __html: link.label }}
                                     />
