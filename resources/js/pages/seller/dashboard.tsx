@@ -97,9 +97,15 @@ interface OrderStats {
 
 interface RevenueStats {
     total: number;
+    net_total: number;
+    total_commission: number;
+    commission_rate: number;
     this_month: number;
+    net_this_month: number;
     this_week: number;
+    net_this_week: number;
     today: number;
+    net_today: number;
     last_month: number;
     pending_amount: number;
     average_order_value: number;
@@ -221,9 +227,15 @@ export default function SellerDashboard() {
     const revenue = useMemo(
         () => ({
             total: 0,
+            net_total: 0,
+            total_commission: 0,
+            commission_rate: 2,
             this_month: 0,
+            net_this_month: 0,
             this_week: 0,
+            net_this_week: 0,
             today: 0,
+            net_today: 0,
             last_month: 0,
             pending_amount: 0,
             average_order_value: 0,
@@ -623,17 +635,17 @@ export default function SellerDashboard() {
                             </div>
                             <div className="min-w-0 text-right">
                                 <p
-                                    className="truncate text-lg font-bold text-gray-900 sm:text-xl lg:text-2xl dark:text-gray-100"
-                                    title={`Total revenue: ${formatCurrency(revenue.total)}`}
+                                    className="truncate text-lg font-bold text-green-700 sm:text-xl lg:text-2xl dark:text-green-400"
+                                    title={`Net earnings (after ${revenue.commission_rate}% commission): ${formatCurrency(revenue.net_total || revenue.total)}`}
                                 >
-                                    {formatCurrency(revenue.total)}
+                                    {formatCurrency(revenue.net_total || revenue.total)}
                                 </p>
-                                <p className="text-xs font-medium text-gray-600 sm:text-sm dark:text-gray-300">Revenue</p>
+                                <p className="text-xs font-medium text-gray-600 sm:text-sm dark:text-gray-300">Net Earnings</p>
                             </div>
                         </div>
                         <div className="mt-3 flex items-center justify-between gap-2 text-xs sm:mt-4 sm:text-sm">
-                            <span className="truncate text-[10px] text-blue-600 sm:text-xs dark:text-blue-400" title="Revenue this month">
-                                {formatCurrency(revenue.this_month)} MTD
+                            <span className="truncate text-[10px] text-blue-600 sm:text-xs dark:text-blue-400" title="Net earnings this month">
+                                {formatCurrency(revenue.net_this_month || revenue.this_month)} MTD
                             </span>
                             {revenue.month_growth_percentage !== 0 && (
                                 <div
@@ -647,6 +659,14 @@ export default function SellerDashboard() {
                                     <span className="text-[10px] font-medium sm:text-xs">{formatPercentage(revenue.month_growth_percentage)}</span>
                                 </div>
                             )}
+                        </div>
+                        <div className="mt-2 flex items-center justify-between gap-2 text-[10px] sm:text-xs">
+                            <span className="truncate text-gray-500 dark:text-gray-400" title={`Gross sales: ${formatCurrency(revenue.total)}`}>
+                                Gross: {formatCurrency(revenue.total)}
+                            </span>
+                            <span className="truncate text-orange-600 dark:text-orange-400" title={`${revenue.commission_rate}% platform fee`}>
+                                -{revenue.commission_rate}% fee
+                            </span>
                         </div>
                         {revenue.pending_amount > 0 && (
                             <div
@@ -750,12 +770,24 @@ export default function SellerDashboard() {
                         </h3>
                         <div className="space-y-4">
                             <div className="flex items-center justify-between">
+                                <span className="text-sm text-gray-600 dark:text-gray-300">Gross Sales</span>
+                                <span className="font-semibold text-gray-900 dark:text-gray-100">{formatCurrency(revenue.total)}</span>
+                            </div>
+                            <div className="flex items-center justify-between">
+                                <span className="text-sm text-gray-600 dark:text-gray-300">Platform Fee ({revenue.commission_rate}%)</span>
+                                <span className="font-semibold text-orange-600 dark:text-orange-400">-{formatCurrency(revenue.total_commission || 0)}</span>
+                            </div>
+                            <div className="flex items-center justify-between border-t border-gray-200 pt-3 dark:border-gray-700">
+                                <span className="text-sm font-medium text-gray-700 dark:text-gray-200">Net Earnings</span>
+                                <span className="font-bold text-green-600 dark:text-green-400">{formatCurrency(revenue.net_total || revenue.total)}</span>
+                            </div>
+                            <div className="flex items-center justify-between">
                                 <span className="text-sm text-gray-600 dark:text-gray-300">Avg. Order Value</span>
                                 <span className="font-semibold text-gray-900 dark:text-gray-100">{formatCurrency(revenue.average_order_value)}</span>
                             </div>
                             <div className="flex items-center justify-between">
-                                <span className="text-sm text-gray-600 dark:text-gray-300">This Week</span>
-                                <span className="font-semibold text-blue-600 dark:text-blue-400">{formatCurrency(revenue.this_week)}</span>
+                                <span className="text-sm text-gray-600 dark:text-gray-300">This Week (Net)</span>
+                                <span className="font-semibold text-blue-600 dark:text-blue-400">{formatCurrency(revenue.net_this_week || revenue.this_week)}</span>
                             </div>
                             <div className="flex items-center justify-between">
                                 <span className="text-sm text-gray-600 dark:text-gray-300">Growth (MTD)</span>

@@ -13,14 +13,33 @@ import {
     FileText,
     HardDrive,
     Mail,
+    Percent,
     Server,
     Settings,
     Shield,
+    ShoppingCart,
     TrendingDown,
     TrendingUp,
     UserPlus,
     Users,
 } from 'lucide-react';
+
+const PesoIcon = ({ className }: { className?: string }) => (
+    <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        className={className}
+    >
+        <rect x="2" y="6" width="20" height="12" rx="2" />
+        <circle cx="12" cy="12" r="3" />
+        <path d="M6 12h.01M18 12h.01" />
+    </svg>
+);
 
 interface UserStats {
     total: number;
@@ -66,6 +85,26 @@ interface GrowthMetrics {
     applications_last_week: number;
 }
 
+interface OrderStats {
+    total: number;
+    pending: number;
+    confirmed: number;
+    shipped: number;
+    delivered: number;
+    completed: number;
+    cancelled: number;
+    today: number;
+    this_week: number;
+    this_month: number;
+    total_revenue: number;
+    today_revenue: number;
+    this_month_revenue: number;
+    total_commission: number;
+    today_commission: number;
+    this_month_commission: number;
+    commission_rate: number;
+}
+
 interface ActivityItem {
     type: string;
     title: string;
@@ -84,6 +123,7 @@ interface DashboardProps extends SharedData {
     growthMetrics: GrowthMetrics;
     recentUsersCount: number;
     recentActiveUsersCount: number;
+    orderStats: OrderStats;
 }
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -134,6 +174,7 @@ export default function AdminDashboard() {
         growthMetrics,
         recentUsersCount,
         recentActiveUsersCount,
+        orderStats,
     } = usePage<DashboardProps>().props;
 
     const user = auth.user;
@@ -233,6 +274,67 @@ export default function AdminDashboard() {
                                 <p className="text-xs font-medium text-gray-600 sm:text-sm dark:text-gray-300">Pending</p>
                                 <p className="text-xl font-bold text-gray-900 sm:text-2xl dark:text-gray-100">{sellerApplicationStats.pending}</p>
                                 <p className="text-xs text-gray-500 dark:text-gray-400">Require review</p>
+                            </div>
+                        </CardContent>
+                    </Card>
+                </div>
+
+                {/* Revenue & Commission Stats */}
+                <div className="grid auto-rows-min gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-4">
+                    <Card className="border-green-200 bg-gradient-to-br from-green-50 to-emerald-50 transition-all duration-200 hover:shadow-md dark:border-green-800 dark:from-green-950/30 dark:to-emerald-950/30">
+                        <CardContent className="flex items-center gap-3 p-4 sm:gap-4">
+                            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-green-100 shadow-sm dark:bg-green-900">
+                                <PesoIcon className="h-5 w-5 text-green-600 dark:text-green-400" />
+                            </div>
+                            <div className="min-w-0 flex-1">
+                                <p className="text-xs font-medium text-gray-600 sm:text-sm dark:text-gray-300">Total Revenue</p>
+                                <p className="text-xl font-bold text-green-700 sm:text-2xl dark:text-green-400">
+                                    ₱{(orderStats?.total_revenue || 0).toLocaleString()}
+                                </p>
+                                <p className="text-xs text-gray-500 dark:text-gray-400">From all orders</p>
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    <Card className="border-emerald-200 bg-gradient-to-br from-emerald-50 to-teal-50 transition-all duration-200 hover:shadow-md dark:border-emerald-800 dark:from-emerald-950/30 dark:to-teal-950/30">
+                        <CardContent className="flex items-center gap-3 p-4 sm:gap-4">
+                            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-100 shadow-sm dark:bg-emerald-900">
+                                <Percent className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
+                            </div>
+                            <div className="min-w-0 flex-1">
+                                <p className="text-xs font-medium text-gray-600 sm:text-sm dark:text-gray-300">Admin Commission</p>
+                                <p className="text-xl font-bold text-emerald-700 sm:text-2xl dark:text-emerald-400">
+                                    ₱{(orderStats?.total_commission || 0).toLocaleString()}
+                                </p>
+                                <p className="text-xs text-gray-500 dark:text-gray-400">{orderStats?.commission_rate || 2}% from sellers</p>
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    <Card className="transition-all duration-200 hover:shadow-md">
+                        <CardContent className="flex items-center gap-3 p-4 sm:gap-4">
+                            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-teal-100 shadow-sm dark:bg-teal-900">
+                                <PesoIcon className="h-5 w-5 text-teal-600 dark:text-teal-400" />
+                            </div>
+                            <div className="min-w-0 flex-1">
+                                <p className="text-xs font-medium text-gray-600 sm:text-sm dark:text-gray-300">This Month Commission</p>
+                                <p className="text-xl font-bold text-teal-700 sm:text-2xl dark:text-teal-400">
+                                    ₱{(orderStats?.this_month_commission || 0).toLocaleString()}
+                                </p>
+                                <p className="text-xs text-gray-500 dark:text-gray-400">Your earnings this month</p>
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    <Card className="transition-all duration-200 hover:shadow-md">
+                        <CardContent className="flex items-center gap-3 p-4 sm:gap-4">
+                            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-indigo-100 shadow-sm dark:bg-indigo-900">
+                                <ShoppingCart className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
+                            </div>
+                            <div className="min-w-0 flex-1">
+                                <p className="text-xs font-medium text-gray-600 sm:text-sm dark:text-gray-300">Completed Orders</p>
+                                <p className="text-xl font-bold text-indigo-700 sm:text-2xl dark:text-indigo-400">{orderStats?.completed || 0}</p>
+                                <p className="text-xs text-gray-500 dark:text-gray-400">{orderStats?.pending || 0} pending</p>
                             </div>
                         </CardContent>
                     </Card>

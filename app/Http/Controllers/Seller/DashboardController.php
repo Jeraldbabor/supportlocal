@@ -373,20 +373,39 @@ class DashboardController extends Controller
 
         // Revenue Statistics
         $completedOrdersQuery = Order::where('seller_id', $userId)->where('status', Order::STATUS_COMPLETED);
+
+        // Get commission rate from settings
+        $commissionRate = (float) \Illuminate\Support\Facades\Cache::get('settings.seller_commission_rate', 2);
+
         $revenueStats = [
             'total' => $completedOrdersQuery->sum('total_amount') ?? 0,
+            'net_total' => $completedOrdersQuery->sum('seller_net_amount') ?? 0,
+            'total_commission' => $completedOrdersQuery->sum('admin_commission') ?? 0,
+            'commission_rate' => $commissionRate,
             'this_month' => Order::where('seller_id', $userId)
                 ->where('status', Order::STATUS_COMPLETED)
                 ->where('created_at', '>=', $lastMonth)
                 ->sum('total_amount') ?? 0,
+            'net_this_month' => Order::where('seller_id', $userId)
+                ->where('status', Order::STATUS_COMPLETED)
+                ->where('created_at', '>=', $lastMonth)
+                ->sum('seller_net_amount') ?? 0,
             'this_week' => Order::where('seller_id', $userId)
                 ->where('status', Order::STATUS_COMPLETED)
                 ->where('created_at', '>=', $lastWeek)
                 ->sum('total_amount') ?? 0,
+            'net_this_week' => Order::where('seller_id', $userId)
+                ->where('status', Order::STATUS_COMPLETED)
+                ->where('created_at', '>=', $lastWeek)
+                ->sum('seller_net_amount') ?? 0,
             'today' => Order::where('seller_id', $userId)
                 ->where('status', Order::STATUS_COMPLETED)
                 ->whereDate('created_at', $now->toDateString())
                 ->sum('total_amount') ?? 0,
+            'net_today' => Order::where('seller_id', $userId)
+                ->where('status', Order::STATUS_COMPLETED)
+                ->whereDate('created_at', $now->toDateString())
+                ->sum('seller_net_amount') ?? 0,
             'pending_amount' => Order::where('seller_id', $userId)
                 ->whereIn('status', [Order::STATUS_PENDING, Order::STATUS_CONFIRMED])
                 ->sum('total_amount') ?? 0,
