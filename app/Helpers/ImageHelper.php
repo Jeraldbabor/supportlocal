@@ -48,6 +48,13 @@ class ImageHelper
 
         // Check if R2 is configured
         if (config('filesystems.disks.r2.key')) {
+            // Use the public R2 URL directly (not the S3 API endpoint)
+            $r2PublicUrl = config('filesystems.disks.r2.url');
+            if ($r2PublicUrl) {
+                return rtrim($r2PublicUrl, '/') . '/' . ltrim($path, '/');
+            }
+            
+            // Fallback to Storage URL if no public URL configured
             try {
                 return Storage::disk('r2')->url($path);
             } catch (\Exception $e) {
