@@ -352,19 +352,11 @@ class OrderController extends Controller
         ]);
 
         try {
-            // Ensure storage directory exists
-            $paymentProofsDir = storage_path('app/public/payment-proofs');
-            if (! File::exists($paymentProofsDir)) {
-                File::makeDirectory($paymentProofsDir, 0755, true);
-            }
-
             // Delete old payment proof if exists
-            if ($order->payment_proof) {
-                Storage::disk('public')->delete($order->payment_proof);
-            }
+            \App\Helpers\ImageHelper::delete($order->payment_proof);
 
             // Store the new payment proof
-            $path = $request->file('payment_proof')->store('payment-proofs', 'public');
+            $path = \App\Helpers\ImageHelper::store($request->file('payment_proof'), 'payment-proofs');
 
             // Update order with payment proof
             $order->update([

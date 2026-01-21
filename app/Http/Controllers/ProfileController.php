@@ -110,11 +110,9 @@ class ProfileController extends Controller
             }
 
             // Delete old profile picture
-            if ($user->profile_picture && Storage::disk('public')->exists($user->profile_picture)) {
-                Storage::disk('public')->delete($user->profile_picture);
-            }
+            \App\Helpers\ImageHelper::delete($user->profile_picture);
 
-            $path = $request->file('avatar')->store('avatars', 'public');
+            $path = \App\Helpers\ImageHelper::store($request->file('avatar'), 'avatars');
 
             if (! $path) {
                 return back()->withErrors(['avatar' => 'Failed to upload image. Please try again.']);
@@ -147,7 +145,7 @@ class ProfileController extends Controller
         $user = $request->user();
 
         if ($user->profile_picture) {
-            Storage::disk('public')->delete($user->profile_picture);
+            \App\Helpers\ImageHelper::delete($user->profile_picture);
             $user->update(['profile_picture' => null]);
 
             return back()->with('message', 'Profile picture deleted successfully.');

@@ -157,19 +157,11 @@ class ProfileController extends Controller
         ]);
 
         try {
-            // Ensure storage directory exists
-            $avatarsDir = storage_path('app/public/avatars');
-            if (! File::exists($avatarsDir)) {
-                File::makeDirectory($avatarsDir, 0755, true);
-            }
-
             // Delete old profile picture if it exists
-            if ($user->profile_picture && Storage::disk('public')->exists($user->profile_picture)) {
-                Storage::disk('public')->delete($user->profile_picture);
-            }
+            \App\Helpers\ImageHelper::delete($user->profile_picture);
 
             // Store new profile picture
-            $path = $request->file('avatar')->store('avatars', 'public');
+            $path = \App\Helpers\ImageHelper::store($request->file('avatar'), 'avatars');
 
             if (! $path) {
                 return redirect()->back()->withErrors(['avatar' => 'Failed to upload image. Please try again.']);
@@ -198,7 +190,7 @@ class ProfileController extends Controller
         $user = Auth::user();
 
         if ($user->profile_picture) {
-            Storage::disk('public')->delete($user->profile_picture);
+            \App\Helpers\ImageHelper::delete($user->profile_picture);
             $user->update(['profile_picture' => null]);
         }
 

@@ -122,13 +122,9 @@ class ProductController extends Controller
         if ($request->hasFile('images')) {
             // Ensure storage directory exists
             $productsDir = storage_path('app/public/products');
-            if (! File::exists($productsDir)) {
-                File::makeDirectory($productsDir, 0755, true);
-            }
-
             foreach ($request->file('images') as $image) {
                 try {
-                    $path = $image->store('products', 'public');
+                    $path = \App\Helpers\ImageHelper::store($image, 'products');
                     if ($path) {
                         $images[] = $path;
                     }
@@ -218,7 +214,7 @@ class ProductController extends Controller
         if ($request->has('remove_images')) {
             foreach ($request->remove_images as $imageToRemove) {
                 if (in_array($imageToRemove, $currentImages)) {
-                    Storage::disk('public')->delete($imageToRemove);
+                    \App\Helpers\ImageHelper::delete($imageToRemove);
                     $currentImages = array_filter($currentImages, fn ($img) => $img !== $imageToRemove);
                 }
             }
@@ -227,7 +223,7 @@ class ProductController extends Controller
         // Add new images
         if ($request->hasFile('new_images')) {
             foreach ($request->file('new_images') as $image) {
-                $path = $image->store('products', 'public');
+                $path = \App\Helpers\ImageHelper::store($image, 'products');
                 $currentImages[] = $path;
             }
         }
@@ -260,7 +256,7 @@ class ProductController extends Controller
         // Delete associated images
         if ($product->images) {
             foreach ($product->images as $image) {
-                Storage::disk('public')->delete($image);
+                \App\Helpers\ImageHelper::delete($image);
             }
         }
 

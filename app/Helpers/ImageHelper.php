@@ -8,8 +8,20 @@ use Illuminate\Support\Facades\Storage;
 class ImageHelper
 {
     /**
-     * Get the public URL for an image stored in storage/app/public
-     * Uses /images/ route which works reliably on Railway without symlinks
+     * Get the storage disk name to use for uploads
+     */
+    public static function getDisk(): string
+    {
+        // Use R2 if configured, otherwise use public (local)
+        if (config('filesystems.disks.r2.key')) {
+            return 'r2';
+        }
+
+        return 'public';
+    }
+
+    /**
+     * Get the public URL for an image
      *
      * @param  string|null  $path  The storage path (e.g., 'products/image.jpg')
      * @param  string|null  $fallback  Fallback URL if path is null/empty
@@ -21,34 +33,31 @@ class ImageHelper
             return $fallback ?? '/placeholder.jpg';
         }
 
-        // If it's already a full URL or starts with /, return as-is
-        if (str_starts_with($path, 'http') || str_starts_with($path, '/')) {
-            // If it's a /storage/ path, convert to /images/
-            if (str_starts_with($path, '/storage/')) {
-                return str_replace('/storage/', '/images/', $path);
-            }
-
+        // If it's already a full URL, return as-is
+        if (str_starts_with($path, 'http')) {
             return $path;
         }
 
-        // Check if S3 is configured - if so, use S3 URLs
-        // When FILESYSTEM_DISK=s3, files are stored in S3 and URLs should come from S3
-        $defaultDisk = config('filesystems.default');
-        if ($defaultDisk === 's3') {
-            try {
-                // Use the 'public' disk which should be configured for S3
-                return Storage::disk('public')->url($path);
-            } catch (\Exception $e) {
-                // Fallback to /images/ if S3 URL generation fails
-                Log::warning('Failed to generate S3 URL, falling back to /images/', ['path' => $path, 'error' => $e->getMessage()]);
+        // If it starts with /, convert /storage/ to /images/
+        if (str_starts_with($path, '/')) {
+            if (str_starts_with($path, '/storage/')) {
+                return str_replace('/storage/', '/images/', $path);
+            }
+            return $path;
+        }
 
+        // Check if R2 is configured
+        if (config('filesystems.disks.r2.key')) {
+            try {
+                return Storage::disk('r2')->url($path);
+            } catch (\Exception $e) {
+                Log::warning('Failed to generate R2 URL', ['path' => $path, 'error' => $e->getMessage()]);
+                // Fallback to local
                 return '/images/'.$path;
             }
         }
 
-        // Use /images/ route which serves files directly from storage/app/public
-        // This works on Railway without symlinks, but files are lost on redeploy
-        // unless Railway Volume is mounted to /app/storage/app/public
+        // Use /images/ route for local storage
         return '/images/'.$path;
     }
 
@@ -66,5 +75,54 @@ class ImageHelper
         return array_map(function ($path) {
             return self::url($path);
         }, $paths);
+    }
+
+    /**
+     * Store an uploaded file
+     *
+     * @param  \Illuminate\Http\UploadedFile  $file
+     * @param  string  $folder  Folder name (e.g., 'products', 'avatars')
+     * @return string|false  The stored path or false on failure
+     */
+    public static function store($file, string $folder): string|false
+    {
+        return $file->store($folder, self::getDisk());
+    }
+
+    /**
+     * Delete a file from storage
+     *
+     * @param  string|null  $path  The file path to delete
+     */
+    public static function delete(?string $path): bool
+    {
+        if (empty($path)) {
+            return false;
+        }
+
+        try {
+            return Storage::disk(self::getDisk())->delete($path);
+        } catch (\Exception $e) {
+            Log::warning('Failed to delete file', ['path' => $path, 'error' => $e->getMessage()]);
+            return false;
+        }
+    }
+
+    /**
+     * Check if a file exists in storage
+     *
+     * @param  string|null  $path  The file path to check
+     */
+    public static function exists(?string $path): bool
+    {
+        if (empty($path)) {
+            return false;
+        }
+
+        try {
+            return Storage::disk(self::getDisk())->exists($path);
+        } catch (\Exception $e) {
+            return false;
+        }
     }
 }

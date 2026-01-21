@@ -183,7 +183,7 @@ class ChatController extends Controller
             }
 
             try {
-                $imagePath = $request->file('image')->store('chat-images', 'public');
+                $imagePath = \App\Helpers\ImageHelper::store($request->file('image'), 'chat-images');
             } catch (\Exception $e) {
                 \Log::error('Chat image upload failed', [
                     'conversation_id' => $conversationId,
