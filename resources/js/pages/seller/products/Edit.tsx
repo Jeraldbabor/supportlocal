@@ -63,7 +63,11 @@ interface EditProps {
 export default function Edit({ product, categories, conditions }: EditProps) {
     const [selectedImages, setSelectedImages] = useState<File[]>([]);
     const [imagePreviewUrls, setImagePreviewUrls] = useState<string[]>(
-        product.images ? product.images.map((img) => (img.startsWith('http') ? img : `/images/${img}`)) : [],
+        product.images
+            ? product.images
+                  .filter((img): img is string => typeof img === 'string' && img.length > 0)
+                  .map((img) => (img.startsWith('http') ? img : `/images/${img}`))
+            : [],
     );
     const [newTag, setNewTag] = useState('');
     const [showSuccess, setShowSuccess] = useState(false);
