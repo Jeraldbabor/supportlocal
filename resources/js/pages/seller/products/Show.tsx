@@ -246,7 +246,7 @@ export default function ShowProduct({ product }: ShowProductProps) {
                                     {/* Additional Images */}
                                     {product.images.length > 1 && (
                                         <div className="grid grid-cols-3 gap-2">
-                                            {product.images.slice(1).map((image, index) => (
+                                            {product.images.slice(1).filter((img): img is string => typeof img === 'string' && img.length > 0).map((image, index) => (
                                                 <img
                                                     key={index}
                                                     src={image.startsWith('http') ? image : `/images/${image}`}
