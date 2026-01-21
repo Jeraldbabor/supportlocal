@@ -132,22 +132,22 @@ function BuyerLayoutContent({ children, title }: BuyerLayoutProps) {
                                         <Link
                                             key={item.name}
                                             href={item.href}
-                                            className={`group relative flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium whitespace-nowrap transition-all duration-300 focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 focus:outline-none ${
+                                            className={`group relative flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium whitespace-nowrap transition-all duration-300 focus:ring-2 focus:ring-orange-500/50 focus:ring-offset-2 focus:outline-none ${
                                                 isActive
-                                                    ? 'border border-primary/20 bg-gradient-to-r from-primary/10 to-primary/5 text-primary shadow-inner'
-                                                    : 'text-gray-700 hover:bg-gray-50 hover:text-primary hover:shadow-sm'
+                                                    ? 'border border-orange-200 bg-gradient-to-r from-orange-100 to-amber-50 text-orange-700 shadow-inner'
+                                                    : 'text-gray-700 hover:bg-gray-50 hover:text-orange-600 hover:shadow-sm'
                                             }`}
                                             aria-current={isActive ? 'page' : undefined}
                                         >
                                             <Icon
                                                 className={`h-4 w-4 flex-shrink-0 transition-all duration-300 ${
-                                                    isActive ? 'text-primary' : 'text-gray-500 group-hover:text-primary'
+                                                    isActive ? 'text-orange-600' : 'text-gray-500 group-hover:text-orange-600'
                                                 }`}
                                             />
                                             <span className="relative">
                                                 {item.name}
                                                 {isActive && (
-                                                    <span className="absolute right-0 -bottom-1 left-0 h-0.5 rounded-full bg-gradient-to-r from-primary to-primary/50"></span>
+                                                    <span className="absolute right-0 -bottom-1 left-0 h-0.5 rounded-full bg-gradient-to-r from-orange-500 to-amber-400"></span>
                                                 )}
                                             </span>
                                         </Link>
@@ -335,17 +335,17 @@ function BuyerLayoutContent({ children, title }: BuyerLayoutProps) {
                                             href={item.href}
                                             className={`flex items-center gap-4 rounded-xl px-4 py-3 text-base font-medium transition-all duration-300 ${
                                                 isActive
-                                                    ? 'border border-primary/20 bg-gradient-to-r from-primary/10 to-primary/5 text-primary'
-                                                    : 'text-gray-700 hover:bg-gray-50 hover:text-primary'
+                                                    ? 'border border-orange-200 bg-gradient-to-r from-orange-100 to-amber-50 text-orange-700'
+                                                    : 'text-gray-700 hover:bg-gray-50 hover:text-orange-600'
                                             }`}
                                             onClick={() => {
                                                 setIsMenuOpen(false);
                                                 setIsUserMenuOpen(false);
                                             }}
                                         >
-                                            <Icon className={`h-5 w-5 ${isActive ? 'text-primary' : 'text-gray-500'}`} />
+                                            <Icon className={`h-5 w-5 ${isActive ? 'text-orange-600' : 'text-gray-500'}`} />
                                             <span>{item.name}</span>
-                                            {isActive && <div className="ml-auto h-2 w-2 rounded-full bg-primary"></div>}
+                                            {isActive && <div className="ml-auto h-2 w-2 rounded-full bg-orange-500"></div>}
                                         </Link>
                                     );
                                 })}

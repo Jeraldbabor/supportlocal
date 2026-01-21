@@ -138,22 +138,22 @@ export default function MainLayout({ children, title }: MainLayoutProps) {
                                         <Link
                                             key={item.name}
                                             href={item.href}
-                                            className={`group relative flex items-center gap-2 rounded-xl px-2.5 py-1.5 text-xs font-medium whitespace-nowrap transition-all duration-300 focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 focus:outline-none sm:px-3 sm:py-2 sm:text-sm ${
+                                            className={`group relative flex items-center gap-2 rounded-xl px-2.5 py-1.5 text-xs font-medium whitespace-nowrap transition-all duration-300 focus:ring-2 focus:ring-orange-500/50 focus:ring-offset-2 focus:outline-none sm:px-3 sm:py-2 sm:text-sm ${
                                                 isActive
-                                                    ? 'border border-primary/20 bg-gradient-to-r from-primary/10 to-primary/5 text-primary shadow-inner'
-                                                    : 'text-gray-700 hover:bg-gray-50 hover:text-primary hover:shadow-sm'
+                                                    ? 'border border-orange-200 bg-gradient-to-r from-orange-100 to-amber-50 text-orange-700 shadow-inner'
+                                                    : 'text-gray-700 hover:bg-gray-50 hover:text-orange-600 hover:shadow-sm'
                                             }`}
                                             aria-current={isActive ? 'page' : undefined}
                                         >
                                             <Icon
                                                 className={`h-3.5 w-3.5 flex-shrink-0 transition-all duration-300 sm:h-4 sm:w-4 ${
-                                                    isActive ? 'text-primary' : 'text-gray-500 group-hover:text-primary'
+                                                    isActive ? 'text-orange-600' : 'text-gray-500 group-hover:text-orange-600'
                                                 }`}
                                             />
                                             <span className="relative">
                                                 {item.name}
                                                 {isActive && (
-                                                    <span className="absolute right-0 -bottom-1 left-0 h-0.5 rounded-full bg-gradient-to-r from-primary to-primary/50"></span>
+                                                    <span className="absolute right-0 -bottom-1 left-0 h-0.5 rounded-full bg-gradient-to-r from-orange-500 to-amber-400"></span>
                                                 )}
                                             </span>
                                         </Link>
@@ -333,17 +333,17 @@ export default function MainLayout({ children, title }: MainLayoutProps) {
                                             href={item.href}
                                             className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-300 sm:gap-4 sm:px-4 sm:py-3 sm:text-base ${
                                                 isActive
-                                                    ? 'border border-primary/20 bg-gradient-to-r from-primary/10 to-primary/5 text-primary'
-                                                    : 'text-gray-700 hover:bg-gray-50 hover:text-primary'
+                                                    ? 'border border-orange-200 bg-gradient-to-r from-orange-100 to-amber-50 text-orange-700'
+                                                    : 'text-gray-700 hover:bg-gray-50 hover:text-orange-600'
                                             }`}
                                             onClick={() => {
                                                 setIsMenuOpen(false);
                                                 setIsUserMenuOpen(false);
                                             }}
                                         >
-                                            <Icon className={`h-4 w-4 flex-shrink-0 sm:h-5 sm:w-5 ${isActive ? 'text-primary' : 'text-gray-500'}`} />
+                                            <Icon className={`h-4 w-4 flex-shrink-0 sm:h-5 sm:w-5 ${isActive ? 'text-orange-600' : 'text-gray-500'}`} />
                                             <span>{item.name}</span>
-                                            {isActive && <div className="ml-auto h-2 w-2 rounded-full bg-primary"></div>}
+                                            {isActive && <div className="ml-auto h-2 w-2 rounded-full bg-orange-500"></div>}
                                         </Link>
                                     );
                                 })}
