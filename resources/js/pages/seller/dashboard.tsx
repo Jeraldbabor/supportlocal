@@ -254,15 +254,15 @@ export default function SellerDashboard() {
     };
 
     const getHealthScoreColor = (score: number) => {
-        if (score >= 80) return 'text-green-600 dark:text-green-400';
-        if (score >= 60) return 'text-yellow-600 dark:text-yellow-400';
-        return 'text-red-600 dark:text-red-400';
+        if (score >= 80) return 'text-green-600';
+        if (score >= 60) return 'text-yellow-600';
+        return 'text-red-600';
     };
 
     const getHealthScoreBg = (score: number) => {
-        if (score >= 80) return 'bg-green-100 dark:bg-green-900';
-        if (score >= 60) return 'bg-yellow-100 dark:bg-yellow-900';
-        return 'bg-red-100 dark:bg-red-900';
+        if (score >= 80) return 'bg-green-100';
+        if (score >= 60) return 'bg-yellow-100';
+        return 'bg-red-100';
     };
 
     // Memoized utility functions
@@ -278,9 +278,9 @@ export default function SellerDashboard() {
     }, []);
 
     const getGrowthColor = useCallback((percentage: number) => {
-        if (percentage > 0) return 'text-green-600 dark:text-green-400';
-        if (percentage < 0) return 'text-red-600 dark:text-red-400';
-        return 'text-gray-600 dark:text-gray-400';
+        if (percentage > 0) return 'text-green-600';
+        if (percentage < 0) return 'text-red-600';
+        return 'text-gray-600';
     }, []);
 
     const getGrowthIcon = useCallback((percentage: number) => {
@@ -303,7 +303,6 @@ export default function SellerDashboard() {
     // Memoized refresh handler
     const handleRefresh = useCallback(() => {
         setIsRefreshing(true);
-        // In a real app, you might want to refetch data instead of reloading
         setTimeout(() => {
             window.location.reload();
         }, 500);
@@ -312,7 +311,6 @@ export default function SellerDashboard() {
     // Keyboard shortcuts
     useEffect(() => {
         const handleKeyDown = (event: KeyboardEvent) => {
-            // Ctrl/Cmd + R for refresh
             if ((event.ctrlKey || event.metaKey) && event.key === 'r') {
                 event.preventDefault();
                 handleRefresh();
@@ -365,13 +363,13 @@ export default function SellerDashboard() {
     const getPriorityColor = (priority: string) => {
         switch (priority) {
             case 'high':
-                return 'border-red-200 bg-red-50 text-red-700 dark:border-red-800 dark:bg-red-950/50 dark:text-red-300';
+                return 'border-red-200 bg-red-50 text-red-700';
             case 'medium':
-                return 'border-yellow-200 bg-yellow-50 text-yellow-700 dark:border-yellow-800 dark:bg-yellow-950/50 dark:text-yellow-300';
+                return 'border-yellow-200 bg-yellow-50 text-yellow-700';
             case 'low':
-                return 'border-blue-200 bg-blue-50 text-blue-700 dark:border-blue-800 dark:bg-blue-950/50 dark:text-blue-300';
+                return 'border-blue-200 bg-blue-50 text-blue-700';
             default:
-                return 'border-gray-200 bg-gray-50 text-gray-700 dark:border-gray-800 dark:bg-gray-950/50 dark:text-gray-300';
+                return 'border-gray-200 bg-gray-50 text-gray-700';
         }
     };
 
@@ -392,23 +390,23 @@ export default function SellerDashboard() {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Seller Dashboard" />
-            <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-3 sm:gap-6 sm:p-4">
+            <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-3 sm:gap-6 sm:p-4" style={{ colorScheme: 'light' }}>
                 {/* Welcome Section with Account Health */}
-                <div className="rounded-xl border bg-gradient-to-r from-blue-50 to-indigo-50 p-4 sm:p-6 dark:from-blue-950/20 dark:to-indigo-950/20">
+                <div className="rounded-xl border border-blue-200 bg-gradient-to-r from-blue-50 to-indigo-50 p-4 sm:p-6">
                     <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
                         <div className="flex min-w-0 flex-1 items-start gap-3 sm:items-center sm:gap-4">
-                            <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-blue-100 sm:h-12 sm:w-12 dark:bg-blue-900">
-                                <Package className="h-5 w-5 text-blue-600 sm:h-6 sm:w-6 dark:text-blue-400" />
+                            <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-blue-100 sm:h-12 sm:w-12">
+                                <Package className="h-5 w-5 sm:h-6 sm:w-6" style={{ color: '#2563eb' }} />
                             </div>
                             <div className="min-w-0 flex-1">
-                                <h1 className="truncate text-xl font-bold text-gray-900 sm:text-2xl dark:text-gray-100">Welcome, {user?.name}!</h1>
-                                <p className="mt-1 text-sm text-gray-600 sm:text-base dark:text-gray-300">
-                                    Role: <span className="font-semibold text-blue-600 dark:text-blue-400">Seller/Artisan</span>
+                                <h1 className="truncate text-xl font-bold text-gray-900 sm:text-2xl">Welcome, {user?.name}!</h1>
+                                <p className="mt-1 text-sm text-gray-600 sm:text-base">
+                                    Role: <span className="font-semibold text-blue-600">Seller/Artisan</span>
                                     {stats.days_as_seller > 0 && (
                                         <span className="ml-1 text-xs sm:ml-2 sm:text-sm">• {stats.days_as_seller} days as seller</span>
                                     )}
                                 </p>
-                                <p className="mt-1 text-xs text-gray-500 sm:text-sm dark:text-gray-400">
+                                <p className="mt-1 text-xs text-gray-500 sm:text-sm">
                                     Manage your products, orders, and customer relationships
                                 </p>
                             </div>
@@ -417,20 +415,18 @@ export default function SellerDashboard() {
                         <div className="flex flex-shrink-0 flex-col items-start gap-3 sm:flex-row sm:items-center sm:gap-4">
                             {/* Last Updated & Refresh */}
                             <div className="flex items-center gap-2 sm:gap-3">
-                                {/* Last Updated */}
-                                <div className="text-left text-xs text-gray-500 sm:text-right dark:text-gray-400">
+                                <div className="text-left text-xs text-gray-500 sm:text-right">
                                     <p>Last updated</p>
                                     <p className="font-medium">{formatLastUpdated(lastUpdated)}</p>
                                 </div>
 
-                                {/* Refresh Button */}
                                 <button
                                     onClick={handleRefresh}
                                     disabled={isRefreshing}
-                                    className="flex items-center gap-1.5 rounded-lg bg-white px-2.5 py-1.5 text-xs font-medium whitespace-nowrap text-gray-700 shadow-sm ring-1 ring-gray-300 hover:bg-gray-50 disabled:opacity-50 sm:gap-2 sm:px-3 sm:py-2 sm:text-sm dark:bg-gray-800 dark:text-gray-300 dark:ring-gray-600 dark:hover:bg-gray-700"
+                                    className="flex items-center gap-1.5 rounded-lg bg-white px-2.5 py-1.5 text-xs font-medium whitespace-nowrap text-gray-700 shadow-sm ring-1 ring-gray-300 hover:bg-gray-50 disabled:opacity-50 sm:gap-2 sm:px-3 sm:py-2 sm:text-sm"
                                     title="Refresh dashboard (Ctrl+R)"
                                 >
-                                    <RefreshCw className={`h-3.5 w-3.5 sm:h-4 sm:w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+                                    <RefreshCw className={`h-3.5 w-3.5 sm:h-4 sm:w-4 ${isRefreshing ? 'animate-spin' : ''}`} style={{ color: '#374151' }} />
                                     <span className="hidden sm:inline">{isRefreshing ? 'Refreshing...' : 'Refresh'}</span>
                                 </button>
                             </div>
@@ -438,7 +434,7 @@ export default function SellerDashboard() {
                             {/* Account Health Score */}
                             <div className="w-full sm:w-auto">
                                 <div className="mb-1.5 flex items-center gap-2">
-                                    <span className="text-xs font-medium whitespace-nowrap text-gray-600 sm:text-sm dark:text-gray-300">
+                                    <span className="text-xs font-medium whitespace-nowrap text-gray-600 sm:text-sm">
                                         Account Health
                                     </span>
                                     <div
@@ -449,7 +445,7 @@ export default function SellerDashboard() {
                                         </span>
                                     </div>
                                 </div>
-                                <div className="h-2 w-full rounded-full bg-gray-200 sm:w-24 dark:bg-gray-700">
+                                <div className="h-2 w-full rounded-full bg-gray-200 sm:w-24">
                                     <div
                                         className={`h-2 rounded-full transition-all duration-500 ${
                                             stats.account_health_score >= 80
@@ -469,18 +465,18 @@ export default function SellerDashboard() {
                 {/* Profile & Settings Overview */}
                 <div className="grid gap-4 md:grid-cols-2">
                     {/* Profile Completeness Widget */}
-                    <div className="rounded-xl border bg-white p-4 shadow-sm sm:p-6 dark:bg-gray-800">
+                    <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm sm:p-6">
                         <div className="mb-4 flex items-center justify-between gap-2">
-                            <h3 className="flex items-center gap-2 text-base font-semibold text-gray-900 sm:text-lg dark:text-gray-100">
-                                <User className="h-4 w-4 sm:h-5 sm:w-5" />
+                            <h3 className="flex items-center gap-2 text-base font-semibold text-gray-900 sm:text-lg">
+                                <User className="h-4 w-4 sm:h-5 sm:w-5" style={{ color: '#374151' }} />
                                 Profile Completeness
                             </h3>
-                            <span className="flex-shrink-0 text-xl font-bold text-blue-600 sm:text-2xl dark:text-blue-400">
+                            <span className="flex-shrink-0 text-xl font-bold text-blue-600 sm:text-2xl">
                                 {profile.profile_completeness}%
                             </span>
                         </div>
 
-                        <div className="mb-4 h-2 w-full rounded-full bg-gray-200 dark:bg-gray-700">
+                        <div className="mb-4 h-2 w-full rounded-full bg-gray-200">
                             <div
                                 className="h-2 rounded-full bg-blue-500 transition-all duration-500"
                                 style={{ width: `${profile.profile_completeness}%` }}
@@ -490,84 +486,84 @@ export default function SellerDashboard() {
                         <div className="space-y-2">
                             <div className="flex items-center gap-2 text-xs sm:text-sm">
                                 {profile.has_avatar ? (
-                                    <CheckCircle className="h-3.5 w-3.5 flex-shrink-0 text-green-500 sm:h-4 sm:w-4" />
+                                    <CheckCircle className="h-3.5 w-3.5 flex-shrink-0 sm:h-4 sm:w-4" style={{ color: '#22c55e' }} />
                                 ) : (
                                     <div className="h-3.5 w-3.5 flex-shrink-0 rounded-full border-2 border-gray-300 sm:h-4 sm:w-4"></div>
                                 )}
-                                <span className="text-gray-600 dark:text-gray-300">Profile Picture</span>
+                                <span className="text-gray-600">Profile Picture</span>
                             </div>
                             <div className="flex items-center gap-2 text-xs sm:text-sm">
                                 {profile.email_verified ? (
-                                    <CheckCircle className="h-3.5 w-3.5 flex-shrink-0 text-green-500 sm:h-4 sm:w-4" />
+                                    <CheckCircle className="h-3.5 w-3.5 flex-shrink-0 sm:h-4 sm:w-4" style={{ color: '#22c55e' }} />
                                 ) : (
                                     <div className="h-3.5 w-3.5 flex-shrink-0 rounded-full border-2 border-gray-300 sm:h-4 sm:w-4"></div>
                                 )}
-                                <span className="text-gray-600 dark:text-gray-300">Email Verified</span>
+                                <span className="text-gray-600">Email Verified</span>
                             </div>
                             <div className="flex items-center gap-2 text-xs sm:text-sm">
                                 {profile.business_setup ? (
-                                    <CheckCircle className="h-3.5 w-3.5 flex-shrink-0 text-green-500 sm:h-4 sm:w-4" />
+                                    <CheckCircle className="h-3.5 w-3.5 flex-shrink-0 sm:h-4 sm:w-4" style={{ color: '#22c55e' }} />
                                 ) : (
                                     <div className="h-3.5 w-3.5 flex-shrink-0 rounded-full border-2 border-gray-300 sm:h-4 sm:w-4"></div>
                                 )}
-                                <span className="text-gray-600 dark:text-gray-300">Business Setup</span>
+                                <span className="text-gray-600">Business Setup</span>
                             </div>
                         </div>
 
                         {profile.missing_fields && profile.missing_fields.length > 0 && (
-                            <div className="mt-4 rounded-lg bg-amber-50 p-3 dark:bg-amber-950/20">
-                                <p className="text-sm font-medium text-amber-700 dark:text-amber-300">Missing: {profile.missing_fields.join(', ')}</p>
+                            <div className="mt-4 rounded-lg bg-amber-50 p-3">
+                                <p className="text-sm font-medium text-amber-700">Missing: {profile.missing_fields.join(', ')}</p>
                             </div>
                         )}
                     </div>
 
                     {/* Account Settings Widget */}
-                    <div className="rounded-xl border bg-white p-4 shadow-sm sm:p-6 dark:bg-gray-800">
+                    <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm sm:p-6">
                         <div className="mb-4 flex items-center justify-between">
-                            <h3 className="flex items-center gap-2 text-base font-semibold text-gray-900 sm:text-lg dark:text-gray-100">
-                                <Settings className="h-4 w-4 sm:h-5 sm:w-5" />
+                            <h3 className="flex items-center gap-2 text-base font-semibold text-gray-900 sm:text-lg">
+                                <Settings className="h-4 w-4 sm:h-5 sm:w-5" style={{ color: '#374151' }} />
                                 Account Settings
                             </h3>
                         </div>
 
                         <div className="space-y-2.5 sm:space-y-3">
                             <div className="flex items-center justify-between gap-2 pr-1">
-                                <span className="min-w-0 flex-1 text-xs text-gray-600 sm:text-sm dark:text-gray-300">Notifications</span>
+                                <span className="min-w-0 flex-1 text-xs text-gray-600 sm:text-sm">Notifications</span>
                                 <div className="flex-shrink-0">
                                     {settings.notifications_enabled ? (
-                                        <CheckCircle className="h-4 w-4 text-green-500" />
+                                        <CheckCircle className="h-4 w-4" style={{ color: '#22c55e' }} />
                                     ) : (
-                                        <AlertTriangle className="h-4 w-4 text-red-500" />
+                                        <AlertTriangle className="h-4 w-4" style={{ color: '#ef4444' }} />
                                     )}
                                 </div>
                             </div>
                             <div className="flex items-center justify-between gap-2 pr-1">
-                                <span className="min-w-0 flex-1 text-xs text-gray-600 sm:text-sm dark:text-gray-300">Two-Factor Auth</span>
+                                <span className="min-w-0 flex-1 text-xs text-gray-600 sm:text-sm">Two-Factor Auth</span>
                                 <div className="flex-shrink-0">
                                     {settings.two_factor_enabled ? (
-                                        <CheckCircle className="h-4 w-4 text-green-500" />
+                                        <CheckCircle className="h-4 w-4" style={{ color: '#22c55e' }} />
                                     ) : (
-                                        <AlertTriangle className="h-4 w-4 text-yellow-500" />
+                                        <AlertTriangle className="h-4 w-4" style={{ color: '#eab308' }} />
                                     )}
                                 </div>
                             </div>
                             <div className="flex items-center justify-between gap-2 pr-1">
-                                <span className="min-w-0 flex-1 text-xs text-gray-600 sm:text-sm dark:text-gray-300">Privacy Settings</span>
+                                <span className="min-w-0 flex-1 text-xs text-gray-600 sm:text-sm">Privacy Settings</span>
                                 <div className="flex-shrink-0">
                                     {settings.privacy_settings_configured ? (
-                                        <CheckCircle className="h-4 w-4 text-green-500" />
+                                        <CheckCircle className="h-4 w-4" style={{ color: '#22c55e' }} />
                                     ) : (
-                                        <AlertTriangle className="h-4 w-4 text-yellow-500" />
+                                        <AlertTriangle className="h-4 w-4" style={{ color: '#eab308' }} />
                                     )}
                                 </div>
                             </div>
                             <div className="flex items-center justify-between gap-2 pr-1">
-                                <span className="min-w-0 flex-1 text-xs text-gray-600 sm:text-sm dark:text-gray-300">Marketing Preferences</span>
+                                <span className="min-w-0 flex-1 text-xs text-gray-600 sm:text-sm">Marketing Preferences</span>
                                 <div className="flex-shrink-0">
                                     {settings.marketing_preferences_set ? (
-                                        <CheckCircle className="h-4 w-4 text-green-500" />
+                                        <CheckCircle className="h-4 w-4" style={{ color: '#22c55e' }} />
                                     ) : (
-                                        <AlertTriangle className="h-4 w-4 text-yellow-500" />
+                                        <AlertTriangle className="h-4 w-4" style={{ color: '#eab308' }} />
                                     )}
                                 </div>
                             </div>
@@ -576,75 +572,75 @@ export default function SellerDashboard() {
                 </div>
 
                 {/* Enhanced Quick Stats */}
-                <div className="grid auto-rows-min gap-3 sm:gap-4 md:grid-cols-2 lg:grid-cols-4">
+                <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
                     {/* Products Card */}
-                    <div className="group rounded-xl border bg-white p-4 shadow-sm transition-all hover:shadow-md sm:p-6 dark:bg-gray-800">
+                    <div className="group rounded-xl border border-gray-200 bg-white p-4 shadow-sm transition-all hover:shadow-md sm:p-6">
                         <div className="flex items-center justify-between">
-                            <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-blue-100 sm:h-12 sm:w-12 dark:bg-blue-900">
-                                <Package className="h-5 w-5 text-blue-600 sm:h-6 sm:w-6 dark:text-blue-400" />
+                            <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-blue-100 sm:h-12 sm:w-12">
+                                <Package className="h-5 w-5 sm:h-6 sm:w-6" style={{ color: '#2563eb' }} />
                             </div>
                             <div className="min-w-0 text-right">
-                                <p className="text-xl font-bold text-gray-900 sm:text-2xl dark:text-gray-100">{products.total}</p>
-                                <p className="text-xs font-medium text-gray-600 sm:text-sm dark:text-gray-300">Products</p>
+                                <p className="text-xl font-bold text-gray-900 sm:text-2xl">{products.total}</p>
+                                <p className="text-xs font-medium text-gray-600 sm:text-sm">Products</p>
                             </div>
                         </div>
                         <div className="mt-3 flex items-center justify-between gap-2 text-xs sm:mt-4 sm:text-sm">
-                            <span className="truncate text-green-600 dark:text-green-400" title="Active products visible to customers">
+                            <span className="truncate text-green-600" title="Active products visible to customers">
                                 {products.active} Active
                             </span>
-                            <span className="truncate text-yellow-600 dark:text-yellow-400" title="Draft products not yet published">
+                            <span className="truncate text-yellow-600" title="Draft products not yet published">
                                 {products.draft} Draft
                             </span>
                         </div>
                         {products.created_this_week > 0 && (
-                            <div className="mt-2 text-[10px] text-gray-500 sm:text-xs dark:text-gray-400">
+                            <div className="mt-2 text-[10px] text-gray-500 sm:text-xs">
                                 +{products.created_this_week} this week
                             </div>
                         )}
                     </div>
 
                     {/* Orders Card */}
-                    <div className="group rounded-xl border bg-white p-4 shadow-sm transition-all hover:shadow-md sm:p-6 dark:bg-gray-800">
+                    <div className="group rounded-xl border border-gray-200 bg-white p-4 shadow-sm transition-all hover:shadow-md sm:p-6">
                         <div className="flex items-center justify-between">
-                            <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-orange-100 sm:h-12 sm:w-12 dark:bg-orange-900">
-                                <ShoppingBag className="h-5 w-5 text-orange-600 sm:h-6 sm:w-6 dark:text-orange-400" />
+                            <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-orange-100 sm:h-12 sm:w-12">
+                                <ShoppingBag className="h-5 w-5 sm:h-6 sm:w-6" style={{ color: '#ea580c' }} />
                             </div>
                             <div className="min-w-0 text-right">
-                                <p className="text-xl font-bold text-gray-900 sm:text-2xl dark:text-gray-100">{orders.total}</p>
-                                <p className="text-xs font-medium text-gray-600 sm:text-sm dark:text-gray-300">Orders</p>
+                                <p className="text-xl font-bold text-gray-900 sm:text-2xl">{orders.total}</p>
+                                <p className="text-xs font-medium text-gray-600 sm:text-sm">Orders</p>
                             </div>
                         </div>
                         <div className="mt-3 flex items-center justify-between gap-2 text-xs sm:mt-4 sm:text-sm">
-                            <span className="truncate text-blue-600 dark:text-blue-400" title="Orders awaiting confirmation">
+                            <span className="truncate text-blue-600" title="Orders awaiting confirmation">
                                 {orders.pending} Pending
                             </span>
-                            <span className="truncate text-green-600 dark:text-green-400" title="Successfully completed orders">
+                            <span className="truncate text-green-600" title="Successfully completed orders">
                                 {orders.completed} Completed
                             </span>
                         </div>
                         {orders.today > 0 && (
-                            <div className="mt-2 text-[10px] text-gray-500 sm:text-xs dark:text-gray-400">+{orders.today} today</div>
+                            <div className="mt-2 text-[10px] text-gray-500 sm:text-xs">+{orders.today} today</div>
                         )}
                     </div>
 
                     {/* Revenue Card */}
-                    <div className="group rounded-xl border bg-white p-4 shadow-sm transition-all hover:shadow-md sm:p-6 dark:bg-gray-800">
+                    <div className="group rounded-xl border border-gray-200 bg-white p-4 shadow-sm transition-all hover:shadow-md sm:p-6">
                         <div className="flex items-center justify-between">
-                            <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-green-100 sm:h-12 sm:w-12 dark:bg-green-900">
-                                <PesoIcon className="h-5 w-5 text-green-600 sm:h-6 sm:w-6 dark:text-green-400" />
+                            <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-green-100 sm:h-12 sm:w-12">
+                                <PesoIcon className="h-5 w-5 text-green-600 sm:h-6 sm:w-6" />
                             </div>
                             <div className="min-w-0 text-right">
                                 <p
-                                    className="truncate text-lg font-bold text-green-700 sm:text-xl lg:text-2xl dark:text-green-400"
+                                    className="truncate text-lg font-bold text-green-700 sm:text-xl lg:text-2xl"
                                     title={`Net earnings (after ${revenue.commission_rate}% commission): ${formatCurrency(revenue.net_total || revenue.total)}`}
                                 >
                                     {formatCurrency(revenue.net_total || revenue.total)}
                                 </p>
-                                <p className="text-xs font-medium text-gray-600 sm:text-sm dark:text-gray-300">Net Earnings</p>
+                                <p className="text-xs font-medium text-gray-600 sm:text-sm">Net Earnings</p>
                             </div>
                         </div>
                         <div className="mt-3 flex items-center justify-between gap-2 text-xs sm:mt-4 sm:text-sm">
-                            <span className="truncate text-[10px] text-blue-600 sm:text-xs dark:text-blue-400" title="Net earnings this month">
+                            <span className="truncate text-[10px] text-blue-600 sm:text-xs" title="Net earnings this month">
                                 {formatCurrency(revenue.net_this_month || revenue.this_month)} MTD
                             </span>
                             {revenue.month_growth_percentage !== 0 && (
@@ -661,16 +657,16 @@ export default function SellerDashboard() {
                             )}
                         </div>
                         <div className="mt-2 flex items-center justify-between gap-2 text-[10px] sm:text-xs">
-                            <span className="truncate text-gray-500 dark:text-gray-400" title={`Gross sales: ${formatCurrency(revenue.total)}`}>
+                            <span className="truncate text-gray-500" title={`Gross sales: ${formatCurrency(revenue.total)}`}>
                                 Gross: {formatCurrency(revenue.total)}
                             </span>
-                            <span className="truncate text-orange-600 dark:text-orange-400" title={`${revenue.commission_rate}% platform fee`}>
+                            <span className="truncate text-orange-600" title={`${revenue.commission_rate}% platform fee`}>
                                 -{revenue.commission_rate}% fee
                             </span>
                         </div>
                         {revenue.pending_amount > 0 && (
                             <div
-                                className="mt-2 truncate text-[10px] text-yellow-600 sm:text-xs dark:text-yellow-400"
+                                className="mt-2 truncate text-[10px] text-yellow-600 sm:text-xs"
                                 title="Revenue from pending orders"
                             >
                                 {formatCurrency(revenue.pending_amount)} pending
@@ -679,26 +675,26 @@ export default function SellerDashboard() {
                     </div>
 
                     {/* Customers Card */}
-                    <div className="group rounded-xl border bg-white p-4 shadow-sm transition-all hover:shadow-md sm:p-6 dark:bg-gray-800">
+                    <div className="group rounded-xl border border-gray-200 bg-white p-4 shadow-sm transition-all hover:shadow-md sm:p-6">
                         <div className="flex items-center justify-between">
-                            <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-purple-100 sm:h-12 sm:w-12 dark:bg-purple-900">
-                                <Users className="h-5 w-5 text-purple-600 sm:h-6 sm:w-6 dark:text-purple-400" />
+                            <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-purple-100 sm:h-12 sm:w-12">
+                                <Users className="h-5 w-5 sm:h-6 sm:w-6" style={{ color: '#9333ea' }} />
                             </div>
                             <div className="min-w-0 text-right">
-                                <p className="text-xl font-bold text-gray-900 sm:text-2xl dark:text-gray-100">{customers.total_unique}</p>
-                                <p className="text-xs font-medium text-gray-600 sm:text-sm dark:text-gray-300">Customers</p>
+                                <p className="text-xl font-bold text-gray-900 sm:text-2xl">{customers.total_unique}</p>
+                                <p className="text-xs font-medium text-gray-600 sm:text-sm">Customers</p>
                             </div>
                         </div>
                         <div className="mt-3 flex items-center justify-between gap-2 text-xs sm:mt-4 sm:text-sm">
-                            <span className="truncate text-green-600 dark:text-green-400" title="Customers who made multiple purchases">
+                            <span className="truncate text-green-600" title="Customers who made multiple purchases">
                                 {customers.returning} Returning
                             </span>
-                            <span className="truncate text-blue-600 dark:text-blue-400" title="Customer retention rate">
+                            <span className="truncate text-blue-600" title="Customer retention rate">
                                 {customers.retention_rate}% Retention
                             </span>
                         </div>
                         {customers.new_this_month > 0 && (
-                            <div className="mt-2 text-[10px] text-gray-500 sm:text-xs dark:text-gray-400">+{customers.new_this_month} this month</div>
+                            <div className="mt-2 text-[10px] text-gray-500 sm:text-xs">+{customers.new_this_month} this month</div>
                         )}
                     </div>
                 </div>
@@ -706,31 +702,31 @@ export default function SellerDashboard() {
                 {/* Performance Overview */}
                 <div className="grid gap-4 md:grid-cols-3">
                     {/* Product Performance */}
-                    <div className="rounded-xl border bg-white p-6 shadow-sm dark:bg-gray-800">
-                        <h3 className="mb-4 flex items-center gap-2 text-lg font-semibold text-gray-900 dark:text-gray-100">
-                            <BarChart3 className="h-5 w-5" />
+                    <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+                        <h3 className="mb-4 flex items-center gap-2 text-lg font-semibold text-gray-900">
+                            <BarChart3 className="h-5 w-5" style={{ color: '#374151' }} />
                             Product Performance
                         </h3>
                         <div className="space-y-4">
                             <div className="flex items-center justify-between">
-                                <span className="text-sm text-gray-600 dark:text-gray-300">Total Views</span>
+                                <span className="text-sm text-gray-600">Total Views</span>
                                 <div className="flex items-center gap-2">
-                                    <Eye className="h-4 w-4 text-blue-500" />
-                                    <span className="font-semibold text-gray-900 dark:text-gray-100">{products.total_views.toLocaleString()}</span>
+                                    <Eye className="h-4 w-4" style={{ color: '#3b82f6' }} />
+                                    <span className="font-semibold text-gray-900">{products.total_views.toLocaleString()}</span>
                                 </div>
                             </div>
                             <div className="flex items-center justify-between">
-                                <span className="text-sm text-gray-600 dark:text-gray-300">Average Rating</span>
+                                <span className="text-sm text-gray-600">Average Rating</span>
                                 <div className="flex items-center gap-2">
-                                    <Star className="h-4 w-4 text-yellow-500" />
-                                    <span className="font-semibold text-gray-900 dark:text-gray-100">{performanceMetrics.averageRating}</span>
+                                    <Star className="h-4 w-4" style={{ color: '#eab308' }} />
+                                    <span className="font-semibold text-gray-900">{performanceMetrics.averageRating}</span>
                                 </div>
                             </div>
                             <div className="flex items-center justify-between">
-                                <span className="text-sm text-gray-600 dark:text-gray-300">Conversion Rate</span>
+                                <span className="text-sm text-gray-600">Conversion Rate</span>
                                 <div className="flex items-center gap-2">
-                                    <TrendingUp className="h-4 w-4 text-green-500" />
-                                    <span className="font-semibold text-gray-900 dark:text-gray-100">
+                                    <TrendingUp className="h-4 w-4" style={{ color: '#22c55e' }} />
+                                    <span className="font-semibold text-gray-900">
                                         {performanceMetrics.conversionRate !== 'N/A' ? performanceMetrics.conversionRate + '%' : 'N/A'}
                                     </span>
                                 </div>
@@ -739,23 +735,23 @@ export default function SellerDashboard() {
                     </div>
 
                     {/* Order Overview */}
-                    <div className="rounded-xl border bg-white p-6 shadow-sm dark:bg-gray-800">
-                        <h3 className="mb-4 flex items-center gap-2 text-lg font-semibold text-gray-900 dark:text-gray-100">
-                            <ShoppingCart className="h-5 w-5" />
+                    <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+                        <h3 className="mb-4 flex items-center gap-2 text-lg font-semibold text-gray-900">
+                            <ShoppingCart className="h-5 w-5" style={{ color: '#374151' }} />
                             Order Overview
                         </h3>
                         <div className="space-y-4">
                             <div className="flex items-center justify-between">
-                                <span className="text-sm text-gray-600 dark:text-gray-300">This Week</span>
-                                <span className="font-semibold text-blue-600 dark:text-blue-400">{orders.this_week}</span>
+                                <span className="text-sm text-gray-600">This Week</span>
+                                <span className="font-semibold text-blue-600">{orders.this_week}</span>
                             </div>
                             <div className="flex items-center justify-between">
-                                <span className="text-sm text-gray-600 dark:text-gray-300">Avg. Items/Order</span>
-                                <span className="font-semibold text-gray-900 dark:text-gray-100">{performanceMetrics.averageItemsPerOrder}</span>
+                                <span className="text-sm text-gray-600">Avg. Items/Order</span>
+                                <span className="font-semibold text-gray-900">{performanceMetrics.averageItemsPerOrder}</span>
                             </div>
                             <div className="flex items-center justify-between">
-                                <span className="text-sm text-gray-600 dark:text-gray-300">Success Rate</span>
-                                <span className="font-semibold text-green-600 dark:text-green-400">
+                                <span className="text-sm text-gray-600">Success Rate</span>
+                                <span className="font-semibold text-green-600">
                                     {performanceMetrics.successRate !== 'N/A' ? performanceMetrics.successRate + '%' : 'N/A'}
                                 </span>
                             </div>
@@ -763,40 +759,40 @@ export default function SellerDashboard() {
                     </div>
 
                     {/* Revenue Insights */}
-                    <div className="rounded-xl border bg-white p-6 shadow-sm dark:bg-gray-800">
-                        <h3 className="mb-4 flex items-center gap-2 text-lg font-semibold text-gray-900 dark:text-gray-100">
-                            <PesoIcon className="h-5 w-5" />
+                    <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+                        <h3 className="mb-4 flex items-center gap-2 text-lg font-semibold text-gray-900">
+                            <PesoIcon className="h-5 w-5 text-gray-700" />
                             Revenue Insights
                         </h3>
                         <div className="space-y-4">
                             <div className="flex items-center justify-between">
-                                <span className="text-sm text-gray-600 dark:text-gray-300">Gross Sales</span>
-                                <span className="font-semibold text-gray-900 dark:text-gray-100">{formatCurrency(revenue.total)}</span>
+                                <span className="text-sm text-gray-600">Gross Sales</span>
+                                <span className="font-semibold text-gray-900">{formatCurrency(revenue.total)}</span>
                             </div>
                             <div className="flex items-center justify-between">
-                                <span className="text-sm text-gray-600 dark:text-gray-300">Platform Fee ({revenue.commission_rate}%)</span>
-                                <span className="font-semibold text-orange-600 dark:text-orange-400">
+                                <span className="text-sm text-gray-600">Platform Fee ({revenue.commission_rate}%)</span>
+                                <span className="font-semibold text-orange-600">
                                     -{formatCurrency(revenue.total_commission || 0)}
                                 </span>
                             </div>
-                            <div className="flex items-center justify-between border-t border-gray-200 pt-3 dark:border-gray-700">
-                                <span className="text-sm font-medium text-gray-700 dark:text-gray-200">Net Earnings</span>
-                                <span className="font-bold text-green-600 dark:text-green-400">
+                            <div className="flex items-center justify-between border-t border-gray-200 pt-3">
+                                <span className="text-sm font-medium text-gray-700">Net Earnings</span>
+                                <span className="font-bold text-green-600">
                                     {formatCurrency(revenue.net_total || revenue.total)}
                                 </span>
                             </div>
                             <div className="flex items-center justify-between">
-                                <span className="text-sm text-gray-600 dark:text-gray-300">Avg. Order Value</span>
-                                <span className="font-semibold text-gray-900 dark:text-gray-100">{formatCurrency(revenue.average_order_value)}</span>
+                                <span className="text-sm text-gray-600">Avg. Order Value</span>
+                                <span className="font-semibold text-gray-900">{formatCurrency(revenue.average_order_value)}</span>
                             </div>
                             <div className="flex items-center justify-between">
-                                <span className="text-sm text-gray-600 dark:text-gray-300">This Week (Net)</span>
-                                <span className="font-semibold text-blue-600 dark:text-blue-400">
+                                <span className="text-sm text-gray-600">This Week (Net)</span>
+                                <span className="font-semibold text-blue-600">
                                     {formatCurrency(revenue.net_this_week || revenue.this_week)}
                                 </span>
                             </div>
                             <div className="flex items-center justify-between">
-                                <span className="text-sm text-gray-600 dark:text-gray-300">Growth (MTD)</span>
+                                <span className="text-sm text-gray-600">Growth (MTD)</span>
                                 <div className={`flex items-center gap-1 ${getGrowthColor(revenue.month_growth_percentage)}`}>
                                     {(() => {
                                         const GrowthIcon = getGrowthIcon(revenue.month_growth_percentage);
@@ -812,9 +808,9 @@ export default function SellerDashboard() {
                 {/* Charts Section */}
                 <div className="grid gap-6 lg:grid-cols-2">
                     {/* Order Status Chart */}
-                    <div className="rounded-xl border bg-white p-6 shadow-sm dark:bg-gray-800">
-                        <h3 className="mb-4 flex items-center gap-2 text-lg font-semibold text-gray-900 dark:text-gray-100">
-                            <BarChart3 className="h-5 w-5" />
+                    <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+                        <h3 className="mb-4 flex items-center gap-2 text-lg font-semibold text-gray-900">
+                            <BarChart3 className="h-5 w-5" style={{ color: '#374151' }} />
                             Order Status Distribution
                         </h3>
                         {orderStatusData.length > 0 ? (
@@ -822,12 +818,12 @@ export default function SellerDashboard() {
                                 {orderStatusData.map((item) => (
                                     <div key={item.name} className="space-y-2">
                                         <div className="flex items-center justify-between">
-                                            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{item.name}</span>
-                                            <span className="text-sm text-gray-600 dark:text-gray-400">
+                                            <span className="text-sm font-medium text-gray-700">{item.name}</span>
+                                            <span className="text-sm text-gray-600">
                                                 {item.value} ({item.percentage.toFixed(1)}%)
                                             </span>
                                         </div>
-                                        <div className="h-2 w-full rounded-full bg-gray-200 dark:bg-gray-700">
+                                        <div className="h-2 w-full rounded-full bg-gray-200">
                                             <div
                                                 className={`h-2 rounded-full ${item.color} transition-all duration-500`}
                                                 style={{ width: `${item.percentage}%` }}
@@ -838,17 +834,17 @@ export default function SellerDashboard() {
                             </div>
                         ) : (
                             <div className="py-8 text-center">
-                                <BarChart3 className="mx-auto mb-4 h-12 w-12 text-gray-400" />
-                                <p className="text-gray-500 dark:text-gray-400">No orders yet</p>
-                                <p className="text-sm text-gray-400 dark:text-gray-500">Start selling to see order distribution</p>
+                                <BarChart3 className="mx-auto mb-4 h-12 w-12" style={{ color: '#9ca3af' }} />
+                                <p className="text-gray-500">No orders yet</p>
+                                <p className="text-sm text-gray-400">Start selling to see order distribution</p>
                             </div>
                         )}
                     </div>
 
                     {/* Revenue Chart */}
-                    <div className="rounded-xl border bg-white p-6 shadow-sm dark:bg-gray-800">
-                        <h3 className="mb-4 flex items-center gap-2 text-lg font-semibold text-gray-900 dark:text-gray-100">
-                            <TrendingUp className="h-5 w-5" />
+                    <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+                        <h3 className="mb-4 flex items-center gap-2 text-lg font-semibold text-gray-900">
+                            <TrendingUp className="h-5 w-5" style={{ color: '#374151' }} />
                             Revenue Overview
                         </h3>
                         <div className="space-y-4">
@@ -858,12 +854,12 @@ export default function SellerDashboard() {
                                 return (
                                     <div key={item.period} className="space-y-2">
                                         <div className="flex items-center justify-between">
-                                            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{item.period}</span>
-                                            <span className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                                            <span className="text-sm font-medium text-gray-700">{item.period}</span>
+                                            <span className="text-sm font-semibold text-gray-900">
                                                 {formatCurrency(item.amount)}
                                             </span>
                                         </div>
-                                        <div className="h-3 w-full rounded-full bg-gray-200 dark:bg-gray-700">
+                                        <div className="h-3 w-full rounded-full bg-gray-200">
                                             <div
                                                 className={`h-3 rounded-full ${item.color} transition-all duration-500`}
                                                 style={{ width: `${percentage}%` }}
@@ -882,29 +878,29 @@ export default function SellerDashboard() {
                     <div className="lg:col-span-2">
                         <div className="mb-6 grid gap-4 md:grid-cols-2">
                             {/* Quick Profile Access */}
-                            <div className="rounded-xl border bg-white p-4 dark:bg-gray-800">
+                            <div className="rounded-xl border border-gray-200 bg-white p-4">
                                 <div className="mb-3 flex items-center justify-between">
-                                    <h4 className="flex items-center gap-2 font-medium text-gray-900 dark:text-gray-100">
-                                        <User className="h-4 w-4" />
+                                    <h4 className="flex items-center gap-2 font-medium text-gray-900">
+                                        <User className="h-4 w-4" style={{ color: '#374151' }} />
                                         Profile Management
                                     </h4>
                                 </div>
                                 <div className="space-y-2">
                                     <Link
                                         href="/seller/profile"
-                                        className="block w-full rounded-lg px-3 py-2 text-left text-sm text-blue-600 hover:bg-blue-50 hover:text-blue-800 dark:text-blue-400 dark:hover:bg-blue-950/50 dark:hover:text-blue-300"
+                                        className="block w-full rounded-lg px-3 py-2 text-left text-sm text-blue-600 hover:bg-blue-50 hover:text-blue-800"
                                     >
                                         → View Profile
                                     </Link>
                                     <Link
                                         href="/seller/profile/edit"
-                                        className="block w-full rounded-lg px-3 py-2 text-left text-sm text-blue-600 hover:bg-blue-50 hover:text-blue-800 dark:text-blue-400 dark:hover:bg-blue-950/50 dark:hover:text-blue-300"
+                                        className="block w-full rounded-lg px-3 py-2 text-left text-sm text-blue-600 hover:bg-blue-50 hover:text-blue-800"
                                     >
                                         → Edit Profile
                                     </Link>
                                     <Link
                                         href="/seller/profile/business"
-                                        className="block w-full rounded-lg px-3 py-2 text-left text-sm text-blue-600 hover:bg-blue-50 hover:text-blue-800 dark:text-blue-400 dark:hover:bg-blue-950/50 dark:hover:text-blue-300"
+                                        className="block w-full rounded-lg px-3 py-2 text-left text-sm text-blue-600 hover:bg-blue-50 hover:text-blue-800"
                                     >
                                         → Business Info
                                     </Link>
@@ -912,29 +908,29 @@ export default function SellerDashboard() {
                             </div>
 
                             {/* Quick Settings Access */}
-                            <div className="rounded-xl border bg-white p-4 dark:bg-gray-800">
+                            <div className="rounded-xl border border-gray-200 bg-white p-4">
                                 <div className="mb-3 flex items-center justify-between">
-                                    <h4 className="flex items-center gap-2 font-medium text-gray-900 dark:text-gray-100">
-                                        <Settings className="h-4 w-4" />
+                                    <h4 className="flex items-center gap-2 font-medium text-gray-900">
+                                        <Settings className="h-4 w-4" style={{ color: '#374151' }} />
                                         Account Settings
                                     </h4>
                                 </div>
                                 <div className="space-y-2">
                                     <Link
                                         href="/seller/settings"
-                                        className="block w-full rounded-lg px-3 py-2 text-left text-sm text-blue-600 hover:bg-blue-50 hover:text-blue-800 dark:text-blue-400 dark:hover:bg-blue-950/50 dark:hover:text-blue-300"
+                                        className="block w-full rounded-lg px-3 py-2 text-left text-sm text-blue-600 hover:bg-blue-50 hover:text-blue-800"
                                     >
                                         → Settings Overview
                                     </Link>
                                     <Link
                                         href="/seller/settings/security"
-                                        className="block w-full rounded-lg px-3 py-2 text-left text-sm text-blue-600 hover:bg-blue-50 hover:text-blue-800 dark:text-blue-400 dark:hover:bg-blue-950/50 dark:hover:text-blue-300"
+                                        className="block w-full rounded-lg px-3 py-2 text-left text-sm text-blue-600 hover:bg-blue-50 hover:text-blue-800"
                                     >
                                         → Security Settings
                                     </Link>
                                     <Link
                                         href="/seller/settings/notifications"
-                                        className="block w-full rounded-lg px-3 py-2 text-left text-sm text-blue-600 hover:bg-blue-50 hover:text-blue-800 dark:text-blue-400 dark:hover:bg-blue-950/50 dark:hover:text-blue-300"
+                                        className="block w-full rounded-lg px-3 py-2 text-left text-sm text-blue-600 hover:bg-blue-50 hover:text-blue-800"
                                     >
                                         → Notifications
                                     </Link>
@@ -943,9 +939,9 @@ export default function SellerDashboard() {
                         </div>
 
                         {/* Recommendations */}
-                        <div className="rounded-xl border bg-white p-6 shadow-sm dark:bg-gray-800">
-                            <h3 className="mb-4 flex items-center gap-2 text-lg font-semibold text-gray-900 dark:text-gray-100">
-                                <Target className="h-5 w-5" />
+                        <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+                            <h3 className="mb-4 flex items-center gap-2 text-lg font-semibold text-gray-900">
+                                <Target className="h-5 w-5" style={{ color: '#374151' }} />
                                 Recommendations for You
                             </h3>
                             {recommendations && recommendations.length > 0 ? (
@@ -968,10 +964,10 @@ export default function SellerDashboard() {
                                                     <span
                                                         className={`rounded-full px-2 py-1 text-xs ${
                                                             rec.priority === 'high'
-                                                                ? 'bg-red-100 text-red-700 dark:bg-red-900/50 dark:text-red-300'
+                                                                ? 'bg-red-100 text-red-700'
                                                                 : rec.priority === 'medium'
-                                                                  ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/50 dark:text-yellow-300'
-                                                                  : 'bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300'
+                                                                  ? 'bg-yellow-100 text-yellow-700'
+                                                                  : 'bg-blue-100 text-blue-700'
                                                         }`}
                                                     >
                                                         {rec.priority}
@@ -983,9 +979,9 @@ export default function SellerDashboard() {
                                 </div>
                             ) : (
                                 <div className="py-8 text-center">
-                                    <Target className="mx-auto mb-4 h-12 w-12 text-gray-400" />
-                                    <p className="text-gray-500 dark:text-gray-400">All caught up!</p>
-                                    <p className="text-sm text-gray-400 dark:text-gray-500">You're doing great managing your seller account</p>
+                                    <Target className="mx-auto mb-4 h-12 w-12" style={{ color: '#9ca3af' }} />
+                                    <p className="text-gray-500">All caught up!</p>
+                                    <p className="text-sm text-gray-400">You're doing great managing your seller account</p>
                                 </div>
                             )}
                         </div>
@@ -994,9 +990,9 @@ export default function SellerDashboard() {
                     {/* Recent Activity & Quick Actions */}
                     <div className="space-y-6">
                         {/* Recent Activity */}
-                        <div className="rounded-xl border bg-white p-6 shadow-sm dark:bg-gray-800">
-                            <h3 className="mb-4 flex items-center gap-2 text-lg font-semibold text-gray-900 dark:text-gray-100">
-                                <Calendar className="h-5 w-5" />
+                        <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+                            <h3 className="mb-4 flex items-center gap-2 text-lg font-semibold text-gray-900">
+                                <Calendar className="h-5 w-5" style={{ color: '#374151' }} />
                                 Recent Activity
                             </h3>
                             {recentActivity && recentActivity.length > 0 ? (
@@ -1006,15 +1002,15 @@ export default function SellerDashboard() {
                                         return (
                                             <div
                                                 key={index}
-                                                className="flex items-start gap-3 border-b border-gray-100 pb-3 last:border-0 last:pb-0 dark:border-gray-700"
+                                                className="flex items-start gap-3 border-b border-gray-100 pb-3 last:border-0 last:pb-0"
                                             >
-                                                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900">
-                                                    <IconComponent className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                                                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-100">
+                                                    <IconComponent className="h-4 w-4 text-blue-600" />
                                                 </div>
                                                 <div className="min-w-0 flex-1">
-                                                    <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{activity.title}</p>
-                                                    <p className="truncate text-xs text-gray-500 dark:text-gray-400">{activity.description}</p>
-                                                    <p className="mt-1 text-xs text-gray-400 dark:text-gray-500">{activity.date}</p>
+                                                    <p className="text-sm font-medium text-gray-900">{activity.title}</p>
+                                                    <p className="truncate text-xs text-gray-500">{activity.description}</p>
+                                                    <p className="mt-1 text-xs text-gray-400">{activity.date}</p>
                                                 </div>
                                             </div>
                                         );
@@ -1022,32 +1018,32 @@ export default function SellerDashboard() {
                                 </div>
                             ) : (
                                 <div className="py-4 text-center">
-                                    <Calendar className="mx-auto mb-2 h-8 w-8 text-gray-400" />
-                                    <p className="text-sm text-gray-500 dark:text-gray-400">No recent activity</p>
+                                    <Calendar className="mx-auto mb-2 h-8 w-8" style={{ color: '#9ca3af' }} />
+                                    <p className="text-sm text-gray-500">No recent activity</p>
                                 </div>
                             )}
                         </div>
 
                         {/* Inventory Alerts */}
                         {(products.low_stock > 0 || products.out_of_stock > 0) && (
-                            <div className="rounded-xl border border-red-200 bg-red-50 p-6 shadow-sm dark:border-red-800 dark:bg-red-950/20">
-                                <h3 className="mb-4 flex items-center gap-2 text-lg font-semibold text-red-800 dark:text-red-300">
+                            <div className="rounded-xl border border-red-200 bg-red-50 p-6 shadow-sm">
+                                <h3 className="mb-4 flex items-center gap-2 text-lg font-semibold text-red-800">
                                     <AlertTriangle className="h-5 w-5" />
                                     Inventory Alerts
                                 </h3>
                                 <div className="space-y-2">
                                     {products.out_of_stock > 0 && (
-                                        <div className="flex items-center justify-between rounded-lg bg-red-100 p-3 dark:bg-red-900/30">
-                                            <span className="text-sm font-medium text-red-800 dark:text-red-300">Out of Stock Products</span>
-                                            <span className="rounded-full bg-red-200 px-2 py-1 text-xs font-bold text-red-800 dark:bg-red-800 dark:text-red-200">
+                                        <div className="flex items-center justify-between rounded-lg bg-red-100 p-3">
+                                            <span className="text-sm font-medium text-red-800">Out of Stock Products</span>
+                                            <span className="rounded-full bg-red-200 px-2 py-1 text-xs font-bold text-red-800">
                                                 {products.out_of_stock}
                                             </span>
                                         </div>
                                     )}
                                     {products.low_stock > 0 && (
-                                        <div className="flex items-center justify-between rounded-lg bg-yellow-100 p-3 dark:bg-yellow-900/30">
-                                            <span className="text-sm font-medium text-yellow-800 dark:text-yellow-300">Low Stock Products</span>
-                                            <span className="rounded-full bg-yellow-200 px-2 py-1 text-xs font-bold text-yellow-800 dark:bg-yellow-800 dark:text-yellow-200">
+                                        <div className="flex items-center justify-between rounded-lg bg-yellow-100 p-3">
+                                            <span className="text-sm font-medium text-yellow-800">Low Stock Products</span>
+                                            <span className="rounded-full bg-yellow-200 px-2 py-1 text-xs font-bold text-yellow-800">
                                                 {products.low_stock}
                                             </span>
                                         </div>
@@ -1055,7 +1051,7 @@ export default function SellerDashboard() {
                                 </div>
                                 <Link
                                     href="/seller/products"
-                                    className="mt-4 inline-flex items-center gap-2 rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 dark:bg-red-700 dark:hover:bg-red-600"
+                                    className="mt-4 inline-flex items-center gap-2 rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700"
                                 >
                                     <Package className="h-4 w-4" />
                                     Manage Inventory
@@ -1065,18 +1061,18 @@ export default function SellerDashboard() {
 
                         {/* Trending Products */}
                         {Object.keys(products.trending).length > 0 && (
-                            <div className="rounded-xl border bg-white p-6 shadow-sm dark:bg-gray-800">
-                                <h3 className="mb-4 flex items-center gap-2 text-lg font-semibold text-gray-900 dark:text-gray-100">
-                                    <TrendingUp className="h-5 w-5" />
+                            <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+                                <h3 className="mb-4 flex items-center gap-2 text-lg font-semibold text-gray-900">
+                                    <TrendingUp className="h-5 w-5" style={{ color: '#374151' }} />
                                     Trending Products
                                 </h3>
                                 <div className="space-y-3">
                                     {Object.entries(products.trending).map(([id, name]) => (
                                         <div key={id} className="flex items-center gap-3">
-                                            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-green-100 dark:bg-green-900">
-                                                <TrendingUp className="h-4 w-4 text-green-600 dark:text-green-400" />
+                                            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-green-100">
+                                                <TrendingUp className="h-4 w-4" style={{ color: '#16a34a' }} />
                                             </div>
-                                            <span className="text-sm font-medium text-gray-900 dark:text-gray-100">{String(name)}</span>
+                                            <span className="text-sm font-medium text-gray-900">{String(name)}</span>
                                         </div>
                                     ))}
                                 </div>
@@ -1084,12 +1080,12 @@ export default function SellerDashboard() {
                         )}
 
                         {/* Quick Actions */}
-                        <div className="rounded-xl border bg-white p-6 shadow-sm dark:bg-gray-800">
-                            <h3 className="mb-4 text-lg font-semibold text-gray-900 dark:text-gray-100">Quick Actions</h3>
+                        <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+                            <h3 className="mb-4 text-lg font-semibold text-gray-900">Quick Actions</h3>
                             <div className="space-y-3">
                                 <Link
                                     href="/seller/products/create"
-                                    className="w-full rounded-lg border border-blue-200 bg-blue-50 px-4 py-3 text-left text-blue-700 hover:bg-blue-100 dark:border-blue-800 dark:bg-blue-950/50 dark:text-blue-300 dark:hover:bg-blue-950/80"
+                                    className="block w-full rounded-lg border border-blue-200 bg-blue-50 px-4 py-3 text-left text-blue-700 hover:bg-blue-100"
                                 >
                                     <div className="flex items-center gap-3">
                                         <Package className="h-5 w-5" />
@@ -1098,7 +1094,7 @@ export default function SellerDashboard() {
                                 </Link>
                                 <Link
                                     href="/seller/profile"
-                                    className="w-full rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-left text-green-700 hover:bg-green-100 dark:border-green-800 dark:bg-green-950/50 dark:text-green-300 dark:hover:bg-green-950/80"
+                                    className="block w-full rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-left text-green-700 hover:bg-green-100"
                                 >
                                     <div className="flex items-center gap-3">
                                         <User className="h-5 w-5" />
@@ -1107,7 +1103,7 @@ export default function SellerDashboard() {
                                 </Link>
                                 <Link
                                     href="/seller/profile/edit"
-                                    className="w-full rounded-lg border border-purple-200 bg-purple-50 px-4 py-3 text-left text-purple-700 hover:bg-purple-100 dark:border-purple-800 dark:bg-purple-950/50 dark:text-purple-300 dark:hover:bg-purple-950/80"
+                                    className="block w-full rounded-lg border border-purple-200 bg-purple-50 px-4 py-3 text-left text-purple-700 hover:bg-purple-100"
                                 >
                                     <div className="flex items-center gap-3">
                                         <User className="h-5 w-5" />
@@ -1116,7 +1112,7 @@ export default function SellerDashboard() {
                                 </Link>
                                 <Link
                                     href="/seller/settings"
-                                    className="w-full rounded-lg border border-orange-200 bg-orange-50 px-4 py-3 text-left text-orange-700 hover:bg-orange-100 dark:border-orange-800 dark:bg-orange-950/50 dark:text-orange-300 dark:hover:bg-orange-950/80"
+                                    className="block w-full rounded-lg border border-orange-200 bg-orange-50 px-4 py-3 text-left text-orange-700 hover:bg-orange-100"
                                 >
                                     <div className="flex items-center gap-3">
                                         <Settings className="h-5 w-5" />

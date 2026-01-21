@@ -114,11 +114,11 @@ export default function PageContentEdit() {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title={content ? 'Edit Page Content' : 'Create Page Content'} />
-            <div className="flex flex-col gap-6">
-                <div className="flex items-center justify-between">
+            <div className="flex flex-col gap-4 p-3 sm:gap-6 sm:p-4" style={{ colorScheme: 'light' }}>
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                     <div>
-                        <h1 className="text-3xl font-bold tracking-tight">{content ? 'Edit Page Content' : 'Create Page Content'}</h1>
-                        <p className="text-muted-foreground">{content ? 'Update the page content' : 'Add new content to your pages'}</p>
+                        <h1 className="text-xl font-bold tracking-tight text-gray-900 sm:text-2xl lg:text-3xl">{content ? 'Edit Page Content' : 'Create Page Content'}</h1>
+                        <p className="text-sm text-gray-500">{content ? 'Update the page content' : 'Add new content to your pages'}</p>
                     </div>
                     <Button variant="outline" onClick={() => router.visit('/admin/page-content')}>
                         <ArrowLeft className="mr-2 h-4 w-4" />
@@ -128,14 +128,14 @@ export default function PageContentEdit() {
 
                 <Card>
                     <CardHeader>
-                        <CardTitle>{content ? 'Edit Content' : 'Create Content'}</CardTitle>
-                        <CardDescription>Customize the content for your {pageType === 'about' ? 'About' : 'Contact'} page</CardDescription>
+                        <CardTitle className="text-gray-900">{content ? 'Edit Content' : 'Create Content'}</CardTitle>
+                        <CardDescription className="text-gray-500">Customize the content for your {pageType === 'about' ? 'About' : 'Contact'} page</CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <form onSubmit={handleSubmit} className="space-y-6">
+                        <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
                             <div className="grid gap-4 md:grid-cols-2">
                                 <div className="space-y-2">
-                                    <Label htmlFor="page_type">Page Type</Label>
+                                    <Label htmlFor="page_type" className="text-gray-700">Page Type</Label>
                                     <Select
                                         value={formData.page_type}
                                         onValueChange={(value) => handleInputChange('page_type', value)}
@@ -152,7 +152,7 @@ export default function PageContentEdit() {
                                 </div>
 
                                 <div className="space-y-2">
-                                    <Label htmlFor="section">Section</Label>
+                                    <Label htmlFor="section" className="text-gray-700">Section</Label>
                                     <Select value={formData.section} onValueChange={(value) => handleInputChange('section', value)} required>
                                         <SelectTrigger>
                                             <SelectValue placeholder="Select a section" />
@@ -169,7 +169,7 @@ export default function PageContentEdit() {
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="title">Title</Label>
+                                <Label htmlFor="title" className="text-gray-700">Title</Label>
                                 <Input
                                     id="title"
                                     name="title"
@@ -180,7 +180,7 @@ export default function PageContentEdit() {
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="content">Content</Label>
+                                <Label htmlFor="content" className="text-gray-700">Content</Label>
                                 <Textarea
                                     id="content"
                                     name="content"
@@ -190,20 +190,20 @@ export default function PageContentEdit() {
                                     placeholder="Enter the content. HTML is supported."
                                     className="font-mono text-sm"
                                 />
-                                <p className="text-xs text-muted-foreground">
+                                <p className="text-xs text-gray-500">
                                     You can use HTML tags for formatting. For example: &lt;p&gt;Your text here&lt;/p&gt;
                                 </p>
                             </div>
 
                             {/* Contact Information Fields - Only show for contact_info section */}
                             {formData.section === 'contact_info' && (
-                                <div className="space-y-6 rounded-lg border p-6">
+                                <div className="space-y-6 rounded-lg border border-gray-200 bg-gray-50 p-4 sm:p-6">
                                     <div>
-                                        <h3 className="mb-4 text-lg font-semibold">Contact Information</h3>
+                                        <h3 className="mb-4 text-base font-semibold text-gray-900 sm:text-lg">Contact Information</h3>
 
                                         {/* Email */}
                                         <div className="mb-4 space-y-2">
-                                            <Label>Email Addresses</Label>
+                                            <Label className="text-gray-700">Email Addresses</Label>
                                             <div className="grid gap-2 md:grid-cols-2">
                                                 <Input
                                                     placeholder="Primary Email"
@@ -230,7 +230,7 @@ export default function PageContentEdit() {
 
                                         {/* Phone */}
                                         <div className="mb-4 space-y-2">
-                                            <Label>Phone Numbers</Label>
+                                            <Label className="text-gray-700">Phone Numbers</Label>
                                             <div className="grid gap-2 md:grid-cols-2">
                                                 <Input
                                                     placeholder="Primary Phone"
@@ -257,7 +257,7 @@ export default function PageContentEdit() {
 
                                         {/* Address */}
                                         <div className="mb-4 space-y-2">
-                                            <Label>Address</Label>
+                                            <Label className="text-gray-700">Address</Label>
                                             <Input
                                                 placeholder="Address Line 1"
                                                 value={contactInfo.address.line1}
@@ -292,7 +292,7 @@ export default function PageContentEdit() {
 
                                         {/* Business Hours */}
                                         <div className="space-y-2">
-                                            <Label>Business Hours</Label>
+                                            <Label className="text-gray-700">Business Hours</Label>
                                             <Input
                                                 placeholder="Monday - Friday Hours"
                                                 value={contactInfo.business_hours.monday_friday}
@@ -339,7 +339,7 @@ export default function PageContentEdit() {
 
                             <div className="grid gap-4 md:grid-cols-2">
                                 <div className="space-y-2">
-                                    <Label htmlFor="sort_order">Sort Order</Label>
+                                    <Label htmlFor="sort_order" className="text-gray-700">Sort Order</Label>
                                     <Input
                                         id="sort_order"
                                         name="sort_order"
@@ -348,7 +348,7 @@ export default function PageContentEdit() {
                                         value={formData.sort_order}
                                         onChange={(e) => handleInputChange('sort_order', parseInt(e.target.value) || 0)}
                                     />
-                                    <p className="text-xs text-muted-foreground">
+                                    <p className="text-xs text-gray-500">
                                         Lower numbers appear first. Use this to control the order of content sections.
                                     </p>
                                 </div>
@@ -359,17 +359,17 @@ export default function PageContentEdit() {
                                         checked={formData.is_active}
                                         onCheckedChange={(checked) => handleInputChange('is_active', checked)}
                                     />
-                                    <Label htmlFor="is_active" className="cursor-pointer">
+                                    <Label htmlFor="is_active" className="cursor-pointer text-gray-700">
                                         Active
                                     </Label>
                                 </div>
                             </div>
 
-                            <div className="flex justify-end gap-4">
-                                <Button type="button" variant="outline" onClick={() => router.visit('/admin/page-content')}>
+                            <div className="flex flex-col gap-2 sm:flex-row sm:justify-end sm:gap-4">
+                                <Button type="button" variant="outline" onClick={() => router.visit('/admin/page-content')} className="w-full sm:w-auto">
                                     Cancel
                                 </Button>
-                                <Button type="submit" disabled={isSubmitting}>
+                                <Button type="submit" disabled={isSubmitting} className="w-full sm:w-auto">
                                     <Save className="mr-2 h-4 w-4" />
                                     {isSubmitting ? 'Saving...' : content ? 'Update Content' : 'Create Content'}
                                 </Button>

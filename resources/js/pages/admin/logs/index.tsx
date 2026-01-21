@@ -69,15 +69,15 @@ export default function LogsIndex() {
             case 'critical':
             case 'alert':
             case 'emergency':
-                return <XCircle className="h-4 w-4 text-red-600" />;
+                return <XCircle className="h-4 w-4" style={{ color: '#dc2626' }} />;
             case 'warning':
-                return <AlertTriangle className="h-4 w-4 text-yellow-600" />;
+                return <AlertTriangle className="h-4 w-4" style={{ color: '#ca8a04' }} />;
             case 'info':
-                return <Info className="h-4 w-4 text-blue-600" />;
+                return <Info className="h-4 w-4" style={{ color: '#2563eb' }} />;
             case 'debug':
-                return <FileSearch className="h-4 w-4 text-gray-600" />;
+                return <FileSearch className="h-4 w-4" style={{ color: '#6b7280' }} />;
             default:
-                return <AlertCircle className="h-4 w-4 text-gray-600" />;
+                return <AlertCircle className="h-4 w-4" style={{ color: '#6b7280' }} />;
         }
     };
 
@@ -87,15 +87,15 @@ export default function LogsIndex() {
             case 'critical':
             case 'alert':
             case 'emergency':
-                return 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400';
+                return 'bg-red-100 text-red-800';
             case 'warning':
-                return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400';
+                return 'bg-yellow-100 text-yellow-800';
             case 'info':
-                return 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400';
+                return 'bg-blue-100 text-blue-800';
             case 'debug':
-                return 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400';
+                return 'bg-gray-100 text-gray-800';
             default:
-                return 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400';
+                return 'bg-gray-100 text-gray-800';
         }
     };
 
@@ -112,21 +112,21 @@ export default function LogsIndex() {
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Logs Monitoring" />
 
-            <div className="flex flex-col gap-6">
+            <div className="flex flex-col gap-4 p-3 sm:gap-6 sm:p-4" style={{ colorScheme: 'light' }}>
                 {/* Header */}
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                     <div>
-                        <h1 className="text-3xl font-bold tracking-tight">Logs Monitoring</h1>
-                        <p className="text-muted-foreground">Monitor application logs and errors</p>
+                        <h1 className="text-xl font-bold tracking-tight text-gray-900 sm:text-2xl lg:text-3xl">Logs Monitoring</h1>
+                        <p className="text-sm text-gray-500">Monitor application logs and errors</p>
                     </div>
                     <div className="flex gap-2">
                         <Link href="/admin/logs/download">
-                            <Button variant="outline">
+                            <Button variant="outline" className="flex-1 sm:flex-initial">
                                 <Download className="mr-2 h-4 w-4" />
                                 Download Logs
                             </Button>
                         </Link>
-                        <Button variant="destructive" onClick={handleClearLogs}>
+                        <Button variant="destructive" onClick={handleClearLogs} className="flex-1 sm:flex-initial">
                             <Trash2 className="mr-2 h-4 w-4" />
                             Clear Logs
                         </Button>
@@ -134,64 +134,64 @@ export default function LogsIndex() {
                 </div>
 
                 {/* Stats Cards */}
-                <div className="grid gap-4 md:grid-cols-5">
+                <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-5">
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">File Size</CardTitle>
-                            <FileSearch className="h-4 w-4 text-muted-foreground" />
+                            <CardTitle className="text-xs font-medium text-gray-500 sm:text-sm">File Size</CardTitle>
+                            <FileSearch className="h-4 w-4" style={{ color: '#6b7280' }} />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold">{stats.file_size}</div>
-                            <p className="text-xs text-muted-foreground">{stats.file_exists ? 'File exists' : 'File not found'}</p>
+                            <div className="text-lg font-bold text-gray-900 sm:text-2xl">{stats.file_size}</div>
+                            <p className="text-xs text-gray-500">{stats.file_exists ? 'File exists' : 'File not found'}</p>
                         </CardContent>
                     </Card>
 
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Total Lines</CardTitle>
+                            <CardTitle className="text-xs font-medium text-gray-500 sm:text-sm">Total Lines</CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold">{stats.total_lines.toLocaleString()}</div>
+                            <div className="text-lg font-bold text-gray-900 sm:text-2xl">{stats.total_lines.toLocaleString()}</div>
                         </CardContent>
                     </Card>
 
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Errors</CardTitle>
-                            <XCircle className="h-4 w-4 text-red-600" />
+                            <CardTitle className="text-xs font-medium text-gray-500 sm:text-sm">Errors</CardTitle>
+                            <XCircle className="h-4 w-4" style={{ color: '#dc2626' }} />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold text-red-600">{level_counts.error}</div>
+                            <div className="text-lg font-bold text-red-600 sm:text-2xl">{level_counts.error}</div>
                         </CardContent>
                     </Card>
 
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Warnings</CardTitle>
-                            <AlertTriangle className="h-4 w-4 text-yellow-600" />
+                            <CardTitle className="text-xs font-medium text-gray-500 sm:text-sm">Warnings</CardTitle>
+                            <AlertTriangle className="h-4 w-4" style={{ color: '#ca8a04' }} />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold text-yellow-600">{level_counts.warning}</div>
+                            <div className="text-lg font-bold text-yellow-600 sm:text-2xl">{level_counts.warning}</div>
                         </CardContent>
                     </Card>
 
-                    <Card>
+                    <Card className="col-span-2 md:col-span-1">
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Info</CardTitle>
-                            <Info className="h-4 w-4 text-blue-600" />
+                            <CardTitle className="text-xs font-medium text-gray-500 sm:text-sm">Info</CardTitle>
+                            <Info className="h-4 w-4" style={{ color: '#2563eb' }} />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold text-blue-600">{level_counts.info}</div>
+                            <div className="text-lg font-bold text-blue-600 sm:text-2xl">{level_counts.info}</div>
                         </CardContent>
                     </Card>
                 </div>
 
                 {/* Filters */}
                 <Card>
-                    <CardContent className="pt-6">
-                        <div className="flex items-end gap-4">
-                            <div className="w-48">
-                                <label className="text-sm font-medium">Filter by Level</label>
+                    <CardContent className="pt-4 sm:pt-6">
+                        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:gap-4">
+                            <div className="w-full sm:w-48">
+                                <label className="mb-1.5 block text-sm font-medium text-gray-700">Filter by Level</label>
                                 <Select value={selectedFilter} onValueChange={handleFilterChange}>
                                     <SelectTrigger>
                                         <SelectValue />
@@ -210,6 +210,7 @@ export default function LogsIndex() {
                                 onClick={() => {
                                     router.reload({ only: ['logs', 'pagination', 'level_counts'] });
                                 }}
+                                className="w-full sm:w-auto"
                             >
                                 <RefreshCw className="mr-2 h-4 w-4" />
                                 Refresh
@@ -221,32 +222,32 @@ export default function LogsIndex() {
                 {/* Logs List */}
                 <Card>
                     <CardHeader>
-                        <CardTitle>Application Logs</CardTitle>
+                        <CardTitle className="text-base text-gray-900 sm:text-lg">Application Logs</CardTitle>
                     </CardHeader>
                     <CardContent className="p-0">
                         <div className="max-h-[600px] overflow-y-auto">
                             {logs.length > 0 ? (
-                                <div className="divide-y">
+                                <div className="divide-y divide-gray-200">
                                     {logs.map((log, index) => (
-                                        <div key={index} className="p-4 transition-colors hover:bg-gray-50 dark:hover:bg-gray-800">
-                                            <div className="flex items-start gap-3">
-                                                <div className="mt-1">{getLevelIcon(log.level)}</div>
+                                        <div key={index} className="p-3 transition-colors hover:bg-gray-50 sm:p-4">
+                                            <div className="flex items-start gap-2 sm:gap-3">
+                                                <div className="mt-1 flex-shrink-0">{getLevelIcon(log.level)}</div>
                                                 <div className="min-w-0 flex-1">
-                                                    <div className="mb-1 flex items-center gap-2">
+                                                    <div className="mb-1 flex flex-wrap items-center gap-2">
                                                         <Badge className={getLevelColor(log.level)}>{log.level.toUpperCase()}</Badge>
                                                         {log.timestamp && (
-                                                            <span className="text-xs text-muted-foreground">{formatTimestamp(log.timestamp)}</span>
+                                                            <span className="text-xs text-gray-500">{formatTimestamp(log.timestamp)}</span>
                                                         )}
                                                     </div>
-                                                    <div className="font-mono text-sm break-words whitespace-pre-wrap text-gray-700 dark:text-gray-300">
+                                                    <div className="break-words whitespace-pre-wrap font-mono text-xs text-gray-700 sm:text-sm">
                                                         {log.message}
                                                     </div>
                                                     {log.stack_trace && (
                                                         <details className="mt-2">
-                                                            <summary className="cursor-pointer text-xs text-muted-foreground hover:text-foreground">
+                                                            <summary className="cursor-pointer text-xs text-gray-500 hover:text-gray-700">
                                                                 Show Stack Trace
                                                             </summary>
-                                                            <pre className="mt-2 overflow-x-auto rounded bg-gray-100 p-3 text-xs dark:bg-gray-900">
+                                                            <pre className="mt-2 overflow-x-auto rounded bg-gray-100 p-2 text-xs sm:p-3">
                                                                 {log.stack_trace}
                                                             </pre>
                                                         </details>
@@ -258,9 +259,9 @@ export default function LogsIndex() {
                                 </div>
                             ) : (
                                 <div className="flex flex-col items-center justify-center py-12">
-                                    <FileSearch className="mb-4 h-12 w-12 text-muted-foreground" />
-                                    <h3 className="text-lg font-medium">No logs found</h3>
-                                    <p className="text-muted-foreground">
+                                    <FileSearch className="mb-4 h-12 w-12" style={{ color: '#9ca3af' }} />
+                                    <h3 className="text-lg font-medium text-gray-900">No logs found</h3>
+                                    <p className="text-gray-500">
                                         {selectedFilter !== 'all' ? `No ${selectedFilter} level logs found` : 'Log file is empty or does not exist'}
                                     </p>
                                 </div>
@@ -271,7 +272,7 @@ export default function LogsIndex() {
 
                 {/* Pagination */}
                 {pagination.total_pages > 1 && (
-                    <div className="flex items-center justify-center gap-2">
+                    <div className="flex flex-wrap items-center justify-center gap-2">
                         <Button
                             variant="outline"
                             disabled={pagination.current_page === 1}
@@ -281,7 +282,7 @@ export default function LogsIndex() {
                         >
                             Previous
                         </Button>
-                        <span className="text-sm text-muted-foreground">
+                        <span className="text-sm text-gray-500">
                             Page {pagination.current_page} of {pagination.total_pages}
                         </span>
                         <Button

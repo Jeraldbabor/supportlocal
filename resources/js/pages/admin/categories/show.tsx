@@ -62,9 +62,9 @@ export default function CategoryShow() {
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title={`Category: ${category.name}`} />
 
-            <div className="flex flex-col gap-6">
+            <div className="flex flex-col gap-4 p-3 sm:gap-6 sm:p-4" style={{ colorScheme: 'light' }}>
                 {/* Header */}
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                     <Link href="/admin/categories">
                         <Button variant="ghost">
                             <ArrowLeft className="mr-2 h-4 w-4" />
@@ -73,39 +73,39 @@ export default function CategoryShow() {
                     </Link>
                     <div className="flex gap-2">
                         <Link href={`/admin/categories/${category.id}/edit`}>
-                            <Button>
+                            <Button className="flex-1 sm:flex-initial">
                                 <Edit className="mr-2 h-4 w-4" />
                                 Edit Category
                             </Button>
                         </Link>
-                        <Button variant="destructive" onClick={handleDelete}>
+                        <Button variant="destructive" onClick={handleDelete} className="flex-1 sm:flex-initial">
                             <Trash2 className="mr-2 h-4 w-4" />
                             Delete
                         </Button>
                     </div>
                 </div>
 
-                <div className="grid gap-6 lg:grid-cols-3">
+                <div className="grid gap-4 sm:gap-6 lg:grid-cols-3">
                     {/* Main Content */}
-                    <div className="space-y-6 lg:col-span-2">
+                    <div className="space-y-4 sm:space-y-6 lg:col-span-2">
                         {/* Category Info */}
                         <Card>
                             <CardHeader>
                                 <div className="flex items-center gap-3">
-                                    <FolderTree className="h-6 w-6" />
+                                    <FolderTree className="h-6 w-6" style={{ color: '#6b7280' }} />
                                     <div>
-                                        <CardTitle>{category.name}</CardTitle>
-                                        <CardDescription>Slug: {category.slug}</CardDescription>
+                                        <CardTitle className="text-gray-900">{category.name}</CardTitle>
+                                        <CardDescription className="text-gray-500">Slug: {category.slug}</CardDescription>
                                     </div>
                                 </div>
                             </CardHeader>
                             <CardContent>
                                 {category.description && (
-                                    <div className="prose dark:prose-invert max-w-none">
-                                        <p>{category.description}</p>
+                                    <div className="prose max-w-none">
+                                        <p className="text-gray-700">{category.description}</p>
                                     </div>
                                 )}
-                                {!category.description && <p className="text-muted-foreground">No description provided</p>}
+                                {!category.description && <p className="text-gray-500">No description provided</p>}
                             </CardContent>
                         </Card>
 
@@ -113,15 +113,15 @@ export default function CategoryShow() {
                         {category.children && category.children.length > 0 && (
                             <Card>
                                 <CardHeader>
-                                    <CardTitle>Subcategories</CardTitle>
-                                    <CardDescription>{category.children.length} subcategories</CardDescription>
+                                    <CardTitle className="text-gray-900">Subcategories</CardTitle>
+                                    <CardDescription className="text-gray-500">{category.children.length} subcategories</CardDescription>
                                 </CardHeader>
                                 <CardContent>
                                     <div className="space-y-2">
                                         {category.children.map((child) => (
-                                            <div key={child.id} className="flex items-center justify-between border-b pb-2 last:border-0">
-                                                <span className="font-medium">{child.name}</span>
-                                                <span className="text-sm text-muted-foreground">{child.products_count} products</span>
+                                            <div key={child.id} className="flex items-center justify-between border-b border-gray-200 pb-2 last:border-0">
+                                                <span className="font-medium text-gray-900">{child.name}</span>
+                                                <span className="text-sm text-gray-500">{child.products_count} products</span>
                                             </div>
                                         ))}
                                     </div>
@@ -131,53 +131,53 @@ export default function CategoryShow() {
                     </div>
 
                     {/* Sidebar */}
-                    <div className="space-y-6">
+                    <div className="space-y-4 sm:space-y-6">
                         {/* Category Details */}
                         <Card>
                             <CardHeader>
-                                <CardTitle>Category Details</CardTitle>
+                                <CardTitle className="text-gray-900">Category Details</CardTitle>
                             </CardHeader>
                             <CardContent className="space-y-4">
                                 <div className="flex items-center justify-between">
-                                    <span className="text-sm font-medium">Status</span>
+                                    <span className="text-sm font-medium text-gray-700">Status</span>
                                     <Badge
                                         className={
                                             category.is_active
-                                                ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400'
-                                                : 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400'
+                                                ? 'bg-green-100 text-green-800'
+                                                : 'bg-gray-100 text-gray-800'
                                         }
                                     >
                                         {category.is_active ? 'Active' : 'Inactive'}
                                     </Badge>
                                 </div>
                                 <div className="flex items-center justify-between">
-                                    <span className="text-sm font-medium">Parent Category</span>
-                                    <span className="text-sm">{category.parent ? category.parent.name : 'Root'}</span>
+                                    <span className="text-sm font-medium text-gray-700">Parent Category</span>
+                                    <span className="text-sm text-gray-900">{category.parent ? category.parent.name : 'Root'}</span>
                                 </div>
                                 <div className="flex items-center justify-between">
-                                    <span className="text-sm font-medium">Products</span>
-                                    <span className="text-sm font-medium">{category.products_count}</span>
+                                    <span className="text-sm font-medium text-gray-700">Products</span>
+                                    <span className="text-sm font-medium text-gray-900">{category.products_count}</span>
                                 </div>
                                 <div className="flex items-center justify-between">
-                                    <span className="text-sm font-medium">Subcategories</span>
-                                    <span className="text-sm font-medium">{category.children.length}</span>
+                                    <span className="text-sm font-medium text-gray-700">Subcategories</span>
+                                    <span className="text-sm font-medium text-gray-900">{category.children.length}</span>
                                 </div>
                                 <div className="flex items-center justify-between">
-                                    <span className="text-sm font-medium">Sort Order</span>
-                                    <span className="text-sm">{category.sort_order}</span>
+                                    <span className="text-sm font-medium text-gray-700">Sort Order</span>
+                                    <span className="text-sm text-gray-900">{category.sort_order}</span>
                                 </div>
                                 {category.icon && (
                                     <div className="flex items-center justify-between">
-                                        <span className="text-sm font-medium">Icon</span>
-                                        <span className="text-sm">{category.icon}</span>
+                                        <span className="text-sm font-medium text-gray-700">Icon</span>
+                                        <span className="text-sm text-gray-900">{category.icon}</span>
                                     </div>
                                 )}
                                 {category.color && (
                                     <div className="flex items-center justify-between">
-                                        <span className="text-sm font-medium">Color</span>
+                                        <span className="text-sm font-medium text-gray-700">Color</span>
                                         <div className="flex items-center gap-2">
                                             <div className="h-4 w-4 rounded-full" style={{ backgroundColor: category.color }} />
-                                            <span className="text-sm">{category.color}</span>
+                                            <span className="text-sm text-gray-900">{category.color}</span>
                                         </div>
                                     </div>
                                 )}
@@ -188,19 +188,19 @@ export default function CategoryShow() {
                         {(category.meta_title || category.meta_description) && (
                             <Card>
                                 <CardHeader>
-                                    <CardTitle>SEO Information</CardTitle>
+                                    <CardTitle className="text-gray-900">SEO Information</CardTitle>
                                 </CardHeader>
                                 <CardContent className="space-y-2 text-sm">
                                     {category.meta_title && (
                                         <div>
-                                            <div className="font-medium text-muted-foreground">Meta Title</div>
-                                            <div className="mt-1">{category.meta_title}</div>
+                                            <div className="font-medium text-gray-500">Meta Title</div>
+                                            <div className="mt-1 text-gray-900">{category.meta_title}</div>
                                         </div>
                                     )}
                                     {category.meta_description && (
                                         <div>
-                                            <div className="font-medium text-muted-foreground">Meta Description</div>
-                                            <div className="mt-1">{category.meta_description}</div>
+                                            <div className="font-medium text-gray-500">Meta Description</div>
+                                            <div className="mt-1 text-gray-900">{category.meta_description}</div>
                                         </div>
                                     )}
                                 </CardContent>
@@ -210,7 +210,7 @@ export default function CategoryShow() {
                         {/* Actions */}
                         <Card>
                             <CardHeader>
-                                <CardTitle>Actions</CardTitle>
+                                <CardTitle className="text-gray-900">Actions</CardTitle>
                             </CardHeader>
                             <CardContent className="space-y-2">
                                 <Button onClick={handleToggleStatus} variant="outline" className="w-full">
