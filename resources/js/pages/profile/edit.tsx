@@ -104,11 +104,16 @@ export default function EditProfile() {
             return;
         }
 
-        setAvatarData('avatar', file);
-        postAvatar('/profile/avatar', {
+        // Use router.post directly with the file to avoid state timing issues
+        router.post('/profile/avatar', {
+            avatar: file,
+        }, {
             forceFormData: true,
             onSuccess: () => {
                 resetAvatar();
+                if (fileInputRef.current) {
+                    fileInputRef.current.value = '';
+                }
                 // Reload the page data to show the new avatar
                 router.reload({ only: ['user'] });
             },
