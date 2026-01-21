@@ -52,6 +52,11 @@ function getRoleNavItems(userRole?: string): NavItem[] {
                     icon: Star,
                 },
                 {
+                    title: 'Product Reviews',
+                    href: '/seller/ratings',
+                    icon: MessageSquare,
+                },
+                {
                     title: 'Customers',
                     href: '/seller/customers',
                     icon: Users,

@@ -3,26 +3,35 @@
 namespace App\Http\Controllers\Seller;
 
 use App\Http\Controllers\Controller;
-use App\Models\SellerRating;
-use App\Notifications\SellerRatingReplyReceived;
+use App\Models\Product;
+use App\Models\ProductRating;
+use App\Notifications\ProductRatingReplyReceived;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class SellerRatingController extends Controller
 {
     /**
-     * Display seller's own ratings
+     * Display product ratings for seller's products
      */
     public function index(Request $request): Response
     {
         $seller = auth()->user();
 
-        $query = $seller->sellerRatings()
-            ->with(['user' => function ($query) {
+        // Query product ratings for this seller's products
+        $query = ProductRating::whereHas('product', function ($q) use ($seller) {
+            $q->where('seller_id', $seller->id);
+        })->with([
+            'user' => function ($query) {
                 $query->select('id', 'name', 'profile_picture');
-            }]);
+            },
+            'product' => function ($query) {
+                $query->select('id', 'name', 'images', 'featured_image');
+            },
+        ]);
 
         // Apply filters
         if ($request->filled('search')) {
@@ -30,11 +39,14 @@ class SellerRatingController extends Controller
             $query->where(function ($q) use ($search) {
                 $q->whereHas('user', function ($userQuery) use ($search) {
                     $userQuery->where('name', 'like', "%{$search}%");
-                })->orWhere('review', 'like', "%{$search}%");
+                })->orWhere('review', 'like', "%{$search}%")
+                    ->orWhereHas('product', function ($productQuery) use ($search) {
+                        $productQuery->where('name', 'like', "%{$search}%");
+                    });
             });
         }
 
-        if ($request->filled('rating')) {
+        if ($request->filled('rating') && $request->rating !== 'all') {
             $query->where('rating', $request->rating);
         }
 
@@ -48,15 +60,21 @@ class SellerRatingController extends Controller
 
         $ratings = $query->orderBy('created_at', 'desc')->paginate(15);
 
-        // Transform ratings to include avatar_url
+        // Transform ratings to include avatar_url and product image
         $ratings->getCollection()->transform(function ($rating) {
-            $rating->user->append('avatar_url');
+            if ($rating->user) {
+                $rating->user->append('avatar_url');
+            }
+            if ($rating->product) {
+                $rating->product_name = $rating->product->name;
+                $rating->product_image = \App\Helpers\ImageHelper::url($rating->product->featured_image ?? ($rating->product->images[0] ?? null));
+            }
 
             return $rating;
         });
 
         // Get statistics
-        $statistics = $this->getSellerStatistics($seller);
+        $statistics = $this->getProductRatingStatistics($seller);
 
         return Inertia::render('seller/ratings/Index', [
             'ratings' => $ratings,
@@ -66,12 +84,13 @@ class SellerRatingController extends Controller
     }
 
     /**
-     * Store seller's reply to a rating
+     * Store seller's reply to a product rating
      */
-    public function storeReply(Request $request, SellerRating $rating): JsonResponse
+    public function storeReply(Request $request, ProductRating $rating): JsonResponse
     {
-        // Verify this rating is for the authenticated seller
-        if ($rating->seller_id !== auth()->id()) {
+        // Verify this rating is for the authenticated seller's product
+        $rating->load('product');
+        if (! $rating->product || $rating->product->seller_id !== auth()->id()) {
             return response()->json([
                 'message' => 'Unauthorized',
             ], 403);
@@ -89,9 +108,10 @@ class SellerRatingController extends Controller
         // Notify the buyer who left the rating
         $rating->load(['user' => function ($query) {
             $query->select('id', 'name', 'profile_picture');
-        }, 'seller']);
+        }, 'product.seller']);
+
         if ($rating->user) {
-            $rating->user->notify(new SellerRatingReplyReceived($rating));
+            $rating->user->notify(new ProductRatingReplyReceived($rating));
         }
 
         return response()->json([
@@ -101,12 +121,13 @@ class SellerRatingController extends Controller
     }
 
     /**
-     * Delete seller's reply to a rating
+     * Delete seller's reply to a product rating
      */
-    public function deleteReply(SellerRating $rating): JsonResponse
+    public function deleteReply(ProductRating $rating): JsonResponse
     {
-        // Verify this rating is for the authenticated seller
-        if ($rating->seller_id !== auth()->id()) {
+        // Verify this rating is for the authenticated seller's product
+        $rating->load('product');
+        if (! $rating->product || $rating->product->seller_id !== auth()->id()) {
             return response()->json([
                 'message' => 'Unauthorized',
             ], 403);
@@ -126,19 +147,30 @@ class SellerRatingController extends Controller
     }
 
     /**
-     * Get statistics for seller's ratings
+     * Get statistics for seller's product ratings
      */
-    private function getSellerStatistics($seller): array
+    private function getProductRatingStatistics($seller): array
     {
-        $totalRatings = $seller->sellerRatings()->count();
-        $averageRating = $seller->average_rating;
-        $ratingsWithReview = $seller->sellerRatings()->whereNotNull('review')->count();
-        $repliedRatings = $seller->sellerRatings()->whereNotNull('seller_reply')->count();
+        // Get all product ratings for this seller's products
+        $baseQuery = ProductRating::whereHas('product', function ($q) use ($seller) {
+            $q->where('seller_id', $seller->id);
+        });
+
+        $totalRatings = (clone $baseQuery)->count();
+        $averageRating = (clone $baseQuery)->avg('rating') ?? 0;
+        $ratingsWithReview = (clone $baseQuery)->whereNotNull('review')->where('review', '!=', '')->count();
+        $repliedRatings = (clone $baseQuery)->whereNotNull('seller_reply')->count();
 
         // Get rating distribution
+        $distributionData = (clone $baseQuery)
+            ->select('rating', DB::raw('COUNT(*) as count'))
+            ->groupBy('rating')
+            ->pluck('count', 'rating')
+            ->toArray();
+
         $distribution = [];
         for ($i = 5; $i >= 1; $i--) {
-            $count = $seller->sellerRatings()->where('rating', $i)->count();
+            $count = $distributionData[$i] ?? 0;
             $percentage = $totalRatings > 0 ? round(($count / $totalRatings) * 100, 1) : 0;
             $distribution[] = [
                 'rating' => $i,
@@ -149,7 +181,7 @@ class SellerRatingController extends Controller
 
         return [
             'total_ratings' => $totalRatings,
-            'average_rating' => $averageRating,
+            'average_rating' => round($averageRating, 1),
             'ratings_with_review' => $ratingsWithReview,
             'replied_ratings' => $repliedRatings,
             'distribution' => $distribution,

@@ -3,7 +3,9 @@
 @php
     $statusColors = [
         'pending' => '#f59e0b',
-        'confirmed' => '#3b82f6', 
+        'confirmed' => '#3b82f6',
+        'shipped' => '#8b5cf6',
+        'delivered' => '#10b981',
         'completed' => '#10b981',
         'cancelled' => '#ef4444',
     ];
@@ -11,6 +13,8 @@
     $statusIcons = [
         'pending' => '⏳',
         'confirmed' => '✅',
+        'shipped' => '🚚',
+        'delivered' => '📬',
         'completed' => '🎉',
         'cancelled' => '❌',
     ];
@@ -60,8 +64,42 @@ Hello **{{ $notifiable->name }}**,
 
 Your order has been confirmed by the seller and is being prepared. You'll receive another notification once it's ready for delivery or pickup.
 
+@elseif($order->status === 'shipped')
+## 🚚 Your Order is On Its Way!
+
+Great news! Your order has been shipped and is on its way to you.
+
+@if($order->shipping_provider || $order->tracking_number)
+@component('mail::panel')
+**Shipping Details:**
+
+@if($order->shipping_provider)
+**Courier:** {{ $order->shipping_provider === 'jt_express' ? 'J&T Express' : ucfirst($order->shipping_provider) }}
+@endif
+@if($order->tracking_number)
+**Tracking Number:** {{ $order->tracking_number }}
+@endif
+@if($order->waybill_number)
+**Waybill Number:** {{ $order->waybill_number }}
+@endif
+@endcomponent
+@endif
+
+You can use the tracking number above to track your package with the courier.
+
+@elseif($order->status === 'delivered')
+## 📬 Order Delivered!
+
+Your order has been delivered to your address. We hope everything arrived in perfect condition!
+
+If you have a moment, please consider leaving a review for the seller.
+
+@if($order->seller)
+**Seller:** {{ $order->seller->business_name ?? $order->seller->name }}
+@endif
+
 @elseif($order->status === 'completed')
-## 🎉 Order Delivered!
+## 🎉 Order Completed!
 
 We hope you love your purchase! If you have a moment, please consider leaving a review for the seller.
 

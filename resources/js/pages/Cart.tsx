@@ -66,7 +66,11 @@ export default function Cart() {
                                             <div className="h-20 w-20 overflow-hidden rounded-md bg-gray-100">
                                                 {item.primary_image ? (
                                                     <img
-                                                        src={`/storage/${item.primary_image}`}
+                                                        src={
+                                                            item.primary_image.startsWith('http') || item.primary_image.startsWith('/')
+                                                                ? item.primary_image
+                                                                : `/images/${item.primary_image}`
+                                                        }
                                                         alt={item.name}
                                                         className="h-full w-full object-cover"
                                                         onError={(e) => {
