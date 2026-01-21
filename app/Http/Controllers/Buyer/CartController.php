@@ -35,7 +35,7 @@ class CartController extends Controller
                     'name' => $item->product->name,
                     'price' => (float) $item->price,
                     'quantity' => $item->quantity,
-                    'primary_image' => $item->product->featured_image ?? $item->product->primary_image,
+                    'primary_image' => \App\Helpers\ImageHelper::url($item->product->featured_image),
                     'seller' => [
                         'id' => $item->product->seller->id,
                         'name' => $item->product->seller->business_name ?? $item->product->seller->name,
@@ -238,7 +238,7 @@ class CartController extends Controller
                     'name' => $item->product->name,
                     'price' => (float) $item->price,
                     'quantity' => $item->quantity,
-                    'primary_image' => $item->product->featured_image ?? $item->product->primary_image,
+                    'primary_image' => \App\Helpers\ImageHelper::url($item->product->featured_image),
                     'seller' => [
                         'id' => $item->product->seller->id,
                         'name' => $item->product->seller->business_name ?? $item->product->seller->name,
