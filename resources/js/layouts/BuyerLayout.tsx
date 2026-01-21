@@ -94,9 +94,9 @@ function BuyerLayoutContent({ children, title }: BuyerLayoutProps) {
     ];
 
     return (
-        <div className="min-h-screen overflow-x-hidden bg-background">
+        <div className="min-h-screen overflow-x-hidden bg-white" style={{ colorScheme: 'light' }}>
             {/* Buyer Navigation Header */}
-            <header className="sticky top-0 z-50 w-full border-b border-gray-200/80 bg-white/95 shadow-sm backdrop-blur-sm">
+            <header className="sticky top-0 z-50 w-full border-b border-gray-200 bg-white shadow-sm">
                 <nav className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8" role="navigation" aria-label="Main navigation">
                     <div className="flex h-16 items-center justify-between">
                         {/* Logo */}
@@ -237,7 +237,7 @@ function BuyerLayoutContent({ children, title }: BuyerLayoutProps) {
                                 {/* Dropdown Menu */}
                                 {isUserMenuOpen && (
                                     <div
-                                        className="absolute top-full right-0 z-50 mt-3 w-64 rounded-xl border border-gray-200/80 bg-white/95 py-2 shadow-xl ring-1 ring-black/5 backdrop-blur-sm"
+                                        className="absolute top-full right-0 z-50 mt-3 w-64 rounded-xl border border-gray-200 bg-white py-2 shadow-xl ring-1 ring-black/5"
                                         role="menu"
                                         aria-orientation="vertical"
                                     >
@@ -324,7 +324,7 @@ function BuyerLayoutContent({ children, title }: BuyerLayoutProps) {
                         }`}
                         ref={mobileMenuRef}
                     >
-                        <div className="border-t border-gray-200/80 bg-white/95 px-4 py-4 shadow-lg backdrop-blur-sm">
+                        <div className="border-t border-gray-200 bg-white px-4 py-4 shadow-lg">
                             <div className="space-y-2">
                                 {buyerNavigation.map((item) => {
                                     const Icon = item.icon;
@@ -402,16 +402,16 @@ function BuyerLayoutContent({ children, title }: BuyerLayoutProps) {
 
             {/* Page Title */}
             {title && (
-                <div className="bg-gray-50 py-4 sm:py-6">
+                <div className="bg-slate-50 py-4 sm:py-6">
                     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                        <h1 className="text-xl font-bold text-gray-900 sm:text-2xl">{title}</h1>
+                        <h1 className="text-xl font-bold text-slate-900 sm:text-2xl">{title}</h1>
                     </div>
                 </div>
             )}
 
             {/* Profile Completion Banner */}
             {profileCompletion && profileCompletion.status && (!profileCompletion.status.is_complete || profileCompletion.recommendation) && (
-                <div className="bg-gray-50">
+                <div className="bg-slate-50">
                     <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
                         <ProfileCompletionBanner
                             status={profileCompletion.status}
@@ -426,7 +426,7 @@ function BuyerLayoutContent({ children, title }: BuyerLayoutProps) {
             )}
 
             {/* Main Content */}
-            <main className="flex-1">{children}</main>
+            <main className="flex-1 bg-white">{children}</main>
 
             {/* Footer - Buyer specific */}
             <footer className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white">
