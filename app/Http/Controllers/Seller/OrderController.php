@@ -297,6 +297,9 @@ class OrderController extends Controller
                 'completed_at' => now(),
             ]);
 
+            // Calculate and apply admin commission
+            $commissionDetails = $order->calculateCommission();
+
             // Notify buyer (in try-catch so completion succeeds even if notification fails)
             try {
                 $order->buyer->notify(new OrderStatusUpdated($order, 'Your order has been completed and delivered'));
@@ -312,6 +315,7 @@ class OrderController extends Controller
                 'success' => true,
                 'message' => 'Order marked as completed!',
                 'order' => $order->fresh(['orderItems.product', 'buyer']),
+                'commission' => $commissionDetails,
             ]);
 
         } catch (\Exception $e) {

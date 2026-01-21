@@ -100,6 +100,15 @@ class DashboardController extends Controller
             'this_month_revenue' => Order::where('created_at', '>=', Carbon::now()->startOfMonth())
                 ->where('status', '!=', Order::STATUS_CANCELLED)
                 ->sum('total_amount'),
+            // Admin commission revenue (from completed orders)
+            'total_commission' => Order::where('status', Order::STATUS_COMPLETED)->sum('admin_commission'),
+            'today_commission' => Order::whereDate('completed_at', today())
+                ->where('status', Order::STATUS_COMPLETED)
+                ->sum('admin_commission'),
+            'this_month_commission' => Order::where('completed_at', '>=', Carbon::now()->startOfMonth())
+                ->where('status', Order::STATUS_COMPLETED)
+                ->sum('admin_commission'),
+            'commission_rate' => \Illuminate\Support\Facades\Cache::get('settings.seller_commission_rate', 2),
         ];
 
         // Category statistics

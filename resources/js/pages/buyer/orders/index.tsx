@@ -278,11 +278,14 @@ export default function Orders({ orders }: OrdersIndexProps) {
                                             View Details
                                         </Link>
 
-                                        {(order.status === 'delivered' || order.status === 'completed') && (
-                                            <button className="hover:bg-primary-dark inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white transition-colors">
+                                        {order.status === 'completed' && order.order_items?.length > 0 && (
+                                            <Link
+                                                href={`/buyer/product/${order.order_items[0].product_id}`}
+                                                className="hover:bg-primary-dark inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white transition-colors"
+                                            >
                                                 <MessageSquare className="h-4 w-4" />
                                                 Leave Review
-                                            </button>
+                                            </Link>
                                         )}
                                     </div>
                                 </div>

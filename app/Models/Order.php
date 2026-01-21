@@ -79,6 +79,9 @@ class Order extends Model
         'tracking_number',
         'waybill_number',
         'total_amount',
+        'commission_rate',
+        'admin_commission',
+        'seller_net_amount',
         'status',
         'rejection_reason',
         'seller_confirmed_at',
@@ -94,6 +97,9 @@ class Order extends Model
         'subtotal' => 'decimal:2',
         'shipping_fee' => 'decimal:2',
         'total_amount' => 'decimal:2',
+        'commission_rate' => 'decimal:2',
+        'admin_commission' => 'decimal:2',
+        'seller_net_amount' => 'decimal:2',
         'seller_confirmed_at' => 'datetime',
         'shipped_at' => 'datetime',
         'delivered_at' => 'datetime',
@@ -250,6 +256,38 @@ class Order extends Model
     public function canBeCompleted(): bool
     {
         return in_array($this->status, [self::STATUS_CONFIRMED, self::STATUS_SHIPPED]);
+    }
+
+    /**
+     * Calculate and apply commission for this order.
+     * This should be called when the order is completed.
+     *
+     * @param  float|null  $commissionRate  Optional custom rate, defaults to system setting
+     * @return array Returns array with commission details
+     */
+    public function calculateCommission(?float $commissionRate = null): array
+    {
+        // Get commission rate from settings if not provided
+        if ($commissionRate === null) {
+            $commissionRate = (float) \Illuminate\Support\Facades\Cache::get('settings.seller_commission_rate', 2);
+        }
+
+        $totalAmount = (float) $this->total_amount;
+        $adminCommission = round(($totalAmount * $commissionRate) / 100, 2);
+        $sellerNetAmount = round($totalAmount - $adminCommission, 2);
+
+        $this->update([
+            'commission_rate' => $commissionRate,
+            'admin_commission' => $adminCommission,
+            'seller_net_amount' => $sellerNetAmount,
+        ]);
+
+        return [
+            'total_amount' => $totalAmount,
+            'commission_rate' => $commissionRate,
+            'admin_commission' => $adminCommission,
+            'seller_net_amount' => $sellerNetAmount,
+        ];
     }
 
     /**
