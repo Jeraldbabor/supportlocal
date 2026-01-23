@@ -59,6 +59,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'is_active',
         'email_verified_at',
         'last_login_at',
+        'last_seen_at',
         'profile_completion_reminder_dismissed_at',
         'profile_completed_at',
         'profile_completion_percentage',
@@ -101,6 +102,7 @@ class User extends Authenticatable implements MustVerifyEmail
             'password' => 'hashed',
             'date_of_birth' => 'date',
             'last_login_at' => 'datetime',
+            'last_seen_at' => 'datetime',
             'is_active' => 'boolean',
             'profile_completion_reminder_dismissed_at' => 'datetime',
             'profile_completed_at' => 'datetime',
@@ -320,6 +322,19 @@ class User extends Authenticatable implements MustVerifyEmail
 
         // Default avatar using initials
         return 'https://ui-avatars.com/api/?name='.urlencode($this->name).'&color=7F9CF5&background=EBF4FF';
+    }
+
+    /**
+     * Check if user is currently online (seen within last 5 minutes)
+     */
+    public function getIsOnlineAttribute(): bool
+    {
+        if (!$this->last_seen_at) {
+            return false;
+        }
+
+        // Consider user online if seen within the last 5 minutes
+        return $this->last_seen_at->diffInMinutes(now()) < 5;
     }
 
     /**

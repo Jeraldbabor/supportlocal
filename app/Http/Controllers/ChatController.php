@@ -128,7 +128,7 @@ class ChatController extends Controller
             });
 
         $otherUser = $conversation->getOtherParticipant($user->id);
-        $otherUser->append('avatar_url');
+        $otherUser->append(['avatar_url', 'is_online']);
 
         // Transform product with proper image URLs
         $product = $conversation->product ? [
@@ -141,7 +141,13 @@ class ChatController extends Controller
             'messages' => $messages,
             'conversation' => [
                 'id' => $conversation->id,
-                'other_user' => $otherUser,
+                'other_user' => [
+                    'id' => $otherUser->id,
+                    'name' => $otherUser->name,
+                    'avatar_url' => $otherUser->avatar_url,
+                    'is_online' => $otherUser->is_online,
+                    'last_seen_at' => $otherUser->last_seen_at?->toISOString(),
+                ],
                 'product' => $product,
             ],
         ]);
