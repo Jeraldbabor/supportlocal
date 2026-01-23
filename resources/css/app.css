@@ -197,48 +197,47 @@
     }
 
     /* Force light mode for all form inputs to prevent Chrome dark mode from hiding text */
-    /* Exclude chat components to allow dark mode */
-    input:not([data-chat-input]),
-    textarea:not([data-chat-input]),
-    select:not([data-chat-input]),
-    input[type="text"]:not([data-chat-input]),
-    input[type="email"]:not([data-chat-input]),
-    input[type="password"]:not([data-chat-input]),
-    input[type="number"]:not([data-chat-input]),
-    input[type="tel"]:not([data-chat-input]),
-    input[type="search"]:not([data-chat-input]),
-    input[type="url"]:not([data-chat-input]) {
+    input,
+    textarea,
+    select,
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    input[type="number"],
+    input[type="tel"],
+    input[type="search"],
+    input[type="url"] {
         color-scheme: light !important;
         background-color: #ffffff !important;
         color: #111827 !important;
         -webkit-text-fill-color: #111827 !important;
     }
 
-    input:not([data-chat-input])::placeholder,
-    textarea:not([data-chat-input])::placeholder {
+    input::placeholder,
+    textarea::placeholder {
         color: #9ca3af !important;
         -webkit-text-fill-color: #9ca3af !important;
         opacity: 1 !important;
     }
 
     /* Ensure input text remains visible in all states */
-    input:not([data-chat-input]):focus,
-    textarea:not([data-chat-input]):focus,
-    select:not([data-chat-input]):focus {
+    input:focus,
+    textarea:focus,
+    select:focus {
         color: #111827 !important;
         -webkit-text-fill-color: #111827 !important;
     }
 
     /* Fix for autofill backgrounds */
-    input:not([data-chat-input]):-webkit-autofill,
-    input:not([data-chat-input]):-webkit-autofill:hover,
-    input:not([data-chat-input]):-webkit-autofill:focus,
-    textarea:not([data-chat-input]):-webkit-autofill,
-    textarea:not([data-chat-input]):-webkit-autofill:hover,
-    textarea:not([data-chat-input]):-webkit-autofill:focus,
-    select:not([data-chat-input]):-webkit-autofill,
-    select:not([data-chat-input]):-webkit-autofill:hover,
-    select:not([data-chat-input]):-webkit-autofill:focus {
+    input:-webkit-autofill,
+    input:-webkit-autofill:hover,
+    input:-webkit-autofill:focus,
+    textarea:-webkit-autofill,
+    textarea:-webkit-autofill:hover,
+    textarea:-webkit-autofill:focus,
+    select:-webkit-autofill,
+    select:-webkit-autofill:hover,
+    select:-webkit-autofill:focus {
         -webkit-text-fill-color: #111827 !important;
         -webkit-box-shadow: 0 0 0px 1000px #ffffff inset !important;
         box-shadow: 0 0 0px 1000px #ffffff inset !important;
@@ -246,20 +245,53 @@
     }
 
     /* Force caret color to be visible */
-    input:not([data-chat-input]),
-    textarea:not([data-chat-input]) {
+    input,
+    textarea {
         caret-color: #111827 !important;
     }
 
-    /* Chat inputs - allow dark mode */
-    input[data-chat-input],
-    textarea[data-chat-input] {
-        color-scheme: light dark;
+    /* Force light mode for all chat components */
+    [data-chat-container],
+    [data-chat-container] * {
+        color-scheme: light !important;
     }
 
-    .dark input[data-chat-input],
-    .dark textarea[data-chat-input] {
-        color-scheme: dark;
+    .dark [data-chat-container],
+    .dark [data-chat-container] * {
+        background-color: #ffffff !important;
+        color: #111827 !important;
+    }
+
+    .dark [data-chat-container] input,
+    .dark [data-chat-container] textarea {
+        background-color: #ffffff !important;
+        color: #111827 !important;
+        border-color: #e5e7eb !important;
+    }
+
+    .dark [data-chat-container] .bg-gray-50,
+    .dark [data-chat-container] .bg-gray-100,
+    .dark [data-chat-container] .bg-white {
+        background-color: #ffffff !important;
+    }
+
+    .dark [data-chat-container] .bg-gray-800,
+    .dark [data-chat-container] .bg-gray-900 {
+        background-color: #f9fafb !important;
+    }
+
+    .dark [data-chat-container] .text-white {
+        color: #111827 !important;
+    }
+
+    .dark [data-chat-container] .text-gray-400,
+    .dark [data-chat-container] .text-gray-500 {
+        color: #6b7280 !important;
+    }
+
+    .dark [data-chat-container] .border-gray-700,
+    .dark [data-chat-container] .border-gray-600 {
+        border-color: #e5e7eb !important;
     }
 
     /* Fix chat message bubbles to prevent browser dark mode from hiding text */
