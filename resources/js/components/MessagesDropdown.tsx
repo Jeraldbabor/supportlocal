@@ -286,14 +286,14 @@ export default function MessagesDropdown({ currentUserId }: MessagesDropdownProp
     // Render dropdown content (reusable for both mobile and desktop)
     const renderDropdownContent = () => (
         <>
-            <div className="rounded-t-lg border-b border-gray-100 bg-gray-50 p-2.5 sm:p-3">
+            <div className="rounded-t-lg border-b border-gray-300 bg-gray-50 p-2.5 sm:p-3">
                 <h3 className="flex items-center gap-1.5 text-sm font-semibold text-gray-900 sm:gap-2 sm:text-base">
                     <MessageSquare className="h-3.5 w-3.5 flex-shrink-0 sm:h-4 sm:w-4" />
                     <span>Messages</span>
                 </h3>
             </div>
 
-            <div ref={conversationsListRef} className="max-h-[60vh] overflow-y-auto scroll-smooth sm:max-h-96">
+            <div ref={conversationsListRef} className="max-h-[60vh] overflow-y-auto scroll-smooth sm:max-h-96 custom-scrollbar">
                 {isLoading ? (
                     <div className="p-6 text-center text-gray-500 sm:p-8">
                         <div className="mx-auto h-6 w-6 animate-spin rounded-full border-b-2 border-primary sm:h-8 sm:w-8"></div>
@@ -306,7 +306,7 @@ export default function MessagesDropdown({ currentUserId }: MessagesDropdownProp
                         <p className="mt-1 text-[10px] text-gray-400 sm:text-xs">Start chatting with sellers!</p>
                     </div>
                 ) : (
-                    <div className="divide-y divide-gray-100">
+                    <div className="divide-y divide-gray-300">
                         {conversations.map((conversation) => (
                             <div key={conversation.id} className="flex items-start gap-2 p-2.5 transition-colors hover:bg-gray-50 sm:gap-3 sm:p-3">
                                 <button
@@ -359,13 +359,13 @@ export default function MessagesDropdown({ currentUserId }: MessagesDropdownProp
             </div>
 
             {conversations.length > 0 && (
-                <div className="rounded-b-lg border-t border-gray-100 bg-gray-50 p-2 sm:p-2.5">
+                <div className="rounded-b-lg border-t border-gray-300 bg-gray-50 p-2 sm:p-2.5">
                     <button
                         onClick={() => {
                             setShowAllMessagesModal(true);
                             setIsOpen(false);
                         }}
-                        className="block w-full rounded py-1.5 text-center text-xs font-medium text-primary transition-colors hover:bg-white hover:text-primary/80 sm:py-2 sm:text-sm"
+                        className="block w-full rounded py-1.5 text-center text-xs font-medium text-orange-500 sm:py-2 sm:text-sm"
                     >
                         View all messages
                     </button>
@@ -396,7 +396,7 @@ export default function MessagesDropdown({ currentUserId }: MessagesDropdownProp
                         {/* Mobile backdrop */}
                         <div className="fixed inset-0 z-[9998] bg-black/20 sm:hidden" onClick={() => setIsOpen(false)} />
                         {/* Dropdown - Fixed on mobile, absolute on desktop */}
-                        <div className="fixed top-[4.5rem] right-2 z-[9999] w-[calc(100vw-1rem)] max-w-sm rounded-lg border border-gray-200 bg-white shadow-xl sm:absolute sm:top-auto sm:right-0 sm:z-50 sm:mt-2 sm:w-80">
+                        <div className="fixed top-[4.5rem] right-2 z-[9999] w-[calc(100vw-1rem)] max-w-sm rounded-lg border border-gray-300 bg-white shadow-xl sm:absolute sm:top-auto sm:right-0 sm:z-50 sm:mt-2 sm:w-80" data-chat-container>
                             {renderDropdownContent()}
                         </div>
                     </>
@@ -421,9 +421,9 @@ export default function MessagesDropdown({ currentUserId }: MessagesDropdownProp
             {showAllMessagesModal &&
                 createPortal(
                     <div className="fixed inset-0 z-[10000] flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
-                        <div className="flex h-[90vh] max-h-[900px] w-full max-w-6xl flex-col overflow-hidden rounded-xl bg-white shadow-2xl">
+                        <div className="flex h-[90vh] max-h-[900px] w-full max-w-6xl flex-col overflow-hidden rounded-xl bg-white dark:bg-gray-800 shadow-2xl" data-chat-container>
                             {/* Header */}
-                            <div className="flex-shrink-0 border-b border-gray-200 bg-gradient-to-r from-primary/5 to-primary/10 p-6">
+                            <div className="flex-shrink-0 border-b border-gray-200 dark:border-gray-700 bg-gradient-to-r from-primary/5 to-primary/10 dark:from-primary/20 dark:to-primary/30 p-6">
                                 <div className="mb-4 flex items-center justify-between">
                                     <div className="flex items-center gap-3">
                                         <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
@@ -442,7 +442,7 @@ export default function MessagesDropdown({ currentUserId }: MessagesDropdownProp
                                         variant="ghost"
                                         size="icon"
                                         onClick={() => setShowAllMessagesModal(false)}
-                                        className="h-10 w-10 rounded-full hover:bg-gray-100"
+                                        className="h-10 w-10 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700"
                                     >
                                         <X className="h-5 w-5" />
                                     </Button>
@@ -451,19 +451,19 @@ export default function MessagesDropdown({ currentUserId }: MessagesDropdownProp
                                 {/* Search */}
                                 {conversations.length > 0 && (
                                     <div className="relative">
-                                        <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-400" />
+                                        <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-400 dark:text-gray-500" />
                                         <Input
                                             placeholder="Search conversations..."
                                             value={searchQuery}
                                             onChange={(e) => setSearchQuery(e.target.value)}
-                                            className="border-gray-300 bg-white pl-10 focus:border-primary focus:ring-primary"
+                                            className="border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 pl-10 focus:border-primary dark:focus:border-orange-500 focus:ring-primary dark:focus:ring-orange-500"
                                         />
                                     </div>
                                 )}
                             </div>
 
                             {/* Conversations List */}
-                            <div className="flex-1 overflow-y-auto bg-gray-50 p-4">
+                            <div className="flex-1 overflow-y-auto bg-gray-50 p-4 custom-scrollbar">
                                 {isLoading ? (
                                     <div className="flex h-full items-center justify-center">
                                         <div className="text-center">
@@ -500,7 +500,7 @@ export default function MessagesDropdown({ currentUserId }: MessagesDropdownProp
                                                 {filteredConversations.map((conversation) => (
                                                     <div
                                                         key={conversation.id}
-                                                        className="cursor-pointer rounded-lg border border-gray-200 bg-white p-4 transition-all hover:border-primary/50 hover:shadow-md"
+                                                        className="cursor-pointer rounded-lg border border-gray-300 bg-white p-4 transition-all hover:border-orange-400 hover:shadow-md"
                                                         onClick={() => handleConversationClick(conversation.id)}
                                                     >
                                                         <div className="flex items-start gap-3">
