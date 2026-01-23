@@ -249,6 +249,31 @@
     textarea {
         caret-color: #111827 !important;
     }
+
+    /* Fix chat message bubbles to prevent browser dark mode from hiding text */
+    .chat-message-received {
+        background-color: #ffffff !important;
+        color: #111827 !important;
+        -webkit-text-fill-color: #111827 !important;
+    }
+
+    .chat-message-received p,
+    .chat-message-received span {
+        color: #111827 !important;
+        -webkit-text-fill-color: #111827 !important;
+    }
+
+    .chat-message-sent {
+        background-color: #f97316 !important;
+        color: #ffffff !important;
+        -webkit-text-fill-color: #ffffff !important;
+    }
+
+    .chat-message-sent p,
+    .chat-message-sent span {
+        color: #ffffff !important;
+        -webkit-text-fill-color: #ffffff !important;
+    }
 }
 
 /* Shopee-like mobile responsiveness - Compact scaling for mobile devices */
