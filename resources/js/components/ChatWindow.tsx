@@ -469,8 +469,8 @@ export default function ChatWindow({ conversationId, currentUserId }: ChatWindow
                                     <div
                                         className={`rounded-2xl px-3 py-2 shadow-sm sm:px-4 sm:py-2.5 ${
                                             isOwnMessage
-                                                ? 'rounded-tr-md bg-orange-500 text-white'
-                                                : 'rounded-tl-md border border-gray-200 bg-white text-gray-900 dark:border-gray-600 dark:bg-gray-700 dark:text-white'
+                                                ? 'chat-message-sent rounded-tr-md bg-orange-500 text-white'
+                                                : 'chat-message-received rounded-tl-md border border-gray-200 bg-white text-gray-900 dark:border-gray-600 dark:bg-gray-700 dark:text-white'
                                         }`}
                                     >
                                         {message.image_url && (
@@ -503,7 +503,7 @@ export default function ChatWindow({ conversationId, currentUserId }: ChatWindow
                                     {getInitials(conversation.other_user.name)}
                                 </AvatarFallback>
                             </Avatar>
-                            <div className="flex items-center rounded-2xl rounded-tl-md border border-gray-200 bg-white px-4 py-2.5 shadow-sm dark:border-gray-600 dark:bg-gray-700">
+                            <div className="chat-message-received flex items-center rounded-2xl rounded-tl-md border border-gray-200 bg-white px-4 py-2.5 shadow-sm dark:border-gray-600 dark:bg-gray-700">
                                 <div className="flex gap-1">
                                     <span className="inline-block h-2 w-2 animate-bounce rounded-full bg-gray-400 dark:bg-gray-500" style={{ animationDelay: '0ms' }}></span>
                                     <span className="inline-block h-2 w-2 animate-bounce rounded-full bg-gray-400 dark:bg-gray-500" style={{ animationDelay: '150ms' }}></span>

@@ -52,6 +52,9 @@ Route::post('/api/cart/transfer', [App\Http\Controllers\Api\CartTransferControll
 // API route for geocoding (Nominatim proxy to avoid CORS)
 Route::get('/api/geocode', [GeocodeController::class, 'geocode'])->name('api.geocode');
 
+// API route for search suggestions (autocomplete)
+Route::get('/api/search/suggestions', [App\Http\Controllers\Api\SearchSuggestionController::class, 'suggestions'])->name('api.search.suggestions');
+
 // API routes for buyer cart (returns JSON)
 Route::middleware('auth')->prefix('api/buyer')->group(function () {
     Route::get('/cart', [App\Http\Controllers\Buyer\CartController::class, 'getCartJson'])->name('api.buyer.cart');
