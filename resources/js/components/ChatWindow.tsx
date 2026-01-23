@@ -554,6 +554,7 @@ export default function ChatWindow({ conversationId, currentUserId }: ChatWindow
                         </button>
                         <input
                             type="text"
+                            data-chat-input
                             value={newMessage}
                             onChange={handleInputChange}
                             placeholder="Type your message..."

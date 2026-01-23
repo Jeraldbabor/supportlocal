@@ -1,10 +1,11 @@
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Product as GlobalProduct } from '@/types';
 import { Head, Link, router, usePage } from '@inertiajs/react';
-import { ChevronDown, ChevronLeft, ChevronRight, Filter, Search, ShoppingCart, Star } from 'lucide-react';
+import { ChevronDown, ChevronLeft, ChevronRight, Filter, ShoppingCart, Star } from 'lucide-react';
 import React, { useState } from 'react';
 import AddToCartModal from '../components/AddToCartModal';
 import AuthRequiredModal from '../components/AuthRequiredModal';
+import SearchAutocomplete from '../components/SearchAutocomplete';
 import Toast from '../components/Toast';
 import WishlistButton from '../components/WishlistButton';
 import { useCart } from '../contexts/CartContext';
@@ -114,9 +115,9 @@ export default function Products({ products, categories = [], sellers = [], loca
     const isPriceSortActive = currentSort === 'price-low' || currentSort === 'price-high';
     const priceSortDirection = currentSort === 'price-low' ? 'low' : currentSort === 'price-high' ? 'high' : null;
 
-    const handleSearch = (e: React.FormEvent) => {
-        e.preventDefault();
-        router.get('/products', { ...filters, search: searchTerm }, { preserveState: true });
+    const handleSearch = (term: string) => {
+        setSearchTerm(term);
+        router.get('/products', { ...filters, search: term }, { preserveState: true });
     };
 
     const handleFilter = (key: string, value: string | null) => {
@@ -654,26 +655,14 @@ export default function Products({ products, categories = [], sellers = [], loca
             <Head title="Browse Products" />
 
             <div className="mx-auto max-w-7xl px-3 py-4 sm:px-4 sm:py-6 lg:px-8">
-                {/* Search Bar */}
+                {/* Search Bar with Autocomplete */}
                 <div className="mb-4 sm:mb-6">
-                    <form onSubmit={handleSearch} className="flex gap-2 sm:gap-3">
-                        <div className="relative min-w-0 flex-1">
-                            <Search className="absolute top-1/2 left-2 h-4 w-4 -translate-y-1/2 text-gray-400 sm:left-3 sm:h-5 sm:w-5" />
-                            <input
-                                type="text"
-                                placeholder="Search products..."
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                                className="w-full rounded-lg border border-gray-300 py-2 pr-3 pl-8 text-xs focus:border-orange-500 focus:ring-2 focus:ring-orange-200 focus:outline-none sm:py-3 sm:pr-4 sm:pl-10 sm:text-sm"
-                            />
-                        </div>
-                        <button
-                            type="submit"
-                            className="flex-shrink-0 rounded-lg bg-orange-500 px-3 py-2 text-xs font-medium whitespace-nowrap text-white transition-colors hover:bg-orange-600 sm:px-6 sm:py-3 sm:text-sm"
-                        >
-                            Search
-                        </button>
-                    </form>
+                    <SearchAutocomplete
+                        type="products"
+                        placeholder="Search products, categories, or sellers..."
+                        initialValue={searchTerm}
+                        onSearch={handleSearch}
+                    />
                 </div>
 
                 {/* Mobile Filter Button */}

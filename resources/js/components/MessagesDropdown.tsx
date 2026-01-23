@@ -286,8 +286,8 @@ export default function MessagesDropdown({ currentUserId }: MessagesDropdownProp
     // Render dropdown content (reusable for both mobile and desktop)
     const renderDropdownContent = () => (
         <>
-            <div className="rounded-t-lg border-b border-gray-100 bg-gray-50 p-2.5 sm:p-3">
-                <h3 className="flex items-center gap-1.5 text-sm font-semibold text-gray-900 sm:gap-2 sm:text-base">
+            <div className="rounded-t-lg border-b border-gray-100 bg-gray-50 p-2.5 dark:border-gray-700 dark:bg-gray-800 sm:p-3">
+                <h3 className="flex items-center gap-1.5 text-sm font-semibold text-gray-900 dark:text-white sm:gap-2 sm:text-base">
                     <MessageSquare className="h-3.5 w-3.5 flex-shrink-0 sm:h-4 sm:w-4" />
                     <span>Messages</span>
                 </h3>
@@ -306,9 +306,9 @@ export default function MessagesDropdown({ currentUserId }: MessagesDropdownProp
                         <p className="mt-1 text-[10px] text-gray-400 sm:text-xs">Start chatting with sellers!</p>
                     </div>
                 ) : (
-                    <div className="divide-y divide-gray-100">
+                    <div className="divide-y divide-gray-100 dark:divide-gray-700">
                         {conversations.map((conversation) => (
-                            <div key={conversation.id} className="flex items-start gap-2 p-2.5 transition-colors hover:bg-gray-50 sm:gap-3 sm:p-3">
+                            <div key={conversation.id} className="flex items-start gap-2 p-2.5 transition-colors hover:bg-gray-50 dark:hover:bg-gray-800 sm:gap-3 sm:p-3">
                                 <button
                                     onClick={() => handleConversationClick(conversation.id)}
                                     className="flex min-w-0 flex-1 items-start gap-2 text-left sm:gap-3"
@@ -321,7 +321,7 @@ export default function MessagesDropdown({ currentUserId }: MessagesDropdownProp
                                     </Avatar>
                                     <div className="min-w-0 flex-1">
                                         <div className="flex items-start justify-between gap-1.5 sm:gap-2">
-                                            <p className="truncate text-xs font-semibold text-gray-900 sm:text-sm">{conversation.other_user.name}</p>
+                                            <p className="truncate text-xs font-semibold text-gray-900 dark:text-white sm:text-sm">{conversation.other_user.name}</p>
                                             {conversation.unread_count > 0 && (
                                                 <span className="flex-shrink-0 rounded-full bg-primary px-1.5 py-0.5 text-[10px] text-white sm:px-2 sm:text-xs">
                                                     {conversation.unread_count}
@@ -332,12 +332,12 @@ export default function MessagesDropdown({ currentUserId }: MessagesDropdownProp
                                             <p className="mt-0.5 truncate text-[10px] text-gray-500 sm:text-xs">{conversation.product.name}</p>
                                         )}
                                         {conversation.last_message && (
-                                            <p className="mt-1 line-clamp-1 truncate text-[10px] text-gray-600 sm:text-xs">
+                                            <p className="mt-1 line-clamp-1 truncate text-[10px] text-gray-600 dark:text-gray-300 sm:text-xs">
                                                 {conversation.last_message.message}
                                             </p>
                                         )}
                                         {conversation.last_message && (
-                                            <p className="mt-0.5 text-[9px] text-gray-400 sm:mt-1 sm:text-xs">
+                                            <p className="mt-0.5 text-[9px] text-gray-400 dark:text-gray-500 sm:mt-1 sm:text-xs">
                                                 {formatDistanceToNow(new Date(conversation.last_message.created_at), { addSuffix: true })}
                                             </p>
                                         )}
@@ -359,13 +359,13 @@ export default function MessagesDropdown({ currentUserId }: MessagesDropdownProp
             </div>
 
             {conversations.length > 0 && (
-                <div className="rounded-b-lg border-t border-gray-100 bg-gray-50 p-2 sm:p-2.5">
+                <div className="rounded-b-lg border-t border-gray-100 bg-gray-50 dark:border-gray-700 dark:bg-gray-800 p-2 sm:p-2.5">
                     <button
                         onClick={() => {
                             setShowAllMessagesModal(true);
                             setIsOpen(false);
                         }}
-                        className="block w-full rounded py-1.5 text-center text-xs font-medium text-primary transition-colors hover:bg-white hover:text-primary/80 sm:py-2 sm:text-sm"
+                        className="block w-full rounded py-1.5 text-center text-xs font-medium text-primary transition-colors hover:bg-white dark:hover:bg-gray-700 hover:text-primary/80 sm:py-2 sm:text-sm"
                     >
                         View all messages
                     </button>
@@ -376,11 +376,10 @@ export default function MessagesDropdown({ currentUserId }: MessagesDropdownProp
 
     return (
         <>
-            <div className="relative" ref={dropdownRef} style={{ colorScheme: 'light' }}>
+            <div className="relative" ref={dropdownRef}>
                 <button
                     onClick={() => setIsOpen(!isOpen)}
-                    className="group relative rounded-lg p-1.5 transition-all duration-300 hover:bg-orange-50 hover:shadow-sm focus:ring-2 focus:ring-orange-500/50 focus:ring-offset-2 focus:outline-none sm:rounded-xl sm:p-2"
-                    style={{ colorScheme: 'light' }}
+                    className="group relative rounded-lg p-1.5 transition-all duration-300 hover:bg-orange-50 hover:shadow-sm focus:ring-2 focus:ring-orange-500/50 focus:ring-offset-2 focus:outline-none dark:hover:bg-gray-800 sm:rounded-xl sm:p-2"
                     aria-label={`Messages ${totalUnread > 0 ? `(${totalUnread} unread)` : ''}`}
                 >
                     <MessageSquare className="h-4 w-4 transition-transform duration-300 group-hover:scale-110 sm:h-5 sm:w-5" style={{ color: '#4b5563' }} />
@@ -397,7 +396,7 @@ export default function MessagesDropdown({ currentUserId }: MessagesDropdownProp
                         {/* Mobile backdrop */}
                         <div className="fixed inset-0 z-[9998] bg-black/20 sm:hidden" onClick={() => setIsOpen(false)} />
                         {/* Dropdown - Fixed on mobile, absolute on desktop */}
-                        <div className="fixed top-[4.5rem] right-2 z-[9999] w-[calc(100vw-1rem)] max-w-sm rounded-lg border border-gray-200 bg-white shadow-xl sm:absolute sm:top-auto sm:right-0 sm:z-50 sm:mt-2 sm:w-80">
+                        <div className="fixed top-[4.5rem] right-2 z-[9999] w-[calc(100vw-1rem)] max-w-sm rounded-lg border border-gray-200 bg-white shadow-xl dark:border-gray-700 dark:bg-gray-900 sm:absolute sm:top-auto sm:right-0 sm:z-50 sm:mt-2 sm:w-80">
                             {renderDropdownContent()}
                         </div>
                     </>
@@ -454,10 +453,11 @@ export default function MessagesDropdown({ currentUserId }: MessagesDropdownProp
                                     <div className="relative">
                                         <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-400" />
                                         <Input
+                                            data-chat-input
                                             placeholder="Search conversations..."
                                             value={searchQuery}
                                             onChange={(e) => setSearchQuery(e.target.value)}
-                                            className="border-gray-300 bg-white pl-10 focus:border-primary focus:ring-primary"
+                                            className="border-gray-300 bg-white pl-10 focus:border-primary focus:ring-primary dark:bg-gray-800 dark:border-gray-600 dark:text-white"
                                         />
                                     </div>
                                 )}

@@ -232,7 +232,7 @@ export default function BuyerChatModal({ conversationId, currentUserId, onClose,
     }
 
     const modalContent = (
-        <div className="fixed right-4 bottom-4 z-[9999] flex max-h-[420px] w-[380px] max-w-[calc(100vw-2rem)] flex-col rounded-lg border border-gray-200 bg-white shadow-2xl">
+        <div className="fixed right-4 bottom-4 z-[9999] flex max-h-[420px] w-[380px] max-w-[calc(100vw-2rem)] flex-col rounded-lg border border-gray-200 bg-white shadow-2xl dark:border-gray-700 dark:bg-gray-900">
             {/* Chat Header */}
             <div className="flex items-center justify-between rounded-t-lg bg-primary px-4 py-3 text-primary-foreground">
                 <div className="flex min-w-0 flex-1 items-center gap-3">
@@ -259,7 +259,7 @@ export default function BuyerChatModal({ conversationId, currentUserId, onClose,
             {!isMinimized && (
                 <>
                     {/* Messages */}
-                    <div className="min-h-0 flex-1 space-y-3 overflow-y-auto scroll-smooth bg-gray-50 p-4">
+                    <div className="min-h-0 flex-1 space-y-3 overflow-y-auto scroll-smooth bg-gray-50 p-4 dark:bg-gray-800">
                         {messages.map((message) => {
                             const isOwnMessage = message.sender_id === currentUserId;
 
@@ -274,7 +274,7 @@ export default function BuyerChatModal({ conversationId, currentUserId, onClose,
                                             className={`rounded-2xl px-3 py-2 ${
                                                 isOwnMessage
                                                     ? 'rounded-br-sm bg-primary text-primary-foreground'
-                                                    : 'rounded-bl-sm border border-gray-200 bg-white'
+                                                    : 'rounded-bl-sm border border-gray-200 bg-white dark:border-gray-600 dark:bg-gray-700 dark:text-white'
                                             }`}
                                         >
                                             {message.image_url && (
@@ -303,7 +303,7 @@ export default function BuyerChatModal({ conversationId, currentUserId, onClose,
                                     <AvatarImage src={conversation.other_user.avatar_url} />
                                     <AvatarFallback className="text-xs">{getInitials(conversation.other_user.name)}</AvatarFallback>
                                 </Avatar>
-                                <div className="flex items-center rounded-2xl rounded-bl-sm border border-gray-200 bg-white px-3 py-2">
+                                <div className="flex items-center rounded-2xl rounded-bl-sm border border-gray-200 bg-white px-3 py-2 dark:border-gray-600 dark:bg-gray-700">
                                     <div className="flex gap-1">
                                         <span
                                             className="inline-block h-1.5 w-1.5 animate-bounce rounded-full bg-gray-400"
@@ -325,7 +325,7 @@ export default function BuyerChatModal({ conversationId, currentUserId, onClose,
                     </div>
 
                     {/* Message Input */}
-                    <form onSubmit={sendMessage} className="rounded-b-lg border-t bg-white p-3">
+                    <form onSubmit={sendMessage} className="rounded-b-lg border-t bg-white p-3 dark:border-gray-700 dark:bg-gray-900">
                         {/* Image Preview */}
                         {imagePreview && (
                             <div className="relative mb-2 inline-block">
@@ -362,11 +362,12 @@ export default function BuyerChatModal({ conversationId, currentUserId, onClose,
                                 <Image className="h-4 w-4" />
                             </Button>
                             <Input
+                                data-chat-input
                                 value={newMessage}
                                 onChange={handleInputChange}
                                 placeholder="Type a message..."
                                 disabled={isLoading}
-                                className="flex-1 rounded-full"
+                                className="flex-1 rounded-full dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:placeholder-gray-500"
                             />
                             <Button
                                 type="submit"

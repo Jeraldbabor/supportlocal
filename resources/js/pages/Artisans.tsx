@@ -1,7 +1,8 @@
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Head, Link, router, usePage } from '@inertiajs/react';
-import { ChevronDown, ChevronLeft, ChevronRight, Filter, MapPin, MessageSquare, Search, Star, User } from 'lucide-react';
+import { ChevronDown, ChevronLeft, ChevronRight, Filter, MapPin, MessageSquare, Star, User } from 'lucide-react';
 import React, { useState } from 'react';
+import SearchAutocomplete from '../components/SearchAutocomplete';
 import StartChatButton from '../components/StartChatButton';
 import MainLayout from '../layouts/MainLayout';
 
@@ -58,9 +59,9 @@ export default function Artisans({ artisans, locations = [], filters = {} }: Art
     const artisanList = artisans?.data || [];
     const currentSort = filters?.sort || 'popular';
 
-    const handleSearch = (e: React.FormEvent) => {
-        e.preventDefault();
-        router.get('/artisans', { ...filters, search: searchTerm }, { preserveState: true });
+    const handleSearch = (term: string) => {
+        setSearchTerm(term);
+        router.get('/artisans', { ...filters, search: term }, { preserveState: true });
     };
 
     const handleFilter = (key: string, value: string | boolean | null) => {
@@ -368,26 +369,14 @@ export default function Artisans({ artisans, locations = [], filters = {} }: Art
             <Head title="Browse Artisans" />
 
             <div className="mx-auto max-w-7xl px-3 py-4 sm:px-4 sm:py-6 lg:px-8">
-                {/* Search Bar */}
+                {/* Search Bar with Autocomplete */}
                 <div className="mb-4 sm:mb-6">
-                    <form onSubmit={handleSearch} className="flex gap-2 sm:gap-3">
-                        <div className="relative min-w-0 flex-1">
-                            <Search className="absolute top-1/2 left-2 h-4 w-4 -translate-y-1/2 text-gray-400 sm:left-3 sm:h-5 sm:w-5" />
-                            <input
-                                type="text"
-                                placeholder="Search artisans..."
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                                className="w-full rounded-lg border border-gray-300 py-2 pr-3 pl-8 text-xs focus:border-orange-500 focus:ring-2 focus:ring-orange-200 focus:outline-none sm:py-3 sm:pr-4 sm:pl-10 sm:text-sm"
-                            />
-                        </div>
-                        <button
-                            type="submit"
-                            className="flex-shrink-0 rounded-lg bg-orange-500 px-3 py-2 text-xs font-medium whitespace-nowrap text-white transition-colors hover:bg-orange-600 sm:px-6 sm:py-3 sm:text-sm"
-                        >
-                            Search
-                        </button>
-                    </form>
+                    <SearchAutocomplete
+                        type="sellers"
+                        placeholder="Search artisans by name, location, or business..."
+                        initialValue={searchTerm}
+                        onSearch={handleSearch}
+                    />
                 </div>
 
                 {/* Mobile Filter Button */}
