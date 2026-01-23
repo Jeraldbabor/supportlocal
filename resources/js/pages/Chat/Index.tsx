@@ -71,7 +71,7 @@ export default function ChatIndex({ auth, conversations }: ChatIndexProps) {
 
             <div 
                 className="mx-auto h-[calc(100vh-8rem)] max-w-6xl overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm sm:h-[calc(100vh-10rem)]"
-                style={{ colorScheme: 'light' }}
+                data-chat-container
             >
                 <div className="flex h-full">
                     {/* Conversations List - Hidden on mobile when chat is open */}

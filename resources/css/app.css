@@ -250,6 +250,50 @@
         caret-color: #111827 !important;
     }
 
+    /* Force light mode for all chat components */
+    [data-chat-container],
+    [data-chat-container] * {
+        color-scheme: light !important;
+    }
+
+    .dark [data-chat-container],
+    .dark [data-chat-container] * {
+        background-color: #ffffff !important;
+        color: #111827 !important;
+    }
+
+    .dark [data-chat-container] input,
+    .dark [data-chat-container] textarea {
+        background-color: #ffffff !important;
+        color: #111827 !important;
+        border-color: #e5e7eb !important;
+    }
+
+    .dark [data-chat-container] .bg-gray-50,
+    .dark [data-chat-container] .bg-gray-100,
+    .dark [data-chat-container] .bg-white {
+        background-color: #ffffff !important;
+    }
+
+    .dark [data-chat-container] .bg-gray-800,
+    .dark [data-chat-container] .bg-gray-900 {
+        background-color: #f9fafb !important;
+    }
+
+    .dark [data-chat-container] .text-white {
+        color: #111827 !important;
+    }
+
+    .dark [data-chat-container] .text-gray-400,
+    .dark [data-chat-container] .text-gray-500 {
+        color: #6b7280 !important;
+    }
+
+    .dark [data-chat-container] .border-gray-700,
+    .dark [data-chat-container] .border-gray-600 {
+        border-color: #e5e7eb !important;
+    }
+
     /* Fix chat message bubbles to prevent browser dark mode from hiding text */
     .chat-message-received {
         background-color: #ffffff !important;

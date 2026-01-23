@@ -232,7 +232,7 @@ export default function BuyerChatModal({ conversationId, currentUserId, onClose,
     }
 
     const modalContent = (
-        <div className="fixed right-4 bottom-4 z-[9999] flex max-h-[420px] w-[380px] max-w-[calc(100vw-2rem)] flex-col rounded-lg border border-gray-200 bg-white shadow-2xl">
+        <div className="fixed right-4 bottom-4 z-[9999] flex max-h-[420px] w-[380px] max-w-[calc(100vw-2rem)] flex-col rounded-lg border border-gray-200 bg-white shadow-2xl" data-chat-container>
             {/* Chat Header */}
             <div className="flex items-center justify-between rounded-t-lg bg-primary px-4 py-3 text-primary-foreground">
                 <div className="flex min-w-0 flex-1 items-center gap-3">
@@ -325,7 +325,7 @@ export default function BuyerChatModal({ conversationId, currentUserId, onClose,
                     </div>
 
                     {/* Message Input */}
-                    <form onSubmit={sendMessage} className="rounded-b-lg border-t bg-white p-3">
+                    <form onSubmit={sendMessage} className="rounded-b-lg border-t bg-white p-3 dark:border-gray-700 dark:bg-gray-900">
                         {/* Image Preview */}
                         {imagePreview && (
                             <div className="relative mb-2 inline-block">

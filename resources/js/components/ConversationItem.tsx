@@ -42,7 +42,6 @@ export default function ConversationItem({ conversation, isActive, onClick }: Co
                     ? 'bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-md' 
                     : 'bg-white hover:bg-orange-50 hover:shadow-sm border border-transparent hover:border-orange-100'
             }`}
-            style={{ colorScheme: 'light' }}
         >
             <div className="flex items-start gap-3">
                 <div className="relative flex-shrink-0">

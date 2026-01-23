@@ -1,4 +1,4 @@
-import { router } from '@inertiajs/react';
+import { router, usePage } from '@inertiajs/react';
 import { Loader2, Search, Store, Tag, X } from 'lucide-react';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 
@@ -56,6 +56,13 @@ export default function SearchAutocomplete({
     const inputRef = useRef<HTMLInputElement>(null);
     const dropdownRef = useRef<HTMLDivElement>(null);
     const debounceRef = useRef<NodeJS.Timeout | null>(null);
+    
+    // Detect if we're on buyer routes or public routes
+    const currentUrl = usePage().url;
+    const isBuyerRoute = currentUrl.startsWith('/buyer/');
+    const productRoutePrefix = isBuyerRoute ? '/buyer/product' : '/product';
+    const sellerRoutePrefix = isBuyerRoute ? '/buyer/seller' : '/artisan';
+    const productsRoute = isBuyerRoute ? '/buyer/products' : '/products';
 
     // Debounced fetch suggestions
     const fetchSuggestions = useCallback(
@@ -119,19 +126,19 @@ export default function SearchAutocomplete({
     // Navigate to product detail
     const handleProductClick = (product: ProductSuggestion) => {
         setShowDropdown(false);
-        router.visit(`/buyer/product/${product.id}`);
+        router.visit(`${productRoutePrefix}/${product.id}`);
     };
 
     // Navigate to seller profile
     const handleSellerClick = (seller: SellerSuggestion) => {
         setShowDropdown(false);
-        router.visit(`/buyer/seller/${seller.id}`);
+        router.visit(`${sellerRoutePrefix}/${seller.id}`);
     };
 
     // Search by category
     const handleCategoryClick = (category: CategorySuggestion) => {
         setShowDropdown(false);
-        router.get('/buyer/products', { category: category.id.toString() });
+        router.get(productsRoute, { category: category.id.toString() });
     };
 
     // Search by keyword
