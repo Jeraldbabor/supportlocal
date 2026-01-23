@@ -70,14 +70,14 @@ export default function ChatIndex({ auth, conversations }: ChatIndexProps) {
             <Head title="Messages" />
 
             <div 
-                className="mx-auto h-[calc(100vh-8rem)] max-w-6xl overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm sm:h-[calc(100vh-10rem)]"
+                className="mx-auto h-[calc(100vh-8rem)] max-w-6xl overflow-hidden rounded-xl border border-gray-300 bg-white shadow-sm sm:h-[calc(100vh-10rem)]"
                 data-chat-container
             >
                 <div className="flex h-full">
                     {/* Conversations List - Hidden on mobile when chat is open */}
-                    <div className={`flex h-full w-full flex-col border-r border-gray-200 bg-gray-50 md:w-80 lg:w-96 ${showChatOnMobile ? 'hidden md:flex' : 'flex'}`}>
+                    <div className={`flex h-full w-full flex-col border-r border-gray-300 bg-gray-50 md:w-80 lg:w-96 ${showChatOnMobile ? 'hidden md:flex' : 'flex'}`}>
                         {/* Header */}
-                        <div className="flex-shrink-0 border-b border-gray-200 bg-white p-4">
+                        <div className="flex-shrink-0 border-b border-gray-300 bg-white p-4">
                             <div className="flex items-center gap-3">
                                 <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-orange-100">
                                     <MessageSquare className="h-5 w-5 text-orange-600" />
@@ -101,7 +101,7 @@ export default function ChatIndex({ auth, conversations }: ChatIndexProps) {
                                         placeholder="Search conversations..."
                                         value={searchQuery}
                                         onChange={(e) => setSearchQuery(e.target.value)}
-                                        className="w-full rounded-lg border border-gray-200 bg-gray-50 py-2.5 pr-4 pl-10 text-sm text-gray-900 placeholder-gray-400 transition-colors focus:border-orange-300 focus:bg-white focus:outline-none focus:ring-2 focus:ring-orange-100"
+                                        className="w-full rounded-lg border border-gray-300 bg-gray-50 py-2.5 pr-4 pl-10 text-sm text-gray-900 placeholder-gray-400 transition-colors focus:border-orange-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-orange-200"
                                     />
                                 </div>
                             )}
@@ -145,7 +145,7 @@ export default function ChatIndex({ auth, conversations }: ChatIndexProps) {
                         {selectedConversationId ? (
                             <>
                                 {/* Mobile back button */}
-                                <div className="flex-shrink-0 border-b border-gray-200 bg-white p-2 md:hidden">
+                                <div className="flex-shrink-0 border-b border-gray-300 bg-white p-2 md:hidden">
                                     <button
                                         onClick={handleBackToList}
                                         className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100"

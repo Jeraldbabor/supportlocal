@@ -29,22 +29,46 @@
 
 /* Custom scrollbar for better UX */
 .custom-scrollbar::-webkit-scrollbar {
-    width: 6px;
+    width: 8px;
+    height: 8px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-track {
     background: #f1f1f1;
-    border-radius: 3px;
+    border-radius: 4px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
     background: #c1c1c1;
-    border-radius: 3px;
+    border-radius: 4px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
     background: #a8a8a8;
 }
+
+    /* Dark mode scrollbar - keep light */
+    .dark .custom-scrollbar::-webkit-scrollbar-track {
+        background: #f1f1f1 !important;
+    }
+
+    .dark .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: #c1c1c1 !important;
+    }
+
+    .dark .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background: #a8a8a8 !important;
+    }
+
+    /* Firefox scrollbar for custom-scrollbar - always light */
+    .custom-scrollbar {
+        scrollbar-width: thin;
+        scrollbar-color: #c1c1c1 #f1f1f1;
+    }
+
+    .dark .custom-scrollbar {
+        scrollbar-color: #c1c1c1 #f1f1f1 !important;
+    }
 
 /* Hide scrollbar but keep functionality */
 .scrollbar-hide {
@@ -250,29 +274,30 @@
         caret-color: #111827 !important;
     }
 
-    /* Force light mode for all chat components */
-    [data-chat-container],
-    [data-chat-container] * {
+    /* Chat container - force light theme always */
+    [data-chat-container] {
         color-scheme: light !important;
+        background-color: #ffffff !important;
     }
 
-    .dark [data-chat-container],
-    .dark [data-chat-container] * {
+    .dark [data-chat-container] {
+        color-scheme: light !important;
         background-color: #ffffff !important;
-        color: #111827 !important;
     }
 
-    .dark [data-chat-container] input,
-    .dark [data-chat-container] textarea {
-        background-color: #ffffff !important;
-        color: #111827 !important;
-        border-color: #e5e7eb !important;
+    /* Force light backgrounds for chat containers - be very specific to avoid overriding bubbles */
+    .dark [data-chat-container] > div,
+    .dark [data-chat-container] > form,
+    .dark [data-chat-container] .bg-gray-50,
+    .dark [data-chat-container] .bg-gray-100,
+    .dark [data-chat-container] .bg-white {
+        background-color: #f9fafb !important;
     }
 
     .dark [data-chat-container] .bg-gray-50,
     .dark [data-chat-container] .bg-gray-100,
     .dark [data-chat-container] .bg-white {
-        background-color: #ffffff !important;
+        background-color: #f9fafb !important;
     }
 
     .dark [data-chat-container] .bg-gray-800,
@@ -280,41 +305,205 @@
         background-color: #f9fafb !important;
     }
 
-    .dark [data-chat-container] .text-white {
-        color: #111827 !important;
+    /* Ensure orange/primary backgrounds are preserved */
+    .dark [data-chat-container] .bg-orange-500,
+    .dark [data-chat-container] .bg-primary {
+        background-color: #f97316 !important;
     }
 
+    /* Chat message bubbles - received messages (white background) */
+    .chat-message-received {
+        background-color: #ffffff !important;
+        color: #111827 !important;
+        border: 1px solid #d1d5db !important;
+        border-color: #d1d5db !important;
+        -webkit-text-fill-color: #111827 !important;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+    }
+
+    .dark .chat-message-received {
+        background-color: #ffffff !important;
+        color: #111827 !important;
+        border: 1px solid #d1d5db !important;
+        border-color: #d1d5db !important;
+        -webkit-text-fill-color: #111827 !important;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+    }
+
+    .chat-message-received p,
+    .chat-message-received span,
+    .chat-message-received *:not(.text-gray-400):not(.text-gray-500) {
+        color: #111827 !important;
+        -webkit-text-fill-color: #111827 !important;
+    }
+
+    /* Chat message bubbles - sent messages (orange background) - CRITICAL FIX */
+    .chat-message-sent,
+    [class*="chat-message-sent"],
+    .bg-orange-500.chat-message-sent,
+    .bg-primary.chat-message-sent {
+        background-color: #f97316 !important;
+        background: linear-gradient(135deg, #f97316 0%, #ea580c 100%) !important;
+        color: #ffffff !important;
+        -webkit-text-fill-color: #ffffff !important;
+        box-shadow: 0 2px 8px rgba(249, 115, 22, 0.3), 0 1px 2px rgba(0, 0, 0, 0.1) !important;
+        border: none !important;
+    }
+
+    .dark .chat-message-sent,
+    .dark [class*="chat-message-sent"],
+    .dark .bg-orange-500.chat-message-sent,
+    .dark .bg-primary.chat-message-sent {
+        background-color: #f97316 !important;
+        background: linear-gradient(135deg, #f97316 0%, #ea580c 100%) !important;
+        color: #ffffff !important;
+        -webkit-text-fill-color: #ffffff !important;
+        box-shadow: 0 2px 8px rgba(249, 115, 22, 0.3), 0 1px 2px rgba(0, 0, 0, 0.1) !important;
+        border: none !important;
+    }
+
+    /* Force white text in sent messages - override everything */
+    .chat-message-sent p,
+    .chat-message-sent div:not(.text-gray-400):not(.text-gray-500),
+    .chat-message-sent span:not(.text-gray-400):not(.text-gray-500),
+    .chat-message-sent *:not(.text-gray-400):not(.text-gray-500),
+    .bg-orange-500 p,
+    .bg-primary p,
+    [class*="bg-orange-500"] p,
+    [class*="bg-primary"] p {
+        color: #ffffff !important;
+        -webkit-text-fill-color: #ffffff !important;
+    }
+
+    /* Timestamps below messages should remain gray - but only if they're siblings */
+    .chat-message-sent ~ span.text-gray-400,
+    .chat-message-sent ~ span.text-gray-500,
+    span.text-gray-400:not(.chat-message-sent *),
+    span.text-gray-500:not(.chat-message-sent *) {
+        color: #6b7280 !important;
+        -webkit-text-fill-color: #6b7280 !important;
+    }
+
+    /* Fix text colors in chat containers - always dark text on light background */
     .dark [data-chat-container] .text-gray-400,
     .dark [data-chat-container] .text-gray-500 {
         color: #6b7280 !important;
     }
 
-    .dark [data-chat-container] .border-gray-700,
-    .dark [data-chat-container] .border-gray-600 {
-        border-color: #e5e7eb !important;
-    }
-
-    /* Fix chat message bubbles to prevent browser dark mode from hiding text */
-    .chat-message-received {
-        background-color: #ffffff !important;
+    .dark [data-chat-container] .text-gray-900,
+    .dark [data-chat-container] .text-gray-100 {
         color: #111827 !important;
-        -webkit-text-fill-color: #111827 !important;
     }
 
-    .chat-message-received p,
-    .chat-message-received span {
-        color: #111827 !important;
-        -webkit-text-fill-color: #111827 !important;
+    .dark [data-chat-container] span.text-gray-400,
+    .dark [data-chat-container] span.text-gray-500,
+    .dark [data-chat-container] p.text-gray-400,
+    .dark [data-chat-container] p.text-gray-500 {
+        color: #6b7280 !important;
     }
 
-    .chat-message-sent {
-        background-color: #f97316 !important;
+    .dark [data-chat-container] .text-muted-foreground {
+        color: #6b7280 !important;
+    }
+
+    /* Preserve white text on orange/active backgrounds */
+    .dark [data-chat-container] .bg-orange-500 .text-white,
+    .dark [data-chat-container] .bg-orange-600 .text-white,
+    .dark [data-chat-container] .bg-primary .text-white,
+    .dark [data-chat-container] .text-white.bg-orange-500,
+    .dark [data-chat-container] .text-white.bg-orange-600 {
         color: #ffffff !important;
         -webkit-text-fill-color: #ffffff !important;
     }
 
-    .chat-message-sent p,
-    .chat-message-sent span {
+    /* Custom scrollbar for chat containers - always light */
+    [data-chat-container]::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+    }
+
+    [data-chat-container]::-webkit-scrollbar-track {
+        background: #f1f1f1 !important;
+        border-radius: 4px;
+    }
+
+    .dark [data-chat-container]::-webkit-scrollbar-track {
+        background: #f1f1f1 !important;
+    }
+
+    [data-chat-container]::-webkit-scrollbar-thumb {
+        background: #c1c1c1 !important;
+        border-radius: 4px;
+    }
+
+    [data-chat-container]::-webkit-scrollbar-thumb:hover {
+        background: #a8a8a8 !important;
+    }
+
+    .dark [data-chat-container]::-webkit-scrollbar-thumb {
+        background: #c1c1c1 !important;
+    }
+
+    .dark [data-chat-container]::-webkit-scrollbar-thumb:hover {
+        background: #a8a8a8 !important;
+    }
+
+    /* Firefox scrollbar - always light */
+    [data-chat-container] {
+        scrollbar-width: thin;
+        scrollbar-color: #c1c1c1 #f1f1f1;
+    }
+
+    .dark [data-chat-container] {
+        scrollbar-color: #c1c1c1 #f1f1f1 !important;
+    }
+
+    /* Prevent Chrome's forced dark mode from breaking chat UI - force light theme */
+    [data-chat-container] {
+        color-scheme: light !important;
+        forced-color-adjust: none !important;
+    }
+
+    .dark [data-chat-container] {
+        color-scheme: light !important;
+    }
+
+    /* Ensure all text in chat containers is readable - force light theme */
+    .dark [data-chat-container] * {
+        color-scheme: light !important;
+    }
+
+    /* Fix muted foreground colors - always use dark text on light background */
+    .dark [data-chat-container] .text-muted-foreground {
+        color: #6b7280 !important;
+    }
+
+    /* Override any dark backgrounds that might be applied - but preserve message bubbles */
+    .dark [data-chat-container] .bg-gray-800,
+    .dark [data-chat-container] .bg-gray-900,
+    .dark [data-chat-container] .bg-gray-700 {
+        background-color: #f9fafb !important;
+    }
+
+    /* Critical: Never override orange/primary message bubble backgrounds - highest specificity */
+    .dark [data-chat-container] .chat-message-sent,
+    .dark [data-chat-container] .bg-orange-500.chat-message-sent,
+    .dark [data-chat-container] .bg-primary.chat-message-sent,
+    .dark [data-chat-container] [class*="chat-message-sent"],
+    .dark [data-chat-container] .bg-orange-500:has(p),
+    .dark [data-chat-container] .bg-primary:has(p) {
+        background-color: #f97316 !important;
+        background: #f97316 !important;
+    }
+
+    /* Ensure sent message text is always visible - override all other rules */
+    .dark [data-chat-container] .chat-message-sent,
+    .dark [data-chat-container] .chat-message-sent p,
+    .dark [data-chat-container] .chat-message-sent div:not(.text-gray-400):not(.text-gray-500),
+    .dark [data-chat-container] .chat-message-sent *:not(.text-gray-400):not(.text-gray-500),
+    .dark [data-chat-container] .bg-orange-500 p,
+    .dark [data-chat-container] .bg-primary p,
+    .dark [data-chat-container] .text-white {
         color: #ffffff !important;
         -webkit-text-fill-color: #ffffff !important;
     }

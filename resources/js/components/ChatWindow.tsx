@@ -379,7 +379,7 @@ export default function ChatWindow({ conversationId, currentUserId }: ChatWindow
     return (
         <div className="flex h-full flex-col overflow-hidden bg-white" data-chat-container>
             {/* Chat Header */}
-            <div className="flex-shrink-0 border-b border-gray-200 bg-white px-4 py-3">
+            <div className="flex-shrink-0 border-b border-gray-300 bg-white px-4 py-3.5 shadow-sm">
                 <div className="flex items-center justify-between gap-3">
                     <div className="flex min-w-0 flex-1 items-center gap-3">
                         <div className="relative flex-shrink-0">
@@ -437,8 +437,8 @@ export default function ChatWindow({ conversationId, currentUserId }: ChatWindow
             </div>
 
             {/* Messages */}
-            <div className="min-h-0 flex-1 overflow-y-auto bg-gray-50 px-3 py-4 sm:px-4 sm:py-6">
-                <div className="mx-auto max-w-2xl space-y-4">
+            <div className="min-h-0 flex-1 overflow-y-auto bg-gradient-to-b from-gray-50 to-white px-4 py-6 sm:px-6 sm:py-8 custom-scrollbar" data-chat-container>
+                <div className="mx-auto max-w-2xl space-y-3">
                     {messages.length === 0 && (
                         <div className="py-12 text-center">
                             <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100">
@@ -452,7 +452,7 @@ export default function ChatWindow({ conversationId, currentUserId }: ChatWindow
                         const showAvatar = index === 0 || messages[index - 1]?.sender_id !== message.sender_id;
 
                         return (
-                            <div key={message.id} className={`flex gap-2 sm:gap-3 ${isOwnMessage ? 'flex-row-reverse' : 'flex-row'}`}>
+                            <div key={message.id} className={`flex gap-3 sm:gap-4 ${isOwnMessage ? 'flex-row-reverse' : 'flex-row'}`}>
                                 {showAvatar ? (
                                     <Avatar className="h-8 w-8 flex-shrink-0 sm:h-9 sm:w-9">
                                         <AvatarImage src={message.sender.avatar_url} />
@@ -467,11 +467,17 @@ export default function ChatWindow({ conversationId, currentUserId }: ChatWindow
                                 )}
                                 <div className={`flex max-w-[75%] flex-col sm:max-w-[70%] ${isOwnMessage ? 'items-end' : 'items-start'}`}>
                                     <div
-                                        className={`rounded-2xl px-3 py-2 shadow-sm sm:px-4 sm:py-2.5 ${
+                                        className={`rounded-2xl px-4 py-2.5 shadow-sm sm:px-5 sm:py-3 ${
                                             isOwnMessage
                                                 ? 'chat-message-sent rounded-tr-md bg-orange-500 text-white'
-                                                : 'chat-message-received rounded-tl-md border border-gray-200 bg-white text-gray-900'
+                                                : 'chat-message-received rounded-tl-md border border-gray-300 bg-white text-gray-900'
                                         }`}
+                                        style={isOwnMessage ? { 
+                                            background: 'linear-gradient(135deg, #f97316 0%, #ea580c 100%)', 
+                                            backgroundColor: '#f97316', 
+                                            color: '#ffffff',
+                                            WebkitTextFillColor: '#ffffff'
+                                        } : {}}
                                     >
                                         {message.image_url && (
                                             <div className="mb-2">
@@ -485,10 +491,15 @@ export default function ChatWindow({ conversationId, currentUserId }: ChatWindow
                                             </div>
                                         )}
                                         {message.message && (
-                                            <p className="text-sm leading-relaxed break-words whitespace-pre-wrap">{message.message}</p>
+                                            <p 
+                                                className={`text-sm leading-relaxed break-words whitespace-pre-wrap ${isOwnMessage ? 'text-white' : 'text-gray-900'}`}
+                                                style={isOwnMessage ? { color: '#ffffff', WebkitTextFillColor: '#ffffff' } : {}}
+                                            >
+                                                {message.message}
+                                            </p>
                                         )}
                                     </div>
-                                    <span className={`mt-1 px-1 text-[10px] text-gray-400 sm:text-[11px] ${isOwnMessage ? 'text-right' : 'text-left'}`}>
+                                    <span className={`mt-1.5 px-2 text-[11px] text-gray-500 sm:text-xs ${isOwnMessage ? 'text-right' : 'text-left'}`}>
                                         {formatDistanceToNow(new Date(message.created_at), { addSuffix: true })}
                                     </span>
                                 </div>
@@ -499,15 +510,15 @@ export default function ChatWindow({ conversationId, currentUserId }: ChatWindow
                         <div className="flex gap-2 sm:gap-3">
                             <Avatar className="h-8 w-8 sm:h-9 sm:w-9">
                                 <AvatarImage src={conversation.other_user.avatar_url} />
-                                <AvatarFallback className="bg-gray-200 text-xs text-gray-600">
+                                <AvatarFallback className="bg-gray-200 dark:bg-gray-700 text-xs text-gray-600 dark:text-gray-300">
                                     {getInitials(conversation.other_user.name)}
                                 </AvatarFallback>
                             </Avatar>
-                            <div className="chat-message-received flex items-center rounded-2xl rounded-tl-md border border-gray-200 bg-white px-4 py-2.5 shadow-sm">
+                            <div className="chat-message-received flex items-center rounded-2xl rounded-tl-md border border-gray-300 bg-white px-4 py-2.5 shadow-sm">
                                 <div className="flex gap-1">
-                                    <span className="inline-block h-2 w-2 animate-bounce rounded-full bg-gray-400" style={{ animationDelay: '0ms' }}></span>
-                                    <span className="inline-block h-2 w-2 animate-bounce rounded-full bg-gray-400" style={{ animationDelay: '150ms' }}></span>
-                                    <span className="inline-block h-2 w-2 animate-bounce rounded-full bg-gray-400" style={{ animationDelay: '300ms' }}></span>
+                                    <span className="inline-block h-2 w-2 animate-bounce rounded-full bg-gray-400 dark:bg-gray-500" style={{ animationDelay: '0ms' }}></span>
+                                    <span className="inline-block h-2 w-2 animate-bounce rounded-full bg-gray-400 dark:bg-gray-500" style={{ animationDelay: '150ms' }}></span>
+                                    <span className="inline-block h-2 w-2 animate-bounce rounded-full bg-gray-400 dark:bg-gray-500" style={{ animationDelay: '300ms' }}></span>
                                 </div>
                             </div>
                         </div>
@@ -517,7 +528,7 @@ export default function ChatWindow({ conversationId, currentUserId }: ChatWindow
             </div>
 
             {/* Message Input */}
-            <form onSubmit={sendMessage} className="flex-shrink-0 border-t border-gray-200 bg-white p-3 sm:p-4">
+            <form onSubmit={sendMessage} className="flex-shrink-0 border-t border-gray-300 bg-white p-4 sm:p-5 shadow-lg">
                 <div className="mx-auto max-w-2xl">
                     {/* Image Preview */}
                     {imagePreview && (
@@ -547,7 +558,7 @@ export default function ChatWindow({ conversationId, currentUserId }: ChatWindow
                             type="button"
                             onClick={() => fileInputRef.current?.click()}
                             disabled={isLoading}
-                            className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-500 transition-colors hover:bg-gray-50 hover:text-gray-700 disabled:opacity-50 sm:h-11 sm:w-11"
+                            className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full border border-gray-300 bg-white text-gray-500 transition-colors hover:bg-gray-50 hover:text-gray-700 disabled:opacity-50 sm:h-11 sm:w-11"
                             title="Upload image"
                         >
                             <Image className="h-5 w-5" />
@@ -558,12 +569,12 @@ export default function ChatWindow({ conversationId, currentUserId }: ChatWindow
                             onChange={handleInputChange}
                             placeholder="Type your message..."
                             disabled={isLoading}
-                            className="min-w-0 flex-1 rounded-full border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm text-gray-900 placeholder-gray-400 transition-colors focus:border-orange-300 focus:bg-white focus:outline-none focus:ring-2 focus:ring-orange-100 sm:px-5 sm:py-3"
+                            className="min-w-0 flex-1 rounded-full border-2 border-gray-300 bg-white px-5 py-3 text-sm text-gray-900 placeholder-gray-400 transition-all focus:border-orange-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-orange-200 focus:shadow-sm"
                         />
                         <button
                             type="submit"
                             disabled={isLoading || (!newMessage.trim() && !selectedImage)}
-                            className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-orange-500 text-white shadow-md transition-all hover:bg-orange-600 hover:shadow-lg disabled:opacity-50 sm:h-11 sm:w-11"
+                            className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-lg transition-all hover:from-orange-600 hover:to-orange-700 hover:shadow-xl hover:scale-105 active:scale-95 disabled:opacity-50 disabled:hover:scale-100"
                         >
                             <Send className="h-5 w-5" />
                         </button>
