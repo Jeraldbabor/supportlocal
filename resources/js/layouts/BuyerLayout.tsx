@@ -170,11 +170,18 @@ function BuyerLayoutContent({ children, title }: BuyerLayoutProps) {
                             {/* Wishlist Icon */}
                             <Link
                                 href="/wishlist"
-                                className="group relative flex-shrink-0 rounded-xl p-2 transition-all duration-300 hover:bg-orange-50 hover:shadow-sm focus:ring-2 focus:ring-orange-500/50 focus:ring-offset-2 focus:outline-none"
+                                className={`group relative flex-shrink-0 rounded-xl p-2 transition-all duration-300 focus:ring-2 focus:ring-orange-500/50 focus:ring-offset-2 focus:outline-none ${
+                                    isActiveRoute('/wishlist')
+                                        ? 'bg-orange-100 shadow-sm ring-1 ring-orange-200'
+                                        : 'hover:bg-orange-50 hover:shadow-sm'
+                                }`}
                                 style={{ colorScheme: 'light' }}
                                 aria-label={`Wishlist ${(wishlistCount ?? 0) > 0 ? `(${wishlistCount} items)` : '(empty)'}`}
                             >
-                                <Heart className="h-5 w-5 transition-transform duration-300 group-hover:scale-110" style={{ color: '#4b5563' }} />
+                                <Heart 
+                                    className="h-5 w-5 transition-transform duration-300 group-hover:scale-110" 
+                                    style={{ color: isActiveRoute('/wishlist') ? '#ea580c' : '#4b5563' }} 
+                                />
                                 {(wishlistCount ?? 0) > 0 && (
                                     <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-gradient-to-r from-pink-500 to-red-500 text-xs font-medium text-white shadow-sm">
                                         {wishlistCount! > 99 ? '99+' : wishlistCount}
@@ -185,11 +192,18 @@ function BuyerLayoutContent({ children, title }: BuyerLayoutProps) {
                             {/* Cart Icon */}
                             <Link
                                 href="/buyer/cart"
-                                className="group relative flex-shrink-0 rounded-xl p-2 transition-all duration-300 hover:bg-orange-50 hover:shadow-sm focus:ring-2 focus:ring-orange-500/50 focus:ring-offset-2 focus:outline-none"
+                                className={`group relative flex-shrink-0 rounded-xl p-2 transition-all duration-300 focus:ring-2 focus:ring-orange-500/50 focus:ring-offset-2 focus:outline-none ${
+                                    isActiveRoute('/buyer/cart')
+                                        ? 'bg-orange-100 shadow-sm ring-1 ring-orange-200'
+                                        : 'hover:bg-orange-50 hover:shadow-sm'
+                                }`}
                                 style={{ colorScheme: 'light' }}
                                 aria-label={`Shopping cart ${totalItems > 0 ? `(${totalItems} items)` : '(empty)'}`}
                             >
-                                <ShoppingCart className="h-5 w-5 transition-transform duration-300 group-hover:scale-110" style={{ color: '#4b5563' }} />
+                                <ShoppingCart 
+                                    className="h-5 w-5 transition-transform duration-300 group-hover:scale-110" 
+                                    style={{ color: isActiveRoute('/buyer/cart') ? '#ea580c' : '#4b5563' }} 
+                                />
                                 {totalItems > 0 && (
                                     <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-gradient-to-r from-red-500 to-red-600 text-xs font-medium text-white shadow-sm">
                                         {totalItems > 99 ? '99+' : totalItems}

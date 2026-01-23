@@ -166,11 +166,18 @@ export default function MainLayout({ children, title }: MainLayoutProps) {
                         <div className="flex flex-shrink-0 items-center space-x-0.5 sm:space-x-1" style={{ colorScheme: 'light' }}>
                             <Link
                                 href="/buyer/notifications"
-                                className="group relative flex-shrink-0 rounded-xl p-1.5 transition-all duration-300 hover:bg-orange-50 hover:shadow-sm focus:ring-2 focus:ring-orange-500/50 focus:ring-offset-2 focus:outline-none sm:p-2"
+                                className={`group relative flex-shrink-0 rounded-xl p-1.5 transition-all duration-300 focus:ring-2 focus:ring-orange-500/50 focus:ring-offset-2 focus:outline-none sm:p-2 ${
+                                    isActiveRoute('/buyer/notifications')
+                                        ? 'bg-orange-100 shadow-sm ring-1 ring-orange-200'
+                                        : 'hover:bg-orange-50 hover:shadow-sm'
+                                }`}
                                 style={{ colorScheme: 'light' }}
                                 aria-label={`Notifications ${unreadCount > 0 ? `(${unreadCount} unread)` : ''}`}
                             >
-                                <Bell className="h-4 w-4 transition-transform duration-300 group-hover:scale-110 sm:h-5 sm:w-5" style={{ color: '#4b5563' }} />
+                                <Bell 
+                                    className="h-4 w-4 transition-transform duration-300 group-hover:scale-110 sm:h-5 sm:w-5" 
+                                    style={{ color: isActiveRoute('/buyer/notifications') ? '#ea580c' : '#4b5563' }} 
+                                />
                                 {unreadCount > 0 && (
                                     <span className="absolute -top-0.5 -right-0.5 flex h-4 w-4 animate-pulse items-center justify-center rounded-full bg-gradient-to-r from-red-500 to-red-600 text-[10px] font-medium text-white shadow-sm sm:-top-1 sm:-right-1 sm:h-5 sm:w-5 sm:text-xs">
                                         {unreadCount > 9 ? '9+' : unreadCount}
@@ -181,11 +188,18 @@ export default function MainLayout({ children, title }: MainLayoutProps) {
                             {/* Wishlist Icon */}
                             <Link
                                 href="/wishlist"
-                                className="group relative flex-shrink-0 rounded-xl p-1.5 transition-all duration-300 hover:bg-orange-50 hover:shadow-sm focus:ring-2 focus:ring-orange-500/50 focus:ring-offset-2 focus:outline-none sm:p-2"
+                                className={`group relative flex-shrink-0 rounded-xl p-1.5 transition-all duration-300 focus:ring-2 focus:ring-orange-500/50 focus:ring-offset-2 focus:outline-none sm:p-2 ${
+                                    isActiveRoute('/wishlist')
+                                        ? 'bg-orange-100 shadow-sm ring-1 ring-orange-200'
+                                        : 'hover:bg-orange-50 hover:shadow-sm'
+                                }`}
                                 style={{ colorScheme: 'light' }}
                                 aria-label={`Wishlist ${(wishlistCount ?? 0) > 0 ? `(${wishlistCount} items)` : '(empty)'}`}
                             >
-                                <Heart className="h-4 w-4 transition-transform duration-300 group-hover:scale-110 sm:h-5 sm:w-5" style={{ color: '#4b5563' }} />
+                                <Heart 
+                                    className="h-4 w-4 transition-transform duration-300 group-hover:scale-110 sm:h-5 sm:w-5" 
+                                    style={{ color: isActiveRoute('/wishlist') ? '#ea580c' : '#4b5563' }} 
+                                />
                                 {(wishlistCount ?? 0) > 0 && (
                                     <span className="absolute -top-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-gradient-to-r from-pink-500 to-red-500 text-[10px] font-medium text-white shadow-sm sm:-top-1 sm:-right-1 sm:h-5 sm:w-5 sm:text-xs">
                                         {wishlistCount! > 99 ? '99+' : wishlistCount}
@@ -197,11 +211,18 @@ export default function MainLayout({ children, title }: MainLayoutProps) {
                             <Link
                                 href="/cart"
                                 onClick={handleCartClick}
-                                className="group relative flex-shrink-0 rounded-xl p-1.5 transition-all duration-300 hover:bg-orange-50 hover:shadow-sm focus:ring-2 focus:ring-orange-500/50 focus:ring-offset-2 focus:outline-none sm:p-2"
+                                className={`group relative flex-shrink-0 rounded-xl p-1.5 transition-all duration-300 focus:ring-2 focus:ring-orange-500/50 focus:ring-offset-2 focus:outline-none sm:p-2 ${
+                                    isActiveRoute('/cart')
+                                        ? 'bg-orange-100 shadow-sm ring-1 ring-orange-200'
+                                        : 'hover:bg-orange-50 hover:shadow-sm'
+                                }`}
                                 style={{ colorScheme: 'light' }}
                                 aria-label={`Shopping cart ${totalItems > 0 ? `(${totalItems} items)` : '(empty)'}`}
                             >
-                                <ShoppingCart className="h-4 w-4 transition-transform duration-300 group-hover:scale-110 sm:h-5 sm:w-5" style={{ color: '#4b5563' }} />
+                                <ShoppingCart 
+                                    className="h-4 w-4 transition-transform duration-300 group-hover:scale-110 sm:h-5 sm:w-5" 
+                                    style={{ color: isActiveRoute('/cart') ? '#ea580c' : '#4b5563' }} 
+                                />
                                 {totalItems > 0 && showCartNotification && (
                                     <span className="absolute -top-0.5 -right-0.5 flex h-4 w-4 animate-pulse items-center justify-center rounded-full bg-gradient-to-r from-red-500 to-red-600 text-[10px] font-medium text-white shadow-sm sm:-top-1 sm:-right-1 sm:h-5 sm:w-5 sm:text-xs">
                                         {totalItems > 99 ? '99+' : totalItems}
