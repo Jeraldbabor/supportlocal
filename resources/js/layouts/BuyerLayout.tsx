@@ -123,7 +123,7 @@ function BuyerLayoutContent({ children, title }: BuyerLayoutProps) {
                         </div>
 
                         {/* Desktop Navigation - Buyer Specific */}
-                        <div className="hidden flex-shrink-0 lg:block">
+                        <div className="hidden flex-shrink-0 lg:block" style={{ colorScheme: 'light' }}>
                             <div className="flex items-center space-x-0.5">
                                 {buyerNavigation.map((item) => {
                                     const Icon = item.icon;
@@ -134,15 +134,15 @@ function BuyerLayoutContent({ children, title }: BuyerLayoutProps) {
                                             href={item.href}
                                             className={`group relative flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium whitespace-nowrap transition-all duration-300 focus:ring-2 focus:ring-orange-500/50 focus:ring-offset-2 focus:outline-none ${
                                                 isActive
-                                                    ? 'border border-orange-200 bg-gradient-to-r from-orange-100 to-amber-50 text-orange-700 shadow-inner'
-                                                    : 'text-gray-700 hover:bg-gray-50 hover:text-orange-600 hover:shadow-sm'
+                                                    ? 'border border-orange-200 bg-gradient-to-r from-orange-100 to-amber-50 shadow-inner'
+                                                    : 'hover:bg-gray-50 hover:shadow-sm'
                                             }`}
+                                            style={{ color: isActive ? '#c2410c' : '#374151' }}
                                             aria-current={isActive ? 'page' : undefined}
                                         >
                                             <Icon
-                                                className={`h-4 w-4 flex-shrink-0 transition-all duration-300 ${
-                                                    isActive ? 'text-orange-600' : 'text-gray-500 group-hover:text-orange-600'
-                                                }`}
+                                                className="h-4 w-4 flex-shrink-0 transition-all duration-300"
+                                                style={{ color: isActive ? '#ea580c' : '#6b7280' }}
                                             />
                                             <span className="relative">
                                                 {item.name}
@@ -170,31 +170,31 @@ function BuyerLayoutContent({ children, title }: BuyerLayoutProps) {
                             {/* Wishlist Icon */}
                             <Link
                                 href="/wishlist"
-                                className="group relative flex-shrink-0 rounded-xl p-2 text-gray-600 transition-all duration-300 hover:bg-primary/5 hover:text-primary hover:shadow-sm focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 focus:outline-none"
+                                className="group relative flex-shrink-0 rounded-xl p-2 transition-all duration-300 hover:bg-orange-50 hover:shadow-sm focus:ring-2 focus:ring-orange-500/50 focus:ring-offset-2 focus:outline-none"
+                                style={{ colorScheme: 'light' }}
                                 aria-label={`Wishlist ${(wishlistCount ?? 0) > 0 ? `(${wishlistCount} items)` : '(empty)'}`}
                             >
-                                <Heart className="h-5 w-5 transition-transform duration-300 group-hover:scale-110" />
+                                <Heart className="h-5 w-5 transition-transform duration-300 group-hover:scale-110" style={{ color: '#4b5563' }} />
                                 {(wishlistCount ?? 0) > 0 && (
                                     <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-gradient-to-r from-pink-500 to-red-500 text-xs font-medium text-white shadow-sm">
                                         {wishlistCount! > 99 ? '99+' : wishlistCount}
                                     </span>
                                 )}
-                                <span className="absolute inset-0 rounded-xl opacity-0 ring-primary/50 transition-all duration-300 group-hover:opacity-100 group-hover:ring-2 group-hover:ring-offset-2"></span>
                             </Link>
 
                             {/* Cart Icon */}
                             <Link
                                 href="/buyer/cart"
-                                className="group relative flex-shrink-0 rounded-xl p-2 text-gray-600 transition-all duration-300 hover:bg-primary/5 hover:text-primary hover:shadow-sm focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 focus:outline-none"
+                                className="group relative flex-shrink-0 rounded-xl p-2 transition-all duration-300 hover:bg-orange-50 hover:shadow-sm focus:ring-2 focus:ring-orange-500/50 focus:ring-offset-2 focus:outline-none"
+                                style={{ colorScheme: 'light' }}
                                 aria-label={`Shopping cart ${totalItems > 0 ? `(${totalItems} items)` : '(empty)'}`}
                             >
-                                <ShoppingCart className="h-5 w-5 transition-transform duration-300 group-hover:scale-110" />
+                                <ShoppingCart className="h-5 w-5 transition-transform duration-300 group-hover:scale-110" style={{ color: '#4b5563' }} />
                                 {totalItems > 0 && (
                                     <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-gradient-to-r from-red-500 to-red-600 text-xs font-medium text-white shadow-sm">
                                         {totalItems > 99 ? '99+' : totalItems}
                                     </span>
                                 )}
-                                <span className="absolute inset-0 rounded-xl opacity-0 ring-primary/50 transition-all duration-300 group-hover:opacity-100 group-hover:ring-2 group-hover:ring-offset-2"></span>
                             </Link>
 
                             {/* User Profile Section with Dropdown */}

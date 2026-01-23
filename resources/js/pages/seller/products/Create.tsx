@@ -167,33 +167,33 @@ export default function CreateProduct({ categories, conditions }: CreateProductP
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Create Product - Seller Dashboard" />
 
-            <div className="flex h-full flex-1 flex-col gap-6 overflow-x-auto rounded-xl p-4">
+            <div className="flex h-full flex-1 flex-col gap-6 overflow-x-auto rounded-xl bg-slate-50 p-4" style={{ colorScheme: 'light' }}>
                 {/* Header */}
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                     <div className="flex items-center gap-4">
                         <Link
                             href="/seller/products"
-                            className="rounded-lg border border-gray-300 p-2 hover:bg-gray-50 dark:border-gray-600 dark:hover:bg-gray-800"
+                            className="rounded-lg border border-gray-300 bg-white p-2 hover:bg-gray-50"
                         >
-                            <ArrowLeft className="h-4 w-4" />
+                            <ArrowLeft className="h-4 w-4" style={{ color: '#374151' }} />
                         </Link>
                         <div>
-                            <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">Create Product</h1>
-                            <p className="text-gray-600 dark:text-gray-300">Add a new handcrafted product to your store</p>
+                            <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl">Create Product</h1>
+                            <p className="text-sm text-gray-600 sm:text-base">Add a new handcrafted product to your store</p>
                         </div>
                     </div>
                     <div className="flex gap-2">
                         <button
                             type="button"
                             onClick={() => setData('status', 'draft')}
-                            className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-800"
+                            className="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 sm:px-4"
                         >
                             Save as Draft
                         </button>
                         <button
                             type="button"
                             onClick={() => setData('status', 'active')}
-                            className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+                            className="rounded-lg bg-orange-600 px-3 py-2 text-sm font-medium text-white hover:bg-orange-700 sm:px-4"
                         >
                             <Save className="mr-2 inline h-4 w-4" />
                             Save & Publish
@@ -203,16 +203,16 @@ export default function CreateProduct({ categories, conditions }: CreateProductP
 
                 {/* Success Alert */}
                 {showSuccess && (
-                    <Alert className="mb-6 border-green-500 bg-green-50 text-green-800 dark:bg-green-900/50 dark:text-green-200">
-                        <CheckCircle className="h-4 w-4" />
+                    <Alert className="mb-6 border-green-500 bg-green-50 text-green-800">
+                        <CheckCircle className="h-4 w-4" style={{ color: '#16a34a' }} />
                         <AlertDescription>Product created successfully! Redirecting to products list...</AlertDescription>
                     </Alert>
                 )}
 
                 {/* Error Alert */}
                 {showError && (
-                    <Alert className="mb-6 border-red-500 bg-red-50 text-red-800 dark:bg-red-900/50 dark:text-red-200">
-                        <X className="h-4 w-4" />
+                    <Alert className="mb-6 border-red-500 bg-red-50 text-red-800">
+                        <X className="h-4 w-4" style={{ color: '#dc2626' }} />
                         <AlertDescription>{errorMessage}</AlertDescription>
                     </Alert>
                 )}
@@ -220,7 +220,7 @@ export default function CreateProduct({ categories, conditions }: CreateProductP
                 <form onSubmit={handleSubmit} className="grid grid-cols-1 gap-6 lg:grid-cols-4">
                     {/* Sidebar Navigation */}
                     <div className="lg:col-span-1">
-                        <div className="sticky top-4 rounded-lg border bg-white p-4 dark:bg-gray-900">
+                        <div className="sticky top-4 rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
                             <nav className="space-y-1">
                                 {tabs.map((tab) => {
                                     const Icon = tab.icon;
@@ -231,11 +231,11 @@ export default function CreateProduct({ categories, conditions }: CreateProductP
                                             onClick={() => setActiveTab(tab.id)}
                                             className={`flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-sm font-medium transition-colors ${
                                                 activeTab === tab.id
-                                                    ? 'bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300'
-                                                    : 'text-gray-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-800'
+                                                    ? 'bg-orange-50 text-orange-700'
+                                                    : 'text-gray-600 hover:bg-gray-50'
                                             }`}
                                         >
-                                            <Icon className="h-4 w-4" />
+                                            <Icon className="h-4 w-4" style={{ color: activeTab === tab.id ? '#ea580c' : '#6b7280' }} />
                                             {tab.label}
                                         </button>
                                     );
@@ -248,29 +248,29 @@ export default function CreateProduct({ categories, conditions }: CreateProductP
                     <div className="space-y-6 lg:col-span-3">
                         {/* Basic Info Tab */}
                         {activeTab === 'basic' && (
-                            <div className="rounded-lg border bg-white p-6 dark:bg-gray-900">
-                                <h2 className="mb-4 text-xl font-semibold text-gray-900 dark:text-gray-100">Basic Information</h2>
+                            <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+                                <h2 className="mb-4 text-xl font-semibold text-gray-900 ">Basic Information</h2>
 
                                 <div className="space-y-4">
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Product Name *</label>
+                                        <label className="block text-sm font-medium text-gray-700 ">Product Name *</label>
                                         <input
                                             type="text"
                                             value={data.name}
                                             onChange={(e) => setData('name', e.target.value)}
-                                            className="mt-1 block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-800"
+                                            className="mt-1 block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-orange-500 focus:ring-1 focus:ring-orange-500 focus:outline-none"
                                             placeholder="Enter product name"
                                         />
                                         {errors.name && <p className="mt-1 text-sm text-red-600">{errors.name}</p>}
                                     </div>
 
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Short Description</label>
+                                        <label className="block text-sm font-medium text-gray-700 ">Short Description</label>
                                         <input
                                             type="text"
                                             value={data.short_description}
                                             onChange={(e) => setData('short_description', e.target.value)}
-                                            className="mt-1 block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-800"
+                                            className="mt-1 block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-orange-500 focus:ring-1 focus:ring-orange-500 focus:outline-none"
                                             placeholder="Brief description for listings"
                                             maxLength={500}
                                         />
@@ -278,12 +278,12 @@ export default function CreateProduct({ categories, conditions }: CreateProductP
                                     </div>
 
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Description *</label>
+                                        <label className="block text-sm font-medium text-gray-700 ">Description *</label>
                                         <textarea
                                             value={data.description}
                                             onChange={(e) => setData('description', e.target.value)}
                                             rows={6}
-                                            className="mt-1 block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-800"
+                                            className="mt-1 block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-orange-500 focus:ring-1 focus:ring-orange-500 focus:outline-none"
                                             placeholder="Detailed description of your handcrafted product..."
                                         />
                                         {errors.description && <p className="mt-1 text-sm text-red-600">{errors.description}</p>}
@@ -291,11 +291,11 @@ export default function CreateProduct({ categories, conditions }: CreateProductP
 
                                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Category</label>
+                                            <label className="block text-sm font-medium text-gray-700 ">Category</label>
                                             <select
                                                 value={data.category_id}
                                                 onChange={(e) => setData('category_id', e.target.value)}
-                                                className="mt-1 block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-800"
+                                                className="mt-1 block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-orange-500 focus:ring-1 focus:ring-orange-500 focus:outline-none"
                                             >
                                                 <option value="">Select Category</option>
                                                 {categories.map((category) => (
@@ -308,11 +308,11 @@ export default function CreateProduct({ categories, conditions }: CreateProductP
                                         </div>
 
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Condition *</label>
+                                            <label className="block text-sm font-medium text-gray-700 ">Condition *</label>
                                             <select
                                                 value={data.condition}
                                                 onChange={(e) => setData('condition', e.target.value)}
-                                                className="mt-1 block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-800"
+                                                className="mt-1 block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-orange-500 focus:ring-1 focus:ring-orange-500 focus:outline-none"
                                             >
                                                 {Object.entries(conditions).map(([key, label]) => (
                                                     <option key={key} value={key}>
@@ -326,7 +326,7 @@ export default function CreateProduct({ categories, conditions }: CreateProductP
 
                                     {/* Product Images */}
                                     <div>
-                                        <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Product Images</label>
+                                        <label className="mb-2 block text-sm font-medium text-gray-700 ">Product Images</label>
 
                                         {/* Image Grid */}
                                         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
@@ -356,7 +356,7 @@ export default function CreateProduct({ categories, conditions }: CreateProductP
                                             <button
                                                 type="button"
                                                 onClick={() => fileInputRef.current?.click()}
-                                                className="flex h-24 w-full items-center justify-center rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 hover:bg-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:hover:bg-gray-700"
+                                                className="flex h-24 w-full items-center justify-center rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 hover:bg-gray-100  "
                                             >
                                                 <Upload className="h-6 w-6 text-gray-400" />
                                             </button>
@@ -379,13 +379,13 @@ export default function CreateProduct({ categories, conditions }: CreateProductP
 
                                     {/* Tags */}
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Tags</label>
+                                        <label className="block text-sm font-medium text-gray-700 ">Tags</label>
                                         <div className="mt-1">
                                             <div className="mb-2 flex flex-wrap gap-2">
                                                 {data.tags.map((tag, index) => (
                                                     <span
                                                         key={index}
-                                                        className="inline-flex items-center gap-1 rounded-full bg-blue-100 px-2 py-1 text-xs font-medium text-blue-700 dark:bg-blue-900 dark:text-blue-300"
+                                                        className="inline-flex items-center gap-1 rounded-full bg-blue-100 px-2 py-1 text-xs font-medium text-blue-700 "
                                                     >
                                                         {tag}
                                                         <button
@@ -401,7 +401,7 @@ export default function CreateProduct({ categories, conditions }: CreateProductP
                                             <input
                                                 type="text"
                                                 placeholder="Add tags (press Enter)"
-                                                className="block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-800"
+                                                className="block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-orange-500 focus:ring-1 focus:ring-orange-500 focus:outline-none"
                                                 onKeyDown={(e) => {
                                                     if (e.key === 'Enter') {
                                                         e.preventDefault();
@@ -419,33 +419,33 @@ export default function CreateProduct({ categories, conditions }: CreateProductP
 
                         {/* Pricing Tab */}
                         {activeTab === 'pricing' && (
-                            <div className="rounded-lg border bg-white p-6 dark:bg-gray-900">
-                                <h2 className="mb-4 text-xl font-semibold text-gray-900 dark:text-gray-100">Pricing</h2>
+                            <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+                                <h2 className="mb-4 text-xl font-semibold text-gray-900 ">Pricing</h2>
 
                                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Price * (₱)</label>
+                                        <label className="block text-sm font-medium text-gray-700 ">Price * (₱)</label>
                                         <input
                                             type="number"
                                             step="0.01"
                                             min="0"
                                             value={data.price}
                                             onChange={(e) => setData('price', e.target.value)}
-                                            className="mt-1 block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-800"
+                                            className="mt-1 block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-orange-500 focus:ring-1 focus:ring-orange-500 focus:outline-none"
                                             placeholder="0.00"
                                         />
                                         {errors.price && <p className="mt-1 text-sm text-red-600">{errors.price}</p>}
                                     </div>
 
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Compare Price (₱)</label>
+                                        <label className="block text-sm font-medium text-gray-700 ">Compare Price (₱)</label>
                                         <input
                                             type="number"
                                             step="0.01"
                                             min="0"
                                             value={data.compare_price}
                                             onChange={(e) => setData('compare_price', e.target.value)}
-                                            className="mt-1 block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-800"
+                                            className="mt-1 block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-orange-500 focus:ring-1 focus:ring-orange-500 focus:outline-none"
                                             placeholder="0.00"
                                         />
                                         <p className="mt-1 text-xs text-gray-500">Original price for discount display</p>
@@ -453,14 +453,14 @@ export default function CreateProduct({ categories, conditions }: CreateProductP
                                     </div>
 
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Cost Price (₱)</label>
+                                        <label className="block text-sm font-medium text-gray-700 ">Cost Price (₱)</label>
                                         <input
                                             type="number"
                                             step="0.01"
                                             min="0"
                                             value={data.cost_price}
                                             onChange={(e) => setData('cost_price', e.target.value)}
-                                            className="mt-1 block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-800"
+                                            className="mt-1 block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-orange-500 focus:ring-1 focus:ring-orange-500 focus:outline-none"
                                             placeholder="0.00"
                                         />
                                         <p className="mt-1 text-xs text-gray-500">Your cost for profit calculation</p>
@@ -472,26 +472,26 @@ export default function CreateProduct({ categories, conditions }: CreateProductP
 
                         {/* Inventory Tab */}
                         {activeTab === 'inventory' && (
-                            <div className="rounded-lg border bg-white p-6 dark:bg-gray-900">
-                                <h2 className="mb-4 text-xl font-semibold text-gray-900 dark:text-gray-100">Inventory</h2>
+                            <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+                                <h2 className="mb-4 text-xl font-semibold text-gray-900 ">Inventory</h2>
 
                                 <div className="space-y-4">
                                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Quantity *</label>
+                                            <label className="block text-sm font-medium text-gray-700 ">Quantity *</label>
                                             <input
                                                 type="number"
                                                 min="0"
                                                 value={data.quantity}
                                                 onChange={(e) => setData('quantity', e.target.value)}
-                                                className="mt-1 block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-800"
+                                                className="mt-1 block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-orange-500 focus:ring-1 focus:ring-orange-500 focus:outline-none"
                                                 placeholder="0"
                                             />
                                             {errors.quantity && <p className="mt-1 text-sm text-red-600">{errors.quantity}</p>}
                                         </div>
 
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                            <label className="block text-sm font-medium text-gray-700 ">
                                                 Low Stock Threshold *
                                             </label>
                                             <input
@@ -499,7 +499,7 @@ export default function CreateProduct({ categories, conditions }: CreateProductP
                                                 min="0"
                                                 value={data.low_stock_threshold}
                                                 onChange={(e) => setData('low_stock_threshold', e.target.value)}
-                                                className="mt-1 block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-800"
+                                                className="mt-1 block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-orange-500 focus:ring-1 focus:ring-orange-500 focus:outline-none"
                                                 placeholder="5"
                                             />
                                             <p className="mt-1 text-xs text-gray-500">Alert when stock falls below this number</p>
@@ -516,7 +516,7 @@ export default function CreateProduct({ categories, conditions }: CreateProductP
                                                 onChange={(e) => setData('track_quantity', e.target.checked)}
                                                 className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                                             />
-                                            <label htmlFor="track_quantity" className="ml-2 text-sm text-gray-700 dark:text-gray-300">
+                                            <label htmlFor="track_quantity" className="ml-2 text-sm text-gray-700 ">
                                                 Track quantity for this product
                                             </label>
                                         </div>
@@ -529,7 +529,7 @@ export default function CreateProduct({ categories, conditions }: CreateProductP
                                                 onChange={(e) => setData('allow_backorders', e.target.checked)}
                                                 className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                                             />
-                                            <label htmlFor="allow_backorders" className="ml-2 text-sm text-gray-700 dark:text-gray-300">
+                                            <label htmlFor="allow_backorders" className="ml-2 text-sm text-gray-700 ">
                                                 Allow customers to purchase when out of stock
                                             </label>
                                         </div>
@@ -540,8 +540,8 @@ export default function CreateProduct({ categories, conditions }: CreateProductP
 
                         {/* Shipping Tab */}
                         {activeTab === 'shipping' && (
-                            <div className="rounded-lg border bg-white p-6 dark:bg-gray-900">
-                                <h2 className="mb-4 text-xl font-semibold text-gray-900 dark:text-gray-100">Shipping</h2>
+                            <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+                                <h2 className="mb-4 text-xl font-semibold text-gray-900 ">Shipping</h2>
 
                                 <div className="space-y-4">
                                     <div className="space-y-3">
@@ -553,7 +553,7 @@ export default function CreateProduct({ categories, conditions }: CreateProductP
                                                 onChange={(e) => setData('requires_shipping', e.target.checked)}
                                                 className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                                             />
-                                            <label htmlFor="requires_shipping" className="ml-2 text-sm text-gray-700 dark:text-gray-300">
+                                            <label htmlFor="requires_shipping" className="ml-2 text-sm text-gray-700 ">
                                                 This product requires shipping
                                             </label>
                                         </div>
@@ -566,7 +566,7 @@ export default function CreateProduct({ categories, conditions }: CreateProductP
                                                 onChange={(e) => setData('is_digital', e.target.checked)}
                                                 className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                                             />
-                                            <label htmlFor="is_digital" className="ml-2 text-sm text-gray-700 dark:text-gray-300">
+                                            <label htmlFor="is_digital" className="ml-2 text-sm text-gray-700 ">
                                                 This is a digital product
                                             </label>
                                         </div>
@@ -579,7 +579,7 @@ export default function CreateProduct({ categories, conditions }: CreateProductP
                                                 onChange={(e) => setData('free_shipping', e.target.checked)}
                                                 className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                                             />
-                                            <label htmlFor="free_shipping" className="ml-2 text-sm text-gray-700 dark:text-gray-300">
+                                            <label htmlFor="free_shipping" className="ml-2 text-sm text-gray-700 ">
                                                 Free shipping
                                             </label>
                                         </div>
@@ -587,7 +587,7 @@ export default function CreateProduct({ categories, conditions }: CreateProductP
 
                                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Weight</label>
+                                            <label className="block text-sm font-medium text-gray-700 ">Weight</label>
                                             <div className="mt-1 flex">
                                                 <input
                                                     type="number"
@@ -595,13 +595,13 @@ export default function CreateProduct({ categories, conditions }: CreateProductP
                                                     min="0"
                                                     value={data.weight}
                                                     onChange={(e) => setData('weight', e.target.value)}
-                                                    className="block w-full rounded-l-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-800"
+                                                    className="block w-full rounded-l-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-orange-500 focus:ring-1 focus:ring-orange-500 focus:outline-none"
                                                     placeholder="0.00"
                                                 />
                                                 <select
                                                     value={data.weight_unit}
                                                     onChange={(e) => setData('weight_unit', e.target.value)}
-                                                    className="rounded-r-lg border border-l-0 border-gray-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-800"
+                                                    className="rounded-r-lg border border-l-0 border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:border-orange-500 focus:ring-1 focus:ring-orange-500 focus:outline-none"
                                                 >
                                                     <option value="kg">kg</option>
                                                     <option value="g">g</option>
@@ -613,7 +613,7 @@ export default function CreateProduct({ categories, conditions }: CreateProductP
                                         </div>
 
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Shipping Cost (₱)</label>
+                                            <label className="block text-sm font-medium text-gray-700 ">Shipping Cost (₱)</label>
                                             <input
                                                 type="number"
                                                 step="0.01"
@@ -621,7 +621,7 @@ export default function CreateProduct({ categories, conditions }: CreateProductP
                                                 value={data.shipping_cost}
                                                 onChange={(e) => setData('shipping_cost', e.target.value)}
                                                 disabled={data.free_shipping}
-                                                className="mt-1 block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none disabled:bg-gray-100 dark:border-gray-600 dark:bg-gray-800"
+                                                className="mt-1 block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-orange-500 focus:ring-1 focus:ring-orange-500 focus:outline-none disabled:bg-gray-100"
                                                 placeholder="0.00"
                                             />
                                             {errors.shipping_cost && <p className="mt-1 text-sm text-red-600">{errors.shipping_cost}</p>}
@@ -629,7 +629,7 @@ export default function CreateProduct({ categories, conditions }: CreateProductP
                                     </div>
 
                                     <div>
-                                        <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Dimensions (cm)</label>
+                                        <label className="mb-2 block text-sm font-medium text-gray-700 ">Dimensions (cm)</label>
                                         <div className="grid grid-cols-3 gap-4">
                                             <div>
                                                 <input
@@ -638,7 +638,7 @@ export default function CreateProduct({ categories, conditions }: CreateProductP
                                                     min="0"
                                                     value={data.dimensions.length}
                                                     onChange={(e) => setData('dimensions', { ...data.dimensions, length: e.target.value })}
-                                                    className="block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-800"
+                                                    className="block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-orange-500 focus:ring-1 focus:ring-orange-500 focus:outline-none"
                                                     placeholder="Length"
                                                 />
                                             </div>
@@ -649,7 +649,7 @@ export default function CreateProduct({ categories, conditions }: CreateProductP
                                                     min="0"
                                                     value={data.dimensions.width}
                                                     onChange={(e) => setData('dimensions', { ...data.dimensions, width: e.target.value })}
-                                                    className="block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-800"
+                                                    className="block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-orange-500 focus:ring-1 focus:ring-orange-500 focus:outline-none"
                                                     placeholder="Width"
                                                 />
                                             </div>
@@ -660,7 +660,7 @@ export default function CreateProduct({ categories, conditions }: CreateProductP
                                                     min="0"
                                                     value={data.dimensions.height}
                                                     onChange={(e) => setData('dimensions', { ...data.dimensions, height: e.target.value })}
-                                                    className="block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-800"
+                                                    className="block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-orange-500 focus:ring-1 focus:ring-orange-500 focus:outline-none"
                                                     placeholder="Height"
                                                 />
                                             </div>
@@ -672,17 +672,17 @@ export default function CreateProduct({ categories, conditions }: CreateProductP
 
                         {/* SEO Tab */}
                         {activeTab === 'seo' && (
-                            <div className="rounded-lg border bg-white p-6 dark:bg-gray-900">
-                                <h2 className="mb-4 text-xl font-semibold text-gray-900 dark:text-gray-100">SEO & Meta</h2>
+                            <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+                                <h2 className="mb-4 text-xl font-semibold text-gray-900 ">SEO & Meta</h2>
 
                                 <div className="space-y-4">
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Meta Title</label>
+                                        <label className="block text-sm font-medium text-gray-700 ">Meta Title</label>
                                         <input
                                             type="text"
                                             value={data.meta_title}
                                             onChange={(e) => setData('meta_title', e.target.value)}
-                                            className="mt-1 block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-800"
+                                            className="mt-1 block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-orange-500 focus:ring-1 focus:ring-orange-500 focus:outline-none"
                                             placeholder="SEO title for search engines"
                                             maxLength={255}
                                         />
@@ -691,12 +691,12 @@ export default function CreateProduct({ categories, conditions }: CreateProductP
                                     </div>
 
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Meta Description</label>
+                                        <label className="block text-sm font-medium text-gray-700 ">Meta Description</label>
                                         <textarea
                                             value={data.meta_description}
                                             onChange={(e) => setData('meta_description', e.target.value)}
                                             rows={3}
-                                            className="mt-1 block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-800"
+                                            className="mt-1 block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-orange-500 focus:ring-1 focus:ring-orange-500 focus:outline-none"
                                             placeholder="SEO description for search engines"
                                             maxLength={500}
                                         />
@@ -713,7 +713,7 @@ export default function CreateProduct({ categories, conditions }: CreateProductP
                                                 onChange={(e) => setData('is_featured', e.target.checked)}
                                                 className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                                             />
-                                            <label htmlFor="is_featured" className="ml-2 text-sm text-gray-700 dark:text-gray-300">
+                                            <label htmlFor="is_featured" className="ml-2 text-sm text-gray-700 ">
                                                 Feature this product
                                             </label>
                                         </div>
@@ -726,7 +726,7 @@ export default function CreateProduct({ categories, conditions }: CreateProductP
                         <div className="flex justify-end gap-4">
                             <Link
                                 href="/seller/products"
-                                className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-800"
+                                className="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
                             >
                                 Cancel
                             </Link>
