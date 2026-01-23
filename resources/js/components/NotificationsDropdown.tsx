@@ -106,23 +106,23 @@ export default function NotificationsDropdown({ userRole = 'buyer', buttonClassN
     const hasUnread = unreadCount > 0 || unreadNotifications.length > 0;
 
     return (
-        <div className="relative" ref={dropdownRef}>
+        <div className="relative" ref={dropdownRef} style={{ colorScheme: 'light' }}>
             <button
                 onClick={() => setIsOpen(!isOpen)}
                 className={
                     buttonClassName ||
-                    'group relative rounded-xl p-2 text-gray-600 transition-all duration-300 hover:bg-orange-50 hover:text-orange-600 hover:shadow-sm focus:ring-2 focus:ring-orange-500/50 focus:ring-offset-2 focus:outline-none'
+                    'group relative rounded-xl p-2 transition-all duration-300 hover:bg-orange-50 hover:shadow-sm focus:ring-2 focus:ring-orange-500/50 focus:ring-offset-2 focus:outline-none'
                 }
+                style={{ colorScheme: 'light' }}
                 aria-label={`Notifications ${hasUnread ? `(${unreadCount} unread)` : ''}`}
                 aria-expanded={isOpen}
             >
-                <Bell className="h-5 w-5 transition-transform duration-300 group-hover:scale-110" />
+                <Bell className="h-5 w-5 transition-transform duration-300 group-hover:scale-110" style={{ color: '#4b5563' }} />
                 {hasUnread && (
                     <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-gradient-to-r from-red-500 to-red-600 text-xs font-medium text-white shadow-sm">
                         {unreadCount > 99 ? '99+' : unreadCount || unreadNotifications.length}
                     </span>
                 )}
-                <span className="absolute inset-0 rounded-xl opacity-0 ring-orange-500/50 transition-all duration-300 group-hover:opacity-100 group-hover:ring-2 group-hover:ring-offset-2"></span>
             </button>
 
             {isOpen && (

@@ -195,6 +195,60 @@
         @apply bg-background text-foreground;
         color-scheme: light;
     }
+
+    /* Force light mode for all form inputs to prevent Chrome dark mode from hiding text */
+    input,
+    textarea,
+    select,
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    input[type="number"],
+    input[type="tel"],
+    input[type="search"],
+    input[type="url"] {
+        color-scheme: light !important;
+        background-color: #ffffff !important;
+        color: #111827 !important;
+        -webkit-text-fill-color: #111827 !important;
+    }
+
+    input::placeholder,
+    textarea::placeholder {
+        color: #9ca3af !important;
+        -webkit-text-fill-color: #9ca3af !important;
+        opacity: 1 !important;
+    }
+
+    /* Ensure input text remains visible in all states */
+    input:focus,
+    textarea:focus,
+    select:focus {
+        color: #111827 !important;
+        -webkit-text-fill-color: #111827 !important;
+    }
+
+    /* Fix for autofill backgrounds */
+    input:-webkit-autofill,
+    input:-webkit-autofill:hover,
+    input:-webkit-autofill:focus,
+    textarea:-webkit-autofill,
+    textarea:-webkit-autofill:hover,
+    textarea:-webkit-autofill:focus,
+    select:-webkit-autofill,
+    select:-webkit-autofill:hover,
+    select:-webkit-autofill:focus {
+        -webkit-text-fill-color: #111827 !important;
+        -webkit-box-shadow: 0 0 0px 1000px #ffffff inset !important;
+        box-shadow: 0 0 0px 1000px #ffffff inset !important;
+        caret-color: #111827 !important;
+    }
+
+    /* Force caret color to be visible */
+    input,
+    textarea {
+        caret-color: #111827 !important;
+    }
 }
 
 /* Shopee-like mobile responsiveness - Compact scaling for mobile devices */

@@ -376,19 +376,19 @@ export default function MessagesDropdown({ currentUserId }: MessagesDropdownProp
 
     return (
         <>
-            <div className="relative" ref={dropdownRef}>
+            <div className="relative" ref={dropdownRef} style={{ colorScheme: 'light' }}>
                 <button
                     onClick={() => setIsOpen(!isOpen)}
-                    className="group relative rounded-lg p-1.5 text-gray-600 transition-all duration-300 hover:bg-primary/5 hover:text-primary hover:shadow-sm focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 focus:outline-none sm:rounded-xl sm:p-2"
+                    className="group relative rounded-lg p-1.5 transition-all duration-300 hover:bg-orange-50 hover:shadow-sm focus:ring-2 focus:ring-orange-500/50 focus:ring-offset-2 focus:outline-none sm:rounded-xl sm:p-2"
+                    style={{ colorScheme: 'light' }}
                     aria-label={`Messages ${totalUnread > 0 ? `(${totalUnread} unread)` : ''}`}
                 >
-                    <MessageSquare className="h-4 w-4 transition-transform duration-300 group-hover:scale-110 sm:h-5 sm:w-5" />
+                    <MessageSquare className="h-4 w-4 transition-transform duration-300 group-hover:scale-110 sm:h-5 sm:w-5" style={{ color: '#4b5563' }} />
                     {totalUnread > 0 && (
                         <span className="absolute -top-0.5 -right-0.5 flex h-4 w-4 animate-pulse items-center justify-center rounded-full bg-gradient-to-r from-blue-500 to-blue-600 text-[10px] font-medium text-white shadow-sm sm:-top-1 sm:-right-1 sm:h-5 sm:w-5 sm:text-xs">
                             {totalUnread > 9 ? '9+' : totalUnread}
                         </span>
                     )}
-                    <span className="absolute inset-0 rounded-lg opacity-0 ring-primary/50 transition-all duration-300 group-hover:opacity-100 group-hover:ring-2 group-hover:ring-offset-2 sm:rounded-xl"></span>
                 </button>
 
                 {/* Dropdown */}
