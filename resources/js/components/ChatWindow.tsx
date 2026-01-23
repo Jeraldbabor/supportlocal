@@ -1,7 +1,8 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { fetchWithCsrf, postWithCsrf } from '@/lib/csrf';
 import { router } from '@inertiajs/react';
 import { formatDistanceToNow } from 'date-fns';
-import { Image, Send, Trash2, X } from 'lucide-react';
+import { Image, Send, Trash2, WifiOff, X } from 'lucide-react';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import Swal from 'sweetalert2';
 
@@ -29,6 +30,8 @@ interface Conversation {
         name: string;
         profile_picture?: string;
         avatar_url?: string;
+        last_seen_at?: string;
+        is_online?: boolean;
     };
     product?: {
         id: number;
@@ -50,9 +53,13 @@ export default function ChatWindow({ conversationId, currentUserId }: ChatWindow
     const [conversation, setConversation] = useState<Conversation | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const [isOtherUserTyping, setIsOtherUserTyping] = useState(false);
+    const [isConnected, setIsConnected] = useState(true);
+    const [isPolling, setIsPolling] = useState(false);
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const pollingIntervalRef = useRef<NodeJS.Timeout | null>(null);
+    const lastMessageIdRef = useRef<number>(0);
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -60,32 +67,82 @@ export default function ChatWindow({ conversationId, currentUserId }: ChatWindow
 
     const markAsRead = useCallback(async () => {
         try {
-            await fetch(`/chat/conversation/${conversationId}/read`, {
-                method: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
-                },
-            });
+            await postWithCsrf(`/chat/conversation/${conversationId}/read`);
         } catch (error) {
             console.error('Failed to mark as read:', error);
         }
     }, [conversationId]);
 
-    const loadMessages = useCallback(async () => {
+    const loadMessages = useCallback(async (isPollingRequest = false) => {
         try {
-            const response = await fetch(`/chat/conversation/${conversationId}/messages`);
+            const response = await fetchWithCsrf(`/chat/conversation/${conversationId}/messages`);
+            if (!response.ok) {
+                throw new Error('Failed to load messages');
+            }
             const data = await response.json();
-            setMessages(data.messages);
+            
+            // Update messages, checking for new ones when polling
+            setMessages((prev) => {
+                if (isPollingRequest && prev.length > 0) {
+                    // Merge new messages that don't exist
+                    const newMessages = data.messages.filter(
+                        (msg: Message) => !prev.some((p) => p.id === msg.id)
+                    );
+                    if (newMessages.length > 0) {
+                        return [...prev, ...newMessages];
+                    }
+                    return prev;
+                }
+                return data.messages;
+            });
+            
             setConversation(data.conversation);
+            
+            // Track last message ID for polling
+            if (data.messages.length > 0) {
+                lastMessageIdRef.current = Math.max(
+                    ...data.messages.map((m: Message) => m.id)
+                );
+            }
         } catch (error) {
             console.error('Failed to load messages:', error);
         }
     }, [conversationId]);
 
-    const subscribeToChannel = useCallback(() => {
-        if (!window.Echo) return;
+    // Start polling fallback when WebSocket is disconnected
+    const startPolling = useCallback(() => {
+        if (pollingIntervalRef.current) return; // Already polling
+        
+        setIsPolling(true);
+        console.log('[Chat] WebSocket disconnected, starting polling fallback');
+        
+        pollingIntervalRef.current = setInterval(() => {
+            loadMessages(true);
+        }, 3000); // Poll every 3 seconds
+    }, [loadMessages]);
 
-        window.Echo.private(`conversation.${conversationId}`)
+    // Stop polling when WebSocket reconnects
+    const stopPolling = useCallback(() => {
+        if (pollingIntervalRef.current) {
+            clearInterval(pollingIntervalRef.current);
+            pollingIntervalRef.current = null;
+            setIsPolling(false);
+            console.log('[Chat] WebSocket reconnected, stopping polling');
+        }
+    }, []);
+
+    const subscribeToChannel = useCallback(() => {
+        if (!window.Echo) {
+            // No Echo available, use polling only
+            setIsConnected(false);
+            startPolling();
+            return;
+        }
+
+        const channel = window.Echo.private(`conversation.${conversationId}`);
+        
+        // Listen for messages
+        channel
             .listen('.message.sent', (e: { message: Message }) => {
                 setMessages((prev) => {
                     const exists = prev.some((msg) => msg.id === e.message.id);
@@ -101,7 +158,45 @@ export default function ChatWindow({ conversationId, currentUserId }: ChatWindow
                     setIsOtherUserTyping(e.isTyping);
                 }
             });
-    }, [conversationId, currentUserId, markAsRead]);
+
+        // Monitor connection state using Pusher's connection events
+        if (window.Echo.connector && window.Echo.connector.pusher) {
+            const pusher = window.Echo.connector.pusher;
+            
+            pusher.connection.bind('connected', () => {
+                console.log('[Chat] Pusher connected');
+                setIsConnected(true);
+                stopPolling();
+            });
+
+            pusher.connection.bind('disconnected', () => {
+                console.log('[Chat] Pusher disconnected');
+                setIsConnected(false);
+                startPolling();
+            });
+
+            pusher.connection.bind('failed', () => {
+                console.log('[Chat] Pusher connection failed');
+                setIsConnected(false);
+                startPolling();
+            });
+
+            pusher.connection.bind('unavailable', () => {
+                console.log('[Chat] Pusher unavailable');
+                setIsConnected(false);
+                startPolling();
+            });
+
+            // Check current connection state
+            const state = pusher.connection.state;
+            if (state !== 'connected') {
+                setIsConnected(false);
+                startPolling();
+            } else {
+                setIsConnected(true);
+            }
+        }
+    }, [conversationId, currentUserId, markAsRead, startPolling, stopPolling]);
 
     useEffect(() => {
         if (conversationId) {
@@ -112,6 +207,11 @@ export default function ChatWindow({ conversationId, currentUserId }: ChatWindow
         return () => {
             if (conversationId && window.Echo) {
                 window.Echo.leave(`conversation.${conversationId}`);
+            }
+            // Clean up polling interval
+            if (pollingIntervalRef.current) {
+                clearInterval(pollingIntervalRef.current);
+                pollingIntervalRef.current = null;
             }
         };
     }, [conversationId, loadMessages, subscribeToChannel]);
@@ -165,19 +265,30 @@ export default function ChatWindow({ conversationId, currentUserId }: ChatWindow
                 formData.append('image', selectedImage);
             }
 
-            const response = await fetch(`/chat/conversation/${conversationId}/message`, {
-                method: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
-                },
-                body: formData,
-            });
+            const response = await postWithCsrf(
+                `/chat/conversation/${conversationId}/message`,
+                formData,
+                { maxRetries: 2 }
+            );
 
             if (response.ok) {
                 const data = await response.json();
-                setMessages((prev) => [...prev, data.message]);
+                setMessages((prev) => {
+                    // Avoid duplicates if WebSocket already added this message
+                    const exists = prev.some((msg) => msg.id === data.message.id);
+                    return exists ? prev : [...prev, data.message];
+                });
                 setNewMessage('');
                 clearImageSelection();
+            } else if (response.status === 419) {
+                Swal.fire({
+                    title: 'Session Expired',
+                    text: 'Your session has expired. Please refresh the page.',
+                    icon: 'warning',
+                    confirmButtonText: 'Refresh',
+                }).then(() => {
+                    window.location.reload();
+                });
             }
         } catch (error) {
             console.error('Failed to send message:', error);
@@ -187,11 +298,12 @@ export default function ChatWindow({ conversationId, currentUserId }: ChatWindow
     };
 
     const handleTyping = () => {
-        fetch(`/chat/conversation/${conversationId}/typing/start`, {
-            method: 'POST',
-            headers: {
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
-            },
+        // Only send typing indicators if connected (avoid 419 spam when disconnected)
+        if (!isConnected) return;
+
+        // Fire and forget - typing indicators are not critical
+        postWithCsrf(`/chat/conversation/${conversationId}/typing/start`).catch(() => {
+            // Silently ignore typing indicator errors
         });
 
         if (typingTimeoutRef.current) {
@@ -199,11 +311,8 @@ export default function ChatWindow({ conversationId, currentUserId }: ChatWindow
         }
 
         typingTimeoutRef.current = setTimeout(() => {
-            fetch(`/chat/conversation/${conversationId}/typing/stop`, {
-                method: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
-                },
+            postWithCsrf(`/chat/conversation/${conversationId}/typing/stop`).catch(() => {
+                // Silently ignore typing indicator errors
             });
         }, 2000);
     };
@@ -280,7 +389,13 @@ export default function ChatWindow({ conversationId, currentUserId }: ChatWindow
                                     {getInitials(conversation.other_user.name)}
                                 </AvatarFallback>
                             </Avatar>
-                            <span className="absolute right-0 bottom-0 h-3 w-3 rounded-full border-2 border-white bg-green-500"></span>
+                            {/* Online/Offline indicator based on actual status */}
+                            <span 
+                                className={`absolute right-0 bottom-0 h-3 w-3 rounded-full border-2 border-white ${
+                                    conversation.other_user.is_online ? 'bg-green-500' : 'bg-gray-400'
+                                }`}
+                                title={conversation.other_user.is_online ? 'Online' : 'Offline'}
+                            ></span>
                         </div>
                         <div className="min-w-0 flex-1">
                             <h3 className="truncate text-sm font-semibold text-gray-900 sm:text-base">
@@ -291,17 +406,33 @@ export default function ChatWindow({ conversationId, currentUserId }: ChatWindow
                                     Re: {conversation.product.name}
                                 </p>
                             ) : (
-                                <p className="text-xs font-medium text-green-600">Online</p>
+                                <p className={`text-xs font-medium ${conversation.other_user.is_online ? 'text-green-600' : 'text-gray-400'}`}>
+                                    {conversation.other_user.is_online 
+                                        ? 'Online' 
+                                        : conversation.other_user.last_seen_at 
+                                            ? `Last seen ${formatDistanceToNow(new Date(conversation.other_user.last_seen_at), { addSuffix: true })}`
+                                            : 'Offline'
+                                    }
+                                </p>
                             )}
                         </div>
                     </div>
-                    <button
-                        onClick={handleDeleteConversation}
-                        className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full text-gray-400 transition-colors hover:bg-red-50 hover:text-red-500"
-                        title="Delete conversation"
-                    >
-                        <Trash2 className="h-5 w-5" />
-                    </button>
+                    <div className="flex items-center gap-2">
+                        {/* Connection status indicator */}
+                        {!isConnected && (
+                            <div className="flex items-center gap-1 text-amber-600" title="Real-time updates unavailable, using polling">
+                                <WifiOff className="h-4 w-4" />
+                                {isPolling && <span className="text-xs">Polling</span>}
+                            </div>
+                        )}
+                        <button
+                            onClick={handleDeleteConversation}
+                            className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full text-gray-400 transition-colors hover:bg-red-50 hover:text-red-500"
+                            title="Delete conversation"
+                        >
+                            <Trash2 className="h-5 w-5" />
+                        </button>
+                    </div>
                 </div>
             </div>
 
