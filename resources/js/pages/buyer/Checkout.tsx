@@ -185,9 +185,9 @@ export default function Checkout({ user, buyNowItem }: CheckoutProps) {
                         <p className="mb-8 text-gray-600">Add items to your cart before checking out.</p>
                         <button
                             onClick={() => router.visit('/buyer/products')}
-                            className="hover:bg-primary-dark inline-flex items-center gap-2 rounded-lg bg-primary px-6 py-3 font-medium text-white transition-colors"
+                            className="inline-flex items-center gap-2 rounded-lg bg-gradient-to-r from-amber-600 to-orange-600 px-6 py-3 font-medium text-white transition-colors hover:from-amber-700 hover:to-orange-700"
                         >
-                            <ShoppingBag className="h-5 w-5" />
+                            <ShoppingBag className="h-5 w-5" style={{ color: '#ffffff' }} />
                             Continue Shopping
                         </button>
                     </div>
@@ -200,10 +200,10 @@ export default function Checkout({ user, buyNowItem }: CheckoutProps) {
         <BuyerLayout title="Checkout">
             <Head title="Checkout" />
 
-            <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8">
+            <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8" style={{ colorScheme: 'light' }}>
                 <div className="mb-8">
                     <button onClick={handleBackToCart} className="mb-4 inline-flex items-center text-sm text-gray-500 hover:text-gray-700">
-                        <ArrowLeft className="mr-2 h-4 w-4" />
+                        <ArrowLeft className="mr-2 h-4 w-4" style={{ color: '#6b7280' }} />
                         Back to Cart
                     </button>
                     <h1 className="text-3xl font-bold text-gray-900">Checkout</h1>
@@ -224,7 +224,7 @@ export default function Checkout({ user, buyNowItem }: CheckoutProps) {
                             <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
                                 <div className="mb-6 flex items-center justify-between">
                                     <div className="flex items-center">
-                                        <Truck className="mr-3 h-6 w-6 text-primary" />
+                                        <Truck className="mr-3 h-6 w-6" style={{ color: '#ea580c' }} />
                                         <h2 className="text-xl font-semibold text-gray-900">Shipping Information</h2>
                                     </div>
                                     {user.delivery_province && user.delivery_city && user.delivery_barangay && (
@@ -248,7 +248,7 @@ export default function Checkout({ user, buyNowItem }: CheckoutProps) {
                                                 id="delivery_province"
                                                 value={data.delivery_province}
                                                 onChange={(e) => setData('delivery_province', e.target.value)}
-                                                className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-primary focus:ring-primary"
+                                                className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-orange-500 focus:ring-orange-500"
                                                 placeholder="Enter province"
                                                 required
                                             />
@@ -264,7 +264,7 @@ export default function Checkout({ user, buyNowItem }: CheckoutProps) {
                                                 id="delivery_city"
                                                 value={data.delivery_city}
                                                 onChange={(e) => setData('delivery_city', e.target.value)}
-                                                className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-primary focus:ring-primary"
+                                                className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-orange-500 focus:ring-orange-500"
                                                 placeholder="Enter city"
                                                 required
                                             />
@@ -280,7 +280,7 @@ export default function Checkout({ user, buyNowItem }: CheckoutProps) {
                                                 id="delivery_barangay"
                                                 value={data.delivery_barangay}
                                                 onChange={(e) => setData('delivery_barangay', e.target.value)}
-                                                className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-primary focus:ring-primary"
+                                                className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-orange-500 focus:ring-orange-500"
                                                 placeholder="Enter barangay"
                                                 required
                                             />
@@ -299,7 +299,7 @@ export default function Checkout({ user, buyNowItem }: CheckoutProps) {
                                                 id="delivery_street"
                                                 value={data.delivery_street}
                                                 onChange={(e) => setData('delivery_street', e.target.value)}
-                                                className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-primary focus:ring-primary"
+                                                className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-orange-500 focus:ring-orange-500"
                                                 placeholder="e.g., 123 Main Street"
                                             />
                                             {errors.delivery_street && <p className="mt-1 text-sm text-red-600">{errors.delivery_street}</p>}
@@ -314,7 +314,7 @@ export default function Checkout({ user, buyNowItem }: CheckoutProps) {
                                                 id="delivery_building_details"
                                                 value={data.delivery_building_details}
                                                 onChange={(e) => setData('delivery_building_details', e.target.value)}
-                                                className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-primary focus:ring-primary"
+                                                className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-orange-500 focus:ring-orange-500"
                                                 placeholder="e.g., Bldg 5, Unit 201"
                                             />
                                             {errors.delivery_building_details && (
@@ -383,7 +383,7 @@ export default function Checkout({ user, buyNowItem }: CheckoutProps) {
                                                 id="shipping_phone"
                                                 value={data.delivery_phone}
                                                 onChange={(e) => setData('delivery_phone', e.target.value)}
-                                                className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-primary focus:ring-primary"
+                                                className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-orange-500 focus:ring-orange-500"
                                                 placeholder="e.g., 09123456789"
                                                 required
                                             />
@@ -396,15 +396,15 @@ export default function Checkout({ user, buyNowItem }: CheckoutProps) {
                             {/* Payment Information */}
                             <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
                                 <div className="mb-6 flex items-center">
-                                    <CreditCard className="mr-3 h-6 w-6 text-primary" />
+                                    <CreditCard className="mr-3 h-6 w-6" style={{ color: '#ea580c' }} />
                                     <h2 className="text-xl font-semibold text-gray-900">Payment Information</h2>
                                 </div>
 
                                 <div className="space-y-4">
                                     <div>
-                                        <label className="mb-2 block text-sm font-medium text-gray-700">Payment Method</label>
+                                        <label className="mb-2 block text-sm font-medium" style={{ color: '#374151' }}>Payment Method</label>
                                         <div className="space-y-2">
-                                            <label className="flex cursor-pointer items-center rounded-lg border border-gray-300 p-3 hover:bg-gray-50">
+                                            <label className="flex cursor-pointer items-center rounded-lg border border-gray-300 p-3 hover:bg-gray-50" style={{ backgroundColor: '#ffffff' }}>
                                                 <input
                                                     type="radio"
                                                     value="cod"
@@ -417,13 +417,13 @@ export default function Checkout({ user, buyNowItem }: CheckoutProps) {
                                                         <Truck className="h-4 w-4 text-white" />
                                                     </div>
                                                     <div>
-                                                        <div className="font-medium">Cash on Delivery (COD)</div>
-                                                        <div className="text-sm text-gray-500">Pay with cash when your order arrives</div>
+                                                        <div className="font-medium" style={{ color: '#111827' }}>Cash on Delivery (COD)</div>
+                                                        <div className="text-sm" style={{ color: '#6b7280' }}>Pay with cash when your order arrives</div>
                                                     </div>
                                                 </div>
                                             </label>
 
-                                            <label className="flex cursor-pointer items-center rounded-lg border border-gray-300 p-3 hover:bg-gray-50">
+                                            <label className="flex cursor-pointer items-center rounded-lg border border-gray-300 p-3 hover:bg-gray-50" style={{ backgroundColor: '#ffffff' }}>
                                                 <input
                                                     type="radio"
                                                     value="gcash"
@@ -436,8 +436,8 @@ export default function Checkout({ user, buyNowItem }: CheckoutProps) {
                                                         <span className="text-xs font-bold text-white">G</span>
                                                     </div>
                                                     <div>
-                                                        <div className="font-medium">GCash</div>
-                                                        <div className="text-sm text-gray-500">Pay with GCash mobile wallet</div>
+                                                        <div className="font-medium" style={{ color: '#111827' }}>GCash</div>
+                                                        <div className="text-sm" style={{ color: '#6b7280' }}>Pay with GCash mobile wallet</div>
                                                     </div>
                                                 </div>
                                             </label>
@@ -445,39 +445,39 @@ export default function Checkout({ user, buyNowItem }: CheckoutProps) {
                                     </div>
 
                                     {data.payment_method === 'cod' && (
-                                        <div className="rounded-lg border border-green-200 bg-green-50 p-4">
+                                        <div className="rounded-lg border border-green-200 p-4" style={{ backgroundColor: '#f0fdf4' }}>
                                             <div className="mb-3 flex items-center">
-                                                <User className="mr-2 h-5 w-5 text-green-600" />
-                                                <h4 className="font-medium text-green-800">Buyer Information for COD</h4>
+                                                <User className="mr-2 h-5 w-5" style={{ color: '#16a34a' }} />
+                                                <h4 className="font-medium" style={{ color: '#166534' }}>Buyer Information for COD</h4>
                                             </div>
                                             <div className="space-y-2 text-sm">
                                                 <div className="flex justify-between">
-                                                    <span className="text-gray-600">Name:</span>
-                                                    <span className="font-medium text-gray-900">{user.name}</span>
+                                                    <span style={{ color: '#4b5563' }}>Name:</span>
+                                                    <span className="font-medium" style={{ color: '#111827' }}>{user.name}</span>
                                                 </div>
                                                 <div className="flex justify-between">
-                                                    <span className="text-gray-600">Email:</span>
-                                                    <span className="font-medium text-gray-900">{user.email}</span>
+                                                    <span style={{ color: '#4b5563' }}>Email:</span>
+                                                    <span className="font-medium" style={{ color: '#111827' }}>{user.email}</span>
                                                 </div>
                                                 {user.phone && (
                                                     <div className="flex justify-between">
-                                                        <span className="text-gray-600">Phone:</span>
-                                                        <span className="font-medium text-gray-900">{user.phone}</span>
+                                                        <span style={{ color: '#4b5563' }}>Phone:</span>
+                                                        <span className="font-medium" style={{ color: '#111827' }}>{user.phone}</span>
                                                     </div>
                                                 )}
                                                 {data.delivery_address && (
                                                     <div className="flex justify-between">
-                                                        <span className="text-gray-600">Address:</span>
-                                                        <span className="max-w-xs text-right font-medium text-gray-900">{data.delivery_address}</span>
+                                                        <span style={{ color: '#4b5563' }}>Address:</span>
+                                                        <span className="max-w-xs text-right font-medium" style={{ color: '#111827' }}>{data.delivery_address}</span>
                                                     </div>
                                                 )}
                                             </div>
-                                            <p className="mt-3 text-xs text-green-700">
+                                            <p className="mt-3 text-xs" style={{ color: '#15803d' }}>
                                                 💡 Please ensure your contact information is correct. Our delivery team will use this information to
                                                 reach you.
                                             </p>
-                                            <div className="mt-3 rounded border border-yellow-200 bg-yellow-50 p-3">
-                                                <p className="text-xs text-yellow-800">
+                                            <div className="mt-3 rounded border border-yellow-200 p-3" style={{ backgroundColor: '#fefce8' }}>
+                                                <p className="text-xs" style={{ color: '#854d0e' }}>
                                                     <strong>Note:</strong> Payment will be collected upon delivery. Please have the exact amount ready
                                                     ({formatPeso(checkoutTotal)}).
                                                 </p>
@@ -487,23 +487,24 @@ export default function Checkout({ user, buyNowItem }: CheckoutProps) {
 
                                     {data.payment_method === 'gcash' && (
                                         <div>
-                                            <label htmlFor="gcash_number" className="mb-2 block text-sm font-medium text-gray-700">
+                                            <label htmlFor="gcash_number" className="mb-2 block text-sm font-medium" style={{ color: '#374151' }}>
                                                 GCash Number
                                             </label>
                                             <div className="relative">
-                                                <Phone className="absolute top-3 left-3 h-4 w-4 text-gray-400" />
+                                                <Phone className="absolute top-3 left-3 h-4 w-4" style={{ color: '#9ca3af' }} />
                                                 <input
                                                     type="tel"
                                                     id="gcash_number"
                                                     value={data.gcash_reference}
                                                     onChange={(e) => setData('gcash_reference', e.target.value)}
-                                                    className="w-full rounded-lg border border-gray-300 py-2 pr-3 pl-10 focus:border-primary focus:ring-primary"
+                                                    className="w-full rounded-lg border border-gray-300 py-2 pr-3 pl-10 focus:border-orange-500 focus:ring-orange-500"
+                                                    style={{ backgroundColor: '#ffffff', color: '#111827' }}
                                                     placeholder="09XX XXX XXXX"
                                                     required
                                                 />
                                             </div>
                                             {errors.gcash_reference && <p className="mt-1 text-sm text-red-600">{errors.gcash_reference}</p>}
-                                            <p className="mt-2 text-sm text-gray-500">
+                                            <p className="mt-2 text-sm" style={{ color: '#6b7280' }}>
                                                 This should be the GCash number linked to your account for payment verification.
                                             </p>
                                         </div>
@@ -518,7 +519,7 @@ export default function Checkout({ user, buyNowItem }: CheckoutProps) {
                                     value={data.delivery_notes}
                                     onChange={(e) => setData('delivery_notes', e.target.value)}
                                     rows={3}
-                                    className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-primary focus:ring-primary"
+                                    className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-orange-500 focus:ring-orange-500"
                                     placeholder="Any special delivery instructions or notes for the seller..."
                                 />
                             </div>
@@ -555,15 +556,15 @@ export default function Checkout({ user, buyNowItem }: CheckoutProps) {
                                 <div className="space-y-2 border-t border-gray-200 pt-4">
                                     <div className="flex justify-between text-sm">
                                         <span className="text-gray-600">Subtotal</span>
-                                        <span className="font-medium">{formatPeso(checkoutTotal)}</span>
+                                        <span className="font-medium text-gray-900">{formatPeso(checkoutTotal)}</span>
                                     </div>
                                     <div className="flex justify-between text-sm">
                                         <span className="text-gray-600">Shipping Fee</span>
-                                        <span className="font-medium">{formatPeso(shippingFee)}</span>
+                                        <span className="font-medium text-gray-900">{formatPeso(shippingFee)}</span>
                                     </div>
                                     <div className="flex justify-between text-sm">
                                         <span className="text-gray-600">Payment Processing</span>
-                                        <span className="font-medium">Free</span>
+                                        <span className="font-medium" style={{ color: '#16a34a' }}>Free</span>
                                     </div>
                                 </div>
 
@@ -577,8 +578,8 @@ export default function Checkout({ user, buyNowItem }: CheckoutProps) {
                                 <button
                                     type="submit"
                                     disabled={processing}
-                                    className={`mt-6 w-full rounded-lg px-6 py-3 font-medium text-white transition-colors focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:outline-none ${
-                                        processing ? 'cursor-not-allowed bg-gray-400' : 'hover:bg-primary-dark bg-primary'
+                                    className={`mt-6 w-full rounded-lg px-6 py-3 font-medium text-white transition-colors focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:outline-none ${
+                                        processing ? 'cursor-not-allowed bg-gray-400' : 'bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700'
                                     }`}
                                 >
                                     {processing ? (
@@ -588,7 +589,7 @@ export default function Checkout({ user, buyNowItem }: CheckoutProps) {
                                         </div>
                                     ) : (
                                         <div className="flex items-center justify-center">
-                                            <CheckCircle className="mr-2 h-5 w-5" />
+                                            <CheckCircle className="mr-2 h-5 w-5" style={{ color: '#ffffff' }} />
                                             Place Order - {formatPeso(totalWithShipping)}
                                         </div>
                                     )}

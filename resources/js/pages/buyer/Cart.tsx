@@ -103,10 +103,10 @@ export default function Cart() {
         <BuyerLayout title="Shopping Cart">
             <Head title="Shopping Cart" />
 
-            <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8">
+            <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8" style={{ colorScheme: 'light' }}>
                 <div className="mb-8">
                     <Link href="/buyer/products" className="mb-4 inline-flex items-center text-sm text-gray-500 hover:text-gray-700">
-                        <ArrowLeft className="mr-2 h-4 w-4" />
+                        <ArrowLeft className="mr-2 h-4 w-4" style={{ color: '#6b7280' }} />
                         Continue Shopping
                     </Link>
                     <h1 className="text-3xl font-bold text-gray-900">Shopping Cart</h1>
@@ -141,7 +141,7 @@ export default function Cart() {
                                                 <div className="flex-1">
                                                     <Link
                                                         href={`/buyer/product/${item.product_id}`}
-                                                        className="line-clamp-1 text-lg font-semibold text-gray-900 hover:text-primary"
+                                                        className="line-clamp-1 text-lg font-semibold text-gray-900 hover:text-orange-600"
                                                     >
                                                         {item.name}
                                                     </Link>
@@ -156,30 +156,30 @@ export default function Cart() {
                                                 {/* Remove Button */}
                                                 <button
                                                     onClick={() => handleRemove(item.id)}
-                                                    className="rounded-full p-2 text-gray-400 transition-colors hover:bg-red-50 hover:text-red-500"
+                                                    className="rounded-full p-2 transition-colors hover:bg-red-50"
                                                     title="Remove from cart"
                                                 >
-                                                    <Trash2 className="h-5 w-5" />
+                                                    <Trash2 className="h-5 w-5" style={{ color: '#9ca3af' }} />
                                                 </button>
                                             </div>
 
                                             {/* Quantity Controls */}
                                             <div className="mt-4 flex items-center justify-between">
-                                                <div className="flex items-center rounded-lg border">
+                                                <div className="flex items-center rounded-lg border border-gray-300 bg-white">
                                                     <button
                                                         onClick={() => handleQuantityChange(item.id, item.quantity - 1)}
                                                         className="p-2 transition-colors hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50"
                                                         disabled={item.quantity <= 1}
                                                     >
-                                                        <Minus className="h-4 w-4" />
+                                                        <Minus className="h-4 w-4" style={{ color: '#374151' }} />
                                                     </button>
-                                                    <span className="min-w-[3rem] px-4 py-2 text-center font-medium">{item.quantity}</span>
+                                                    <span className="min-w-[3rem] px-4 py-2 text-center font-medium text-gray-900">{item.quantity}</span>
                                                     <button
                                                         onClick={() => handleQuantityChange(item.id, item.quantity + 1)}
                                                         className="p-2 transition-colors hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50"
                                                         disabled={item.quantity >= item.stock_quantity}
                                                     >
-                                                        <Plus className="h-4 w-4" />
+                                                        <Plus className="h-4 w-4" style={{ color: '#374151' }} />
                                                     </button>
                                                 </div>
                                                 <div className="text-right">
@@ -217,7 +217,7 @@ export default function Cart() {
                                         <span className="line-clamp-1 text-gray-600">
                                             {item.name} × {item.quantity}
                                         </span>
-                                        <span className="font-medium">{formatPeso(item.price * item.quantity)}</span>
+                                        <span className="font-medium text-gray-900">{formatPeso(item.price * item.quantity)}</span>
                                     </div>
                                 ))}
                             </div>
