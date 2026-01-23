@@ -208,7 +208,6 @@ export default function MainLayout({ children, title }: MainLayoutProps) {
                                     </span>
                                 )}
                             </Link>
-                            </Link>
 
                             {/* User Authentication Section */}
                             {auth.user ? (
