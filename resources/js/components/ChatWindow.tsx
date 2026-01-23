@@ -367,19 +367,19 @@ export default function ChatWindow({ conversationId, currentUserId }: ChatWindow
 
     if (!conversation) {
         return (
-            <div className="flex h-full items-center justify-center bg-gray-50">
+            <div className="flex h-full items-center justify-center bg-gray-50 dark:bg-gray-900">
                 <div className="flex flex-col items-center gap-3">
                     <div className="h-8 w-8 animate-spin rounded-full border-2 border-orange-500 border-t-transparent"></div>
-                    <p className="font-medium text-gray-500">Loading conversation...</p>
+                    <p className="font-medium text-gray-500 dark:text-gray-400">Loading conversation...</p>
                 </div>
             </div>
         );
     }
 
     return (
-        <div className="flex h-full flex-col overflow-hidden bg-white">
+        <div className="flex h-full flex-col overflow-hidden bg-white dark:bg-gray-900">
             {/* Chat Header */}
-            <div className="flex-shrink-0 border-b border-gray-200 bg-white px-4 py-3">
+            <div className="flex-shrink-0 border-b border-gray-200 bg-white px-4 py-3 dark:border-gray-700 dark:bg-gray-900">
                 <div className="flex items-center justify-between gap-3">
                     <div className="flex min-w-0 flex-1 items-center gap-3">
                         <div className="relative flex-shrink-0">
@@ -391,22 +391,22 @@ export default function ChatWindow({ conversationId, currentUserId }: ChatWindow
                             </Avatar>
                             {/* Online/Offline indicator based on actual status */}
                             <span 
-                                className={`absolute right-0 bottom-0 h-3 w-3 rounded-full border-2 border-white ${
+                                className={`absolute right-0 bottom-0 h-3 w-3 rounded-full border-2 border-white dark:border-gray-900 ${
                                     conversation.other_user.is_online ? 'bg-green-500' : 'bg-gray-400'
                                 }`}
                                 title={conversation.other_user.is_online ? 'Online' : 'Offline'}
                             ></span>
                         </div>
                         <div className="min-w-0 flex-1">
-                            <h3 className="truncate text-sm font-semibold text-gray-900 sm:text-base">
+                            <h3 className="truncate text-sm font-semibold text-gray-900 dark:text-white sm:text-base">
                                 {conversation.other_user.name}
                             </h3>
                             {conversation.product ? (
-                                <p className="truncate text-xs text-gray-500">
+                                <p className="truncate text-xs text-gray-500 dark:text-gray-400">
                                     Re: {conversation.product.name}
                                 </p>
                             ) : (
-                                <p className={`text-xs font-medium ${conversation.other_user.is_online ? 'text-green-600' : 'text-gray-400'}`}>
+                                <p className={`text-xs font-medium ${conversation.other_user.is_online ? 'text-green-600 dark:text-green-400' : 'text-gray-400 dark:text-gray-500'}`}>
                                     {conversation.other_user.is_online 
                                         ? 'Online' 
                                         : conversation.other_user.last_seen_at 
@@ -420,14 +420,14 @@ export default function ChatWindow({ conversationId, currentUserId }: ChatWindow
                     <div className="flex items-center gap-2">
                         {/* Connection status indicator */}
                         {!isConnected && (
-                            <div className="flex items-center gap-1 text-amber-600" title="Real-time updates unavailable, using polling">
+                            <div className="flex items-center gap-1 text-amber-600 dark:text-amber-400" title="Real-time updates unavailable, using polling">
                                 <WifiOff className="h-4 w-4" />
                                 {isPolling && <span className="text-xs">Polling</span>}
                             </div>
                         )}
                         <button
                             onClick={handleDeleteConversation}
-                            className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full text-gray-400 transition-colors hover:bg-red-50 hover:text-red-500"
+                            className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full text-gray-400 transition-colors hover:bg-red-50 hover:text-red-500 dark:text-gray-500 dark:hover:bg-red-900/30 dark:hover:text-red-400"
                             title="Delete conversation"
                         >
                             <Trash2 className="h-5 w-5" />
@@ -437,14 +437,14 @@ export default function ChatWindow({ conversationId, currentUserId }: ChatWindow
             </div>
 
             {/* Messages */}
-            <div className="min-h-0 flex-1 overflow-y-auto bg-gray-50 px-3 py-4 sm:px-4 sm:py-6">
+            <div className="min-h-0 flex-1 overflow-y-auto bg-gray-50 px-3 py-4 dark:bg-gray-800 sm:px-4 sm:py-6">
                 <div className="mx-auto max-w-2xl space-y-4">
                     {messages.length === 0 && (
                         <div className="py-12 text-center">
-                            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100">
-                                <Send className="h-8 w-8 text-gray-400" />
+                            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-700">
+                                <Send className="h-8 w-8 text-gray-400 dark:text-gray-500" />
                             </div>
-                            <p className="text-gray-500">No messages yet. Start the conversation!</p>
+                            <p className="text-gray-500 dark:text-gray-400">No messages yet. Start the conversation!</p>
                         </div>
                     )}
                     {messages.map((message, index) => {
@@ -457,7 +457,7 @@ export default function ChatWindow({ conversationId, currentUserId }: ChatWindow
                                     <Avatar className="h-8 w-8 flex-shrink-0 sm:h-9 sm:w-9">
                                         <AvatarImage src={message.sender.avatar_url} />
                                         <AvatarFallback
-                                            className={`text-xs font-medium ${isOwnMessage ? 'bg-orange-100 text-orange-700' : 'bg-gray-200 text-gray-600'}`}
+                                            className={`text-xs font-medium ${isOwnMessage ? 'bg-orange-100 text-orange-700 dark:bg-orange-900 dark:text-orange-300' : 'bg-gray-200 text-gray-600 dark:bg-gray-600 dark:text-gray-300'}`}
                                         >
                                             {getInitials(message.sender.name)}
                                         </AvatarFallback>
@@ -470,7 +470,7 @@ export default function ChatWindow({ conversationId, currentUserId }: ChatWindow
                                         className={`rounded-2xl px-3 py-2 shadow-sm sm:px-4 sm:py-2.5 ${
                                             isOwnMessage
                                                 ? 'rounded-tr-md bg-orange-500 text-white'
-                                                : 'rounded-tl-md border border-gray-200 bg-white text-gray-900'
+                                                : 'rounded-tl-md border border-gray-200 bg-white text-gray-900 dark:border-gray-600 dark:bg-gray-700 dark:text-white'
                                         }`}
                                     >
                                         {message.image_url && (
@@ -488,7 +488,7 @@ export default function ChatWindow({ conversationId, currentUserId }: ChatWindow
                                             <p className="text-sm leading-relaxed break-words whitespace-pre-wrap">{message.message}</p>
                                         )}
                                     </div>
-                                    <span className={`mt-1 px-1 text-[10px] text-gray-400 sm:text-[11px] ${isOwnMessage ? 'text-right' : 'text-left'}`}>
+                                    <span className={`mt-1 px-1 text-[10px] text-gray-400 dark:text-gray-500 sm:text-[11px] ${isOwnMessage ? 'text-right' : 'text-left'}`}>
                                         {formatDistanceToNow(new Date(message.created_at), { addSuffix: true })}
                                     </span>
                                 </div>
@@ -499,15 +499,15 @@ export default function ChatWindow({ conversationId, currentUserId }: ChatWindow
                         <div className="flex gap-2 sm:gap-3">
                             <Avatar className="h-8 w-8 sm:h-9 sm:w-9">
                                 <AvatarImage src={conversation.other_user.avatar_url} />
-                                <AvatarFallback className="bg-gray-200 text-xs text-gray-600">
+                                <AvatarFallback className="bg-gray-200 text-xs text-gray-600 dark:bg-gray-600 dark:text-gray-300">
                                     {getInitials(conversation.other_user.name)}
                                 </AvatarFallback>
                             </Avatar>
-                            <div className="flex items-center rounded-2xl rounded-tl-md border border-gray-200 bg-white px-4 py-2.5 shadow-sm">
+                            <div className="flex items-center rounded-2xl rounded-tl-md border border-gray-200 bg-white px-4 py-2.5 shadow-sm dark:border-gray-600 dark:bg-gray-700">
                                 <div className="flex gap-1">
-                                    <span className="inline-block h-2 w-2 animate-bounce rounded-full bg-gray-400" style={{ animationDelay: '0ms' }}></span>
-                                    <span className="inline-block h-2 w-2 animate-bounce rounded-full bg-gray-400" style={{ animationDelay: '150ms' }}></span>
-                                    <span className="inline-block h-2 w-2 animate-bounce rounded-full bg-gray-400" style={{ animationDelay: '300ms' }}></span>
+                                    <span className="inline-block h-2 w-2 animate-bounce rounded-full bg-gray-400 dark:bg-gray-500" style={{ animationDelay: '0ms' }}></span>
+                                    <span className="inline-block h-2 w-2 animate-bounce rounded-full bg-gray-400 dark:bg-gray-500" style={{ animationDelay: '150ms' }}></span>
+                                    <span className="inline-block h-2 w-2 animate-bounce rounded-full bg-gray-400 dark:bg-gray-500" style={{ animationDelay: '300ms' }}></span>
                                 </div>
                             </div>
                         </div>
@@ -517,12 +517,12 @@ export default function ChatWindow({ conversationId, currentUserId }: ChatWindow
             </div>
 
             {/* Message Input */}
-            <form onSubmit={sendMessage} className="flex-shrink-0 border-t border-gray-200 bg-white p-3 sm:p-4">
+            <form onSubmit={sendMessage} className="flex-shrink-0 border-t border-gray-200 bg-white p-3 dark:border-gray-700 dark:bg-gray-900 sm:p-4">
                 <div className="mx-auto max-w-2xl">
                     {/* Image Preview */}
                     {imagePreview && (
                         <div className="relative mb-3 inline-block">
-                            <div className="relative overflow-hidden rounded-lg border-2 border-orange-200">
+                            <div className="relative overflow-hidden rounded-lg border-2 border-orange-200 dark:border-orange-700">
                                 <img src={imagePreview} alt="Preview" className="max-h-24 max-w-xs object-cover sm:max-h-32" />
                                 <button
                                     type="button"
@@ -547,7 +547,7 @@ export default function ChatWindow({ conversationId, currentUserId }: ChatWindow
                             type="button"
                             onClick={() => fileInputRef.current?.click()}
                             disabled={isLoading}
-                            className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-500 transition-colors hover:bg-gray-50 hover:text-gray-700 disabled:opacity-50 sm:h-11 sm:w-11"
+                            className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-500 transition-colors hover:bg-gray-50 hover:text-gray-700 disabled:opacity-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-300 sm:h-11 sm:w-11"
                             title="Upload image"
                         >
                             <Image className="h-5 w-5" />
@@ -558,7 +558,7 @@ export default function ChatWindow({ conversationId, currentUserId }: ChatWindow
                             onChange={handleInputChange}
                             placeholder="Type your message..."
                             disabled={isLoading}
-                            className="min-w-0 flex-1 rounded-full border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm text-gray-900 placeholder-gray-400 transition-colors focus:border-orange-300 focus:bg-white focus:outline-none focus:ring-2 focus:ring-orange-100 sm:px-5 sm:py-3"
+                            className="min-w-0 flex-1 rounded-full border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm text-gray-900 placeholder-gray-400 transition-colors focus:border-orange-300 focus:bg-white focus:outline-none focus:ring-2 focus:ring-orange-100 dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:placeholder-gray-500 dark:focus:border-orange-500 dark:focus:bg-gray-700 dark:focus:ring-orange-900 sm:px-5 sm:py-3"
                         />
                         <button
                             type="submit"
