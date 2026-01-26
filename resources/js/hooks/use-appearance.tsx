@@ -12,17 +12,29 @@ const setCookie = (name: string, value: string, days = 365) => {
 };
 
 const applyTheme = () => {
+    // Only run in browser environment
+    if (typeof document === 'undefined') {
+        return;
+    }
+
     // Force light mode always - ignore any appearance setting
     document.documentElement.classList.remove('dark');
     document.documentElement.style.colorScheme = 'light';
 };
 
 export function initializeTheme() {
+    // Only run in browser environment
+    if (typeof window === 'undefined' || typeof document === 'undefined') {
+        return;
+    }
+
     // Force light mode - ignore saved appearance
     applyTheme();
 
     // Set appearance to light in localStorage to prevent future dark mode
-    localStorage.setItem('appearance', 'light');
+    if (typeof localStorage !== 'undefined') {
+        localStorage.setItem('appearance', 'light');
+    }
 }
 
 export function useAppearance() {
@@ -34,7 +46,9 @@ export function useAppearance() {
         setAppearance(forcedMode);
 
         // Store in localStorage for client-side persistence - always light
-        localStorage.setItem('appearance', forcedMode);
+        if (typeof localStorage !== 'undefined') {
+            localStorage.setItem('appearance', forcedMode);
+        }
 
         // Store in cookie for SSR - always light
         setCookie('appearance', forcedMode);
