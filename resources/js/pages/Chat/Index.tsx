@@ -69,13 +69,15 @@ export default function ChatIndex({ auth, conversations }: ChatIndexProps) {
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Messages" />
 
-            <div 
+            <div
                 className="mx-auto h-[calc(100vh-8rem)] max-w-6xl overflow-hidden rounded-xl border border-gray-300 bg-white shadow-sm sm:h-[calc(100vh-10rem)]"
                 data-chat-container
             >
                 <div className="flex h-full">
                     {/* Conversations List - Hidden on mobile when chat is open */}
-                    <div className={`flex h-full w-full flex-col border-r border-gray-300 bg-gray-50 md:w-80 lg:w-96 ${showChatOnMobile ? 'hidden md:flex' : 'flex'}`}>
+                    <div
+                        className={`flex h-full w-full flex-col border-r border-gray-300 bg-gray-50 md:w-80 lg:w-96 ${showChatOnMobile ? 'hidden md:flex' : 'flex'}`}
+                    >
                         {/* Header */}
                         <div className="flex-shrink-0 border-b border-gray-300 bg-white p-4">
                             <div className="flex items-center gap-3">
@@ -101,7 +103,7 @@ export default function ChatIndex({ auth, conversations }: ChatIndexProps) {
                                         placeholder="Search conversations..."
                                         value={searchQuery}
                                         onChange={(e) => setSearchQuery(e.target.value)}
-                                        className="w-full rounded-lg border border-gray-300 bg-gray-50 py-2.5 pr-4 pl-10 text-sm text-gray-900 placeholder-gray-400 transition-colors focus:border-orange-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-orange-200"
+                                        className="w-full rounded-lg border border-gray-300 bg-gray-50 py-2.5 pr-4 pl-10 text-sm text-gray-900 placeholder-gray-400 transition-colors focus:border-orange-400 focus:bg-white focus:ring-2 focus:ring-orange-200 focus:outline-none"
                                     />
                                 </div>
                             )}
@@ -115,9 +117,7 @@ export default function ChatIndex({ auth, conversations }: ChatIndexProps) {
                                         <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100">
                                             <MessageSquare className="h-8 w-8 text-gray-400" />
                                         </div>
-                                        <p className="font-medium text-gray-900">
-                                            {searchQuery ? 'No results found' : 'No conversations yet'}
-                                        </p>
+                                        <p className="font-medium text-gray-900">{searchQuery ? 'No results found' : 'No conversations yet'}</p>
                                         <p className="mt-2 text-sm text-gray-500">
                                             {searchQuery
                                                 ? 'Try a different search term'

@@ -138,7 +138,9 @@ export default function CategoriesIndex() {
                                     />
                                 </div>
                             </div>
-                            <Button onClick={handleSearch} className="w-full sm:w-auto">Search</Button>
+                            <Button onClick={handleSearch} className="w-full sm:w-auto">
+                                Search
+                            </Button>
                         </div>
                     </CardContent>
                 </Card>
@@ -150,11 +152,11 @@ export default function CategoriesIndex() {
                             <table className="w-full">
                                 <thead className="border-b border-gray-200 bg-gray-50">
                                     <tr>
-                                        <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Category</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Parent</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Products</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Status</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Actions</th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">Category</th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">Parent</th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">Products</th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">Status</th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-gray-200 bg-white">
@@ -165,9 +167,7 @@ export default function CategoriesIndex() {
                                                     <FolderTree className="h-5 w-5" style={{ color: '#6b7280' }} />
                                                     <div>
                                                         <div className="font-medium text-gray-900">{category.name}</div>
-                                                        {category.description && (
-                                                            <div className="text-sm text-gray-500">{category.description}</div>
-                                                        )}
+                                                        {category.description && <div className="text-sm text-gray-500">{category.description}</div>}
                                                     </div>
                                                 </div>
                                             </td>
@@ -185,13 +185,7 @@ export default function CategoriesIndex() {
                                                 )}
                                             </td>
                                             <td className="px-6 py-4">
-                                                <Badge
-                                                    className={
-                                                        category.is_active
-                                                            ? 'bg-green-100 text-green-800'
-                                                            : 'bg-gray-100 text-gray-800'
-                                                    }
-                                                >
+                                                <Badge className={category.is_active ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}>
                                                     {category.is_active ? 'Active' : 'Inactive'}
                                                 </Badge>
                                             </td>
@@ -246,22 +240,12 @@ export default function CategoriesIndex() {
                                         <FolderTree className="mt-0.5 h-5 w-5" style={{ color: '#6b7280' }} />
                                         <div>
                                             <div className="font-medium text-gray-900">{category.name}</div>
-                                            {category.description && (
-                                                <div className="mt-1 text-sm text-gray-500">{category.description}</div>
-                                            )}
+                                            {category.description && <div className="mt-1 text-sm text-gray-500">{category.description}</div>}
                                             <div className="mt-2 flex flex-wrap gap-2">
-                                                <Badge
-                                                    className={
-                                                        category.is_active
-                                                            ? 'bg-green-100 text-green-800'
-                                                            : 'bg-gray-100 text-gray-800'
-                                                    }
-                                                >
+                                                <Badge className={category.is_active ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}>
                                                     {category.is_active ? 'Active' : 'Inactive'}
                                                 </Badge>
-                                                <span className="text-xs text-gray-500">
-                                                    {category.parent ? category.parent.name : 'Root'}
-                                                </span>
+                                                <span className="text-xs text-gray-500">{category.parent ? category.parent.name : 'Root'}</span>
                                             </div>
                                             <div className="mt-2 text-xs text-gray-500">
                                                 {category.products_count} products
@@ -316,7 +300,9 @@ export default function CategoriesIndex() {
                                         key={index}
                                         href={link.url}
                                         className={`rounded-md px-2 py-1.5 text-xs transition-colors sm:px-3 sm:py-2 sm:text-sm ${
-                                            link.active ? 'bg-orange-500 text-white' : 'border border-gray-200 bg-white text-gray-700 hover:bg-gray-50'
+                                            link.active
+                                                ? 'bg-orange-500 text-white'
+                                                : 'border border-gray-200 bg-white text-gray-700 hover:bg-gray-50'
                                         }`}
                                         dangerouslySetInnerHTML={{ __html: link.label }}
                                     />

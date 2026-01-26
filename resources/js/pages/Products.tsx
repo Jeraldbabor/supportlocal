@@ -960,7 +960,10 @@ export default function Products({ products, categories = [], sellers = [], loca
                                                             }`}
                                                             style={{ colorScheme: 'light' }}
                                                         >
-                                                            <ShoppingCart className="h-4 w-4" style={{ color: isOutOfStock(product) || isLoading ? '#6b7280' : '#ffffff' }} />
+                                                            <ShoppingCart
+                                                                className="h-4 w-4"
+                                                                style={{ color: isOutOfStock(product) || isLoading ? '#6b7280' : '#ffffff' }}
+                                                            />
                                                         </button>
                                                         <button
                                                             onClick={(e) => handleBuyNow(e, product)}

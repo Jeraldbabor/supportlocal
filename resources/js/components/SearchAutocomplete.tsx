@@ -41,13 +41,7 @@ interface SearchSuggestions {
     keywords?: string[];
 }
 
-export default function SearchAutocomplete({
-    type,
-    placeholder,
-    initialValue = '',
-    onSearch,
-    className = '',
-}: SearchAutocompleteProps) {
+export default function SearchAutocomplete({ type, placeholder, initialValue = '', onSearch, className = '' }: SearchAutocompleteProps) {
     const [searchTerm, setSearchTerm] = useState(initialValue);
     const [suggestions, setSuggestions] = useState<SearchSuggestions>({});
     const [isLoading, setIsLoading] = useState(false);
@@ -56,7 +50,7 @@ export default function SearchAutocomplete({
     const inputRef = useRef<HTMLInputElement>(null);
     const dropdownRef = useRef<HTMLDivElement>(null);
     const debounceRef = useRef<NodeJS.Timeout | null>(null);
-    
+
     // Detect if we're on buyer routes or public routes
     const currentUrl = usePage().url;
     const isBuyerRoute = currentUrl.startsWith('/buyer/');
@@ -75,16 +69,13 @@ export default function SearchAutocomplete({
 
             setIsLoading(true);
             try {
-                const response = await fetch(
-                    `/api/search/suggestions?q=${encodeURIComponent(term)}&type=${type}`,
-                    {
-                        headers: {
-                            Accept: 'application/json',
-                            'X-Requested-With': 'XMLHttpRequest',
-                        },
-                    }
-                );
-                
+                const response = await fetch(`/api/search/suggestions?q=${encodeURIComponent(term)}&type=${type}`, {
+                    headers: {
+                        Accept: 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest',
+                    },
+                });
+
                 if (response.ok) {
                     const data = await response.json();
                     setSuggestions(data);
@@ -96,7 +87,7 @@ export default function SearchAutocomplete({
                 setIsLoading(false);
             }
         },
-        [type]
+        [type],
     );
 
     // Handle input change with debounce
@@ -161,7 +152,7 @@ export default function SearchAutocomplete({
     // Handle keyboard navigation
     const handleKeyDown = (e: React.KeyboardEvent) => {
         const allItems = getAllFlatItems();
-        
+
         if (e.key === 'ArrowDown') {
             e.preventDefault();
             setSelectedIndex((prev) => (prev < allItems.length - 1 ? prev + 1 : prev));
@@ -182,7 +173,7 @@ export default function SearchAutocomplete({
     // Get all items as flat array for keyboard navigation
     const getAllFlatItems = () => {
         const items: { type: string; data: ProductSuggestion | SellerSuggestion | CategorySuggestion | string }[] = [];
-        
+
         if (suggestions.keywords) {
             suggestions.keywords.forEach((keyword) => {
                 items.push({ type: 'keyword', data: keyword });
@@ -203,7 +194,7 @@ export default function SearchAutocomplete({
                 items.push({ type: 'seller', data: seller });
             });
         }
-        
+
         return items;
     };
 
@@ -309,15 +300,13 @@ export default function SearchAutocomplete({
                     className="absolute top-full right-0 left-0 z-50 mt-1 max-h-[400px] overflow-y-auto rounded-lg border border-gray-200 bg-white shadow-lg sm:max-h-[500px]"
                 >
                     {!hasResults && !isLoading && (
-                        <div className="px-4 py-6 text-center text-sm text-gray-500">
-                            No results found for "{searchTerm}"
-                        </div>
+                        <div className="px-4 py-6 text-center text-sm text-gray-500">No results found for "{searchTerm}"</div>
                     )}
 
                     {/* Keywords Suggestions */}
                     {suggestions.keywords && suggestions.keywords.length > 0 && (
                         <div className="border-b border-gray-100 px-2 py-2">
-                            <div className="mb-1.5 px-2 text-[10px] font-semibold uppercase tracking-wide text-gray-500 sm:text-xs">
+                            <div className="mb-1.5 px-2 text-[10px] font-semibold tracking-wide text-gray-500 uppercase sm:text-xs">
                                 Search Suggestions
                             </div>
                             {suggestions.keywords.map((keyword) => {
@@ -342,9 +331,7 @@ export default function SearchAutocomplete({
                     {/* Category Suggestions */}
                     {suggestions.categories && suggestions.categories.length > 0 && (
                         <div className="border-b border-gray-100 px-2 py-2">
-                            <div className="mb-1.5 px-2 text-[10px] font-semibold uppercase tracking-wide text-gray-500 sm:text-xs">
-                                Categories
-                            </div>
+                            <div className="mb-1.5 px-2 text-[10px] font-semibold tracking-wide text-gray-500 uppercase sm:text-xs">Categories</div>
                             {suggestions.categories.map((category) => {
                                 currentIndex++;
                                 const isSelected = currentIndex === selectedIndex;
@@ -359,9 +346,7 @@ export default function SearchAutocomplete({
                                         <Tag className="h-3.5 w-3.5 flex-shrink-0 text-orange-500 sm:h-4 sm:w-4" />
                                         <span className="truncate">{category.name}</span>
                                         {category.products_count !== undefined && (
-                                            <span className="ml-auto text-[10px] text-gray-400 sm:text-xs">
-                                                {category.products_count} products
-                                            </span>
+                                            <span className="ml-auto text-[10px] text-gray-400 sm:text-xs">{category.products_count} products</span>
                                         )}
                                     </button>
                                 );
@@ -372,9 +357,7 @@ export default function SearchAutocomplete({
                     {/* Product Suggestions */}
                     {suggestions.products && suggestions.products.length > 0 && (
                         <div className="border-b border-gray-100 px-2 py-2">
-                            <div className="mb-1.5 px-2 text-[10px] font-semibold uppercase tracking-wide text-gray-500 sm:text-xs">
-                                Products
-                            </div>
+                            <div className="mb-1.5 px-2 text-[10px] font-semibold tracking-wide text-gray-500 uppercase sm:text-xs">Products</div>
                             {suggestions.products.map((product) => {
                                 currentIndex++;
                                 const isSelected = currentIndex === selectedIndex;
@@ -388,25 +371,15 @@ export default function SearchAutocomplete({
                                     >
                                         <div className="h-10 w-10 flex-shrink-0 overflow-hidden rounded-md bg-gray-100 sm:h-12 sm:w-12">
                                             {product.primary_image ? (
-                                                <img
-                                                    src={product.primary_image}
-                                                    alt={product.name}
-                                                    className="h-full w-full object-cover"
-                                                />
+                                                <img src={product.primary_image} alt={product.name} className="h-full w-full object-cover" />
                                             ) : (
-                                                <div className="flex h-full w-full items-center justify-center text-[10px] text-gray-400">
-                                                    No img
-                                                </div>
+                                                <div className="flex h-full w-full items-center justify-center text-[10px] text-gray-400">No img</div>
                                             )}
                                         </div>
                                         <div className="min-w-0 flex-1">
-                                            <div className="truncate text-xs font-medium text-gray-900 sm:text-sm">
-                                                {product.name}
-                                            </div>
+                                            <div className="truncate text-xs font-medium text-gray-900 sm:text-sm">{product.name}</div>
                                             <div className="flex items-center gap-2 text-[10px] text-gray-500 sm:text-xs">
-                                                <span className="font-semibold text-orange-500">
-                                                    ₱{Number(product.price).toLocaleString()}
-                                                </span>
+                                                <span className="font-semibold text-orange-500">₱{Number(product.price).toLocaleString()}</span>
                                                 {product.seller_name && (
                                                     <>
                                                         <span>•</span>
@@ -424,9 +397,7 @@ export default function SearchAutocomplete({
                     {/* Seller Suggestions */}
                     {suggestions.sellers && suggestions.sellers.length > 0 && (
                         <div className="px-2 py-2">
-                            <div className="mb-1.5 px-2 text-[10px] font-semibold uppercase tracking-wide text-gray-500 sm:text-xs">
-                                Sellers
-                            </div>
+                            <div className="mb-1.5 px-2 text-[10px] font-semibold tracking-wide text-gray-500 uppercase sm:text-xs">Sellers</div>
                             {suggestions.sellers.map((seller) => {
                                 currentIndex++;
                                 const isSelected = currentIndex === selectedIndex;
@@ -440,11 +411,7 @@ export default function SearchAutocomplete({
                                     >
                                         <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center overflow-hidden rounded-full bg-orange-100 sm:h-12 sm:w-12">
                                             {seller.profile_image ? (
-                                                <img
-                                                    src={seller.profile_image}
-                                                    alt={seller.name}
-                                                    className="h-full w-full object-cover"
-                                                />
+                                                <img src={seller.profile_image} alt={seller.name} className="h-full w-full object-cover" />
                                             ) : (
                                                 <Store className="h-5 w-5 text-orange-500 sm:h-6 sm:w-6" />
                                             )}
@@ -454,9 +421,7 @@ export default function SearchAutocomplete({
                                                 {seller.business_name || seller.name}
                                             </div>
                                             <div className="flex items-center gap-2 text-[10px] text-gray-500 sm:text-xs">
-                                                {seller.products_count !== undefined && (
-                                                    <span>{seller.products_count} products</span>
-                                                )}
+                                                {seller.products_count !== undefined && <span>{seller.products_count} products</span>}
                                                 {seller.location && (
                                                     <>
                                                         {seller.products_count !== undefined && <span>•</span>}

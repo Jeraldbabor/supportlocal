@@ -274,7 +274,9 @@ export default function CustomersIndex({ customers, statistics, filters }: Custo
                                             <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">
                                                 <SortButton field="last_order">Last Order</SortButton>
                                             </th>
-                                            <th className="px-6 py-3 text-right text-xs font-medium tracking-wider text-gray-500 uppercase">Actions</th>
+                                            <th className="px-6 py-3 text-right text-xs font-medium tracking-wider text-gray-500 uppercase">
+                                                Actions
+                                            </th>
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-gray-200 bg-white">
@@ -283,7 +285,11 @@ export default function CustomersIndex({ customers, statistics, filters }: Custo
                                                 <td className="px-6 py-4 whitespace-nowrap">
                                                     <div className="flex items-center">
                                                         <div className="h-10 w-10 flex-shrink-0">
-                                                            <img className="h-10 w-10 rounded-full object-cover" src={customer.avatar_url} alt={customer.name} />
+                                                            <img
+                                                                className="h-10 w-10 rounded-full object-cover"
+                                                                src={customer.avatar_url}
+                                                                alt={customer.name}
+                                                            />
                                                         </div>
                                                         <div className="ml-4">
                                                             <div className="text-sm font-medium text-gray-900">{customer.name}</div>
@@ -349,10 +355,10 @@ export default function CustomersIndex({ customers, statistics, filters }: Custo
                                     <div key={customer.id} className="p-4">
                                         <div className="flex items-start justify-between gap-3">
                                             <div className="flex items-center gap-3">
-                                                <img 
-                                                    className="h-12 w-12 flex-shrink-0 rounded-full object-cover" 
-                                                    src={customer.avatar_url} 
-                                                    alt={customer.name} 
+                                                <img
+                                                    className="h-12 w-12 flex-shrink-0 rounded-full object-cover"
+                                                    src={customer.avatar_url}
+                                                    alt={customer.name}
                                                 />
                                                 <div className="min-w-0">
                                                     <p className="font-medium text-gray-900">{customer.name}</p>
@@ -380,7 +386,9 @@ export default function CustomersIndex({ customers, statistics, filters }: Custo
                                                     <p className="text-xs text-gray-500">Last Order</p>
                                                     <div className="flex items-center gap-2">
                                                         <span className="text-gray-900">{formatDate(customer.last_order_date)}</span>
-                                                        <span className={`rounded-full px-2 py-0.5 text-xs font-semibold ${getStatusColor(customer.last_order_status)}`}>
+                                                        <span
+                                                            className={`rounded-full px-2 py-0.5 text-xs font-semibold ${getStatusColor(customer.last_order_status)}`}
+                                                        >
                                                             {customer.last_order_status}
                                                         </span>
                                                     </div>

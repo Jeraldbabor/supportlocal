@@ -168,10 +168,7 @@ export default function ShowProduct({ product }: ShowProductProps) {
                 {/* Header */}
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                     <div className="flex items-center gap-4">
-                        <Link
-                            href="/seller/products"
-                            className="rounded-lg border border-gray-300 bg-white p-2 hover:bg-gray-50"
-                        >
+                        <Link href="/seller/products" className="rounded-lg border border-gray-300 bg-white p-2 hover:bg-gray-50">
                             <ArrowLeft className="h-4 w-4" style={{ color: '#374151' }} />
                         </Link>
                         <div>
@@ -218,7 +215,7 @@ export default function ShowProduct({ product }: ShowProductProps) {
                     {/* Product Images */}
                     <div className="lg:col-span-1">
                         <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
-                            <h2 className="mb-4 text-lg font-semibold text-gray-900 ">Product Images</h2>
+                            <h2 className="mb-4 text-lg font-semibold text-gray-900">Product Images</h2>
 
                             {product.images && product.images.length > 0 ? (
                                 <div className="space-y-4">
@@ -259,7 +256,7 @@ export default function ShowProduct({ product }: ShowProductProps) {
                                     )}
                                 </div>
                             ) : (
-                                <div className="flex h-64 items-center justify-center rounded-lg bg-gray-100 ">
+                                <div className="flex h-64 items-center justify-center rounded-lg bg-gray-100">
                                     <Package className="h-12 w-12 text-gray-400" />
                                 </div>
                             )}
@@ -270,40 +267,40 @@ export default function ShowProduct({ product }: ShowProductProps) {
                     <div className="space-y-6 lg:col-span-2">
                         {/* Basic Info */}
                         <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
-                            <h2 className="mb-4 text-lg font-semibold text-gray-900 ">Product Information</h2>
+                            <h2 className="mb-4 text-lg font-semibold text-gray-900">Product Information</h2>
 
                             <div className="space-y-4">
                                 <div>
-                                    <h3 className="text-sm font-medium text-gray-500 ">Description</h3>
-                                    <p className="mt-1 text-gray-900 ">{product.description}</p>
+                                    <h3 className="text-sm font-medium text-gray-500">Description</h3>
+                                    <p className="mt-1 text-gray-900">{product.description}</p>
                                 </div>
 
                                 {product.short_description && (
                                     <div>
-                                        <h3 className="text-sm font-medium text-gray-500 ">Short Description</h3>
-                                        <p className="mt-1 text-gray-900 ">{product.short_description}</p>
+                                        <h3 className="text-sm font-medium text-gray-500">Short Description</h3>
+                                        <p className="mt-1 text-gray-900">{product.short_description}</p>
                                     </div>
                                 )}
 
                                 <div className="grid grid-cols-2 gap-4">
                                     <div>
-                                        <h3 className="text-sm font-medium text-gray-500 ">Category</h3>
-                                        <p className="mt-1 text-gray-900 ">{product.category?.name || 'Uncategorized'}</p>
+                                        <h3 className="text-sm font-medium text-gray-500">Category</h3>
+                                        <p className="mt-1 text-gray-900">{product.category?.name || 'Uncategorized'}</p>
                                     </div>
                                     <div>
-                                        <h3 className="text-sm font-medium text-gray-500 ">Condition</h3>
-                                        <p className="mt-1 text-gray-900 capitalize ">{product.condition}</p>
+                                        <h3 className="text-sm font-medium text-gray-500">Condition</h3>
+                                        <p className="mt-1 text-gray-900 capitalize">{product.condition}</p>
                                     </div>
                                 </div>
 
                                 {product.tags && product.tags.length > 0 && (
                                     <div>
-                                        <h3 className="text-sm font-medium text-gray-500 ">Tags</h3>
+                                        <h3 className="text-sm font-medium text-gray-500">Tags</h3>
                                         <div className="mt-1 flex flex-wrap gap-2">
                                             {product.tags.map((tag, index) => (
                                                 <span
                                                     key={index}
-                                                    className="inline-flex rounded-full bg-blue-100 px-2 py-1 text-xs font-medium text-blue-700 "
+                                                    className="inline-flex rounded-full bg-blue-100 px-2 py-1 text-xs font-medium text-blue-700"
                                                 >
                                                     {tag}
                                                 </span>
@@ -318,31 +315,31 @@ export default function ShowProduct({ product }: ShowProductProps) {
                         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                             {/* Pricing */}
                             <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
-                                <h2 className="mb-4 text-lg font-semibold text-gray-900 ">Pricing</h2>
+                                <h2 className="mb-4 text-lg font-semibold text-gray-900">Pricing</h2>
 
                                 <div className="space-y-3">
                                     <div className="flex items-center justify-between">
-                                        <span className="text-sm text-gray-500 ">Selling Price</span>
-                                        <span className="text-lg font-bold text-gray-900 ">{product.formatted_price}</span>
+                                        <span className="text-sm text-gray-500">Selling Price</span>
+                                        <span className="text-lg font-bold text-gray-900">{product.formatted_price}</span>
                                     </div>
 
                                     {product.formatted_compare_price && (
                                         <div className="flex items-center justify-between">
-                                            <span className="text-sm text-gray-500 ">Compare Price</span>
+                                            <span className="text-sm text-gray-500">Compare Price</span>
                                             <span className="text-sm text-gray-500 line-through">{product.formatted_compare_price}</span>
                                         </div>
                                     )}
 
                                     {product.cost_price && (
                                         <div className="flex items-center justify-between">
-                                            <span className="text-sm text-gray-500 ">Cost Price</span>
-                                            <span className="text-sm text-gray-900 ">₱{product.cost_price}</span>
+                                            <span className="text-sm text-gray-500">Cost Price</span>
+                                            <span className="text-sm text-gray-900">₱{product.cost_price}</span>
                                         </div>
                                     )}
 
                                     {product.discount_percentage && (
                                         <div className="flex items-center justify-between">
-                                            <span className="text-sm text-gray-500 ">Discount</span>
+                                            <span className="text-sm text-gray-500">Discount</span>
                                             <span className="rounded bg-red-100 px-2 py-1 text-xs font-medium text-red-600">
                                                 -{product.discount_percentage}%
                                             </span>
@@ -351,7 +348,7 @@ export default function ShowProduct({ product }: ShowProductProps) {
 
                                     {product.profit_margin && (
                                         <div className="flex items-center justify-between">
-                                            <span className="text-sm text-gray-500 ">Profit Margin</span>
+                                            <span className="text-sm text-gray-500">Profit Margin</span>
                                             <span className="rounded bg-green-100 px-2 py-1 text-xs font-medium text-green-600">
                                                 {product.profit_margin}%
                                             </span>
@@ -362,16 +359,16 @@ export default function ShowProduct({ product }: ShowProductProps) {
 
                             {/* Inventory */}
                             <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
-                                <h2 className="mb-4 text-lg font-semibold text-gray-900 ">Inventory</h2>
+                                <h2 className="mb-4 text-lg font-semibold text-gray-900">Inventory</h2>
 
                                 <div className="space-y-3">
                                     <div className="flex items-center justify-between">
-                                        <span className="text-sm text-gray-500 ">Stock Quantity</span>
-                                        <span className="text-lg font-bold text-gray-900 ">{product.quantity}</span>
+                                        <span className="text-sm text-gray-500">Stock Quantity</span>
+                                        <span className="text-lg font-bold text-gray-900">{product.quantity}</span>
                                     </div>
 
                                     <div className="flex items-center justify-between">
-                                        <span className="text-sm text-gray-500 ">Stock Status</span>
+                                        <span className="text-sm text-gray-500">Stock Status</span>
                                         <span
                                             className={`rounded-full border px-2 py-1 text-xs font-medium ${getStockStatusColor(product.stock_status)}`}
                                         >
@@ -380,8 +377,8 @@ export default function ShowProduct({ product }: ShowProductProps) {
                                     </div>
 
                                     <div className="flex items-center justify-between">
-                                        <span className="text-sm text-gray-500 ">Low Stock Alert</span>
-                                        <span className="text-sm text-gray-900 ">{product.low_stock_threshold}</span>
+                                        <span className="text-sm text-gray-500">Low Stock Alert</span>
+                                        <span className="text-sm text-gray-900">{product.low_stock_threshold}</span>
                                     </div>
                                 </div>
                             </div>
@@ -391,34 +388,34 @@ export default function ShowProduct({ product }: ShowProductProps) {
                         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                             {/* Shipping */}
                             <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
-                                <h2 className="mb-4 text-lg font-semibold text-gray-900 ">Shipping</h2>
+                                <h2 className="mb-4 text-lg font-semibold text-gray-900">Shipping</h2>
 
                                 <div className="space-y-3">
                                     <div className="flex items-center justify-between">
-                                        <span className="text-sm text-gray-500 ">Requires Shipping</span>
+                                        <span className="text-sm text-gray-500">Requires Shipping</span>
                                         <span className={`text-sm ${product.requires_shipping ? 'text-green-600' : 'text-red-600'}`}>
                                             {product.requires_shipping ? 'Yes' : 'No'}
                                         </span>
                                     </div>
 
                                     <div className="flex items-center justify-between">
-                                        <span className="text-sm text-gray-500 ">Digital Product</span>
+                                        <span className="text-sm text-gray-500">Digital Product</span>
                                         <span className={`text-sm ${product.is_digital ? 'text-green-600' : 'text-gray-600'}`}>
                                             {product.is_digital ? 'Yes' : 'No'}
                                         </span>
                                     </div>
 
                                     <div className="flex items-center justify-between">
-                                        <span className="text-sm text-gray-500 ">Shipping Cost</span>
-                                        <span className="text-sm text-gray-900 ">
+                                        <span className="text-sm text-gray-500">Shipping Cost</span>
+                                        <span className="text-sm text-gray-900">
                                             {product.free_shipping ? 'Free' : product.shipping_cost ? `₱${product.shipping_cost}` : 'Not set'}
                                         </span>
                                     </div>
 
                                     {product.weight && (
                                         <div className="flex items-center justify-between">
-                                            <span className="text-sm text-gray-500 ">Weight</span>
-                                            <span className="text-sm text-gray-900 ">
+                                            <span className="text-sm text-gray-500">Weight</span>
+                                            <span className="text-sm text-gray-900">
                                                 {product.weight} {product.weight_unit}
                                             </span>
                                         </div>
@@ -428,25 +425,25 @@ export default function ShowProduct({ product }: ShowProductProps) {
 
                             {/* Analytics */}
                             <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
-                                <h2 className="mb-4 text-lg font-semibold text-gray-900 ">Analytics</h2>
+                                <h2 className="mb-4 text-lg font-semibold text-gray-900">Analytics</h2>
 
                                 <div className="space-y-3">
                                     <div className="flex items-center justify-between">
-                                        <span className="text-sm text-gray-500 ">Views</span>
-                                        <span className="text-sm text-gray-900 ">{product.view_count}</span>
+                                        <span className="text-sm text-gray-500">Views</span>
+                                        <span className="text-sm text-gray-900">{product.view_count}</span>
                                     </div>
 
                                     <div className="flex items-center justify-between">
-                                        <span className="text-sm text-gray-500 ">Orders</span>
-                                        <span className="text-sm text-gray-900 ">{product.order_count}</span>
+                                        <span className="text-sm text-gray-500">Orders</span>
+                                        <span className="text-sm text-gray-900">{product.order_count}</span>
                                     </div>
 
                                     {product.average_rating && (
                                         <div className="flex items-center justify-between">
-                                            <span className="text-sm text-gray-500 ">Rating</span>
+                                            <span className="text-sm text-gray-500">Rating</span>
                                             <div className="flex items-center gap-1">
                                                 <Star className="h-4 w-4 fill-current text-yellow-500" />
-                                                <span className="text-sm text-gray-900 ">
+                                                <span className="text-sm text-gray-900">
                                                     {product.average_rating} ({product.review_count} reviews)
                                                 </span>
                                             </div>
@@ -454,10 +451,8 @@ export default function ShowProduct({ product }: ShowProductProps) {
                                     )}
 
                                     <div className="flex items-center justify-between">
-                                        <span className="text-sm text-gray-500 ">Created</span>
-                                        <span className="text-sm text-gray-900 ">
-                                            {new Date(product.created_at).toLocaleDateString()}
-                                        </span>
+                                        <span className="text-sm text-gray-500">Created</span>
+                                        <span className="text-sm text-gray-900">{new Date(product.created_at).toLocaleDateString()}</span>
                                     </div>
                                 </div>
                             </div>
@@ -475,7 +470,7 @@ export default function ShowProduct({ product }: ShowProductProps) {
 
                             <button
                                 onClick={duplicateProduct}
-                                className="inline-flex items-center gap-2 rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 "
+                                className="inline-flex items-center gap-2 rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
                             >
                                 <Copy className="h-4 w-4" />
                                 Duplicate
@@ -485,7 +480,7 @@ export default function ShowProduct({ product }: ShowProductProps) {
                                 href={`/product/${product.slug}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="inline-flex items-center gap-2 rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 "
+                                className="inline-flex items-center gap-2 rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
                             >
                                 <ExternalLink className="h-4 w-4" />
                                 View Public Page
@@ -493,7 +488,7 @@ export default function ShowProduct({ product }: ShowProductProps) {
 
                             <button
                                 onClick={deleteProduct}
-                                className="inline-flex items-center gap-2 rounded-lg border border-red-300 px-4 py-2 text-sm font-medium text-red-700 hover:bg-red-50 "
+                                className="inline-flex items-center gap-2 rounded-lg border border-red-300 px-4 py-2 text-sm font-medium text-red-700 hover:bg-red-50"
                             >
                                 <Trash2 className="h-4 w-4" />
                                 Delete

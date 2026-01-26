@@ -23,7 +23,7 @@ export async function refreshCsrfToken(): Promise<string> {
                 method: 'GET',
                 credentials: 'same-origin',
                 headers: {
-                    'Accept': 'text/html',
+                    Accept: 'text/html',
                     'X-Requested-With': 'XMLHttpRequest',
                 },
             });
@@ -56,10 +56,7 @@ interface FetchWithCsrfOptions extends RequestInit {
 /**
  * Fetch wrapper that handles CSRF tokens and 419 errors with automatic retry
  */
-export async function fetchWithCsrf(
-    url: string,
-    options: FetchWithCsrfOptions = {}
-): Promise<Response> {
+export async function fetchWithCsrf(url: string, options: FetchWithCsrfOptions = {}): Promise<Response> {
     const { maxRetries = 1, ...fetchOptions } = options;
 
     const makeRequest = async (retryCount: number): Promise<Response> => {
@@ -88,11 +85,7 @@ export async function fetchWithCsrf(
 /**
  * Simple POST request with CSRF token and automatic retry
  */
-export async function postWithCsrf(
-    url: string,
-    body?: FormData | object | null,
-    options: FetchWithCsrfOptions = {}
-): Promise<Response> {
+export async function postWithCsrf(url: string, body?: FormData | object | null, options: FetchWithCsrfOptions = {}): Promise<Response> {
     const headers: Record<string, string> = {};
     let requestBody: FormData | string | undefined;
 

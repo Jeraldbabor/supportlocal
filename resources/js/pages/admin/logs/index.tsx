@@ -239,7 +239,7 @@ export default function LogsIndex() {
                                                             <span className="text-xs text-gray-500">{formatTimestamp(log.timestamp)}</span>
                                                         )}
                                                     </div>
-                                                    <div className="break-words whitespace-pre-wrap font-mono text-xs text-gray-700 sm:text-sm">
+                                                    <div className="font-mono text-xs break-words whitespace-pre-wrap text-gray-700 sm:text-sm">
                                                         {log.message}
                                                     </div>
                                                     {log.stack_trace && (

@@ -126,7 +126,10 @@ export default function ReportsIndex() {
                         <div className="space-y-4">
                             {productPerformanceReport.top_selling_products.length > 0 ? (
                                 productPerformanceReport.top_selling_products.map((product) => (
-                                    <div key={product.id} className="flex flex-col gap-2 border-b border-gray-200 pb-4 last:border-0 sm:flex-row sm:items-center sm:justify-between">
+                                    <div
+                                        key={product.id}
+                                        className="flex flex-col gap-2 border-b border-gray-200 pb-4 last:border-0 sm:flex-row sm:items-center sm:justify-between"
+                                    >
                                         <div>
                                             <div className="font-medium text-gray-900">{product.name}</div>
                                             <div className="text-sm text-gray-500">SKU: {product.sku}</div>
@@ -154,7 +157,10 @@ export default function ReportsIndex() {
                         <div className="space-y-4">
                             {sellerPerformanceReport.top_sellers.length > 0 ? (
                                 sellerPerformanceReport.top_sellers.map((seller) => (
-                                    <div key={seller.id} className="flex flex-col gap-2 border-b border-gray-200 pb-4 last:border-0 sm:flex-row sm:items-center sm:justify-between">
+                                    <div
+                                        key={seller.id}
+                                        className="flex flex-col gap-2 border-b border-gray-200 pb-4 last:border-0 sm:flex-row sm:items-center sm:justify-between"
+                                    >
                                         <div>
                                             <div className="font-medium text-gray-900">{seller.name}</div>
                                             <div className="text-sm text-gray-500">{seller.products_count} products</div>
@@ -181,7 +187,7 @@ export default function ReportsIndex() {
                             <div className="space-y-2">
                                 {Object.entries(productPerformanceReport.products_by_status).map(([status, count]) => (
                                     <div key={status} className="flex justify-between">
-                                        <span className="capitalize text-gray-700">{status}</span>
+                                        <span className="text-gray-700 capitalize">{status}</span>
                                         <span className="font-medium text-gray-900">{count}</span>
                                     </div>
                                 ))}

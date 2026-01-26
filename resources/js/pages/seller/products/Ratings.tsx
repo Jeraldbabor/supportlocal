@@ -125,12 +125,12 @@ export default function Ratings({ ratings, sellerProducts, statistics, filters }
         return (
             <div className="flex items-center gap-0.5">
                 {[1, 2, 3, 4, 5].map((star) => (
-                    <Star 
-                        key={star} 
+                    <Star
+                        key={star}
                         className={sizeClasses[size]}
-                        style={{ 
+                        style={{
                             color: star <= rating ? '#facc15' : '#d1d5db',
-                            fill: star <= rating ? '#facc15' : '#e5e7eb'
+                            fill: star <= rating ? '#facc15' : '#e5e7eb',
                         }}
                     />
                 ))}
@@ -260,9 +260,7 @@ export default function Ratings({ ratings, sellerProducts, statistics, filters }
                         <p className="mt-2 text-xl font-bold text-green-600 sm:text-2xl">
                             {statistics.distribution.find((d) => d.rating === 5)?.count || 0}
                         </p>
-                        <p className="text-xs text-gray-500">
-                            {statistics.distribution.find((d) => d.rating === 5)?.percentage || 0}% of total
-                        </p>
+                        <p className="text-xs text-gray-500">{statistics.distribution.find((d) => d.rating === 5)?.percentage || 0}% of total</p>
                     </div>
 
                     <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
@@ -288,10 +286,7 @@ export default function Ratings({ ratings, sellerProducts, statistics, filters }
                                 </div>
                                 <div className="flex-1">
                                     <div className="h-2 overflow-hidden rounded-full bg-gray-200">
-                                        <div 
-                                            className="h-full rounded-full bg-yellow-400 transition-all" 
-                                            style={{ width: `${dist.percentage}%` }} 
-                                        />
+                                        <div className="h-full rounded-full bg-yellow-400 transition-all" style={{ width: `${dist.percentage}%` }} />
                                     </div>
                                 </div>
                                 <div className="flex w-16 items-center justify-between text-xs sm:w-24 sm:text-sm">
@@ -315,7 +310,7 @@ export default function Ratings({ ratings, sellerProducts, statistics, filters }
                             {showFilters ? 'Hide' : 'Show'}
                         </button>
                     </div>
-                    
+
                     <form onSubmit={handleSearch} className={`mt-4 space-y-4 ${showFilters ? 'block' : 'hidden sm:block'}`}>
                         <div className="grid gap-3 sm:gap-4 md:grid-cols-3">
                             <div className="relative">
@@ -357,15 +352,15 @@ export default function Ratings({ ratings, sellerProducts, statistics, filters }
                         </div>
 
                         <div className="flex flex-col gap-2 sm:flex-row">
-                            <button 
-                                type="submit" 
+                            <button
+                                type="submit"
                                 className="inline-flex items-center justify-center gap-2 rounded-lg bg-orange-500 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-orange-600"
                             >
                                 <Filter className="h-4 w-4" style={{ color: '#ffffff' }} />
                                 Apply Filters
                             </button>
-                            <button 
-                                type="button" 
+                            <button
+                                type="button"
                                 onClick={clearFilters}
                                 className="inline-flex items-center justify-center rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
                             >
@@ -381,7 +376,7 @@ export default function Ratings({ ratings, sellerProducts, statistics, filters }
                     <p className="text-xs text-gray-500 sm:text-sm">
                         Showing {ratings.data.length} of {ratings.total} reviews
                     </p>
-                    
+
                     <div className="mt-4">
                         {ratings.data.length === 0 ? (
                             <div className="py-12 text-center">
@@ -418,10 +413,8 @@ export default function Ratings({ ratings, sellerProducts, statistics, filters }
                                                 </Link>
                                             </div>
                                         </div>
-                                        
-                                        {rating.review && (
-                                            <p className="mt-3 text-sm text-gray-700 sm:ml-14">{rating.review}</p>
-                                        )}
+
+                                        {rating.review && <p className="mt-3 text-sm text-gray-700 sm:ml-14">{rating.review}</p>}
 
                                         {/* Seller Reply Section */}
                                         <div className="mt-4 sm:ml-14">
@@ -480,7 +473,7 @@ export default function Ratings({ ratings, sellerProducts, statistics, filters }
                                                             </div>
                                                         </div>
                                                     ) : (
-                                                        <button 
+                                                        <button
                                                             onClick={() => setReplyingToId(rating.id)}
                                                             className="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
                                                         >

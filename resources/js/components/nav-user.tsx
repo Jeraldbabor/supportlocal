@@ -26,7 +26,7 @@ export function NavUser() {
                         </SidebarMenuButton>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent
-                        className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg bg-white shadow-lg border border-gray-200"
+                        className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg border border-gray-200 bg-white shadow-lg"
                         align="end"
                         side={isMobile ? 'bottom' : state === 'collapsed' ? 'left' : 'bottom'}
                         style={{ colorScheme: 'light' }}

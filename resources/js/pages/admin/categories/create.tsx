@@ -67,23 +67,31 @@ export default function CategoryCreate() {
                         </CardHeader>
                         <CardContent className="space-y-4">
                             <div className="space-y-2">
-                                <Label htmlFor="name" className="text-gray-700">Category Name *</Label>
+                                <Label htmlFor="name" className="text-gray-700">
+                                    Category Name *
+                                </Label>
                                 <Input id="name" name="name" required />
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="slug" className="text-gray-700">Slug</Label>
+                                <Label htmlFor="slug" className="text-gray-700">
+                                    Slug
+                                </Label>
                                 <Input id="slug" name="slug" placeholder="Auto-generated from name" />
                                 <p className="text-xs text-gray-500">Leave empty to auto-generate from name</p>
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="description" className="text-gray-700">Description</Label>
+                                <Label htmlFor="description" className="text-gray-700">
+                                    Description
+                                </Label>
                                 <Textarea id="description" name="description" rows={4} />
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="parent_id" className="text-gray-700">Parent Category</Label>
+                                <Label htmlFor="parent_id" className="text-gray-700">
+                                    Parent Category
+                                </Label>
                                 <Select name="parent_id" defaultValue="none">
                                     <SelectTrigger>
                                         <SelectValue placeholder="Select parent category (optional)" />
@@ -101,23 +109,31 @@ export default function CategoryCreate() {
 
                             <div className="grid gap-4 md:grid-cols-2">
                                 <div className="space-y-2">
-                                    <Label htmlFor="icon" className="text-gray-700">Icon</Label>
+                                    <Label htmlFor="icon" className="text-gray-700">
+                                        Icon
+                                    </Label>
                                     <Input id="icon" name="icon" placeholder="e.g., package, shopping-bag" />
                                 </div>
                                 <div className="space-y-2">
-                                    <Label htmlFor="color" className="text-gray-700">Color</Label>
+                                    <Label htmlFor="color" className="text-gray-700">
+                                        Color
+                                    </Label>
                                     <Input id="color" name="color" placeholder="e.g., #FF5733, blue" />
                                 </div>
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="sort_order" className="text-gray-700">Sort Order</Label>
+                                <Label htmlFor="sort_order" className="text-gray-700">
+                                    Sort Order
+                                </Label>
                                 <Input id="sort_order" name="sort_order" type="number" defaultValue="0" />
                             </div>
 
                             <div className="flex items-center space-x-2">
                                 <Switch id="is_active" name="is_active" defaultChecked />
-                                <Label htmlFor="is_active" className="text-gray-700">Active</Label>
+                                <Label htmlFor="is_active" className="text-gray-700">
+                                    Active
+                                </Label>
                             </div>
                         </CardContent>
                     </Card>
@@ -129,11 +145,15 @@ export default function CategoryCreate() {
                         </CardHeader>
                         <CardContent className="space-y-4">
                             <div className="space-y-2">
-                                <Label htmlFor="meta_title" className="text-gray-700">Meta Title</Label>
+                                <Label htmlFor="meta_title" className="text-gray-700">
+                                    Meta Title
+                                </Label>
                                 <Input id="meta_title" name="meta_title" />
                             </div>
                             <div className="space-y-2">
-                                <Label htmlFor="meta_description" className="text-gray-700">Meta Description</Label>
+                                <Label htmlFor="meta_description" className="text-gray-700">
+                                    Meta Description
+                                </Label>
                                 <Textarea id="meta_description" name="meta_description" rows={3} />
                             </div>
                         </CardContent>

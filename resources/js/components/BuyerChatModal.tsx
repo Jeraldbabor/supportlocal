@@ -232,13 +232,21 @@ export default function BuyerChatModal({ conversationId, currentUserId, onClose,
     }
 
     const modalContent = (
-        <div className="fixed right-4 bottom-4 z-[9999] flex max-h-[420px] w-[380px] max-w-[calc(100vw-2rem)] flex-col rounded-lg border border-gray-300 bg-white shadow-2xl" data-chat-container>
+        <div
+            className="fixed right-4 bottom-4 z-[9999] flex max-h-[420px] w-[380px] max-w-[calc(100vw-2rem)] flex-col rounded-lg border border-gray-300 bg-white shadow-2xl"
+            data-chat-container
+        >
             {/* Chat Header */}
-            <div className="flex items-center justify-between rounded-t-lg bg-gradient-to-r from-orange-500 to-orange-600 px-4 py-3 text-white shadow-md" style={{ background: 'linear-gradient(135deg, #f97316 0%, #ea580c 100%)', backgroundColor: '#f97316', color: '#ffffff' }}>
+            <div
+                className="flex items-center justify-between rounded-t-lg bg-gradient-to-r from-orange-500 to-orange-600 px-4 py-3 text-white shadow-md"
+                style={{ background: 'linear-gradient(135deg, #f97316 0%, #ea580c 100%)', backgroundColor: '#f97316', color: '#ffffff' }}
+            >
                 <div className="flex min-w-0 flex-1 items-center gap-3">
                     <Avatar className="h-10 w-10 border-2 border-white">
                         <AvatarImage src={conversation.other_user.avatar_url} />
-                        <AvatarFallback className="bg-white font-semibold text-orange-500">{getInitials(conversation.other_user.name)}</AvatarFallback>
+                        <AvatarFallback className="bg-white font-semibold text-orange-500">
+                            {getInitials(conversation.other_user.name)}
+                        </AvatarFallback>
                     </Avatar>
                     <div className="min-w-0 flex-1">
                         <h3 className="truncate text-sm leading-tight font-semibold">{conversation.other_user.name}</h3>
@@ -259,7 +267,10 @@ export default function BuyerChatModal({ conversationId, currentUserId, onClose,
             {!isMinimized && (
                 <>
                     {/* Messages */}
-                    <div className="min-h-0 flex-1 space-y-3 overflow-y-auto scroll-smooth bg-gradient-to-b from-gray-50 to-white p-4 custom-scrollbar" data-chat-container>
+                    <div
+                        className="custom-scrollbar min-h-0 flex-1 space-y-3 overflow-y-auto scroll-smooth bg-gradient-to-b from-gray-50 to-white p-4"
+                        data-chat-container
+                    >
                         {messages.map((message) => {
                             const isOwnMessage = message.sender_id === currentUserId;
 
@@ -267,7 +278,11 @@ export default function BuyerChatModal({ conversationId, currentUserId, onClose,
                                 <div key={message.id} className={`flex gap-2 ${isOwnMessage ? 'flex-row-reverse' : 'flex-row'}`}>
                                     <Avatar className="h-7 w-7">
                                         <AvatarImage src={message.sender.avatar_url} />
-                                        <AvatarFallback className={`text-xs ${isOwnMessage ? 'bg-orange-100 text-orange-700' : 'bg-gray-200 text-gray-600'}`}>{getInitials(message.sender.name)}</AvatarFallback>
+                                        <AvatarFallback
+                                            className={`text-xs ${isOwnMessage ? 'bg-orange-100 text-orange-700' : 'bg-gray-200 text-gray-600'}`}
+                                        >
+                                            {getInitials(message.sender.name)}
+                                        </AvatarFallback>
                                     </Avatar>
                                     <div className={`flex flex-col ${isOwnMessage ? 'items-end' : 'items-start'} max-w-[70%]`}>
                                         <div
@@ -276,12 +291,16 @@ export default function BuyerChatModal({ conversationId, currentUserId, onClose,
                                                     ? 'chat-message-sent rounded-br-sm bg-orange-500 text-white'
                                                     : 'chat-message-received rounded-bl-sm border border-gray-300 bg-white'
                                             }`}
-                                            style={isOwnMessage ? { 
-                                                background: 'linear-gradient(135deg, #f97316 0%, #ea580c 100%)', 
-                                                backgroundColor: '#f97316', 
-                                                color: '#ffffff',
-                                                WebkitTextFillColor: '#ffffff'
-                                            } : {}}
+                                            style={
+                                                isOwnMessage
+                                                    ? {
+                                                          background: 'linear-gradient(135deg, #f97316 0%, #ea580c 100%)',
+                                                          backgroundColor: '#f97316',
+                                                          color: '#ffffff',
+                                                          WebkitTextFillColor: '#ffffff',
+                                                      }
+                                                    : {}
+                                            }
                                         >
                                             {message.image_url && (
                                                 <div className="mb-2">
@@ -295,7 +314,7 @@ export default function BuyerChatModal({ conversationId, currentUserId, onClose,
                                                 </div>
                                             )}
                                             {message.message && (
-                                                <p 
+                                                <p
                                                     className={`text-sm break-words ${isOwnMessage ? 'text-white' : 'text-gray-900'}`}
                                                     style={isOwnMessage ? { color: '#ffffff', WebkitTextFillColor: '#ffffff' } : {}}
                                                 >
@@ -314,7 +333,9 @@ export default function BuyerChatModal({ conversationId, currentUserId, onClose,
                             <div className="flex gap-2">
                                 <Avatar className="h-7 w-7">
                                     <AvatarImage src={conversation.other_user.avatar_url} />
-                                    <AvatarFallback className="text-xs bg-gray-200 text-gray-600">{getInitials(conversation.other_user.name)}</AvatarFallback>
+                                    <AvatarFallback className="bg-gray-200 text-xs text-gray-600">
+                                        {getInitials(conversation.other_user.name)}
+                                    </AvatarFallback>
                                 </Avatar>
                                 <div className="chat-message-received flex items-center rounded-2xl rounded-bl-sm border border-gray-300 bg-white px-3 py-2">
                                     <div className="flex gap-1">
@@ -379,7 +400,7 @@ export default function BuyerChatModal({ conversationId, currentUserId, onClose,
                                 onChange={handleInputChange}
                                 placeholder="Type a message..."
                                 disabled={isLoading}
-                                className="flex-1 rounded-full bg-gray-50 border-2 border-gray-300 text-gray-900 placeholder-gray-400 focus:border-orange-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-orange-200"
+                                className="flex-1 rounded-full border-2 border-gray-300 bg-gray-50 text-gray-900 placeholder-gray-400 focus:border-orange-400 focus:bg-white focus:ring-2 focus:ring-orange-200 focus:outline-none"
                             />
                             <Button
                                 type="submit"

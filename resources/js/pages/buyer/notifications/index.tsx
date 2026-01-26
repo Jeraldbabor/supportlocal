@@ -155,9 +155,7 @@ function NotificationsContent({ notifications }: NotificationsProps) {
                                 <Bell className="h-5 w-5 sm:h-6 sm:w-6" style={{ color: '#b45309' }} />
                                 <h1 className="text-lg font-semibold text-gray-900 sm:text-xl">Notifications</h1>
                                 {unreadCount > 0 && (
-                                    <span className="rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-800">
-                                        {unreadCount} unread
-                                    </span>
+                                    <span className="rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-800">{unreadCount} unread</span>
                                 )}
                             </div>
 
@@ -177,7 +175,7 @@ function NotificationsContent({ notifications }: NotificationsProps) {
                                         </SelectContent>
                                     </Select>
                                 </div>
-                                
+
                                 {notifications.data.length > 0 && (
                                     <button
                                         onClick={() => setShowClearAllConfirm(true)}
@@ -238,20 +236,14 @@ function NotificationsContent({ notifications }: NotificationsProps) {
                                         <div className="min-w-0 flex-1">
                                             <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
                                                 <div className="min-w-0 flex-1">
-                                                    <p className="text-sm font-medium text-gray-900">
-                                                        {notification.data.title || 'Notification'}
-                                                    </p>
+                                                    <p className="text-sm font-medium text-gray-900">{notification.data.title || 'Notification'}</p>
                                                     <p className="mt-0.5 text-sm text-gray-700 sm:mt-1">
                                                         {notification.data.message || 'No message'}
                                                     </p>
                                                     {notification.data.admin_notes && (
                                                         <div className="mt-2 rounded-md border border-blue-200 bg-blue-50 p-2 sm:p-3">
-                                                            <p className="mb-1 text-xs font-semibold text-blue-900">
-                                                                Note from Admin:
-                                                            </p>
-                                                            <p className="text-xs text-blue-800 sm:text-sm">
-                                                                {notification.data.admin_notes}
-                                                            </p>
+                                                            <p className="mb-1 text-xs font-semibold text-blue-900">Note from Admin:</p>
+                                                            <p className="text-xs text-blue-800 sm:text-sm">{notification.data.admin_notes}</p>
                                                         </div>
                                                     )}
                                                     <div className="mt-1.5 flex items-center text-xs text-gray-500 sm:mt-2">
@@ -278,13 +270,13 @@ function NotificationsContent({ notifications }: NotificationsProps) {
                                                                 e.stopPropagation();
                                                                 handleMarkAsRead(notification.id);
                                                             }}
-                                                            className="text-xs font-medium text-amber-700 hover:text-amber-900 whitespace-nowrap"
+                                                            className="text-xs font-medium whitespace-nowrap text-amber-700 hover:text-amber-900"
                                                         >
                                                             Mark as read
                                                         </button>
                                                     )}
                                                     {isRead(notification) && (
-                                                        <span className="flex items-center text-xs text-green-600 whitespace-nowrap">
+                                                        <span className="flex items-center text-xs whitespace-nowrap text-green-600">
                                                             <Check className="mr-1 h-3 w-3" style={{ color: '#16a34a' }} />
                                                             Read
                                                         </span>
@@ -303,8 +295,8 @@ function NotificationsContent({ notifications }: NotificationsProps) {
                         <div className="border-t border-gray-200 px-3 py-3 sm:px-6 sm:py-4">
                             <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                                 <div className="text-xs text-gray-700 sm:text-sm">
-                                    Showing {filteredNotifications.length} of {notifications.total} (page {notifications.current_page}{' '}
-                                    of {notifications.last_page})
+                                    Showing {filteredNotifications.length} of {notifications.total} (page {notifications.current_page} of{' '}
+                                    {notifications.last_page})
                                 </div>
                                 <div className="flex gap-2">
                                     {notifications.current_page > 1 && (
@@ -332,7 +324,10 @@ function NotificationsContent({ notifications }: NotificationsProps) {
                 {/* Clear All History Confirmation Dialog */}
                 {showClearAllConfirm && (
                     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-                        <div className="w-full max-w-md rounded-lg border border-gray-200 bg-white p-4 shadow-xl sm:p-6" style={{ colorScheme: 'light' }}>
+                        <div
+                            className="w-full max-w-md rounded-lg border border-gray-200 bg-white p-4 shadow-xl sm:p-6"
+                            style={{ colorScheme: 'light' }}
+                        >
                             <div className="mb-3 flex items-center sm:mb-4">
                                 <div className="flex-shrink-0">
                                     <Trash2 className="h-5 w-5 sm:h-6 sm:w-6" style={{ color: '#dc2626' }} />
@@ -370,7 +365,10 @@ function NotificationsContent({ notifications }: NotificationsProps) {
                 {/* Individual Delete Confirmation Dialog */}
                 {showDeleteConfirm && (
                     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-                        <div className="w-full max-w-md rounded-lg border border-gray-200 bg-white p-4 shadow-xl sm:p-6" style={{ colorScheme: 'light' }}>
+                        <div
+                            className="w-full max-w-md rounded-lg border border-gray-200 bg-white p-4 shadow-xl sm:p-6"
+                            style={{ colorScheme: 'light' }}
+                        >
                             <div className="mb-3 flex items-center sm:mb-4">
                                 <div className="flex-shrink-0">
                                     <X className="h-5 w-5 sm:h-6 sm:w-6" style={{ color: '#dc2626' }} />

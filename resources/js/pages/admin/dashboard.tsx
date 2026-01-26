@@ -236,9 +236,7 @@ export default function AdminDashboard() {
                             <div className="min-w-0 flex-1">
                                 <p className="text-xs font-medium text-gray-600 sm:text-sm">Active Users</p>
                                 <p className="text-xl font-bold text-gray-900 sm:text-2xl">{userStats.active}</p>
-                                <p className="text-xs text-gray-500">
-                                    {Math.round((userStats.active / userStats.total) * 100)}% of total
-                                </p>
+                                <p className="text-xs text-gray-500">{Math.round((userStats.active / userStats.total) * 100)}% of total</p>
                             </div>
                         </CardContent>
                     </Card>
@@ -288,9 +286,7 @@ export default function AdminDashboard() {
                             </div>
                             <div className="min-w-0 flex-1">
                                 <p className="text-xs font-medium text-gray-600 sm:text-sm">Total Revenue</p>
-                                <p className="text-xl font-bold text-green-700 sm:text-2xl">
-                                    ₱{(orderStats?.total_revenue || 0).toLocaleString()}
-                                </p>
+                                <p className="text-xl font-bold text-green-700 sm:text-2xl">₱{(orderStats?.total_revenue || 0).toLocaleString()}</p>
                                 <p className="text-xs text-gray-500">From all orders</p>
                             </div>
                         </CardContent>
@@ -407,9 +403,7 @@ export default function AdminDashboard() {
                                             </div>
                                             <div className="min-w-0 flex-1">
                                                 <p className="text-xs font-medium text-gray-900 sm:text-sm">{activity.title}</p>
-                                                <p className="mt-0.5 truncate text-xs text-gray-500 sm:text-sm">
-                                                    {activity.description}
-                                                </p>
+                                                <p className="mt-0.5 truncate text-xs text-gray-500 sm:text-sm">{activity.description}</p>
                                                 <p className="mt-1 text-xs text-gray-400">
                                                     {new Date(activity.time).toLocaleDateString()} {new Date(activity.time).toLocaleTimeString()}
                                                 </p>
@@ -500,9 +494,7 @@ export default function AdminDashboard() {
                                 </div>
                                 <div className="min-w-0 flex-1">
                                     <p className="text-xs font-medium text-gray-600 sm:text-sm">Database Size</p>
-                                    <p className="text-base font-semibold text-gray-900 sm:text-lg">
-                                        {systemStats.database_size.size_formatted}
-                                    </p>
+                                    <p className="text-base font-semibold text-gray-900 sm:text-lg">{systemStats.database_size.size_formatted}</p>
                                 </div>
                             </div>
                             <div className="flex items-center gap-2.5 sm:gap-3">
@@ -520,9 +512,7 @@ export default function AdminDashboard() {
                                 </div>
                                 <div className="min-w-0 flex-1">
                                     <p className="text-xs font-medium text-gray-600 sm:text-sm">Cache Hits</p>
-                                    <p className="text-base font-semibold text-gray-900 sm:text-lg">
-                                        {systemStats.cache_hits.toLocaleString()}
-                                    </p>
+                                    <p className="text-base font-semibold text-gray-900 sm:text-lg">{systemStats.cache_hits.toLocaleString()}</p>
                                 </div>
                             </div>
                             <div className="flex items-center gap-2.5 sm:gap-3">
@@ -560,9 +550,7 @@ export default function AdminDashboard() {
                             <div className="flex items-center justify-between">
                                 <div className="min-w-0 flex-1">
                                     <p className="text-xs font-medium text-gray-600 sm:text-sm">Approved Applications</p>
-                                    <p className="text-xl font-bold text-green-600 sm:text-2xl">
-                                        {sellerApplicationStats.approved}
-                                    </p>
+                                    <p className="text-xl font-bold text-green-600 sm:text-2xl">{sellerApplicationStats.approved}</p>
                                 </div>
                                 <CheckCircle className="h-7 w-7 shrink-0 sm:h-8 sm:w-8" style={{ color: '#16a34a' }} />
                             </div>

@@ -150,13 +150,13 @@ export default function Index({ ratings, statistics, filters }: SellerRatingsPag
     const renderStars = (rating: number, size: 'sm' | 'md' = 'md') => {
         const sizeClass = size === 'sm' ? 'h-4 w-4' : 'h-5 w-5';
         return [...Array(5)].map((_, i) => (
-            <Star 
-                key={i} 
+            <Star
+                key={i}
                 className={sizeClass}
-                style={{ 
+                style={{
                     color: i < rating ? '#facc15' : '#d1d5db',
-                    fill: i < rating ? '#facc15' : '#e5e7eb'
-                }} 
+                    fill: i < rating ? '#facc15' : '#e5e7eb',
+                }}
             />
         ));
     };
@@ -218,9 +218,7 @@ export default function Index({ ratings, statistics, filters }: SellerRatingsPag
                         </div>
                         <p className="mt-2 text-xl font-bold text-gray-900 sm:text-2xl">{statistics.replied_ratings}</p>
                         <p className="text-xs text-gray-500">
-                            {statistics.total_ratings > 0
-                                ? `${((statistics.replied_ratings / statistics.total_ratings) * 100).toFixed(0)}%`
-                                : '0%'}{' '}
+                            {statistics.total_ratings > 0 ? `${((statistics.replied_ratings / statistics.total_ratings) * 100).toFixed(0)}%` : '0%'}{' '}
                             response rate
                         </p>
                     </div>
@@ -248,10 +246,7 @@ export default function Index({ ratings, statistics, filters }: SellerRatingsPag
                                 </div>
                                 <div className="flex-1">
                                     <div className="h-2 overflow-hidden rounded-full bg-gray-200">
-                                        <div 
-                                            className="h-full rounded-full bg-orange-500 transition-all" 
-                                            style={{ width: `${dist.percentage}%` }} 
-                                        />
+                                        <div className="h-full rounded-full bg-orange-500 transition-all" style={{ width: `${dist.percentage}%` }} />
                                     </div>
                                 </div>
                                 <div className="flex w-20 items-center gap-1 text-xs sm:w-32 sm:gap-2 sm:text-sm">
@@ -275,7 +270,7 @@ export default function Index({ ratings, statistics, filters }: SellerRatingsPag
                             {showFilters ? 'Hide' : 'Show'}
                         </button>
                     </div>
-                    
+
                     <form onSubmit={handleSearch} className={`mt-4 space-y-4 ${showFilters ? 'block' : 'hidden sm:block'}`}>
                         <div className="grid gap-3 sm:gap-4 md:grid-cols-3">
                             <div className="relative">
@@ -314,15 +309,15 @@ export default function Index({ ratings, statistics, filters }: SellerRatingsPag
                         </div>
 
                         <div className="flex flex-col gap-2 sm:flex-row">
-                            <button 
-                                type="submit" 
+                            <button
+                                type="submit"
                                 className="inline-flex items-center justify-center gap-2 rounded-lg bg-orange-500 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-orange-600"
                             >
                                 <Filter className="h-4 w-4" style={{ color: '#ffffff' }} />
                                 Apply Filters
                             </button>
-                            <button 
-                                type="button" 
+                            <button
+                                type="button"
                                 onClick={clearFilters}
                                 className="inline-flex items-center justify-center rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
                             >
@@ -338,7 +333,7 @@ export default function Index({ ratings, statistics, filters }: SellerRatingsPag
                     <p className="text-xs text-gray-500 sm:text-sm">
                         Showing {ratings.data.length} of {ratings.total} ratings
                     </p>
-                    
+
                     <div className="mt-4">
                         {ratings.data.length === 0 ? (
                             <div className="py-12 text-center">
@@ -369,10 +364,8 @@ export default function Index({ ratings, statistics, filters }: SellerRatingsPag
                                                 <p className="text-xs text-gray-500 sm:text-sm">{formatDate(rating.created_at)}</p>
                                             </div>
                                         </div>
-                                        
-                                        {rating.review && (
-                                            <p className="mt-3 text-sm text-gray-700 sm:ml-14">{rating.review}</p>
-                                        )}
+
+                                        {rating.review && <p className="mt-3 text-sm text-gray-700 sm:ml-14">{rating.review}</p>}
 
                                         {/* Seller Reply Section */}
                                         <div className="mt-4 sm:ml-14">

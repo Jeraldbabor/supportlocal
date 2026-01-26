@@ -129,13 +129,18 @@ export default function NotificationsDropdown({ userRole = 'buyer', buttonClassN
                 <>
                     {/* Mobile overlay */}
                     <div className="fixed inset-0 z-40 bg-black/20 sm:hidden" onClick={() => setIsOpen(false)} />
-                    
-                    <div className="fixed left-2 right-2 top-16 z-50 mx-auto max-w-sm rounded-xl border border-gray-200 bg-white shadow-xl sm:absolute sm:left-auto sm:top-full sm:right-0 sm:mx-0 sm:mt-2 sm:w-80">
+
+                    <div className="fixed top-16 right-2 left-2 z-50 mx-auto max-w-sm rounded-xl border border-gray-200 bg-white shadow-xl sm:absolute sm:top-full sm:right-0 sm:left-auto sm:mx-0 sm:mt-2 sm:w-80">
                         {/* Header */}
                         <div className="flex items-center justify-between border-b border-gray-100 px-4 py-3">
                             <h3 className="text-sm font-semibold text-gray-900">Notifications</h3>
                             {hasUnread && (
-                                <Button variant="ghost" size="sm" onClick={handleMarkAllAsRead} className="text-xs text-orange-600 hover:text-orange-700">
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={handleMarkAllAsRead}
+                                    className="text-xs text-orange-600 hover:text-orange-700"
+                                >
                                     Mark all as read
                                 </Button>
                             )}

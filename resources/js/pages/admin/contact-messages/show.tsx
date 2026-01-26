@@ -78,23 +78,23 @@ export default function ContactMessageShow() {
     const getStatusBadge = (status: string) => {
         switch (status) {
             case 'new':
-                return (
-                    <Badge className="bg-blue-500 text-white">
-                        New
-                    </Badge>
-                );
+                return <Badge className="bg-blue-500 text-white">New</Badge>;
             case 'read':
                 return <Badge className="bg-gray-100 text-gray-800">Read</Badge>;
             case 'replied':
+                return <Badge className="bg-green-500 text-white">Replied</Badge>;
+            case 'archived':
                 return (
-                    <Badge className="bg-green-500 text-white">
-                        Replied
+                    <Badge variant="outline" className="border-gray-300 text-gray-700">
+                        Archived
                     </Badge>
                 );
-            case 'archived':
-                return <Badge variant="outline" className="border-gray-300 text-gray-700">Archived</Badge>;
             default:
-                return <Badge variant="outline" className="border-gray-300 text-gray-700">{status}</Badge>;
+                return (
+                    <Badge variant="outline" className="border-gray-300 text-gray-700">
+                        {status}
+                    </Badge>
+                );
         }
     };
 
@@ -235,21 +235,31 @@ export default function ContactMessageShow() {
                     </DialogHeader>
                     <form onSubmit={handleReply} className="space-y-4">
                         <div className="space-y-2">
-                            <Label htmlFor="to" className="text-gray-700">To</Label>
+                            <Label htmlFor="to" className="text-gray-700">
+                                To
+                            </Label>
                             <div className="rounded-md border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-900">
                                 {message.name} &lt;{message.email}&gt;
                             </div>
                         </div>
                         <div className="space-y-2">
-                            <Label htmlFor="subject" className="text-gray-700">Subject</Label>
+                            <Label htmlFor="subject" className="text-gray-700">
+                                Subject
+                            </Label>
                             <div className="rounded-md border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-900">Re: {message.subject}</div>
                         </div>
                         <div className="space-y-2">
-                            <Label htmlFor="original-message" className="text-gray-700">Original Message</Label>
-                            <div className="max-h-32 overflow-y-auto rounded-md border border-gray-200 bg-gray-50 p-3 text-sm text-gray-700">{message.message}</div>
+                            <Label htmlFor="original-message" className="text-gray-700">
+                                Original Message
+                            </Label>
+                            <div className="max-h-32 overflow-y-auto rounded-md border border-gray-200 bg-gray-50 p-3 text-sm text-gray-700">
+                                {message.message}
+                            </div>
                         </div>
                         <div className="space-y-2">
-                            <Label htmlFor="reply_message" className="text-gray-700">Your Reply *</Label>
+                            <Label htmlFor="reply_message" className="text-gray-700">
+                                Your Reply *
+                            </Label>
                             <Textarea
                                 id="reply_message"
                                 value={replyForm.data.reply_message}
@@ -259,9 +269,7 @@ export default function ContactMessageShow() {
                                 required
                             />
                             <InputError message={replyForm.errors.reply_message} />
-                            <p className="text-xs text-gray-500">
-                                Minimum 10 characters. The original message will be included in the email.
-                            </p>
+                            <p className="text-xs text-gray-500">Minimum 10 characters. The original message will be included in the email.</p>
                         </div>
                         <DialogFooter className="flex-col gap-2 sm:flex-row">
                             <Button

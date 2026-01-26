@@ -259,9 +259,7 @@ export default function SellerProfileEdit() {
                                             onChange={(e) => setData('date_of_birth', e.target.value)}
                                             className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500"
                                         />
-                                        {errors.date_of_birth && (
-                                            <p className="mt-1 text-xs text-red-600 sm:text-sm">{errors.date_of_birth}</p>
-                                        )}
+                                        {errors.date_of_birth && <p className="mt-1 text-xs text-red-600 sm:text-sm">{errors.date_of_birth}</p>}
                                     </div>
 
                                     <div className="md:col-span-2">
@@ -298,9 +296,7 @@ export default function SellerProfileEdit() {
                                             className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500"
                                             placeholder="Leave empty to use primary phone"
                                         />
-                                        {errors.delivery_phone && (
-                                            <p className="mt-1 text-xs text-red-600 sm:text-sm">{errors.delivery_phone}</p>
-                                        )}
+                                        {errors.delivery_phone && <p className="mt-1 text-xs text-red-600 sm:text-sm">{errors.delivery_phone}</p>}
                                     </div>
 
                                     <div>
@@ -342,9 +338,7 @@ export default function SellerProfileEdit() {
                                             className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500"
                                             placeholder="Leave empty to use primary address"
                                         />
-                                        {errors.delivery_address && (
-                                            <p className="mt-1 text-xs text-red-600 sm:text-sm">{errors.delivery_address}</p>
-                                        )}
+                                        {errors.delivery_address && <p className="mt-1 text-xs text-red-600 sm:text-sm">{errors.delivery_address}</p>}
                                     </div>
 
                                     <div className="md:col-span-2">
@@ -356,9 +350,7 @@ export default function SellerProfileEdit() {
                                             className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500"
                                             placeholder="Any special delivery instructions..."
                                         />
-                                        {errors.delivery_notes && (
-                                            <p className="mt-1 text-xs text-red-600 sm:text-sm">{errors.delivery_notes}</p>
-                                        )}
+                                        {errors.delivery_notes && <p className="mt-1 text-xs text-red-600 sm:text-sm">{errors.delivery_notes}</p>}
                                     </div>
                                 </div>
                             </div>

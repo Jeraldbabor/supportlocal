@@ -117,7 +117,9 @@ export default function PageContentEdit() {
             <div className="flex flex-col gap-4 p-3 sm:gap-6 sm:p-4" style={{ colorScheme: 'light' }}>
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                     <div>
-                        <h1 className="text-xl font-bold tracking-tight text-gray-900 sm:text-2xl lg:text-3xl">{content ? 'Edit Page Content' : 'Create Page Content'}</h1>
+                        <h1 className="text-xl font-bold tracking-tight text-gray-900 sm:text-2xl lg:text-3xl">
+                            {content ? 'Edit Page Content' : 'Create Page Content'}
+                        </h1>
                         <p className="text-sm text-gray-500">{content ? 'Update the page content' : 'Add new content to your pages'}</p>
                     </div>
                     <Button variant="outline" onClick={() => router.visit('/admin/page-content')}>
@@ -129,13 +131,17 @@ export default function PageContentEdit() {
                 <Card>
                     <CardHeader>
                         <CardTitle className="text-gray-900">{content ? 'Edit Content' : 'Create Content'}</CardTitle>
-                        <CardDescription className="text-gray-500">Customize the content for your {pageType === 'about' ? 'About' : 'Contact'} page</CardDescription>
+                        <CardDescription className="text-gray-500">
+                            Customize the content for your {pageType === 'about' ? 'About' : 'Contact'} page
+                        </CardDescription>
                     </CardHeader>
                     <CardContent>
                         <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
                             <div className="grid gap-4 md:grid-cols-2">
                                 <div className="space-y-2">
-                                    <Label htmlFor="page_type" className="text-gray-700">Page Type</Label>
+                                    <Label htmlFor="page_type" className="text-gray-700">
+                                        Page Type
+                                    </Label>
                                     <Select
                                         value={formData.page_type}
                                         onValueChange={(value) => handleInputChange('page_type', value)}
@@ -152,7 +158,9 @@ export default function PageContentEdit() {
                                 </div>
 
                                 <div className="space-y-2">
-                                    <Label htmlFor="section" className="text-gray-700">Section</Label>
+                                    <Label htmlFor="section" className="text-gray-700">
+                                        Section
+                                    </Label>
                                     <Select value={formData.section} onValueChange={(value) => handleInputChange('section', value)} required>
                                         <SelectTrigger>
                                             <SelectValue placeholder="Select a section" />
@@ -169,7 +177,9 @@ export default function PageContentEdit() {
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="title" className="text-gray-700">Title</Label>
+                                <Label htmlFor="title" className="text-gray-700">
+                                    Title
+                                </Label>
                                 <Input
                                     id="title"
                                     name="title"
@@ -180,7 +190,9 @@ export default function PageContentEdit() {
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="content" className="text-gray-700">Content</Label>
+                                <Label htmlFor="content" className="text-gray-700">
+                                    Content
+                                </Label>
                                 <Textarea
                                     id="content"
                                     name="content"
@@ -339,7 +351,9 @@ export default function PageContentEdit() {
 
                             <div className="grid gap-4 md:grid-cols-2">
                                 <div className="space-y-2">
-                                    <Label htmlFor="sort_order" className="text-gray-700">Sort Order</Label>
+                                    <Label htmlFor="sort_order" className="text-gray-700">
+                                        Sort Order
+                                    </Label>
                                     <Input
                                         id="sort_order"
                                         name="sort_order"
@@ -366,7 +380,12 @@ export default function PageContentEdit() {
                             </div>
 
                             <div className="flex flex-col gap-2 sm:flex-row sm:justify-end sm:gap-4">
-                                <Button type="button" variant="outline" onClick={() => router.visit('/admin/page-content')} className="w-full sm:w-auto">
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    onClick={() => router.visit('/admin/page-content')}
+                                    className="w-full sm:w-auto"
+                                >
                                     Cancel
                                 </Button>
                                 <Button type="submit" disabled={isSubmitting} className="w-full sm:w-auto">

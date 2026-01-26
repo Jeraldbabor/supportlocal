@@ -91,23 +91,23 @@ export default function ContactMessagesIndex() {
     const getStatusBadge = (status: string) => {
         switch (status) {
             case 'new':
-                return (
-                    <Badge className="bg-blue-500 text-white">
-                        New
-                    </Badge>
-                );
+                return <Badge className="bg-blue-500 text-white">New</Badge>;
             case 'read':
                 return <Badge className="bg-gray-100 text-gray-800">Read</Badge>;
             case 'replied':
+                return <Badge className="bg-green-500 text-white">Replied</Badge>;
+            case 'archived':
                 return (
-                    <Badge className="bg-green-500 text-white">
-                        Replied
+                    <Badge variant="outline" className="border-gray-300 text-gray-700">
+                        Archived
                     </Badge>
                 );
-            case 'archived':
-                return <Badge variant="outline" className="border-gray-300 text-gray-700">Archived</Badge>;
             default:
-                return <Badge variant="outline" className="border-gray-300 text-gray-700">{status}</Badge>;
+                return (
+                    <Badge variant="outline" className="border-gray-300 text-gray-700">
+                        {status}
+                    </Badge>
+                );
         }
     };
 
@@ -258,7 +258,7 @@ export default function ContactMessagesIndex() {
                                                     size="sm"
                                                     onClick={() => handleDelete(message.id)}
                                                     disabled={isDeleting === message.id}
-                                                    className="h-8 w-8 shrink-0 p-0 text-red-600 hover:text-red-700 hover:bg-red-50 sm:h-auto sm:w-auto sm:px-2.5"
+                                                    className="h-8 w-8 shrink-0 p-0 text-red-600 hover:bg-red-50 hover:text-red-700 sm:h-auto sm:w-auto sm:px-2.5"
                                                 >
                                                     <Trash2 className="h-3 w-3 sm:h-4 sm:w-4" />
                                                 </Button>
@@ -277,7 +277,9 @@ export default function ContactMessagesIndex() {
                                         key={index}
                                         href={link.url || '#'}
                                         className={`rounded-md px-2 py-1.5 text-xs transition-colors sm:px-3 sm:py-2 sm:text-sm ${
-                                            link.active ? 'bg-orange-500 text-white' : 'border border-gray-200 bg-white text-gray-700 hover:bg-gray-50'
+                                            link.active
+                                                ? 'bg-orange-500 text-white'
+                                                : 'border border-gray-200 bg-white text-gray-700 hover:bg-gray-50'
                                         } ${!link.url ? 'pointer-events-none opacity-50' : ''}`}
                                         dangerouslySetInnerHTML={{ __html: link.label }}
                                     />

@@ -38,18 +38,16 @@ export default function ConversationItem({ conversation, isActive, onClick }: Co
         <button
             onClick={onClick}
             className={`mb-1.5 w-full rounded-xl p-3 text-left transition-all duration-200 ${
-                isActive 
-                    ? 'bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-md' 
-                    : 'bg-white hover:bg-orange-50 hover:shadow-sm border border-transparent hover:border-orange-100'
+                isActive
+                    ? 'bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-md'
+                    : 'border border-transparent bg-white hover:border-orange-100 hover:bg-orange-50 hover:shadow-sm'
             }`}
         >
             <div className="flex items-start gap-3">
                 <div className="relative flex-shrink-0">
                     <Avatar className={`h-11 w-11 ring-2 ${isActive ? 'ring-white/30' : 'ring-gray-100'}`}>
                         <AvatarImage src={conversation.other_user.avatar_url} />
-                        <AvatarFallback 
-                            className={isActive ? 'bg-white/20 text-white' : 'bg-orange-100 font-semibold text-orange-700'}
-                        >
+                        <AvatarFallback className={isActive ? 'bg-white/20 text-white' : 'bg-orange-100 font-semibold text-orange-700'}>
                             {getInitials(conversation.other_user.name)}
                         </AvatarFallback>
                     </Avatar>
@@ -71,18 +69,12 @@ export default function ConversationItem({ conversation, isActive, onClick }: Co
                         )}
                     </div>
                     {conversation.product && (
-                        <p className={`mt-0.5 truncate text-xs ${isActive ? 'text-white/70' : 'text-gray-500'}`}>
-                            Re: {conversation.product.name}
-                        </p>
+                        <p className={`mt-0.5 truncate text-xs ${isActive ? 'text-white/70' : 'text-gray-500'}`}>Re: {conversation.product.name}</p>
                     )}
                     {conversation.last_message && (
                         <p
                             className={`mt-1 truncate text-sm ${
-                                isActive 
-                                    ? 'text-white/80' 
-                                    : conversation.unread_count > 0 
-                                        ? 'font-medium text-gray-800' 
-                                        : 'text-gray-500'
+                                isActive ? 'text-white/80' : conversation.unread_count > 0 ? 'font-medium text-gray-800' : 'text-gray-500'
                             }`}
                         >
                             {conversation.last_message.message}

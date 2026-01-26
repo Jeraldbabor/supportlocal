@@ -1,7 +1,7 @@
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Head, Link, router, usePage } from '@inertiajs/react';
 import { ChevronDown, ChevronLeft, ChevronRight, Filter, MapPin, MessageSquare, Star, User } from 'lucide-react';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import SearchAutocomplete from '../components/SearchAutocomplete';
 import StartChatButton from '../components/StartChatButton';
 import MainLayout from '../layouts/MainLayout';

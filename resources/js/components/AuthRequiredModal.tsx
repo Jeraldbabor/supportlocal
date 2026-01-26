@@ -27,7 +27,10 @@ export default function AuthRequiredModal({ isOpen, onClose, action, productName
             <div className="absolute inset-0 bg-black/50 backdrop-blur-sm transition-opacity" onClick={onClose} />
 
             {/* Modal */}
-            <div className="relative z-10 w-full max-w-md transform rounded-2xl bg-white p-6 shadow-2xl transition-all" style={{ colorScheme: 'light' }}>
+            <div
+                className="relative z-10 w-full max-w-md transform rounded-2xl bg-white p-6 shadow-2xl transition-all"
+                style={{ colorScheme: 'light' }}
+            >
                 {/* Close Button */}
                 <button
                     onClick={onClose}
@@ -95,19 +98,27 @@ export default function AuthRequiredModal({ isOpen, onClose, action, productName
                     <p className="mb-2 text-xs font-semibold tracking-wide text-gray-700 uppercase">Why Create an Account?</p>
                     <ul className="space-y-1 text-sm text-gray-600">
                         <li className="flex items-start">
-                            <span className="mr-2" style={{ color: '#ea580c' }}>✓</span>
+                            <span className="mr-2" style={{ color: '#ea580c' }}>
+                                ✓
+                            </span>
                             <span>Save items to your cart</span>
                         </li>
                         <li className="flex items-start">
-                            <span className="mr-2" style={{ color: '#ea580c' }}>✓</span>
+                            <span className="mr-2" style={{ color: '#ea580c' }}>
+                                ✓
+                            </span>
                             <span>Track your orders</span>
                         </li>
                         <li className="flex items-start">
-                            <span className="mr-2" style={{ color: '#ea580c' }}>✓</span>
+                            <span className="mr-2" style={{ color: '#ea580c' }}>
+                                ✓
+                            </span>
                             <span>Faster checkout experience</span>
                         </li>
                         <li className="flex items-start">
-                            <span className="mr-2" style={{ color: '#ea580c' }}>✓</span>
+                            <span className="mr-2" style={{ color: '#ea580c' }}>
+                                ✓
+                            </span>
                             <span>Support local artisans</span>
                         </li>
                     </ul>

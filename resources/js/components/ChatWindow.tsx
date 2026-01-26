@@ -73,49 +73,48 @@ export default function ChatWindow({ conversationId, currentUserId }: ChatWindow
         }
     }, [conversationId]);
 
-    const loadMessages = useCallback(async (isPollingRequest = false) => {
-        try {
-            const response = await fetchWithCsrf(`/chat/conversation/${conversationId}/messages`);
-            if (!response.ok) {
-                throw new Error('Failed to load messages');
-            }
-            const data = await response.json();
-            
-            // Update messages, checking for new ones when polling
-            setMessages((prev) => {
-                if (isPollingRequest && prev.length > 0) {
-                    // Merge new messages that don't exist
-                    const newMessages = data.messages.filter(
-                        (msg: Message) => !prev.some((p) => p.id === msg.id)
-                    );
-                    if (newMessages.length > 0) {
-                        return [...prev, ...newMessages];
-                    }
-                    return prev;
+    const loadMessages = useCallback(
+        async (isPollingRequest = false) => {
+            try {
+                const response = await fetchWithCsrf(`/chat/conversation/${conversationId}/messages`);
+                if (!response.ok) {
+                    throw new Error('Failed to load messages');
                 }
-                return data.messages;
-            });
-            
-            setConversation(data.conversation);
-            
-            // Track last message ID for polling
-            if (data.messages.length > 0) {
-                lastMessageIdRef.current = Math.max(
-                    ...data.messages.map((m: Message) => m.id)
-                );
+                const data = await response.json();
+
+                // Update messages, checking for new ones when polling
+                setMessages((prev) => {
+                    if (isPollingRequest && prev.length > 0) {
+                        // Merge new messages that don't exist
+                        const newMessages = data.messages.filter((msg: Message) => !prev.some((p) => p.id === msg.id));
+                        if (newMessages.length > 0) {
+                            return [...prev, ...newMessages];
+                        }
+                        return prev;
+                    }
+                    return data.messages;
+                });
+
+                setConversation(data.conversation);
+
+                // Track last message ID for polling
+                if (data.messages.length > 0) {
+                    lastMessageIdRef.current = Math.max(...data.messages.map((m: Message) => m.id));
+                }
+            } catch (error) {
+                console.error('Failed to load messages:', error);
             }
-        } catch (error) {
-            console.error('Failed to load messages:', error);
-        }
-    }, [conversationId]);
+        },
+        [conversationId],
+    );
 
     // Start polling fallback when WebSocket is disconnected
     const startPolling = useCallback(() => {
         if (pollingIntervalRef.current) return; // Already polling
-        
+
         setIsPolling(true);
         console.log('[Chat] WebSocket disconnected, starting polling fallback');
-        
+
         pollingIntervalRef.current = setInterval(() => {
             loadMessages(true);
         }, 3000); // Poll every 3 seconds
@@ -140,7 +139,7 @@ export default function ChatWindow({ conversationId, currentUserId }: ChatWindow
         }
 
         const channel = window.Echo.private(`conversation.${conversationId}`);
-        
+
         // Listen for messages
         channel
             .listen('.message.sent', (e: { message: Message }) => {
@@ -162,7 +161,7 @@ export default function ChatWindow({ conversationId, currentUserId }: ChatWindow
         // Monitor connection state using Pusher's connection events
         if (window.Echo.connector && window.Echo.connector.pusher) {
             const pusher = window.Echo.connector.pusher;
-            
+
             pusher.connection.bind('connected', () => {
                 console.log('[Chat] Pusher connected');
                 setIsConnected(true);
@@ -265,11 +264,7 @@ export default function ChatWindow({ conversationId, currentUserId }: ChatWindow
                 formData.append('image', selectedImage);
             }
 
-            const response = await postWithCsrf(
-                `/chat/conversation/${conversationId}/message`,
-                formData,
-                { maxRetries: 2 }
-            );
+            const response = await postWithCsrf(`/chat/conversation/${conversationId}/message`, formData, { maxRetries: 2 });
 
             if (response.ok) {
                 const data = await response.json();
@@ -390,7 +385,7 @@ export default function ChatWindow({ conversationId, currentUserId }: ChatWindow
                                 </AvatarFallback>
                             </Avatar>
                             {/* Online/Offline indicator based on actual status */}
-                            <span 
+                            <span
                                 className={`absolute right-0 bottom-0 h-3 w-3 rounded-full border-2 border-white ${
                                     conversation.other_user.is_online ? 'bg-green-500' : 'bg-gray-400'
                                 }`}
@@ -398,21 +393,16 @@ export default function ChatWindow({ conversationId, currentUserId }: ChatWindow
                             ></span>
                         </div>
                         <div className="min-w-0 flex-1">
-                            <h3 className="truncate text-sm font-semibold text-gray-900 sm:text-base">
-                                {conversation.other_user.name}
-                            </h3>
+                            <h3 className="truncate text-sm font-semibold text-gray-900 sm:text-base">{conversation.other_user.name}</h3>
                             {conversation.product ? (
-                                <p className="truncate text-xs text-gray-500">
-                                    Re: {conversation.product.name}
-                                </p>
+                                <p className="truncate text-xs text-gray-500">Re: {conversation.product.name}</p>
                             ) : (
                                 <p className={`text-xs font-medium ${conversation.other_user.is_online ? 'text-green-600' : 'text-gray-400'}`}>
-                                    {conversation.other_user.is_online 
-                                        ? 'Online' 
-                                        : conversation.other_user.last_seen_at 
-                                            ? `Last seen ${formatDistanceToNow(new Date(conversation.other_user.last_seen_at), { addSuffix: true })}`
-                                            : 'Offline'
-                                    }
+                                    {conversation.other_user.is_online
+                                        ? 'Online'
+                                        : conversation.other_user.last_seen_at
+                                          ? `Last seen ${formatDistanceToNow(new Date(conversation.other_user.last_seen_at), { addSuffix: true })}`
+                                          : 'Offline'}
                                 </p>
                             )}
                         </div>
@@ -437,7 +427,10 @@ export default function ChatWindow({ conversationId, currentUserId }: ChatWindow
             </div>
 
             {/* Messages */}
-            <div className="min-h-0 flex-1 overflow-y-auto bg-gradient-to-b from-gray-50 to-white px-4 py-6 sm:px-6 sm:py-8 custom-scrollbar" data-chat-container>
+            <div
+                className="custom-scrollbar min-h-0 flex-1 overflow-y-auto bg-gradient-to-b from-gray-50 to-white px-4 py-6 sm:px-6 sm:py-8"
+                data-chat-container
+            >
                 <div className="mx-auto max-w-2xl space-y-3">
                     {messages.length === 0 && (
                         <div className="py-12 text-center">
@@ -472,12 +465,16 @@ export default function ChatWindow({ conversationId, currentUserId }: ChatWindow
                                                 ? 'chat-message-sent rounded-tr-md bg-orange-500 text-white'
                                                 : 'chat-message-received rounded-tl-md border border-gray-300 bg-white text-gray-900'
                                         }`}
-                                        style={isOwnMessage ? { 
-                                            background: 'linear-gradient(135deg, #f97316 0%, #ea580c 100%)', 
-                                            backgroundColor: '#f97316', 
-                                            color: '#ffffff',
-                                            WebkitTextFillColor: '#ffffff'
-                                        } : {}}
+                                        style={
+                                            isOwnMessage
+                                                ? {
+                                                      background: 'linear-gradient(135deg, #f97316 0%, #ea580c 100%)',
+                                                      backgroundColor: '#f97316',
+                                                      color: '#ffffff',
+                                                      WebkitTextFillColor: '#ffffff',
+                                                  }
+                                                : {}
+                                        }
                                     >
                                         {message.image_url && (
                                             <div className="mb-2">
@@ -491,7 +488,7 @@ export default function ChatWindow({ conversationId, currentUserId }: ChatWindow
                                             </div>
                                         )}
                                         {message.message && (
-                                            <p 
+                                            <p
                                                 className={`text-sm leading-relaxed break-words whitespace-pre-wrap ${isOwnMessage ? 'text-white' : 'text-gray-900'}`}
                                                 style={isOwnMessage ? { color: '#ffffff', WebkitTextFillColor: '#ffffff' } : {}}
                                             >
@@ -510,15 +507,24 @@ export default function ChatWindow({ conversationId, currentUserId }: ChatWindow
                         <div className="flex gap-2 sm:gap-3">
                             <Avatar className="h-8 w-8 sm:h-9 sm:w-9">
                                 <AvatarImage src={conversation.other_user.avatar_url} />
-                                <AvatarFallback className="bg-gray-200 dark:bg-gray-700 text-xs text-gray-600 dark:text-gray-300">
+                                <AvatarFallback className="bg-gray-200 text-xs text-gray-600 dark:bg-gray-700 dark:text-gray-300">
                                     {getInitials(conversation.other_user.name)}
                                 </AvatarFallback>
                             </Avatar>
                             <div className="chat-message-received flex items-center rounded-2xl rounded-tl-md border border-gray-300 bg-white px-4 py-2.5 shadow-sm">
                                 <div className="flex gap-1">
-                                    <span className="inline-block h-2 w-2 animate-bounce rounded-full bg-gray-400 dark:bg-gray-500" style={{ animationDelay: '0ms' }}></span>
-                                    <span className="inline-block h-2 w-2 animate-bounce rounded-full bg-gray-400 dark:bg-gray-500" style={{ animationDelay: '150ms' }}></span>
-                                    <span className="inline-block h-2 w-2 animate-bounce rounded-full bg-gray-400 dark:bg-gray-500" style={{ animationDelay: '300ms' }}></span>
+                                    <span
+                                        className="inline-block h-2 w-2 animate-bounce rounded-full bg-gray-400 dark:bg-gray-500"
+                                        style={{ animationDelay: '0ms' }}
+                                    ></span>
+                                    <span
+                                        className="inline-block h-2 w-2 animate-bounce rounded-full bg-gray-400 dark:bg-gray-500"
+                                        style={{ animationDelay: '150ms' }}
+                                    ></span>
+                                    <span
+                                        className="inline-block h-2 w-2 animate-bounce rounded-full bg-gray-400 dark:bg-gray-500"
+                                        style={{ animationDelay: '300ms' }}
+                                    ></span>
                                 </div>
                             </div>
                         </div>
@@ -528,7 +534,7 @@ export default function ChatWindow({ conversationId, currentUserId }: ChatWindow
             </div>
 
             {/* Message Input */}
-            <form onSubmit={sendMessage} className="flex-shrink-0 border-t border-gray-300 bg-white p-4 sm:p-5 shadow-lg">
+            <form onSubmit={sendMessage} className="flex-shrink-0 border-t border-gray-300 bg-white p-4 shadow-lg sm:p-5">
                 <div className="mx-auto max-w-2xl">
                     {/* Image Preview */}
                     {imagePreview && (
@@ -569,12 +575,12 @@ export default function ChatWindow({ conversationId, currentUserId }: ChatWindow
                             onChange={handleInputChange}
                             placeholder="Type your message..."
                             disabled={isLoading}
-                            className="min-w-0 flex-1 rounded-full border-2 border-gray-300 bg-white px-5 py-3 text-sm text-gray-900 placeholder-gray-400 transition-all focus:border-orange-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-orange-200 focus:shadow-sm"
+                            className="min-w-0 flex-1 rounded-full border-2 border-gray-300 bg-white px-5 py-3 text-sm text-gray-900 placeholder-gray-400 transition-all focus:border-orange-400 focus:bg-white focus:shadow-sm focus:ring-2 focus:ring-orange-200 focus:outline-none"
                         />
                         <button
                             type="submit"
                             disabled={isLoading || (!newMessage.trim() && !selectedImage)}
-                            className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-lg transition-all hover:from-orange-600 hover:to-orange-700 hover:shadow-xl hover:scale-105 active:scale-95 disabled:opacity-50 disabled:hover:scale-100"
+                            className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-lg transition-all hover:scale-105 hover:from-orange-600 hover:to-orange-700 hover:shadow-xl active:scale-95 disabled:opacity-50 disabled:hover:scale-100"
                         >
                             <Send className="h-5 w-5" />
                         </button>

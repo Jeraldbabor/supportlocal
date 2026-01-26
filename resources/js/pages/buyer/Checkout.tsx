@@ -402,9 +402,14 @@ export default function Checkout({ user, buyNowItem }: CheckoutProps) {
 
                                 <div className="space-y-4">
                                     <div>
-                                        <label className="mb-2 block text-sm font-medium" style={{ color: '#374151' }}>Payment Method</label>
+                                        <label className="mb-2 block text-sm font-medium" style={{ color: '#374151' }}>
+                                            Payment Method
+                                        </label>
                                         <div className="space-y-2">
-                                            <label className="flex cursor-pointer items-center rounded-lg border border-gray-300 p-3 hover:bg-gray-50" style={{ backgroundColor: '#ffffff' }}>
+                                            <label
+                                                className="flex cursor-pointer items-center rounded-lg border border-gray-300 p-3 hover:bg-gray-50"
+                                                style={{ backgroundColor: '#ffffff' }}
+                                            >
                                                 <input
                                                     type="radio"
                                                     value="cod"
@@ -417,13 +422,20 @@ export default function Checkout({ user, buyNowItem }: CheckoutProps) {
                                                         <Truck className="h-4 w-4 text-white" />
                                                     </div>
                                                     <div>
-                                                        <div className="font-medium" style={{ color: '#111827' }}>Cash on Delivery (COD)</div>
-                                                        <div className="text-sm" style={{ color: '#6b7280' }}>Pay with cash when your order arrives</div>
+                                                        <div className="font-medium" style={{ color: '#111827' }}>
+                                                            Cash on Delivery (COD)
+                                                        </div>
+                                                        <div className="text-sm" style={{ color: '#6b7280' }}>
+                                                            Pay with cash when your order arrives
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </label>
 
-                                            <label className="flex cursor-pointer items-center rounded-lg border border-gray-300 p-3 hover:bg-gray-50" style={{ backgroundColor: '#ffffff' }}>
+                                            <label
+                                                className="flex cursor-pointer items-center rounded-lg border border-gray-300 p-3 hover:bg-gray-50"
+                                                style={{ backgroundColor: '#ffffff' }}
+                                            >
                                                 <input
                                                     type="radio"
                                                     value="gcash"
@@ -436,8 +448,12 @@ export default function Checkout({ user, buyNowItem }: CheckoutProps) {
                                                         <span className="text-xs font-bold text-white">G</span>
                                                     </div>
                                                     <div>
-                                                        <div className="font-medium" style={{ color: '#111827' }}>GCash</div>
-                                                        <div className="text-sm" style={{ color: '#6b7280' }}>Pay with GCash mobile wallet</div>
+                                                        <div className="font-medium" style={{ color: '#111827' }}>
+                                                            GCash
+                                                        </div>
+                                                        <div className="text-sm" style={{ color: '#6b7280' }}>
+                                                            Pay with GCash mobile wallet
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </label>
@@ -448,27 +464,37 @@ export default function Checkout({ user, buyNowItem }: CheckoutProps) {
                                         <div className="rounded-lg border border-green-200 p-4" style={{ backgroundColor: '#f0fdf4' }}>
                                             <div className="mb-3 flex items-center">
                                                 <User className="mr-2 h-5 w-5" style={{ color: '#16a34a' }} />
-                                                <h4 className="font-medium" style={{ color: '#166534' }}>Buyer Information for COD</h4>
+                                                <h4 className="font-medium" style={{ color: '#166534' }}>
+                                                    Buyer Information for COD
+                                                </h4>
                                             </div>
                                             <div className="space-y-2 text-sm">
                                                 <div className="flex justify-between">
                                                     <span style={{ color: '#4b5563' }}>Name:</span>
-                                                    <span className="font-medium" style={{ color: '#111827' }}>{user.name}</span>
+                                                    <span className="font-medium" style={{ color: '#111827' }}>
+                                                        {user.name}
+                                                    </span>
                                                 </div>
                                                 <div className="flex justify-between">
                                                     <span style={{ color: '#4b5563' }}>Email:</span>
-                                                    <span className="font-medium" style={{ color: '#111827' }}>{user.email}</span>
+                                                    <span className="font-medium" style={{ color: '#111827' }}>
+                                                        {user.email}
+                                                    </span>
                                                 </div>
                                                 {user.phone && (
                                                     <div className="flex justify-between">
                                                         <span style={{ color: '#4b5563' }}>Phone:</span>
-                                                        <span className="font-medium" style={{ color: '#111827' }}>{user.phone}</span>
+                                                        <span className="font-medium" style={{ color: '#111827' }}>
+                                                            {user.phone}
+                                                        </span>
                                                     </div>
                                                 )}
                                                 {data.delivery_address && (
                                                     <div className="flex justify-between">
                                                         <span style={{ color: '#4b5563' }}>Address:</span>
-                                                        <span className="max-w-xs text-right font-medium" style={{ color: '#111827' }}>{data.delivery_address}</span>
+                                                        <span className="max-w-xs text-right font-medium" style={{ color: '#111827' }}>
+                                                            {data.delivery_address}
+                                                        </span>
                                                     </div>
                                                 )}
                                             </div>
@@ -564,7 +590,9 @@ export default function Checkout({ user, buyNowItem }: CheckoutProps) {
                                     </div>
                                     <div className="flex justify-between text-sm">
                                         <span className="text-gray-600">Payment Processing</span>
-                                        <span className="font-medium" style={{ color: '#16a34a' }}>Free</span>
+                                        <span className="font-medium" style={{ color: '#16a34a' }}>
+                                            Free
+                                        </span>
                                     </div>
                                 </div>
 
@@ -579,7 +607,9 @@ export default function Checkout({ user, buyNowItem }: CheckoutProps) {
                                     type="submit"
                                     disabled={processing}
                                     className={`mt-6 w-full rounded-lg px-6 py-3 font-medium text-white transition-colors focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:outline-none ${
-                                        processing ? 'cursor-not-allowed bg-gray-400' : 'bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700'
+                                        processing
+                                            ? 'cursor-not-allowed bg-gray-400'
+                                            : 'bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700'
                                     }`}
                                 >
                                     {processing ? (
