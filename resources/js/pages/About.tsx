@@ -31,7 +31,8 @@ export default function About({ artisans = [], pageContents = {} }: AboutProps) 
             name: 'Jerald Babor',
             specialty: 'Full-Stack Web Developer',
             image: '/jerald.jfif',
-            description: 'A skilled full-stack web developer creating innovative digital solutions and web applications, and the only one who developed this website and maintained it.',
+            description:
+                'A skilled full-stack web developer creating innovative digital solutions and web applications, and the only one who developed this website and maintained it.',
             location: 'Philippines',
             experience: '',
         },
@@ -40,7 +41,8 @@ export default function About({ artisans = [], pageContents = {} }: AboutProps) 
             name: 'Sir Jonas Parreño MIT',
             specialty: 'Analysis/Capstone Adviser',
             image: '/sirjd.jpg',
-            description: 'An experienced adviser specializing in analysis and capstone project guidance, helping students excel in their academic journey.',
+            description:
+                'An experienced adviser specializing in analysis and capstone project guidance, helping students excel in their academic journey.',
             location: 'Philippines',
             experience: '',
         },
