@@ -1,34 +1,78 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" @class(['dark' => ($appearance ?? 'system') == 'dark'])>
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes">
         <meta name="color-scheme" content="light">
 
-        {{-- Inline script to detect system dark mode preference and apply it immediately --}}
+        {{-- Force light mode - prevent dark mode from being applied --}}
         <script>
             (function() {
-                const appearance = '{{ $appearance ?? "system" }}';
-
-                if (appearance === 'system') {
-                    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-
-                    if (prefersDark) {
-                        document.documentElement.classList.add('dark');
-                    }
+                // Immediately remove dark class if it exists and force light mode
+                document.documentElement.classList.remove('dark');
+                document.documentElement.style.colorScheme = 'light';
+                
+                // Override any appearance settings to force light mode
+                if (typeof localStorage !== 'undefined') {
+                    localStorage.setItem('appearance', 'light');
                 }
+                
+                // Watch for any attempts to add dark class and remove it immediately
+                const observer = new MutationObserver(function(mutations) {
+                    mutations.forEach(function(mutation) {
+                        if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+                            if (document.documentElement.classList.contains('dark')) {
+                                document.documentElement.classList.remove('dark');
+                                document.documentElement.style.colorScheme = 'light';
+                            }
+                        }
+                        if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
+                            if (document.documentElement.style.colorScheme === 'dark') {
+                                document.documentElement.style.colorScheme = 'light';
+                            }
+                        }
+                    });
+                });
+                
+                // Start observing for class and style changes
+                observer.observe(document.documentElement, {
+                    attributes: true,
+                    attributeFilter: ['class', 'style']
+                });
+                
+                // Also prevent dark mode on any system theme changes
+                if (window.matchMedia) {
+                    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+                    const handleChange = () => {
+                        document.documentElement.classList.remove('dark');
+                        document.documentElement.style.colorScheme = 'light';
+                        if (typeof localStorage !== 'undefined') {
+                            localStorage.setItem('appearance', 'light');
+                        }
+                    };
+                    mediaQuery.addEventListener('change', handleChange);
+                }
+                
+                // Periodically check and remove dark class (as a safety net)
+                setInterval(function() {
+                    if (document.documentElement.classList.contains('dark')) {
+                        document.documentElement.classList.remove('dark');
+                        document.documentElement.style.colorScheme = 'light';
+                    }
+                }, 100);
             })();
         </script>
 
-        {{-- Inline style to set the HTML background color based on our theme in app.css --}}
+        {{-- Inline style to set the HTML background color - always light mode --}}
         <style>
             html {
-                background-color: oklch(1 0 0);
-                color-scheme: light;
+                background-color: oklch(1 0 0) !important;
+                color-scheme: light !important;
             }
 
             html.dark {
-                background-color: oklch(0.145 0 0);
+                background-color: oklch(1 0 0) !important;
+                color-scheme: light !important;
             }
         </style>
 

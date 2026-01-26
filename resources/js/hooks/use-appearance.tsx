@@ -20,10 +20,11 @@ const setCookie = (name: string, value: string, days = 365) => {
 };
 
 const applyTheme = (appearance: Appearance) => {
-    const isDark = appearance === 'dark' || (appearance === 'system' && prefersDark());
+    // Force light mode always - ignore appearance setting
+    const isDark = false;
 
-    document.documentElement.classList.toggle('dark', isDark);
-    document.documentElement.style.colorScheme = isDark ? 'dark' : 'light';
+    document.documentElement.classList.remove('dark');
+    document.documentElement.style.colorScheme = 'light';
 };
 
 const mediaQuery = () => {
@@ -40,34 +41,39 @@ const handleSystemThemeChange = () => {
 };
 
 export function initializeTheme() {
-    const savedAppearance = (localStorage.getItem('appearance') as Appearance) || 'system';
+    // Force light mode - ignore saved appearance
+    applyTheme('light');
+    
+    // Set appearance to light in localStorage to prevent future dark mode
+    localStorage.setItem('appearance', 'light');
 
-    applyTheme(savedAppearance);
-
-    // Add the event listener for system theme changes...
-    mediaQuery()?.addEventListener('change', handleSystemThemeChange);
+    // Don't listen to system theme changes - we always want light mode
+    // mediaQuery()?.addEventListener('change', handleSystemThemeChange);
 }
 
 export function useAppearance() {
     const [appearance, setAppearance] = useState<Appearance>('system');
 
     const updateAppearance = useCallback((mode: Appearance) => {
-        setAppearance(mode);
+        // Always force light mode regardless of what mode is requested
+        const forcedMode: Appearance = 'light';
+        setAppearance(forcedMode);
 
-        // Store in localStorage for client-side persistence...
-        localStorage.setItem('appearance', mode);
+        // Store in localStorage for client-side persistence - always light
+        localStorage.setItem('appearance', forcedMode);
 
-        // Store in cookie for SSR...
-        setCookie('appearance', mode);
+        // Store in cookie for SSR - always light
+        setCookie('appearance', forcedMode);
 
-        applyTheme(mode);
+        applyTheme(forcedMode);
     }, []);
 
     useEffect(() => {
-        const savedAppearance = localStorage.getItem('appearance') as Appearance | null;
-        updateAppearance(savedAppearance || 'system');
+        // Force light mode - ignore saved appearance
+        updateAppearance('light');
 
-        return () => mediaQuery()?.removeEventListener('change', handleSystemThemeChange);
+        // Don't listen to system theme changes
+        // return () => mediaQuery()?.removeEventListener('change', handleSystemThemeChange);
     }, [updateAppearance]);
 
     return { appearance, updateAppearance } as const;
