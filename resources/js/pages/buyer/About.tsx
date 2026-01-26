@@ -29,42 +29,41 @@ export default function About({ artisans = [], pageContents = {} }: AboutProps) 
     const defaultArtisans: Artisan[] = [
         {
             id: 1,
-            name: 'Sarah Chen',
-            specialty: 'Ceramic Pottery',
-            image: '/api/placeholder/200/200',
+            name: 'Jerald Babor',
+            specialty: 'Full-Stack Web Developer',
+            image: '/jerald.jfif',
             description:
-                'Sarah has been creating beautiful ceramic pieces for over 15 years, specializing in functional pottery with artistic flair.',
-            location: 'Portland, OR',
-            experience: '15+ years',
+                'A skilled full-stack web developer creating innovative digital solutions and web applications, and the only one who developed this website and maintained it.',
+            location: 'Philippines',
+            experience: '',
         },
         {
             id: 2,
-            name: 'Mike Rodriguez',
-            specialty: 'Woodworking',
-            image: '/api/placeholder/200/200',
-            description: 'Mike crafts sustainable wooden furniture and accessories using traditional techniques and locally sourced materials.',
-            location: 'Austin, TX',
-            experience: '12+ years',
+            name: 'Sir Jonas Parreño MIT',
+            specialty: 'Analysis/Capstone Adviser',
+            image: '/sirjd.jpg',
+            description:
+                'An experienced adviser specializing in analysis and capstone project guidance, helping students excel in their academic journey.',
+            location: 'Philippines',
+            experience: '',
         },
         {
             id: 3,
-            name: 'Emma Thompson',
-            specialty: 'Textile Arts',
-            image: '/api/placeholder/200/200',
-            description:
-                'Emma creates cozy knitted items and woven textiles using natural fibers and traditional patterns passed down through generations.',
-            location: 'Burlington, VT',
-            experience: '10+ years',
+            name: 'Decery Alihid',
+            specialty: 'Documentator',
+            image: '/decery.jfif',
+            description: 'A dedicated documentator ensuring clear, comprehensive documentation for projects and processes.',
+            location: 'Philippines',
+            experience: '',
         },
         {
             id: 4,
-            name: 'David Kim',
-            specialty: 'Leather Crafting',
-            image: '/api/placeholder/200/200',
-            description:
-                'David specializes in premium leather goods, from journals to bags, using traditional techniques and high-quality materials.',
-            location: 'Seattle, WA',
-            experience: '8+ years',
+            name: 'Micaela Oliamina',
+            specialty: 'Documentator',
+            image: '/mekay.jfif',
+            description: 'A meticulous documentator creating detailed documentation to support project success and knowledge sharing.',
+            location: 'Philippines',
+            experience: '',
         },
     ];
 
@@ -169,12 +168,12 @@ export default function About({ artisans = [], pageContents = {} }: AboutProps) 
                 </div>
             </section>
 
-            {/* Featured Artisans */}
+            {/* Meet Our Team */}
             <section className="bg-white py-16">
                 <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                     <div className="mb-12 text-center">
-                        <h2 className="mb-4 text-3xl font-bold text-gray-900 md:text-4xl">Meet Our Artisans</h2>
-                        <p className="text-xl text-gray-600">The talented craftspeople who make our marketplace special</p>
+                        <h2 className="mb-4 text-3xl font-bold text-gray-900 md:text-4xl">Meet Our Team</h2>
+                        <p className="text-xl text-gray-600">The talented team members who make our marketplace special</p>
                     </div>
 
                     <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4">
@@ -188,7 +187,7 @@ export default function About({ artisans = [], pageContents = {} }: AboutProps) 
                                         <MapPin className="h-4 w-4" />
                                         {artisan.location}
                                     </p>
-                                    <p>{artisan.experience}</p>
+                                    {artisan.experience && <p>{artisan.experience}</p>}
                                 </div>
                                 <p className="text-sm text-gray-600">{artisan.description}</p>
                             </div>
@@ -217,7 +216,7 @@ export default function About({ artisans = [], pageContents = {} }: AboutProps) 
                                         about items created by human hands with care, skill, and passion.
                                     </p>
                                     <p>
-                                        Founded in 2023, we started as a small team passionate about supporting local artisans and preserving
+                                        Founded in 2026, we started as a small team passionate about supporting local artisans and preserving
                                         traditional crafts. We noticed that many talented craftspeople struggled to reach customers beyond their
                                         immediate communities.
                                     </p>
