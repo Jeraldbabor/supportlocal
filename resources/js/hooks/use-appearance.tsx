@@ -20,7 +20,7 @@ const applyTheme = () => {
 export function initializeTheme() {
     // Force light mode - ignore saved appearance
     applyTheme();
-    
+
     // Set appearance to light in localStorage to prevent future dark mode
     localStorage.setItem('appearance', 'light');
 }
@@ -28,7 +28,7 @@ export function initializeTheme() {
 export function useAppearance() {
     const [appearance, setAppearance] = useState<Appearance>('system');
 
-    const updateAppearance = useCallback((mode: Appearance) => {
+    const updateAppearance = useCallback((_mode: Appearance) => {
         // Always force light mode regardless of what mode is requested
         const forcedMode: Appearance = 'light';
         setAppearance(forcedMode);
