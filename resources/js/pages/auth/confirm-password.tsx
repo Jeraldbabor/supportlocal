@@ -15,7 +15,11 @@ export default function ConfirmPassword() {
         >
             <Head title="Confirm password" />
 
-            <Form {...ConfirmablePasswordController.store.form()} resetOnSuccess={['password']}>
+            <Form
+                action={ConfirmablePasswordController.store().url}
+                method={ConfirmablePasswordController.store().method}
+                resetOnSuccess={['password']}
+            >
                 {({ processing, errors }) => (
                     <div className="space-y-6">
                         <div className="grid gap-2">

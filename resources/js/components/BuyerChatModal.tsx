@@ -12,6 +12,7 @@ interface Message {
     sender_id: number;
     message: string;
     image?: string;
+    image_url?: string;
     is_read: boolean;
     created_at: string;
     sender: {

@@ -17,7 +17,8 @@ export default function StartChatButton({ userId, productId, className = '', var
     const [showChatModal, setShowChatModal] = useState(false);
     const [conversationId, setConversationId] = useState<number | null>(null);
     const [isMinimized, setIsMinimized] = useState(false);
-    const { auth } = usePage().props as { auth: { user?: { id: number; seller_status?: string } } };
+    const props = usePage().props as unknown as { auth: { user?: { id: number; seller_status?: string } } };
+    const auth = props.auth;
     const currentUserId = auth?.user?.id;
 
     const handleStartChat = async () => {
@@ -71,7 +72,7 @@ export default function StartChatButton({ userId, productId, className = '', var
                 )}
             </Button>
 
-            {showChatModal && conversationId && (
+            {showChatModal && conversationId && currentUserId && (
                 <BuyerChatModal
                     conversationId={conversationId}
                     currentUserId={currentUserId}

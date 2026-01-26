@@ -117,7 +117,7 @@ export function NotificationsProvider({
 
         return () => {
             channel.stopListening('.Illuminate\\Notifications\\Events\\BroadcastNotificationCreated');
-            Echo.leave(`private-App.Models.User.${userId}`);
+            Echo?.leave(`private-App.Models.User.${userId}`);
         };
     }, [userId, refreshUnreadCount, navigationCount]);
 

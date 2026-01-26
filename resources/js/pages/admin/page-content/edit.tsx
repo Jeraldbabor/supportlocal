@@ -92,7 +92,8 @@ export default function PageContentEdit() {
             metadata: formData.section === 'contact_info' ? metadata : content?.metadata || null,
         };
 
-        router.post('/admin/page-content', submitData, {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        router.post('/admin/page-content', submitData as any, {
             preserveScroll: true,
             onFinish: () => setIsSubmitting(false),
         });

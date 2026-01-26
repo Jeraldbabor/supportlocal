@@ -54,6 +54,7 @@ interface Product {
     } | null;
     tags?: string[];
     images?: string[];
+    image_urls?: string[];
     featured_image?: string;
     primary_image?: string;
     shipping_cost?: number;

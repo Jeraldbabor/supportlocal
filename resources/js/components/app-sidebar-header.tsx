@@ -23,7 +23,7 @@ export function AppSidebarHeader({ breadcrumbs = [] }: { breadcrumbs?: Breadcrum
                 </div>
             </div>
             <div className="flex flex-shrink-0 items-center gap-2 sm:gap-3">
-                {showNotifications && user?.role && <NotificationsDropdown userRole={user.role} />}
+                {showNotifications && user?.role && <NotificationsDropdown userRole={user.role as 'buyer' | 'seller' | 'administrator'} />}
                 <UserRoleDisplay />
             </div>
         </header>

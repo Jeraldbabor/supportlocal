@@ -9,6 +9,7 @@ interface OrderItem {
     id: number;
     product_name: string;
     product_image: string;
+    product_image_url?: string;
     quantity: number;
     price: number;
     total: number;
@@ -22,6 +23,7 @@ interface Order {
     payment_method: string;
     payment_status: string;
     payment_proof: string | null;
+    payment_proof_url?: string | null;
     payment_verification_notes: string | null;
     delivery_address: string;
     delivery_phone: string;

@@ -180,7 +180,7 @@ export default function MessagesDropdown({ currentUserId }: MessagesDropdownProp
 
         return () => {
             channel.stopListening('MessageSent');
-            Echo.leave(`private-App.Models.User.${currentUserId}`);
+            Echo?.leave(`private-App.Models.User.${currentUserId}`);
             if (reloadTimeout) clearTimeout(reloadTimeout);
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps

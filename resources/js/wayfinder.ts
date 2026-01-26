@@ -3,7 +3,7 @@
 export type RouteQueryOptions = {
     query?: Record<string, string | number | boolean | undefined>;
     mergeQuery?: Record<string, string | number | boolean | undefined>;
-} & Record<string, string | number | boolean | undefined>;
+};
 
 export type RouteDefinition<T = string> = {
     url: string;
@@ -39,13 +39,12 @@ export const queryParams = (options?: RouteQueryOptions): string => {
 /**
  * Apply default URL parameters
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const applyUrlDefaults = (args: any, defaults?: Record<string, unknown>): any => {
+export function applyUrlDefaults<T>(args: T, defaults?: Record<string, unknown>): T {
     // If args is a string (URL), apply defaults to URL
     if (typeof args === 'string') {
         if (!defaults) return args;
 
-        let finalUrl = args;
+        let finalUrl: string = args;
         Object.entries(defaults).forEach(([key, value]) => {
             const placeholder = `{${key}}`;
             if (finalUrl.includes(placeholder)) {
@@ -53,9 +52,9 @@ export const applyUrlDefaults = (args: any, defaults?: Record<string, unknown>):
             }
         });
 
-        return finalUrl;
+        return finalUrl as T;
     }
 
     // If args is an object, return it as-is (for backward compatibility)
     return args;
-};
+}

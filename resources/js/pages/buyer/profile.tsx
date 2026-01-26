@@ -52,6 +52,7 @@ interface User {
     date_of_birth?: string;
     profile_picture?: string;
     avatar?: string;
+    avatar_url?: string;
     delivery_address?: string;
     delivery_phone?: string;
     delivery_notes?: string;

@@ -52,7 +52,7 @@ export default function CategoryEdit() {
 
         // Handle parent_id
         if (data.parent_id === 'none' || data.parent_id === '') {
-            data.parent_id = null;
+            data.parent_id = '';
         }
 
         router.put(`/admin/categories/${category.id}`, data, {
