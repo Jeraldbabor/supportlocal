@@ -11,12 +11,12 @@
                 // Immediately remove dark class if it exists and force light mode
                 document.documentElement.classList.remove('dark');
                 document.documentElement.style.colorScheme = 'light';
-                
+
                 // Override any appearance settings to force light mode
                 if (typeof localStorage !== 'undefined') {
                     localStorage.setItem('appearance', 'light');
                 }
-                
+
                 // Watch for any attempts to add dark class and remove it immediately
                 const observer = new MutationObserver(function(mutations) {
                     mutations.forEach(function(mutation) {
@@ -33,13 +33,13 @@
                         }
                     });
                 });
-                
+
                 // Start observing for class and style changes
                 observer.observe(document.documentElement, {
                     attributes: true,
                     attributeFilter: ['class', 'style']
                 });
-                
+
                 // Also prevent dark mode on any system theme changes
                 if (window.matchMedia) {
                     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
@@ -52,7 +52,7 @@
                     };
                     mediaQuery.addEventListener('change', handleChange);
                 }
-                
+
                 // Periodically check and remove dark class (as a safety net)
                 setInterval(function() {
                     if (document.documentElement.classList.contains('dark')) {
