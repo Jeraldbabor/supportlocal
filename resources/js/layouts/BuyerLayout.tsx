@@ -178,9 +178,9 @@ function BuyerLayoutContent({ children, title }: BuyerLayoutProps) {
                                 style={{ colorScheme: 'light' }}
                                 aria-label={`Wishlist ${(wishlistCount ?? 0) > 0 ? `(${wishlistCount} items)` : '(empty)'}`}
                             >
-                                <Heart 
-                                    className="h-5 w-5 transition-transform duration-300 group-hover:scale-110" 
-                                    style={{ color: isActiveRoute('/wishlist') ? '#ea580c' : '#4b5563' }} 
+                                <Heart
+                                    className="h-5 w-5 transition-transform duration-300 group-hover:scale-110"
+                                    style={{ color: isActiveRoute('/wishlist') ? '#ea580c' : '#4b5563' }}
                                 />
                                 {(wishlistCount ?? 0) > 0 && (
                                     <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-gradient-to-r from-pink-500 to-red-500 text-xs font-medium text-white shadow-sm">
@@ -200,9 +200,9 @@ function BuyerLayoutContent({ children, title }: BuyerLayoutProps) {
                                 style={{ colorScheme: 'light' }}
                                 aria-label={`Shopping cart ${totalItems > 0 ? `(${totalItems} items)` : '(empty)'}`}
                             >
-                                <ShoppingCart 
-                                    className="h-5 w-5 transition-transform duration-300 group-hover:scale-110" 
-                                    style={{ color: isActiveRoute('/buyer/cart') ? '#ea580c' : '#4b5563' }} 
+                                <ShoppingCart
+                                    className="h-5 w-5 transition-transform duration-300 group-hover:scale-110"
+                                    style={{ color: isActiveRoute('/buyer/cart') ? '#ea580c' : '#4b5563' }}
                                 />
                                 {totalItems > 0 && (
                                     <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-gradient-to-r from-red-500 to-red-600 text-xs font-medium text-white shadow-sm">
@@ -586,7 +586,8 @@ function BuyerLayoutContent({ children, title }: BuyerLayoutProps) {
                     <div className="mt-8 border-t border-gray-800 pt-6 sm:mt-12 sm:pt-8">
                         <div className="flex flex-col items-center justify-between gap-4 text-center md:flex-row md:text-left">
                             <p className="text-sm text-gray-400">
-                                &copy; {new Date().getFullYear()} Support Local. Empowering buyers and artisans. Crafted with ❤️ for artisans, Develop and Maintain by @Jerald B Babor.
+                                &copy; {new Date().getFullYear()} Support Local. Empowering buyers and artisans. Crafted with ❤️ for artisans, Develop
+                                and Maintain by @Jerald B Babor.
                             </p>
                             <div className="flex flex-wrap justify-center gap-4 text-sm sm:gap-6 md:justify-start">
                                 <Link href="/privacy" className="text-gray-400 transition-colors hover:text-amber-400">

@@ -24,19 +24,46 @@ jobs:
         with:
           php-version: '8.4'
 
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
       - name: Install Dependencies
         run: |
           composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
-          npm install
+          npm ci
 
-      - name: Run Pint
-        run: vendor/bin/pint
+      - name: Generate Wayfinder Routes
+        run: |
+          echo "📦 Generating Wayfinder route files..."
+          php artisan wayfinder:generate
+          echo "✅ Wayfinder routes generated"
 
-      - name: Format Frontend
-        run: npm run format
+      - name: Check PHP Code Style
+        run: |
+          echo "🔍 Checking PHP code style with Pint..."
+          vendor/bin/pint --test || (echo "❌ PHP code style issues found. Run 'vendor/bin/pint' to fix." && exit 1)
+          echo "✅ PHP code style check passed"
+
+      - name: Check Frontend Formatting
+        run: |
+          echo "🔍 Checking frontend formatting with Prettier..."
+          npm run format:check || (echo "❌ Frontend formatting issues found. Run 'npm run format' to fix." && exit 1)
+          echo "✅ Frontend formatting check passed"
+
+      - name: Check TypeScript Types
+        run: |
+          echo "🔍 Checking TypeScript types..."
+          npm run types || (echo "❌ TypeScript type errors found. Fix the errors above." && exit 1)
+          echo "✅ TypeScript type check passed"
 
       - name: Lint Frontend
-        run: npm run lint
+        run: |
+          echo "🔍 Linting frontend code with ESLint..."
+          npm run lint:check || (echo "❌ ESLint errors found. Run 'npm run lint' to fix." && exit 1)
+          echo "✅ Frontend linting check passed"
 
       # - name: Commit Changes
       #   uses: stefanzweifel/git-auto-commit-action@v5

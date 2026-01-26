@@ -457,7 +457,10 @@ export default function ProductsIndex() {
                         {/* Mobile Card View */}
                         <div className="space-y-3 p-4 md:hidden">
                             {products.data.map((product) => (
-                                <div key={product.id} className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm transition-all hover:shadow-md">
+                                <div
+                                    key={product.id}
+                                    className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm transition-all hover:shadow-md"
+                                >
                                     <div className="flex items-start justify-between gap-3">
                                         <div className="flex min-w-0 flex-1 items-start gap-3">
                                             {product.primary_image ? (
@@ -579,7 +582,9 @@ export default function ProductsIndex() {
                                         key={index}
                                         href={link.url}
                                         className={`rounded-md px-2 py-1.5 text-xs transition-colors sm:px-3 sm:py-2 sm:text-sm ${
-                                            link.active ? 'bg-orange-500 text-white' : 'border border-gray-200 bg-white text-gray-700 hover:bg-gray-50'
+                                            link.active
+                                                ? 'bg-orange-500 text-white'
+                                                : 'border border-gray-200 bg-white text-gray-700 hover:bg-gray-50'
                                         }`}
                                         dangerouslySetInnerHTML={{ __html: link.label }}
                                     />

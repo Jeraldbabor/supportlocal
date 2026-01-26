@@ -1,2 +1,8 @@
 resources/js/components/ui/*
+resources/views/**/*.blade.php
 resources/views/mail/*
+
+# Auto-generated Wayfinder files
+resources/js/actions/**
+resources/js/routes/**
+resources/js/wayfinder/**

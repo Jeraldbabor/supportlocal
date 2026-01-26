@@ -19,7 +19,8 @@ export default function ResetPassword({ token, email }: ResetPasswordProps) {
             <Head title="Reset password" />
 
             <Form
-                {...NewPasswordController.store.form()}
+                action={NewPasswordController.store().url}
+                method={NewPasswordController.store().method}
                 transform={(data) => ({ ...data, token, email })}
                 resetOnSuccess={['password', 'password_confirmation']}
             >

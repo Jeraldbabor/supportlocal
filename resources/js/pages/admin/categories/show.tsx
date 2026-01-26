@@ -119,7 +119,10 @@ export default function CategoryShow() {
                                 <CardContent>
                                     <div className="space-y-2">
                                         {category.children.map((child) => (
-                                            <div key={child.id} className="flex items-center justify-between border-b border-gray-200 pb-2 last:border-0">
+                                            <div
+                                                key={child.id}
+                                                className="flex items-center justify-between border-b border-gray-200 pb-2 last:border-0"
+                                            >
                                                 <span className="font-medium text-gray-900">{child.name}</span>
                                                 <span className="text-sm text-gray-500">{child.products_count} products</span>
                                             </div>
@@ -140,13 +143,7 @@ export default function CategoryShow() {
                             <CardContent className="space-y-4">
                                 <div className="flex items-center justify-between">
                                     <span className="text-sm font-medium text-gray-700">Status</span>
-                                    <Badge
-                                        className={
-                                            category.is_active
-                                                ? 'bg-green-100 text-green-800'
-                                                : 'bg-gray-100 text-gray-800'
-                                        }
-                                    >
+                                    <Badge className={category.is_active ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}>
                                         {category.is_active ? 'Active' : 'Inactive'}
                                     </Badge>
                                 </div>

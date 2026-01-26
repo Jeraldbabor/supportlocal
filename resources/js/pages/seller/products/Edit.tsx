@@ -38,6 +38,7 @@ interface Product {
     condition?: string;
     tags?: string[] | null;
     images?: string[] | null;
+    image_urls?: string[];
     status: 'active' | 'draft' | 'archived';
     requires_shipping: boolean;
     taxable: boolean;

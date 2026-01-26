@@ -2,14 +2,6 @@ import { useCallback, useEffect, useState } from 'react';
 
 export type Appearance = 'light' | 'dark' | 'system';
 
-const prefersDark = () => {
-    if (typeof window === 'undefined') {
-        return false;
-    }
-
-    return window.matchMedia('(prefers-color-scheme: dark)').matches;
-};
-
 const setCookie = (name: string, value: string, days = 365) => {
     if (typeof document === 'undefined') {
         return;
@@ -19,55 +11,54 @@ const setCookie = (name: string, value: string, days = 365) => {
     document.cookie = `${name}=${value};path=/;max-age=${maxAge};SameSite=Lax`;
 };
 
-const applyTheme = (appearance: Appearance) => {
-    const isDark = appearance === 'dark' || (appearance === 'system' && prefersDark());
-
-    document.documentElement.classList.toggle('dark', isDark);
-    document.documentElement.style.colorScheme = isDark ? 'dark' : 'light';
-};
-
-const mediaQuery = () => {
-    if (typeof window === 'undefined') {
-        return null;
+const applyTheme = () => {
+    // Only run in browser environment
+    if (typeof document === 'undefined') {
+        return;
     }
 
-    return window.matchMedia('(prefers-color-scheme: dark)');
-};
-
-const handleSystemThemeChange = () => {
-    const currentAppearance = localStorage.getItem('appearance') as Appearance;
-    applyTheme(currentAppearance || 'system');
+    // Force light mode always - ignore any appearance setting
+    document.documentElement.classList.remove('dark');
+    document.documentElement.style.colorScheme = 'light';
 };
 
 export function initializeTheme() {
-    const savedAppearance = (localStorage.getItem('appearance') as Appearance) || 'system';
+    // Only run in browser environment
+    if (typeof window === 'undefined' || typeof document === 'undefined') {
+        return;
+    }
 
-    applyTheme(savedAppearance);
+    // Force light mode - ignore saved appearance
+    applyTheme();
 
-    // Add the event listener for system theme changes...
-    mediaQuery()?.addEventListener('change', handleSystemThemeChange);
+    // Set appearance to light in localStorage to prevent future dark mode
+    if (typeof localStorage !== 'undefined') {
+        localStorage.setItem('appearance', 'light');
+    }
 }
 
 export function useAppearance() {
     const [appearance, setAppearance] = useState<Appearance>('system');
 
-    const updateAppearance = useCallback((mode: Appearance) => {
-        setAppearance(mode);
+    const updateAppearance = useCallback((_mode: Appearance) => {
+        // Always force light mode regardless of what mode is requested
+        const forcedMode: Appearance = 'light';
+        setAppearance(forcedMode);
 
-        // Store in localStorage for client-side persistence...
-        localStorage.setItem('appearance', mode);
+        // Store in localStorage for client-side persistence - always light
+        if (typeof localStorage !== 'undefined') {
+            localStorage.setItem('appearance', forcedMode);
+        }
 
-        // Store in cookie for SSR...
-        setCookie('appearance', mode);
+        // Store in cookie for SSR - always light
+        setCookie('appearance', forcedMode);
 
-        applyTheme(mode);
+        applyTheme();
     }, []);
 
     useEffect(() => {
-        const savedAppearance = localStorage.getItem('appearance') as Appearance | null;
-        updateAppearance(savedAppearance || 'system');
-
-        return () => mediaQuery()?.removeEventListener('change', handleSystemThemeChange);
+        // Force light mode - ignore saved appearance
+        updateAppearance('light');
     }, [updateAppearance]);
 
     return { appearance, updateAppearance } as const;

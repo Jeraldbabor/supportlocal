@@ -76,7 +76,7 @@ export default function ProductEdit() {
 
         // Handle category_id
         if (data.category_id === 'none' || data.category_id === '') {
-            data.category_id = null;
+            data.category_id = '';
         }
 
         router.put(`/admin/products/${product.id}`, data, {

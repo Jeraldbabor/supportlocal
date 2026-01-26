@@ -4,7 +4,7 @@ import Pusher from 'pusher-js';
 declare global {
     interface Window {
         Pusher: typeof Pusher;
-        Echo: Echo | null;
+        Echo: Echo<'pusher'> | null;
     }
 }
 
@@ -45,12 +45,10 @@ if (isValidPusherKey && isValidPusherCluster) {
         cluster: pusherCluster,
         authEndpoint: '/broadcasting/auth',
         // Use authorizer function to get fresh CSRF token for each channel subscription
+        // @ts-expect-error - authorizer callback type is intentionally simplified
         authorizer: (channel: { name: string }) => {
             return {
-                authorize: (
-                    socketId: string,
-                    callback: (error: boolean | Error | null, authData?: { auth: string; channel_data?: string }) => void,
-                ) => {
+                authorize: (socketId: string, callback: (error: Error | null, authData?: { auth: string; channel_data?: string }) => void) => {
                     fetch('/broadcasting/auth', {
                         method: 'POST',
                         headers: {
@@ -73,7 +71,7 @@ if (isValidPusherKey && isValidPusherCluster) {
                             callback(null, data);
                         })
                         .catch((error) => {
-                            callback(error);
+                            callback(error instanceof Error ? error : new Error(String(error)));
                         });
                 },
             };

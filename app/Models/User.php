@@ -329,7 +329,7 @@ class User extends Authenticatable implements MustVerifyEmail
      */
     public function getIsOnlineAttribute(): bool
     {
-        if (!$this->last_seen_at) {
+        if (! $this->last_seen_at) {
             return false;
         }
 

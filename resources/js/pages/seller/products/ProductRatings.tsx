@@ -35,6 +35,7 @@ interface Product {
     id: number;
     name: string;
     images?: string[];
+    image_urls?: string[];
     primary_image?: string;
     average_rating: number;
     review_count: number;

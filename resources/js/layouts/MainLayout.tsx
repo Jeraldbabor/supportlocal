@@ -174,9 +174,9 @@ export default function MainLayout({ children, title }: MainLayoutProps) {
                                 style={{ colorScheme: 'light' }}
                                 aria-label={`Notifications ${unreadCount > 0 ? `(${unreadCount} unread)` : ''}`}
                             >
-                                <Bell 
-                                    className="h-4 w-4 transition-transform duration-300 group-hover:scale-110 sm:h-5 sm:w-5" 
-                                    style={{ color: isActiveRoute('/buyer/notifications') ? '#ea580c' : '#4b5563' }} 
+                                <Bell
+                                    className="h-4 w-4 transition-transform duration-300 group-hover:scale-110 sm:h-5 sm:w-5"
+                                    style={{ color: isActiveRoute('/buyer/notifications') ? '#ea580c' : '#4b5563' }}
                                 />
                                 {unreadCount > 0 && (
                                     <span className="absolute -top-0.5 -right-0.5 flex h-4 w-4 animate-pulse items-center justify-center rounded-full bg-gradient-to-r from-red-500 to-red-600 text-[10px] font-medium text-white shadow-sm sm:-top-1 sm:-right-1 sm:h-5 sm:w-5 sm:text-xs">
@@ -196,9 +196,9 @@ export default function MainLayout({ children, title }: MainLayoutProps) {
                                 style={{ colorScheme: 'light' }}
                                 aria-label={`Wishlist ${(wishlistCount ?? 0) > 0 ? `(${wishlistCount} items)` : '(empty)'}`}
                             >
-                                <Heart 
-                                    className="h-4 w-4 transition-transform duration-300 group-hover:scale-110 sm:h-5 sm:w-5" 
-                                    style={{ color: isActiveRoute('/wishlist') ? '#ea580c' : '#4b5563' }} 
+                                <Heart
+                                    className="h-4 w-4 transition-transform duration-300 group-hover:scale-110 sm:h-5 sm:w-5"
+                                    style={{ color: isActiveRoute('/wishlist') ? '#ea580c' : '#4b5563' }}
                                 />
                                 {(wishlistCount ?? 0) > 0 && (
                                     <span className="absolute -top-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-gradient-to-r from-pink-500 to-red-500 text-[10px] font-medium text-white shadow-sm sm:-top-1 sm:-right-1 sm:h-5 sm:w-5 sm:text-xs">
@@ -212,16 +212,14 @@ export default function MainLayout({ children, title }: MainLayoutProps) {
                                 href="/cart"
                                 onClick={handleCartClick}
                                 className={`group relative flex-shrink-0 rounded-xl p-1.5 transition-all duration-300 focus:ring-2 focus:ring-orange-500/50 focus:ring-offset-2 focus:outline-none sm:p-2 ${
-                                    isActiveRoute('/cart')
-                                        ? 'bg-orange-100 shadow-sm ring-1 ring-orange-200'
-                                        : 'hover:bg-orange-50 hover:shadow-sm'
+                                    isActiveRoute('/cart') ? 'bg-orange-100 shadow-sm ring-1 ring-orange-200' : 'hover:bg-orange-50 hover:shadow-sm'
                                 }`}
                                 style={{ colorScheme: 'light' }}
                                 aria-label={`Shopping cart ${totalItems > 0 ? `(${totalItems} items)` : '(empty)'}`}
                             >
-                                <ShoppingCart 
-                                    className="h-4 w-4 transition-transform duration-300 group-hover:scale-110 sm:h-5 sm:w-5" 
-                                    style={{ color: isActiveRoute('/cart') ? '#ea580c' : '#4b5563' }} 
+                                <ShoppingCart
+                                    className="h-4 w-4 transition-transform duration-300 group-hover:scale-110 sm:h-5 sm:w-5"
+                                    style={{ color: isActiveRoute('/cart') ? '#ea580c' : '#4b5563' }}
                                 />
                                 {totalItems > 0 && showCartNotification && (
                                     <span className="absolute -top-0.5 -right-0.5 flex h-4 w-4 animate-pulse items-center justify-center rounded-full bg-gradient-to-r from-red-500 to-red-600 text-[10px] font-medium text-white shadow-sm sm:-top-1 sm:-right-1 sm:h-5 sm:w-5 sm:text-xs">
@@ -362,7 +360,9 @@ export default function MainLayout({ children, title }: MainLayoutProps) {
                                                 setIsUserMenuOpen(false);
                                             }}
                                         >
-                                            <Icon className={`h-4 w-4 flex-shrink-0 sm:h-5 sm:w-5 ${isActive ? 'text-orange-600' : 'text-gray-500'}`} />
+                                            <Icon
+                                                className={`h-4 w-4 flex-shrink-0 sm:h-5 sm:w-5 ${isActive ? 'text-orange-600' : 'text-gray-500'}`}
+                                            />
                                             <span>{item.name}</span>
                                             {isActive && <div className="ml-auto h-2 w-2 rounded-full bg-orange-500"></div>}
                                         </Link>
@@ -564,7 +564,8 @@ export default function MainLayout({ children, title }: MainLayoutProps) {
                     <div className="mt-8 border-t border-gray-800 pt-6 sm:mt-12 sm:pt-8">
                         <div className="flex flex-col items-center justify-between gap-4 text-center md:flex-row md:text-left">
                             <p className="text-sm text-gray-400">
-                                &copy; {new Date().getFullYear()} Support Local. All rights reserved. Crafted with ❤️ for artisans, Develop and Maintain by @Jerald B Babor.
+                                &copy; {new Date().getFullYear()} Support Local. All rights reserved. Crafted with ❤️ for artisans, Develop and
+                                Maintain by @Jerald B Babor.
                             </p>
                             <div className="flex flex-wrap justify-center gap-4 text-sm sm:gap-6 md:justify-start">
                                 <Link href="/privacy" className="text-gray-400 transition-colors hover:text-amber-400">

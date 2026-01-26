@@ -97,9 +97,15 @@ export default function SellerBusinessProfile() {
                                         <span
                                             className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium sm:px-3 sm:py-1 sm:text-sm ${getStatusColor(business.status)}`}
                                         >
-                                            {business.status === 'approved' && <CheckCircle className="mr-1.5 h-3.5 w-3.5 sm:mr-2 sm:h-4 sm:w-4" style={{ color: '#16a34a' }} />}
-                                            {business.status === 'rejected' && <AlertTriangle className="mr-1.5 h-3.5 w-3.5 sm:mr-2 sm:h-4 sm:w-4" style={{ color: '#dc2626' }} />}
-                                            {business.status === 'pending' && <Calendar className="mr-1.5 h-3.5 w-3.5 sm:mr-2 sm:h-4 sm:w-4" style={{ color: '#ca8a04' }} />}
+                                            {business.status === 'approved' && (
+                                                <CheckCircle className="mr-1.5 h-3.5 w-3.5 sm:mr-2 sm:h-4 sm:w-4" style={{ color: '#16a34a' }} />
+                                            )}
+                                            {business.status === 'rejected' && (
+                                                <AlertTriangle className="mr-1.5 h-3.5 w-3.5 sm:mr-2 sm:h-4 sm:w-4" style={{ color: '#dc2626' }} />
+                                            )}
+                                            {business.status === 'pending' && (
+                                                <Calendar className="mr-1.5 h-3.5 w-3.5 sm:mr-2 sm:h-4 sm:w-4" style={{ color: '#ca8a04' }} />
+                                            )}
                                             {business.status.charAt(0).toUpperCase() + business.status.slice(1)}
                                         </span>
                                     </div>
@@ -161,9 +167,7 @@ export default function SellerBusinessProfile() {
                                                 </option>
                                             ))}
                                         </select>
-                                        {errors.business_type && (
-                                            <p className="mt-1 text-xs text-red-600 sm:text-sm">{errors.business_type}</p>
-                                        )}
+                                        {errors.business_type && <p className="mt-1 text-xs text-red-600 sm:text-sm">{errors.business_type}</p>}
                                     </div>
 
                                     <div>

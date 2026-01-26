@@ -85,7 +85,9 @@ export default function Cart() {
                                                 <div className="flex items-center gap-2">
                                                     <p className="text-sm text-gray-600">by {item.seller.name}</p>
                                                 </div>
-                                                <p className="mt-1 text-lg font-semibold" style={{ color: '#ea580c' }}>₱{item.price.toFixed(2)}</p>
+                                                <p className="mt-1 text-lg font-semibold" style={{ color: '#ea580c' }}>
+                                                    ₱{item.price.toFixed(2)}
+                                                </p>
                                             </div>
                                             <div className="flex items-center space-x-3">
                                                 {/* Quantity Controls */}
@@ -161,7 +163,9 @@ export default function Cart() {
                                 <div className="border-t border-gray-200 pt-3">
                                     <div className="flex justify-between">
                                         <span className="text-lg font-semibold text-gray-900">Total</span>
-                                        <span className="text-lg font-semibold" style={{ color: '#ea580c' }}>₱{total.toFixed(2)}</span>
+                                        <span className="text-lg font-semibold" style={{ color: '#ea580c' }}>
+                                            ₱{total.toFixed(2)}
+                                        </span>
                                     </div>
                                 </div>
                             </div>

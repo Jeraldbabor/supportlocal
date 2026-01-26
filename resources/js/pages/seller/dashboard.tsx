@@ -406,9 +406,7 @@ export default function SellerDashboard() {
                                         <span className="ml-1 text-xs sm:ml-2 sm:text-sm">• {stats.days_as_seller} days as seller</span>
                                     )}
                                 </p>
-                                <p className="mt-1 text-xs text-gray-500 sm:text-sm">
-                                    Manage your products, orders, and customer relationships
-                                </p>
+                                <p className="mt-1 text-xs text-gray-500 sm:text-sm">Manage your products, orders, and customer relationships</p>
                             </div>
                         </div>
 
@@ -426,7 +424,10 @@ export default function SellerDashboard() {
                                     className="flex items-center gap-1.5 rounded-lg bg-white px-2.5 py-1.5 text-xs font-medium whitespace-nowrap text-gray-700 shadow-sm ring-1 ring-gray-300 hover:bg-gray-50 disabled:opacity-50 sm:gap-2 sm:px-3 sm:py-2 sm:text-sm"
                                     title="Refresh dashboard (Ctrl+R)"
                                 >
-                                    <RefreshCw className={`h-3.5 w-3.5 sm:h-4 sm:w-4 ${isRefreshing ? 'animate-spin' : ''}`} style={{ color: '#374151' }} />
+                                    <RefreshCw
+                                        className={`h-3.5 w-3.5 sm:h-4 sm:w-4 ${isRefreshing ? 'animate-spin' : ''}`}
+                                        style={{ color: '#374151' }}
+                                    />
                                     <span className="hidden sm:inline">{isRefreshing ? 'Refreshing...' : 'Refresh'}</span>
                                 </button>
                             </div>
@@ -434,9 +435,7 @@ export default function SellerDashboard() {
                             {/* Account Health Score */}
                             <div className="w-full sm:w-auto">
                                 <div className="mb-1.5 flex items-center gap-2">
-                                    <span className="text-xs font-medium whitespace-nowrap text-gray-600 sm:text-sm">
-                                        Account Health
-                                    </span>
+                                    <span className="text-xs font-medium whitespace-nowrap text-gray-600 sm:text-sm">Account Health</span>
                                     <div
                                         className={`flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full sm:h-8 sm:w-8 ${getHealthScoreBg(stats.account_health_score)}`}
                                     >
@@ -471,9 +470,7 @@ export default function SellerDashboard() {
                                 <User className="h-4 w-4 sm:h-5 sm:w-5" style={{ color: '#374151' }} />
                                 Profile Completeness
                             </h3>
-                            <span className="flex-shrink-0 text-xl font-bold text-blue-600 sm:text-2xl">
-                                {profile.profile_completeness}%
-                            </span>
+                            <span className="flex-shrink-0 text-xl font-bold text-blue-600 sm:text-2xl">{profile.profile_completeness}%</span>
                         </div>
 
                         <div className="mb-4 h-2 w-full rounded-full bg-gray-200">
@@ -593,9 +590,7 @@ export default function SellerDashboard() {
                             </span>
                         </div>
                         {products.created_this_week > 0 && (
-                            <div className="mt-2 text-[10px] text-gray-500 sm:text-xs">
-                                +{products.created_this_week} this week
-                            </div>
+                            <div className="mt-2 text-[10px] text-gray-500 sm:text-xs">+{products.created_this_week} this week</div>
                         )}
                     </div>
 
@@ -618,9 +613,7 @@ export default function SellerDashboard() {
                                 {orders.completed} Completed
                             </span>
                         </div>
-                        {orders.today > 0 && (
-                            <div className="mt-2 text-[10px] text-gray-500 sm:text-xs">+{orders.today} today</div>
-                        )}
+                        {orders.today > 0 && <div className="mt-2 text-[10px] text-gray-500 sm:text-xs">+{orders.today} today</div>}
                     </div>
 
                     {/* Revenue Card */}
@@ -665,10 +658,7 @@ export default function SellerDashboard() {
                             </span>
                         </div>
                         {revenue.pending_amount > 0 && (
-                            <div
-                                className="mt-2 truncate text-[10px] text-yellow-600 sm:text-xs"
-                                title="Revenue from pending orders"
-                            >
+                            <div className="mt-2 truncate text-[10px] text-yellow-600 sm:text-xs" title="Revenue from pending orders">
                                 {formatCurrency(revenue.pending_amount)} pending
                             </div>
                         )}
@@ -771,15 +761,11 @@ export default function SellerDashboard() {
                             </div>
                             <div className="flex items-center justify-between">
                                 <span className="text-sm text-gray-600">Platform Fee ({revenue.commission_rate}%)</span>
-                                <span className="font-semibold text-orange-600">
-                                    -{formatCurrency(revenue.total_commission || 0)}
-                                </span>
+                                <span className="font-semibold text-orange-600">-{formatCurrency(revenue.total_commission || 0)}</span>
                             </div>
                             <div className="flex items-center justify-between border-t border-gray-200 pt-3">
                                 <span className="text-sm font-medium text-gray-700">Net Earnings</span>
-                                <span className="font-bold text-green-600">
-                                    {formatCurrency(revenue.net_total || revenue.total)}
-                                </span>
+                                <span className="font-bold text-green-600">{formatCurrency(revenue.net_total || revenue.total)}</span>
                             </div>
                             <div className="flex items-center justify-between">
                                 <span className="text-sm text-gray-600">Avg. Order Value</span>
@@ -787,9 +773,7 @@ export default function SellerDashboard() {
                             </div>
                             <div className="flex items-center justify-between">
                                 <span className="text-sm text-gray-600">This Week (Net)</span>
-                                <span className="font-semibold text-blue-600">
-                                    {formatCurrency(revenue.net_this_week || revenue.this_week)}
-                                </span>
+                                <span className="font-semibold text-blue-600">{formatCurrency(revenue.net_this_week || revenue.this_week)}</span>
                             </div>
                             <div className="flex items-center justify-between">
                                 <span className="text-sm text-gray-600">Growth (MTD)</span>
@@ -855,9 +839,7 @@ export default function SellerDashboard() {
                                     <div key={item.period} className="space-y-2">
                                         <div className="flex items-center justify-between">
                                             <span className="text-sm font-medium text-gray-700">{item.period}</span>
-                                            <span className="text-sm font-semibold text-gray-900">
-                                                {formatCurrency(item.amount)}
-                                            </span>
+                                            <span className="text-sm font-semibold text-gray-900">{formatCurrency(item.amount)}</span>
                                         </div>
                                         <div className="h-3 w-full rounded-full bg-gray-200">
                                             <div
@@ -1000,10 +982,7 @@ export default function SellerDashboard() {
                                     {recentActivity.map((activity, index) => {
                                         const IconComponent = getIconComponent(activity.icon);
                                         return (
-                                            <div
-                                                key={index}
-                                                className="flex items-start gap-3 border-b border-gray-100 pb-3 last:border-0 last:pb-0"
-                                            >
+                                            <div key={index} className="flex items-start gap-3 border-b border-gray-100 pb-3 last:border-0 last:pb-0">
                                                 <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-100">
                                                     <IconComponent className="h-4 w-4 text-blue-600" />
                                                 </div>

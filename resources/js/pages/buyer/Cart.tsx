@@ -173,7 +173,9 @@ export default function Cart() {
                                                     >
                                                         <Minus className="h-4 w-4" style={{ color: '#374151' }} />
                                                     </button>
-                                                    <span className="min-w-[3rem] px-4 py-2 text-center font-medium text-gray-900">{item.quantity}</span>
+                                                    <span className="min-w-[3rem] px-4 py-2 text-center font-medium text-gray-900">
+                                                        {item.quantity}
+                                                    </span>
                                                     <button
                                                         onClick={() => handleQuantityChange(item.id, item.quantity + 1)}
                                                         className="p-2 transition-colors hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50"

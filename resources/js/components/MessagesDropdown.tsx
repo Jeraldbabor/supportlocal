@@ -180,7 +180,7 @@ export default function MessagesDropdown({ currentUserId }: MessagesDropdownProp
 
         return () => {
             channel.stopListening('MessageSent');
-            Echo.leave(`private-App.Models.User.${currentUserId}`);
+            Echo?.leave(`private-App.Models.User.${currentUserId}`);
             if (reloadTimeout) clearTimeout(reloadTimeout);
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -293,7 +293,7 @@ export default function MessagesDropdown({ currentUserId }: MessagesDropdownProp
                 </h3>
             </div>
 
-            <div ref={conversationsListRef} className="max-h-[60vh] overflow-y-auto scroll-smooth sm:max-h-96 custom-scrollbar">
+            <div ref={conversationsListRef} className="custom-scrollbar max-h-[60vh] overflow-y-auto scroll-smooth sm:max-h-96">
                 {isLoading ? (
                     <div className="p-6 text-center text-gray-500 sm:p-8">
                         <div className="mx-auto h-6 w-6 animate-spin rounded-full border-b-2 border-primary sm:h-8 sm:w-8"></div>
@@ -382,7 +382,10 @@ export default function MessagesDropdown({ currentUserId }: MessagesDropdownProp
                     className="group relative rounded-lg p-1.5 transition-all duration-300 hover:bg-orange-50 hover:shadow-sm focus:ring-2 focus:ring-orange-500/50 focus:ring-offset-2 focus:outline-none sm:rounded-xl sm:p-2"
                     aria-label={`Messages ${totalUnread > 0 ? `(${totalUnread} unread)` : ''}`}
                 >
-                    <MessageSquare className="h-4 w-4 transition-transform duration-300 group-hover:scale-110 sm:h-5 sm:w-5" style={{ color: '#4b5563' }} />
+                    <MessageSquare
+                        className="h-4 w-4 transition-transform duration-300 group-hover:scale-110 sm:h-5 sm:w-5"
+                        style={{ color: '#4b5563' }}
+                    />
                     {totalUnread > 0 && (
                         <span className="absolute -top-0.5 -right-0.5 flex h-4 w-4 animate-pulse items-center justify-center rounded-full bg-gradient-to-r from-blue-500 to-blue-600 text-[10px] font-medium text-white shadow-sm sm:-top-1 sm:-right-1 sm:h-5 sm:w-5 sm:text-xs">
                             {totalUnread > 9 ? '9+' : totalUnread}
@@ -396,7 +399,10 @@ export default function MessagesDropdown({ currentUserId }: MessagesDropdownProp
                         {/* Mobile backdrop */}
                         <div className="fixed inset-0 z-[9998] bg-black/20 sm:hidden" onClick={() => setIsOpen(false)} />
                         {/* Dropdown - Fixed on mobile, absolute on desktop */}
-                        <div className="fixed top-[4.5rem] right-2 z-[9999] w-[calc(100vw-1rem)] max-w-sm rounded-lg border border-gray-300 bg-white shadow-xl sm:absolute sm:top-auto sm:right-0 sm:z-50 sm:mt-2 sm:w-80" data-chat-container>
+                        <div
+                            className="fixed top-[4.5rem] right-2 z-[9999] w-[calc(100vw-1rem)] max-w-sm rounded-lg border border-gray-300 bg-white shadow-xl sm:absolute sm:top-auto sm:right-0 sm:z-50 sm:mt-2 sm:w-80"
+                            data-chat-container
+                        >
                             {renderDropdownContent()}
                         </div>
                     </>
@@ -421,9 +427,12 @@ export default function MessagesDropdown({ currentUserId }: MessagesDropdownProp
             {showAllMessagesModal &&
                 createPortal(
                     <div className="fixed inset-0 z-[10000] flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
-                        <div className="flex h-[90vh] max-h-[900px] w-full max-w-6xl flex-col overflow-hidden rounded-xl bg-white dark:bg-gray-800 shadow-2xl" data-chat-container>
+                        <div
+                            className="flex h-[90vh] max-h-[900px] w-full max-w-6xl flex-col overflow-hidden rounded-xl bg-white shadow-2xl dark:bg-gray-800"
+                            data-chat-container
+                        >
                             {/* Header */}
-                            <div className="flex-shrink-0 border-b border-gray-200 dark:border-gray-700 bg-gradient-to-r from-primary/5 to-primary/10 dark:from-primary/20 dark:to-primary/30 p-6">
+                            <div className="flex-shrink-0 border-b border-gray-200 bg-gradient-to-r from-primary/5 to-primary/10 p-6 dark:border-gray-700 dark:from-primary/20 dark:to-primary/30">
                                 <div className="mb-4 flex items-center justify-between">
                                     <div className="flex items-center gap-3">
                                         <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
@@ -456,14 +465,14 @@ export default function MessagesDropdown({ currentUserId }: MessagesDropdownProp
                                             placeholder="Search conversations..."
                                             value={searchQuery}
                                             onChange={(e) => setSearchQuery(e.target.value)}
-                                            className="border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 pl-10 focus:border-primary dark:focus:border-orange-500 focus:ring-primary dark:focus:ring-orange-500"
+                                            className="border-gray-300 bg-white pl-10 focus:border-primary focus:ring-primary dark:border-gray-600 dark:bg-gray-700 dark:focus:border-orange-500 dark:focus:ring-orange-500"
                                         />
                                     </div>
                                 )}
                             </div>
 
                             {/* Conversations List */}
-                            <div className="flex-1 overflow-y-auto bg-gray-50 p-4 custom-scrollbar">
+                            <div className="custom-scrollbar flex-1 overflow-y-auto bg-gray-50 p-4">
                                 {isLoading ? (
                                     <div className="flex h-full items-center justify-center">
                                         <div className="text-center">

@@ -201,13 +201,27 @@ export default function OrdersIndex() {
                             <table className="w-full">
                                 <thead className="border-b border-gray-200 bg-gray-50">
                                     <tr>
-                                        <th className="px-4 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase lg:px-6">Order</th>
-                                        <th className="px-4 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase lg:px-6">Buyer</th>
-                                        <th className="px-4 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase lg:px-6">Seller</th>
-                                        <th className="px-4 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase lg:px-6">Amount</th>
-                                        <th className="px-4 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase lg:px-6">Status</th>
-                                        <th className="px-4 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase lg:px-6">Date</th>
-                                        <th className="px-4 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase lg:px-6">Actions</th>
+                                        <th className="px-4 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase lg:px-6">
+                                            Order
+                                        </th>
+                                        <th className="px-4 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase lg:px-6">
+                                            Buyer
+                                        </th>
+                                        <th className="px-4 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase lg:px-6">
+                                            Seller
+                                        </th>
+                                        <th className="px-4 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase lg:px-6">
+                                            Amount
+                                        </th>
+                                        <th className="px-4 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase lg:px-6">
+                                            Status
+                                        </th>
+                                        <th className="px-4 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase lg:px-6">
+                                            Date
+                                        </th>
+                                        <th className="px-4 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase lg:px-6">
+                                            Actions
+                                        </th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-gray-200 bg-white">
@@ -238,9 +252,7 @@ export default function OrdersIndex() {
                                                 <div className="font-medium text-gray-900">₱{order.total_amount.toLocaleString()}</div>
                                             </td>
                                             <td className="px-4 py-4 lg:px-6">
-                                                <Badge className={getStatusBadgeColor(order.status_color)}>
-                                                    {order.status_label}
-                                                </Badge>
+                                                <Badge className={getStatusBadgeColor(order.status_color)}>{order.status_label}</Badge>
                                             </td>
                                             <td className="px-4 py-4 lg:px-6">
                                                 <span className="text-sm text-gray-900">{new Date(order.created_at).toLocaleDateString()}</span>
@@ -272,14 +284,15 @@ export default function OrdersIndex() {
                         {/* Mobile Card View */}
                         <div className="space-y-3 p-4 md:hidden">
                             {orders.data.map((order) => (
-                                <div key={order.id} className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm transition-all hover:shadow-md">
+                                <div
+                                    key={order.id}
+                                    className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm transition-all hover:shadow-md"
+                                >
                                     <div className="flex items-start justify-between gap-3">
                                         <div className="min-w-0 flex-1">
                                             <div className="flex items-center gap-2">
                                                 <span className="font-medium text-gray-900">{order.order_number}</span>
-                                                <Badge className={getStatusBadgeColor(order.status_color)}>
-                                                    {order.status_label}
-                                                </Badge>
+                                                <Badge className={getStatusBadgeColor(order.status_color)}>{order.status_label}</Badge>
                                             </div>
                                             <div className="mt-2 space-y-1 text-sm text-gray-500">
                                                 <div className="flex items-center gap-1">
@@ -297,12 +310,11 @@ export default function OrdersIndex() {
                                                     </div>
                                                 )}
                                                 <div>
-                                                    <span className="font-medium text-gray-700">Date:</span> {new Date(order.created_at).toLocaleDateString()}
+                                                    <span className="font-medium text-gray-700">Date:</span>{' '}
+                                                    {new Date(order.created_at).toLocaleDateString()}
                                                 </div>
                                             </div>
-                                            <div className="mt-2 text-lg font-bold text-green-600">
-                                                ₱{order.total_amount.toLocaleString()}
-                                            </div>
+                                            <div className="mt-2 text-lg font-bold text-green-600">₱{order.total_amount.toLocaleString()}</div>
                                         </div>
                                         <DropdownMenu>
                                             <DropdownMenuTrigger asChild>
@@ -345,7 +357,9 @@ export default function OrdersIndex() {
                                         key={index}
                                         href={link.url}
                                         className={`rounded-md px-2 py-1.5 text-xs transition-colors sm:px-3 sm:py-2 sm:text-sm ${
-                                            link.active ? 'bg-orange-500 text-white' : 'border border-gray-200 bg-white text-gray-700 hover:bg-gray-50'
+                                            link.active
+                                                ? 'bg-orange-500 text-white'
+                                                : 'border border-gray-200 bg-white text-gray-700 hover:bg-gray-50'
                                         }`}
                                         dangerouslySetInnerHTML={{ __html: link.label }}
                                     />

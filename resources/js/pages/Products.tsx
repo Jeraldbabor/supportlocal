@@ -1,7 +1,7 @@
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Product as GlobalProduct } from '@/types';
 import { Head, Link, router, usePage } from '@inertiajs/react';
-import { ChevronDown, ChevronLeft, ChevronRight, Filter, ShoppingCart, Star } from 'lucide-react';
+import { ArrowDown, ArrowUp, ChevronDown, ChevronLeft, ChevronRight, Filter, ShoppingCart, Star } from 'lucide-react';
 import React, { useState } from 'react';
 import AddToCartModal from '../components/AddToCartModal';
 import AuthRequiredModal from '../components/AuthRequiredModal';
@@ -137,7 +137,7 @@ export default function Products({ products, categories = [], sellers = [], loca
     };
 
     const handlePriceFilter = () => {
-        const newFilters: Record<string, string | boolean | null> = { ...filters };
+        const newFilters: Record<string, string | number | boolean | null> = { ...filters };
         if (minPrice) newFilters.min_price = minPrice;
         if (maxPrice) newFilters.max_price = maxPrice;
         if (!minPrice) delete newFilters.min_price;
@@ -960,7 +960,10 @@ export default function Products({ products, categories = [], sellers = [], loca
                                                             }`}
                                                             style={{ colorScheme: 'light' }}
                                                         >
-                                                            <ShoppingCart className="h-4 w-4" style={{ color: isOutOfStock(product) || isLoading ? '#6b7280' : '#ffffff' }} />
+                                                            <ShoppingCart
+                                                                className="h-4 w-4"
+                                                                style={{ color: isOutOfStock(product) || isLoading ? '#6b7280' : '#ffffff' }}
+                                                            />
                                                         </button>
                                                         <button
                                                             onClick={(e) => handleBuyNow(e, product)}

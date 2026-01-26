@@ -630,7 +630,10 @@ export default function Analytics({ dateRange, overview, revenue, orders, produc
                     <CardContent>
                         <div className="space-y-4">
                             {recentOrders.map((order) => (
-                                <div key={order.id} className="flex flex-col gap-2 border-b border-gray-200 pb-4 last:border-0 sm:flex-row sm:items-center sm:justify-between">
+                                <div
+                                    key={order.id}
+                                    className="flex flex-col gap-2 border-b border-gray-200 pb-4 last:border-0 sm:flex-row sm:items-center sm:justify-between"
+                                >
                                     <div className="space-y-1">
                                         <div className="flex flex-wrap items-center gap-2">
                                             <span className="font-medium text-gray-900">{order.order_number}</span>

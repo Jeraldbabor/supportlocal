@@ -327,9 +327,7 @@ export default function UsersIndex() {
                                                     <div className="min-w-0">
                                                         <div className="truncate font-medium text-gray-900">{user.name}</div>
                                                         <div className="truncate text-sm text-gray-500">{user.email}</div>
-                                                        {user.phone_number && (
-                                                            <div className="text-xs text-gray-500">{user.phone_number}</div>
-                                                        )}
+                                                        {user.phone_number && <div className="text-xs text-gray-500">{user.phone_number}</div>}
                                                     </div>
                                                 </div>
                                             </td>
@@ -337,13 +335,7 @@ export default function UsersIndex() {
                                                 <Badge className={getRoleColor(user.role || '')}>{user.role_display}</Badge>
                                             </td>
                                             <td className="px-4 py-4 lg:px-6">
-                                                <Badge
-                                                    className={
-                                                        user.is_active
-                                                            ? 'bg-green-100 text-green-800'
-                                                            : 'bg-gray-100 text-gray-800'
-                                                    }
-                                                >
+                                                <Badge className={user.is_active ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}>
                                                     {user.is_active ? 'Active' : 'Inactive'}
                                                 </Badge>
                                             </td>
@@ -362,7 +354,9 @@ export default function UsersIndex() {
                                             </td>
                                             <td className="px-4 py-4 lg:px-6">
                                                 {user.last_login_at ? (
-                                                    <span className="text-sm text-gray-900">{new Date(user.last_login_at as string).toLocaleDateString()}</span>
+                                                    <span className="text-sm text-gray-900">
+                                                        {new Date(user.last_login_at as string).toLocaleDateString()}
+                                                    </span>
                                                 ) : (
                                                     <span className="text-sm text-gray-500">Never</span>
                                                 )}
@@ -430,7 +424,10 @@ export default function UsersIndex() {
                         {/* Mobile Card View */}
                         <div className="space-y-3 p-4 md:hidden">
                             {users.data.map((user) => (
-                                <div key={user.id} className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm transition-all hover:shadow-md">
+                                <div
+                                    key={user.id}
+                                    className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm transition-all hover:shadow-md"
+                                >
                                     <div className="flex items-start justify-between gap-3">
                                         <div className="flex min-w-0 flex-1 items-start gap-3">
                                             <img
@@ -448,13 +445,7 @@ export default function UsersIndex() {
                                                 {user.phone_number && <div className="mt-0.5 text-xs text-gray-500">{user.phone_number}</div>}
                                                 <div className="mt-2 flex flex-wrap items-center gap-2">
                                                     <Badge className={getRoleColor(user.role || '')}>{user.role_display}</Badge>
-                                                    <Badge
-                                                        className={
-                                                            user.is_active
-                                                                ? 'bg-green-100 text-green-800'
-                                                                : 'bg-gray-100 text-gray-800'
-                                                        }
-                                                    >
+                                                    <Badge className={user.is_active ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}>
                                                         {user.is_active ? 'Active' : 'Inactive'}
                                                     </Badge>
                                                     {user.email_verified_at ? (
@@ -556,7 +547,9 @@ export default function UsersIndex() {
                                         key={index}
                                         href={link.url}
                                         className={`rounded-md px-2 py-1.5 text-xs transition-colors sm:px-3 sm:py-2 sm:text-sm ${
-                                            link.active ? 'bg-orange-500 text-white' : 'border border-gray-200 bg-white text-gray-700 hover:bg-gray-50'
+                                            link.active
+                                                ? 'bg-orange-500 text-white'
+                                                : 'border border-gray-200 bg-white text-gray-700 hover:bg-gray-50'
                                         }`}
                                         dangerouslySetInnerHTML={{ __html: link.label }}
                                     />

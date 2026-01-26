@@ -171,10 +171,7 @@ export default function CreateProduct({ categories, conditions }: CreateProductP
                 {/* Header */}
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                     <div className="flex items-center gap-4">
-                        <Link
-                            href="/seller/products"
-                            className="rounded-lg border border-gray-300 bg-white p-2 hover:bg-gray-50"
-                        >
+                        <Link href="/seller/products" className="rounded-lg border border-gray-300 bg-white p-2 hover:bg-gray-50">
                             <ArrowLeft className="h-4 w-4" style={{ color: '#374151' }} />
                         </Link>
                         <div>
@@ -230,9 +227,7 @@ export default function CreateProduct({ categories, conditions }: CreateProductP
                                             type="button"
                                             onClick={() => setActiveTab(tab.id)}
                                             className={`flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-sm font-medium transition-colors ${
-                                                activeTab === tab.id
-                                                    ? 'bg-orange-50 text-orange-700'
-                                                    : 'text-gray-600 hover:bg-gray-50'
+                                                activeTab === tab.id ? 'bg-orange-50 text-orange-700' : 'text-gray-600 hover:bg-gray-50'
                                             }`}
                                         >
                                             <Icon className="h-4 w-4" style={{ color: activeTab === tab.id ? '#ea580c' : '#6b7280' }} />
@@ -249,11 +244,11 @@ export default function CreateProduct({ categories, conditions }: CreateProductP
                         {/* Basic Info Tab */}
                         {activeTab === 'basic' && (
                             <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
-                                <h2 className="mb-4 text-xl font-semibold text-gray-900 ">Basic Information</h2>
+                                <h2 className="mb-4 text-xl font-semibold text-gray-900">Basic Information</h2>
 
                                 <div className="space-y-4">
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 ">Product Name *</label>
+                                        <label className="block text-sm font-medium text-gray-700">Product Name *</label>
                                         <input
                                             type="text"
                                             value={data.name}
@@ -265,7 +260,7 @@ export default function CreateProduct({ categories, conditions }: CreateProductP
                                     </div>
 
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 ">Short Description</label>
+                                        <label className="block text-sm font-medium text-gray-700">Short Description</label>
                                         <input
                                             type="text"
                                             value={data.short_description}
@@ -278,7 +273,7 @@ export default function CreateProduct({ categories, conditions }: CreateProductP
                                     </div>
 
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 ">Description *</label>
+                                        <label className="block text-sm font-medium text-gray-700">Description *</label>
                                         <textarea
                                             value={data.description}
                                             onChange={(e) => setData('description', e.target.value)}
@@ -291,7 +286,7 @@ export default function CreateProduct({ categories, conditions }: CreateProductP
 
                                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 ">Category</label>
+                                            <label className="block text-sm font-medium text-gray-700">Category</label>
                                             <select
                                                 value={data.category_id}
                                                 onChange={(e) => setData('category_id', e.target.value)}
@@ -308,7 +303,7 @@ export default function CreateProduct({ categories, conditions }: CreateProductP
                                         </div>
 
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 ">Condition *</label>
+                                            <label className="block text-sm font-medium text-gray-700">Condition *</label>
                                             <select
                                                 value={data.condition}
                                                 onChange={(e) => setData('condition', e.target.value)}
@@ -326,7 +321,7 @@ export default function CreateProduct({ categories, conditions }: CreateProductP
 
                                     {/* Product Images */}
                                     <div>
-                                        <label className="mb-2 block text-sm font-medium text-gray-700 ">Product Images</label>
+                                        <label className="mb-2 block text-sm font-medium text-gray-700">Product Images</label>
 
                                         {/* Image Grid */}
                                         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
@@ -356,7 +351,7 @@ export default function CreateProduct({ categories, conditions }: CreateProductP
                                             <button
                                                 type="button"
                                                 onClick={() => fileInputRef.current?.click()}
-                                                className="flex h-24 w-full items-center justify-center rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 hover:bg-gray-100  "
+                                                className="flex h-24 w-full items-center justify-center rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 hover:bg-gray-100"
                                             >
                                                 <Upload className="h-6 w-6 text-gray-400" />
                                             </button>
@@ -379,13 +374,13 @@ export default function CreateProduct({ categories, conditions }: CreateProductP
 
                                     {/* Tags */}
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 ">Tags</label>
+                                        <label className="block text-sm font-medium text-gray-700">Tags</label>
                                         <div className="mt-1">
                                             <div className="mb-2 flex flex-wrap gap-2">
                                                 {data.tags.map((tag, index) => (
                                                     <span
                                                         key={index}
-                                                        className="inline-flex items-center gap-1 rounded-full bg-blue-100 px-2 py-1 text-xs font-medium text-blue-700 "
+                                                        className="inline-flex items-center gap-1 rounded-full bg-blue-100 px-2 py-1 text-xs font-medium text-blue-700"
                                                     >
                                                         {tag}
                                                         <button
@@ -420,11 +415,11 @@ export default function CreateProduct({ categories, conditions }: CreateProductP
                         {/* Pricing Tab */}
                         {activeTab === 'pricing' && (
                             <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
-                                <h2 className="mb-4 text-xl font-semibold text-gray-900 ">Pricing</h2>
+                                <h2 className="mb-4 text-xl font-semibold text-gray-900">Pricing</h2>
 
                                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 ">Price * (₱)</label>
+                                        <label className="block text-sm font-medium text-gray-700">Price * (₱)</label>
                                         <input
                                             type="number"
                                             step="0.01"
@@ -438,7 +433,7 @@ export default function CreateProduct({ categories, conditions }: CreateProductP
                                     </div>
 
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 ">Compare Price (₱)</label>
+                                        <label className="block text-sm font-medium text-gray-700">Compare Price (₱)</label>
                                         <input
                                             type="number"
                                             step="0.01"
@@ -453,7 +448,7 @@ export default function CreateProduct({ categories, conditions }: CreateProductP
                                     </div>
 
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 ">Cost Price (₱)</label>
+                                        <label className="block text-sm font-medium text-gray-700">Cost Price (₱)</label>
                                         <input
                                             type="number"
                                             step="0.01"
@@ -473,12 +468,12 @@ export default function CreateProduct({ categories, conditions }: CreateProductP
                         {/* Inventory Tab */}
                         {activeTab === 'inventory' && (
                             <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
-                                <h2 className="mb-4 text-xl font-semibold text-gray-900 ">Inventory</h2>
+                                <h2 className="mb-4 text-xl font-semibold text-gray-900">Inventory</h2>
 
                                 <div className="space-y-4">
                                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 ">Quantity *</label>
+                                            <label className="block text-sm font-medium text-gray-700">Quantity *</label>
                                             <input
                                                 type="number"
                                                 min="0"
@@ -491,9 +486,7 @@ export default function CreateProduct({ categories, conditions }: CreateProductP
                                         </div>
 
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 ">
-                                                Low Stock Threshold *
-                                            </label>
+                                            <label className="block text-sm font-medium text-gray-700">Low Stock Threshold *</label>
                                             <input
                                                 type="number"
                                                 min="0"
@@ -516,7 +509,7 @@ export default function CreateProduct({ categories, conditions }: CreateProductP
                                                 onChange={(e) => setData('track_quantity', e.target.checked)}
                                                 className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                                             />
-                                            <label htmlFor="track_quantity" className="ml-2 text-sm text-gray-700 ">
+                                            <label htmlFor="track_quantity" className="ml-2 text-sm text-gray-700">
                                                 Track quantity for this product
                                             </label>
                                         </div>
@@ -529,7 +522,7 @@ export default function CreateProduct({ categories, conditions }: CreateProductP
                                                 onChange={(e) => setData('allow_backorders', e.target.checked)}
                                                 className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                                             />
-                                            <label htmlFor="allow_backorders" className="ml-2 text-sm text-gray-700 ">
+                                            <label htmlFor="allow_backorders" className="ml-2 text-sm text-gray-700">
                                                 Allow customers to purchase when out of stock
                                             </label>
                                         </div>
@@ -541,7 +534,7 @@ export default function CreateProduct({ categories, conditions }: CreateProductP
                         {/* Shipping Tab */}
                         {activeTab === 'shipping' && (
                             <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
-                                <h2 className="mb-4 text-xl font-semibold text-gray-900 ">Shipping</h2>
+                                <h2 className="mb-4 text-xl font-semibold text-gray-900">Shipping</h2>
 
                                 <div className="space-y-4">
                                     <div className="space-y-3">
@@ -553,7 +546,7 @@ export default function CreateProduct({ categories, conditions }: CreateProductP
                                                 onChange={(e) => setData('requires_shipping', e.target.checked)}
                                                 className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                                             />
-                                            <label htmlFor="requires_shipping" className="ml-2 text-sm text-gray-700 ">
+                                            <label htmlFor="requires_shipping" className="ml-2 text-sm text-gray-700">
                                                 This product requires shipping
                                             </label>
                                         </div>
@@ -566,7 +559,7 @@ export default function CreateProduct({ categories, conditions }: CreateProductP
                                                 onChange={(e) => setData('is_digital', e.target.checked)}
                                                 className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                                             />
-                                            <label htmlFor="is_digital" className="ml-2 text-sm text-gray-700 ">
+                                            <label htmlFor="is_digital" className="ml-2 text-sm text-gray-700">
                                                 This is a digital product
                                             </label>
                                         </div>
@@ -579,7 +572,7 @@ export default function CreateProduct({ categories, conditions }: CreateProductP
                                                 onChange={(e) => setData('free_shipping', e.target.checked)}
                                                 className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                                             />
-                                            <label htmlFor="free_shipping" className="ml-2 text-sm text-gray-700 ">
+                                            <label htmlFor="free_shipping" className="ml-2 text-sm text-gray-700">
                                                 Free shipping
                                             </label>
                                         </div>
@@ -587,7 +580,7 @@ export default function CreateProduct({ categories, conditions }: CreateProductP
 
                                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 ">Weight</label>
+                                            <label className="block text-sm font-medium text-gray-700">Weight</label>
                                             <div className="mt-1 flex">
                                                 <input
                                                     type="number"
@@ -613,7 +606,7 @@ export default function CreateProduct({ categories, conditions }: CreateProductP
                                         </div>
 
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 ">Shipping Cost (₱)</label>
+                                            <label className="block text-sm font-medium text-gray-700">Shipping Cost (₱)</label>
                                             <input
                                                 type="number"
                                                 step="0.01"
@@ -629,7 +622,7 @@ export default function CreateProduct({ categories, conditions }: CreateProductP
                                     </div>
 
                                     <div>
-                                        <label className="mb-2 block text-sm font-medium text-gray-700 ">Dimensions (cm)</label>
+                                        <label className="mb-2 block text-sm font-medium text-gray-700">Dimensions (cm)</label>
                                         <div className="grid grid-cols-3 gap-4">
                                             <div>
                                                 <input
@@ -673,11 +666,11 @@ export default function CreateProduct({ categories, conditions }: CreateProductP
                         {/* SEO Tab */}
                         {activeTab === 'seo' && (
                             <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
-                                <h2 className="mb-4 text-xl font-semibold text-gray-900 ">SEO & Meta</h2>
+                                <h2 className="mb-4 text-xl font-semibold text-gray-900">SEO & Meta</h2>
 
                                 <div className="space-y-4">
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 ">Meta Title</label>
+                                        <label className="block text-sm font-medium text-gray-700">Meta Title</label>
                                         <input
                                             type="text"
                                             value={data.meta_title}
@@ -691,7 +684,7 @@ export default function CreateProduct({ categories, conditions }: CreateProductP
                                     </div>
 
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 ">Meta Description</label>
+                                        <label className="block text-sm font-medium text-gray-700">Meta Description</label>
                                         <textarea
                                             value={data.meta_description}
                                             onChange={(e) => setData('meta_description', e.target.value)}
@@ -713,7 +706,7 @@ export default function CreateProduct({ categories, conditions }: CreateProductP
                                                 onChange={(e) => setData('is_featured', e.target.checked)}
                                                 className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                                             />
-                                            <label htmlFor="is_featured" className="ml-2 text-sm text-gray-700 ">
+                                            <label htmlFor="is_featured" className="ml-2 text-sm text-gray-700">
                                                 Feature this product
                                             </label>
                                         </div>

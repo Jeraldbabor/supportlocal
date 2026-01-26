@@ -24,6 +24,7 @@ interface OrderItem {
     id: number;
     product_name: string;
     product_image: string;
+    product_image_url?: string;
     quantity: number;
     price: number;
     total: number;

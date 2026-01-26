@@ -85,8 +85,12 @@ export default function PageContentIndex() {
 
                 <Tabs value={currentPage} onValueChange={handlePageChange} className="w-full">
                     <TabsList className="bg-gray-100">
-                        <TabsTrigger value="about" className="data-[state=active]:bg-white data-[state=active]:text-gray-900">About Page</TabsTrigger>
-                        <TabsTrigger value="contact" className="data-[state=active]:bg-white data-[state=active]:text-gray-900">Contact Page</TabsTrigger>
+                        <TabsTrigger value="about" className="data-[state=active]:bg-white data-[state=active]:text-gray-900">
+                            About Page
+                        </TabsTrigger>
+                        <TabsTrigger value="contact" className="data-[state=active]:bg-white data-[state=active]:text-gray-900">
+                            Contact Page
+                        </TabsTrigger>
                     </TabsList>
 
                     <TabsContent value="about" className="mt-4 space-y-4">
@@ -114,7 +118,10 @@ export default function PageContentIndex() {
                                                 <h3 className="text-base font-semibold text-gray-900 sm:text-lg">{getSectionDisplayName(section)}</h3>
                                                 <div className="space-y-2">
                                                     {sectionContents.map((content) => (
-                                                        <div key={content.id} className="flex flex-col gap-3 rounded-lg border border-gray-200 bg-white p-3 sm:flex-row sm:items-center sm:justify-between sm:p-4">
+                                                        <div
+                                                            key={content.id}
+                                                            className="flex flex-col gap-3 rounded-lg border border-gray-200 bg-white p-3 sm:flex-row sm:items-center sm:justify-between sm:p-4"
+                                                        >
                                                             <div className="flex-1">
                                                                 <div className="flex flex-wrap items-center gap-2">
                                                                     <h4 className="font-medium text-gray-900">{content.title || 'Untitled'}</h4>
@@ -123,7 +130,9 @@ export default function PageContentIndex() {
                                                                     ) : (
                                                                         <Badge className="bg-gray-100 text-gray-800">Inactive</Badge>
                                                                     )}
-                                                                    <Badge variant="outline" className="border-gray-300 text-gray-700">Order: {content.sort_order}</Badge>
+                                                                    <Badge variant="outline" className="border-gray-300 text-gray-700">
+                                                                        Order: {content.sort_order}
+                                                                    </Badge>
                                                                 </div>
                                                                 {content.content && (
                                                                     <p className="mt-1 line-clamp-2 text-sm text-gray-500">
@@ -144,7 +153,7 @@ export default function PageContentIndex() {
                                                                     size="sm"
                                                                     onClick={() => handleDelete(content.id)}
                                                                     disabled={isDeleting === content.id}
-                                                                    className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                                                                    className="text-red-600 hover:bg-red-50 hover:text-red-700"
                                                                 >
                                                                     <Trash2 className="h-4 w-4" />
                                                                 </Button>
@@ -187,7 +196,9 @@ export default function PageContentIndex() {
                                         {Object.entries(groupedContents).map(([section, sectionContents]) => (
                                             <div key={section} className="space-y-2">
                                                 <div className="flex flex-wrap items-center justify-between gap-2">
-                                                    <h3 className="text-base font-semibold text-gray-900 sm:text-lg">{getSectionDisplayName(section)}</h3>
+                                                    <h3 className="text-base font-semibold text-gray-900 sm:text-lg">
+                                                        {getSectionDisplayName(section)}
+                                                    </h3>
                                                     {section === 'contact_info' && (
                                                         <Badge variant="outline" className="border-gray-300 text-xs text-gray-700">
                                                             Customize Contact Details
@@ -199,9 +210,7 @@ export default function PageContentIndex() {
                                                         <div
                                                             key={content.id}
                                                             className={`flex flex-col gap-3 rounded-lg border p-3 sm:flex-row sm:items-center sm:justify-between sm:p-4 ${
-                                                                section === 'contact_info'
-                                                                    ? 'border-blue-200 bg-blue-50'
-                                                                    : 'border-gray-200 bg-white'
+                                                                section === 'contact_info' ? 'border-blue-200 bg-blue-50' : 'border-gray-200 bg-white'
                                                             }`}
                                                         >
                                                             <div className="flex-1">
@@ -212,7 +221,9 @@ export default function PageContentIndex() {
                                                                     ) : (
                                                                         <Badge className="bg-gray-100 text-gray-800">Inactive</Badge>
                                                                     )}
-                                                                    <Badge variant="outline" className="border-gray-300 text-gray-700">Order: {content.sort_order}</Badge>
+                                                                    <Badge variant="outline" className="border-gray-300 text-gray-700">
+                                                                        Order: {content.sort_order}
+                                                                    </Badge>
                                                                 </div>
                                                                 {section === 'contact_info' && (
                                                                     <p className="mt-2 text-sm text-gray-500">
@@ -239,7 +250,7 @@ export default function PageContentIndex() {
                                                                     size="sm"
                                                                     onClick={() => handleDelete(content.id)}
                                                                     disabled={isDeleting === content.id}
-                                                                    className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                                                                    className="text-red-600 hover:bg-red-50 hover:text-red-700"
                                                                 >
                                                                     <Trash2 className="h-4 w-4" />
                                                                 </Button>

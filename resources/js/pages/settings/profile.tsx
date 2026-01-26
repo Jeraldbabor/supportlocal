@@ -33,7 +33,8 @@ export default function Profile({ mustVerifyEmail, status }: { mustVerifyEmail: 
                     <HeadingSmall title="Profile information" description="Update your name and email address" />
 
                     <Form
-                        {...ProfileController.update.form()}
+                        action={ProfileController.update().url}
+                        method={ProfileController.update().method}
                         options={{
                             preserveScroll: true,
                         }}
@@ -79,7 +80,7 @@ export default function Profile({ mustVerifyEmail, status }: { mustVerifyEmail: 
                                         <p className="-mt-4 text-sm text-muted-foreground">
                                             Your email address is unverified.{' '}
                                             <Link
-                                                href={send()}
+                                                href={send.url()}
                                                 as="button"
                                                 className="text-foreground underline decoration-neutral-300 underline-offset-4 transition-colors duration-300 ease-out hover:decoration-current! dark:decoration-neutral-500"
                                             >

@@ -315,12 +315,12 @@ export default function OrderShow() {
                                     <div className="space-y-3">
                                         <div className="flex items-center gap-3">
                                             <img
-                                                src={order.buyer.avatar_url}
-                                                alt={order.buyer.name}
+                                                src={order.buyer?.avatar_url}
+                                                alt={order.buyer?.name}
                                                 className="h-10 w-10 rounded-full"
                                                 onError={(e) => {
                                                     const target = e.target as HTMLImageElement;
-                                                    target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(order.buyer.name)}&color=7F9CF5&background=EBF4FF`;
+                                                    target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(order.buyer?.name || 'User')}&color=7F9CF5&background=EBF4FF`;
                                                 }}
                                             />
                                             <div>

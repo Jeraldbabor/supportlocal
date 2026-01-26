@@ -209,7 +209,7 @@ export function AppSidebar() {
 
             return () => {
                 channel.stopListening('MessageSent');
-                Echo.leave(`private-App.Models.User.${user.id}`);
+                Echo?.leave(`private-App.Models.User.${user.id}`);
             };
         }
     }, [user?.id, navigationCount]);

@@ -30,7 +30,7 @@ class TrackUserActivity
             $lastSeen = $user->last_seen_at;
             $now = now();
 
-            if (!$lastSeen || $lastSeen->diffInSeconds($now) >= $this->updateInterval) {
+            if (! $lastSeen || $lastSeen->diffInSeconds($now) >= $this->updateInterval) {
                 // Use query builder to avoid model events and be more efficient
                 \DB::table('users')
                     ->where('id', $user->id)

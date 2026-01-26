@@ -9,6 +9,7 @@ interface OrderItem {
     product_id: number;
     product_name: string;
     product_image: string;
+    product_image_url?: string;
     seller_name: string;
     quantity: number;
     price: number;
@@ -210,7 +211,9 @@ export default function Orders({ orders }: OrdersIndexProps) {
                                     <div className="flex items-center justify-between gap-3 sm:gap-4">
                                         <div className="flex items-center gap-1.5 sm:gap-2">
                                             {getStatusIcon(order.status)}
-                                            <span className={`rounded-full px-2.5 py-1 text-xs font-medium sm:px-3 sm:text-sm ${getStatusColor(order.status)}`}>
+                                            <span
+                                                className={`rounded-full px-2.5 py-1 text-xs font-medium sm:px-3 sm:text-sm ${getStatusColor(order.status)}`}
+                                            >
                                                 {getStatusText(order.status)}
                                             </span>
                                         </div>
@@ -285,8 +288,7 @@ export default function Orders({ orders }: OrdersIndexProps) {
                                     {/* Payment Info */}
                                     <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
                                         <div className="text-xs text-gray-600 sm:text-sm">
-                                            <span className="font-medium">Payment:</span>{' '}
-                                            <span className="capitalize">{order.payment_method}</span>
+                                            <span className="font-medium">Payment:</span> <span className="capitalize">{order.payment_method}</span>
                                         </div>
                                         {order.seller_confirmed_at && (
                                             <div className="text-xs text-green-600 sm:text-sm">
