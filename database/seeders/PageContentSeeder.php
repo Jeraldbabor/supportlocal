@@ -104,7 +104,7 @@ class PageContentSeeder extends Seeder
                         items created by human hands with care, skill, and passion.
                     </p>
                     <p>
-                        Founded in 2023, we started as a small team passionate about supporting local artisans and preserving traditional
+                        Founded in 2026, we started as a small team passionate about supporting local artisans and preserving traditional
                         crafts. We noticed that many talented craftspeople struggled to reach customers beyond their immediate communities.
                     </p>
                     <p>

@@ -162,27 +162,45 @@ class HomeController extends Controller
      */
     public function about()
     {
-        // Get featured artisans (sellers with products)
-        $artisans = User::where('role', User::ROLE_SELLER)
-            ->whereHas('products', function ($query) {
-                $query->where('status', 'active');
-            })
-            ->with(['products' => function ($query) {
-                $query->where('status', 'active')->with('category')->take(3);
-            }])
-            ->take(4)
-            ->get()
-            ->map(function ($artisan) {
-                return [
-                    'id' => $artisan->id,
-                    'name' => $artisan->name,
-                    'specialty' => $artisan->products->first()->category->name ?? 'General Crafts',
-                    'image' => $artisan->avatar_url,
-                    'description' => $artisan->bio ?? 'Passionate artisan creating beautiful handmade items.',
-                    'location' => $artisan->city ?? 'Local Area',
-                    'experience' => $artisan->years_of_experience ?? '5+ years',
-                ];
-            });
+        // Team members data
+        $artisans = [
+            [
+                'id' => 1,
+                'name' => 'Jerald Babor',
+                'specialty' => 'Full-Stack Web Developer',
+                'image' => '/jerald.jfif',
+                'description' => 'A skilled full-stack web developer creating innovative digital solutions and web applications, and the only one who developed this website and maintained it.',
+                'location' => 'Philippines',
+                'experience' => '',
+            ],
+            [
+                'id' => 2,
+                'name' => 'Sir Jonas Parreño MIT',
+                'specialty' => 'Analysis/Capstone Adviser',
+                'image' => '/sirjd.jpg',
+                'description' => 'An experienced adviser specializing in analysis and capstone project guidance, helping students excel in their academic journey.',
+                'location' => 'Philippines',
+                'experience' => '',
+            ],
+            [
+                'id' => 3,
+                'name' => 'Decery Alihid',
+                'specialty' => 'Documentator',
+                'image' => '/decery.jfif',
+                'description' => 'A dedicated documentator ensuring clear, comprehensive documentation for projects and processes.',
+                'location' => 'Philippines',
+                'experience' => '',
+            ],
+            [
+                'id' => 4,
+                'name' => 'Micaela Oliamina',
+                'specialty' => 'Documentator',
+                'image' => '/mekay.jfif',
+                'description' => 'A meticulous documentator creating detailed documentation to support project success and knowledge sharing.',
+                'location' => 'Philippines',
+                'experience' => '',
+            ],
+        ];
 
         // Get dynamic page content
         $pageContents = PageContent::getPageContents(PageContent::PAGE_TYPE_ABOUT)
@@ -197,7 +215,7 @@ class HomeController extends Controller
             ->keyBy('section');
 
         return Inertia::render('About', [
-            'artisans' => $artisans ?? [],
+            'artisans' => $artisans,
             'pageContents' => $pageContents,
         ]);
     }

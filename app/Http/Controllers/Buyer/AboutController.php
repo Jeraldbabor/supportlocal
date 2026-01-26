@@ -4,54 +4,51 @@ namespace App\Http\Controllers\Buyer;
 
 use App\Http\Controllers\Controller;
 use App\Models\PageContent;
-use App\Models\User;
-use Carbon\Carbon;
 use Inertia\Inertia;
 
 class AboutController extends Controller
 {
     public function index()
     {
-        $artisans = User::where('role', 'seller')
-            ->orderBy('created_at', 'desc')
-            ->get()
-            ->map(function ($user) {
-                // Calculate time since joining
-                $joinedAt = Carbon::parse($user->created_at);
-                $now = Carbon::now();
-
-                $years = (int) $joinedAt->diffInYears($now);
-                $months = (int) $joinedAt->diffInMonths($now) % 12;
-                $days = (int) $joinedAt->diffInDays($now) % 30;
-
-                // Build experience string - show only the most significant unit
-                if ($years >= 1) {
-                    $experience = $years.' '.($years == 1 ? 'year' : 'years');
-                } elseif ($months >= 1) {
-                    $experience = $months.' '.($months == 1 ? 'month' : 'months');
-                } else {
-                    $experience = max(1, $days).' '.($days <= 1 ? 'day' : 'days');
-                }
-
-                // Build location string
-                $locationParts = array_filter([
-                    $user->delivery_city,
-                    $user->delivery_province,
-                ]);
-                $location = ! empty($locationParts) ? implode(', ', $locationParts) : ($user->address ?? 'Philippines');
-
-                return [
-                    'id' => $user->id,
-                    'name' => $user->name,
-                    'specialty' => 'Artisan',
-                    'image' => $user->profile_picture
-                        ? \App\Helpers\ImageHelper::url($user->profile_picture)
-                        : 'https://ui-avatars.com/api/?name='.urlencode($user->name).'&size=200&background=random',
-                    'description' => 'A talented artisan creating unique handcrafted items.',
-                    'location' => $location,
-                    'experience' => $experience,
-                ];
-            });
+        // Team members data
+        $artisans = [
+            [
+                'id' => 1,
+                'name' => 'Jerald Babor',
+                'specialty' => 'Full-Stack Web Developer',
+                'image' => '/jerald.jfif',
+                'description' => 'A skilled full-stack web developer creating innovative digital solutions and web applications, and the only one who developed this website and maintained it.',
+                'location' => 'Philippines',
+                'experience' => '',
+            ],
+            [
+                'id' => 2,
+                'name' => 'Sir Jonas Parreño MIT',
+                'specialty' => 'Analysis/Capstone Adviser',
+                'image' => '/sirjd.jpg',
+                'description' => 'An experienced adviser specializing in analysis and capstone project guidance, helping students excel in their academic journey.',
+                'location' => 'Philippines',
+                'experience' => '',
+            ],
+            [
+                'id' => 3,
+                'name' => 'Decery Alihid',
+                'specialty' => 'Documentator',
+                'image' => '/decery.jfif',
+                'description' => 'A dedicated documentator ensuring clear, comprehensive documentation for projects and processes.',
+                'location' => 'Philippines',
+                'experience' => '',
+            ],
+            [
+                'id' => 4,
+                'name' => 'Micaela Oliamina',
+                'specialty' => 'Documentator',
+                'image' => '/mekay.jfif',
+                'description' => 'A meticulous documentator creating detailed documentation to support project success and knowledge sharing.',
+                'location' => 'Philippines',
+                'experience' => '',
+            ],
+        ];
 
         // Get dynamic page content
         $pageContents = PageContent::getPageContents(PageContent::PAGE_TYPE_ABOUT)
