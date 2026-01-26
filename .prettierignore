@@ -1,2 +1,3 @@
 resources/js/components/ui/*
+resources/views/**/*.blade.php
 resources/views/mail/*
