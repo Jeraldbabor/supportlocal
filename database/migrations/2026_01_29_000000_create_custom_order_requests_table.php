@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('request_number')->unique();
             $table->foreignId('buyer_id')->constrained('users')->onDelete('cascade');
             $table->foreignId('seller_id')->constrained('users')->onDelete('cascade');
-            
+
             // Request details
             $table->string('title');
             $table->text('description');
@@ -26,7 +26,7 @@ return new class extends Migration
             $table->integer('quantity')->default(1);
             $table->date('preferred_deadline')->nullable();
             $table->text('special_requirements')->nullable();
-            
+
             // Seller response
             $table->enum('status', [
                 'pending',           // Waiting for seller response
@@ -37,27 +37,27 @@ return new class extends Migration
                 'in_progress',       // Work in progress
                 'ready_for_checkout', // Seller finished, waiting for buyer payment
                 'completed',         // Buyer paid, order created
-                'cancelled'          // Request cancelled
+                'cancelled',          // Request cancelled
             ])->default('pending');
-            
+
             // Quote details from seller
             $table->decimal('quoted_price', 10, 2)->nullable();
             $table->integer('estimated_days')->nullable();
             $table->text('seller_notes')->nullable();
             $table->timestamp('quoted_at')->nullable();
-            
+
             // Response timestamps
             $table->timestamp('accepted_at')->nullable();
             $table->timestamp('rejected_at')->nullable();
             $table->text('rejection_reason')->nullable();
             $table->timestamp('completed_at')->nullable();
-            
+
             // Link to product if seller creates one
             $table->foreignId('product_id')->nullable()->constrained('products')->onDelete('set null');
             $table->foreignId('order_id')->nullable()->constrained('orders')->onDelete('set null');
-            
+
             $table->timestamps();
-            
+
             // Indexes for better query performance
             $table->index(['buyer_id', 'status']);
             $table->index(['seller_id', 'status']);

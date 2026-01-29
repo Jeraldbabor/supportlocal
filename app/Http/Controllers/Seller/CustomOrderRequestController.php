@@ -31,10 +31,10 @@ class CustomOrderRequestController extends Controller
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('title', 'like', "%{$search}%")
-                  ->orWhere('request_number', 'like', "%{$search}%")
-                  ->orWhereHas('buyer', function ($bq) use ($search) {
-                      $bq->where('name', 'like', "%{$search}%");
-                  });
+                    ->orWhere('request_number', 'like', "%{$search}%")
+                    ->orWhereHas('buyer', function ($bq) use ($search) {
+                        $bq->where('name', 'like', "%{$search}%");
+                    });
             });
         }
 
@@ -48,6 +48,7 @@ class CustomOrderRequestController extends Controller
                 'email' => $item->buyer->email,
                 'avatar_url' => $item->buyer->avatar_url,
             ];
+
             return $item;
         });
 
@@ -100,7 +101,7 @@ class CustomOrderRequestController extends Controller
             abort(403, 'You do not have permission to quote this request.');
         }
 
-        if (!$customOrderRequest->canBeQuoted()) {
+        if (! $customOrderRequest->canBeQuoted()) {
             return back()->with('error', 'This request cannot be quoted.');
         }
 
@@ -134,7 +135,7 @@ class CustomOrderRequestController extends Controller
             abort(403, 'You do not have permission to reject this request.');
         }
 
-        if (!$customOrderRequest->canBeRejected()) {
+        if (! $customOrderRequest->canBeRejected()) {
             return back()->with('error', 'This request cannot be rejected.');
         }
 
@@ -164,7 +165,7 @@ class CustomOrderRequestController extends Controller
             abort(403, 'You do not have permission to update this request.');
         }
 
-        if (!$customOrderRequest->canStartWork()) {
+        if (! $customOrderRequest->canStartWork()) {
             return back()->with('error', 'Work cannot be started on this request.');
         }
 
@@ -188,7 +189,7 @@ class CustomOrderRequestController extends Controller
             abort(403, 'You do not have permission to update this request.');
         }
 
-        if (!$customOrderRequest->canBeSentForCheckout()) {
+        if (! $customOrderRequest->canBeSentForCheckout()) {
             return back()->with('error', 'This request cannot be sent for checkout.');
         }
 
@@ -198,7 +199,7 @@ class CustomOrderRequestController extends Controller
 
         // Notify buyer that the custom order is ready for payment
         $customOrderRequest->buyer->notify(new CustomOrderStatusUpdated(
-            $customOrderRequest, 
+            $customOrderRequest,
             'Your custom order is ready! Please proceed to checkout to complete your purchase.'
         ));
 

@@ -43,6 +43,7 @@ class NewCustomOrderRequest extends Notification
         }
 
         $requestId = $this->customOrderRequest->id ?? $this->customOrderRequest;
+
         return CustomOrderRequest::with('buyer')->findOrFail($requestId);
     }
 
@@ -54,14 +55,14 @@ class NewCustomOrderRequest extends Notification
         $request = $this->getRequest();
 
         return (new MailMessage)
-            ->subject('New Custom Order Request - ' . $request->request_number)
-            ->greeting('Hello ' . $notifiable->name . '!')
+            ->subject('New Custom Order Request - '.$request->request_number)
+            ->greeting('Hello '.$notifiable->name.'!')
             ->line('You have received a new custom order request!')
-            ->line('**Request:** ' . $request->title)
-            ->line('**From:** ' . ($request->buyer->name ?? 'Customer'))
-            ->line('**Budget:** ' . ($request->formatted_budget ?? 'Not specified'))
-            ->line('**Quantity:** ' . $request->quantity)
-            ->action('View Request Details', url('/seller/custom-orders/' . $request->id))
+            ->line('**Request:** '.$request->title)
+            ->line('**From:** '.($request->buyer->name ?? 'Customer'))
+            ->line('**Budget:** '.($request->formatted_budget ?? 'Not specified'))
+            ->line('**Quantity:** '.$request->quantity)
+            ->action('View Request Details', url('/seller/custom-orders/'.$request->id))
             ->line('Please review the request and provide a quote or respond to the customer.');
     }
 
@@ -74,11 +75,11 @@ class NewCustomOrderRequest extends Notification
 
         return [
             'title' => 'New Custom Order Request',
-            'message' => 'You received a custom order request "' . $request->title . '" from ' . ($request->buyer->name ?? 'Customer') . '.',
+            'message' => 'You received a custom order request "'.$request->title.'" from '.($request->buyer->name ?? 'Customer').'.',
             'custom_order_request_id' => $request->id,
             'request_number' => $request->request_number,
             'buyer_name' => $request->buyer->name ?? 'Customer',
-            'action_url' => '/seller/custom-orders/' . $request->id,
+            'action_url' => '/seller/custom-orders/'.$request->id,
         ];
     }
 }

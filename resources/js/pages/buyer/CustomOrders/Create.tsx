@@ -57,9 +57,7 @@ export default function CustomOrderCreate({ seller, sellers }: Props) {
     });
 
     // Filter sellers based on search query
-    const filteredSellers = sellers?.filter((s) =>
-        s.name.toLowerCase().includes(searchQuery.toLowerCase())
-    ) || [];
+    const filteredSellers = sellers?.filter((s) => s.name.toLowerCase().includes(searchQuery.toLowerCase())) || [];
 
     // Close dropdown when clicking outside
     useEffect(() => {
@@ -121,10 +119,7 @@ export default function CustomOrderCreate({ seller, sellers }: Props) {
             <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8">
                 {/* Header */}
                 <div className="mb-8">
-                    <Link
-                        href="/buyer/custom-orders"
-                        className="mb-4 inline-flex items-center text-sm text-gray-500 hover:text-gray-700"
-                    >
+                    <Link href="/buyer/custom-orders" className="mb-4 inline-flex items-center text-sm text-gray-500 hover:text-gray-700">
                         <ArrowLeft className="mr-2 h-4 w-4" />
                         Back to Custom Orders
                     </Link>
@@ -171,14 +166,12 @@ export default function CustomOrderCreate({ seller, sellers }: Props) {
                                     <div className="flex items-center gap-4 rounded-lg border border-green-200 bg-green-50 p-4">
                                         <Avatar className="h-16 w-16">
                                             <AvatarImage src={seller.avatar_url || undefined} />
-                                            <AvatarFallback className="bg-amber-100 text-amber-700 text-xl">
+                                            <AvatarFallback className="bg-amber-100 text-xl text-amber-700">
                                                 {seller.name?.[0]?.toUpperCase()}
                                             </AvatarFallback>
                                         </Avatar>
                                         <div className="flex-1">
-                                            <p className="text-lg font-semibold text-gray-900">
-                                                {seller.name}
-                                            </p>
+                                            <p className="text-lg font-semibold text-gray-900">{seller.name}</p>
                                             {seller.address && <p className="text-sm text-gray-500">{seller.address}</p>}
                                         </div>
                                         <Link href="/buyer/sellers">
@@ -194,14 +187,14 @@ export default function CustomOrderCreate({ seller, sellers }: Props) {
                                             <div
                                                 className={`flex cursor-pointer items-center justify-between rounded-lg border bg-white px-4 py-3 transition-all ${
                                                     errors.seller_id ? 'border-red-500' : 'border-gray-300 hover:border-amber-400'
-                                                } ${isDropdownOpen ? 'ring-2 ring-amber-500 ring-opacity-50' : ''}`}
+                                                } ${isDropdownOpen ? 'ring-opacity-50 ring-2 ring-amber-500' : ''}`}
                                                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                                             >
                                                 {selectedSeller ? (
                                                     <div className="flex items-center gap-3">
                                                         <Avatar className="h-8 w-8">
                                                             <AvatarImage src={selectedSeller.avatar_url || undefined} />
-                                                            <AvatarFallback className="bg-amber-100 text-amber-700 text-sm">
+                                                            <AvatarFallback className="bg-amber-100 text-sm text-amber-700">
                                                                 {selectedSeller.name?.[0]?.toUpperCase()}
                                                             </AvatarFallback>
                                                         </Avatar>
@@ -210,7 +203,9 @@ export default function CustomOrderCreate({ seller, sellers }: Props) {
                                                 ) : (
                                                     <span className="text-gray-500">Select an artisan...</span>
                                                 )}
-                                                <ChevronDown className={`h-5 w-5 text-gray-400 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
+                                                <ChevronDown
+                                                    className={`h-5 w-5 text-gray-400 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`}
+                                                />
                                             </div>
 
                                             {isDropdownOpen && (
@@ -218,13 +213,13 @@ export default function CustomOrderCreate({ seller, sellers }: Props) {
                                                     {/* Search Input */}
                                                     <div className="sticky top-0 border-b bg-white p-3">
                                                         <div className="relative">
-                                                            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+                                                            <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-400" />
                                                             <input
                                                                 type="text"
                                                                 placeholder="Search artisan by name..."
                                                                 value={searchQuery}
                                                                 onChange={(e) => setSearchQuery(e.target.value)}
-                                                                className="w-full rounded-lg border border-gray-300 py-2 pl-10 pr-4 text-sm focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500"
+                                                                className="w-full rounded-lg border border-gray-300 py-2 pr-4 pl-10 text-sm focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
                                                                 onClick={(e) => e.stopPropagation()}
                                                                 autoFocus
                                                             />
@@ -250,14 +245,22 @@ export default function CustomOrderCreate({ seller, sellers }: Props) {
                                                                     </Avatar>
                                                                     <div className="flex-1">
                                                                         <p className="font-medium text-gray-900">{s.name}</p>
-                                                                        {s.address && (
-                                                                            <p className="text-sm text-gray-500">{s.address}</p>
-                                                                        )}
+                                                                        {s.address && <p className="text-sm text-gray-500">{s.address}</p>}
                                                                     </div>
                                                                     {data.seller_id === s.id.toString() && (
                                                                         <div className="flex h-5 w-5 items-center justify-center rounded-full bg-amber-500 text-white">
-                                                                            <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                                                                            <svg
+                                                                                className="h-3 w-3"
+                                                                                fill="none"
+                                                                                viewBox="0 0 24 24"
+                                                                                stroke="currentColor"
+                                                                            >
+                                                                                <path
+                                                                                    strokeLinecap="round"
+                                                                                    strokeLinejoin="round"
+                                                                                    strokeWidth={3}
+                                                                                    d="M5 13l4 4L19 7"
+                                                                                />
                                                                             </svg>
                                                                         </div>
                                                                     )}
@@ -286,15 +289,13 @@ export default function CustomOrderCreate({ seller, sellers }: Props) {
                                             <div className="mt-4 flex items-center gap-4 rounded-lg border border-amber-200 bg-gradient-to-r from-amber-50 to-orange-50 p-4">
                                                 <Avatar className="h-14 w-14 ring-2 ring-amber-300 ring-offset-2">
                                                     <AvatarImage src={selectedSeller.avatar_url || undefined} />
-                                                    <AvatarFallback className="bg-amber-100 text-amber-700 text-lg">
+                                                    <AvatarFallback className="bg-amber-100 text-lg text-amber-700">
                                                         {selectedSeller.name?.[0]?.toUpperCase()}
                                                     </AvatarFallback>
                                                 </Avatar>
                                                 <div className="flex-1">
                                                     <p className="font-semibold text-gray-900">{selectedSeller.name}</p>
-                                                    {selectedSeller.address && (
-                                                        <p className="text-sm text-gray-600">{selectedSeller.address}</p>
-                                                    )}
+                                                    {selectedSeller.address && <p className="text-sm text-gray-600">{selectedSeller.address}</p>}
                                                     <p className="mt-1 text-xs text-amber-700">Selected Artisan</p>
                                                 </div>
                                                 <Button
@@ -475,9 +476,7 @@ export default function CustomOrderCreate({ seller, sellers }: Props) {
                                     <ImageIcon className="h-5 w-5 text-amber-600" />
                                     Reference Images (Optional)
                                 </CardTitle>
-                                <CardDescription>
-                                    Upload images to help the artisan understand what you want (max 5 images)
-                                </CardDescription>
+                                <CardDescription>Upload images to help the artisan understand what you want (max 5 images)</CardDescription>
                             </CardHeader>
                             <CardContent>
                                 <div className="space-y-4">
@@ -513,14 +512,7 @@ export default function CustomOrderCreate({ seller, sellers }: Props) {
                                         </div>
                                     )}
 
-                                    <input
-                                        ref={fileInputRef}
-                                        type="file"
-                                        accept="image/*"
-                                        multiple
-                                        onChange={handleImageUpload}
-                                        className="hidden"
-                                    />
+                                    <input ref={fileInputRef} type="file" accept="image/*" multiple onChange={handleImageUpload} className="hidden" />
                                 </div>
                             </CardContent>
                         </Card>

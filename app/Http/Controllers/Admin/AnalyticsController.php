@@ -62,8 +62,8 @@ class AnalyticsController extends Controller
         $endDate = Carbon::now();
         $startDate = $this->getStartDate($dateRange, $endDate);
 
-        $filename = 'analytics_report_' . now()->format('Y-m-d_His') . '.csv';
-        
+        $filename = 'analytics_report_'.now()->format('Y-m-d_His').'.csv';
+
         $headers = [
             'Content-Type' => 'text/csv',
             'Content-Disposition' => "attachment; filename=\"$filename\"",
@@ -74,14 +74,14 @@ class AnalyticsController extends Controller
 
         $callback = function () use ($startDate, $endDate, $reportType, $dateRange) {
             $file = fopen('php://output', 'w');
-            
+
             // Add BOM for Excel UTF-8 compatibility
             fprintf($file, chr(0xEF).chr(0xBB).chr(0xBF));
 
             // Report Header
             fputcsv($file, ['SUPPORTLOCAL ANALYTICS REPORT']);
             fputcsv($file, ['Generated:', now()->format('Y-m-d H:i:s')]);
-            fputcsv($file, ['Period:', $startDate->format('Y-m-d') . ' to ' . $endDate->format('Y-m-d')]);
+            fputcsv($file, ['Period:', $startDate->format('Y-m-d').' to '.$endDate->format('Y-m-d')]);
             fputcsv($file, []);
 
             if ($reportType === 'all' || $reportType === 'overview') {
@@ -242,6 +242,7 @@ class AnalyticsController extends Controller
                 'total' => $buyers + $sellers,
             ];
         }
+
         return $data;
     }
 
@@ -293,8 +294,8 @@ class AnalyticsController extends Controller
             ->take(10)
             ->with('seller')
             ->get()
-            ->filter(fn($item) => $item->seller !== null)
-            ->map(fn($item) => [
+            ->filter(fn ($item) => $item->seller !== null)
+            ->map(fn ($item) => [
                 'id' => $item->seller->id,
                 'name' => $item->seller->name,
                 'email' => $item->seller->email,
@@ -329,7 +330,7 @@ class AnalyticsController extends Controller
             ->orderByDesc('total_revenue')
             ->take(10)
             ->get()
-            ->map(fn($item) => [
+            ->map(fn ($item) => [
                 'id' => $item->id,
                 'name' => $item->name,
                 'price' => $item->price,
@@ -362,7 +363,7 @@ class AnalyticsController extends Controller
             'cancelled' => CustomOrderRequest::whereIn('status', [
                 CustomOrderRequest::STATUS_CANCELLED,
                 CustomOrderRequest::STATUS_REJECTED,
-                CustomOrderRequest::STATUS_DECLINED
+                CustomOrderRequest::STATUS_DECLINED,
             ])->whereBetween('created_at', [$startDate, $endDate])->count(),
             'total_value' => round($totalValue, 2),
             'conversion_rate' => $total > 0 ? round(($completed / $total) * 100, 2) : 0,
@@ -378,7 +379,7 @@ class AnalyticsController extends Controller
             ->select('status', DB::raw('COUNT(*) as count'))
             ->groupBy('status')
             ->get()
-            ->map(fn($item) => [
+            ->map(fn ($item) => [
                 'status' => ucfirst($item->status),
                 'count' => $item->count,
             ])
@@ -405,7 +406,7 @@ class AnalyticsController extends Controller
             ->orderByDesc('revenue')
             ->take(10)
             ->get()
-            ->map(fn($item) => [
+            ->map(fn ($item) => [
                 'category' => $item->category,
                 'revenue' => round($item->revenue, 2),
             ])
@@ -420,6 +421,7 @@ class AnalyticsController extends Controller
         if ($previous == 0) {
             return $current > 0 ? 100 : 0;
         }
+
         return round((($current - $previous) / $previous) * 100, 2);
     }
 
@@ -431,12 +433,12 @@ class AnalyticsController extends Controller
 
         fputcsv($file, ['=== OVERVIEW STATISTICS ===']);
         fputcsv($file, ['Metric', 'Value', 'Growth %']);
-        fputcsv($file, ['Total Revenue', '₱' . number_format($overview['total_revenue'], 2), $overview['revenue_growth'] . '%']);
-        fputcsv($file, ['Total Commission', '₱' . number_format($overview['total_commission'], 2), '']);
-        fputcsv($file, ['Total Orders', $overview['total_orders'], $overview['orders_growth'] . '%']);
+        fputcsv($file, ['Total Revenue', '₱'.number_format($overview['total_revenue'], 2), $overview['revenue_growth'].'%']);
+        fputcsv($file, ['Total Commission', '₱'.number_format($overview['total_commission'], 2), '']);
+        fputcsv($file, ['Total Orders', $overview['total_orders'], $overview['orders_growth'].'%']);
         fputcsv($file, ['Completed Orders', $overview['completed_orders'], '']);
-        fputcsv($file, ['Average Order Value', '₱' . number_format($overview['avg_order_value'], 2), '']);
-        fputcsv($file, ['New Users', $overview['new_users'], $overview['users_growth'] . '%']);
+        fputcsv($file, ['Average Order Value', '₱'.number_format($overview['avg_order_value'], 2), '']);
+        fputcsv($file, ['New Users', $overview['new_users'], $overview['users_growth'].'%']);
         fputcsv($file, ['New Sellers', $overview['new_sellers'], '']);
         fputcsv($file, ['New Buyers', $overview['new_buyers'], '']);
         fputcsv($file, ['New Products', $overview['new_products'], '']);
@@ -450,7 +452,7 @@ class AnalyticsController extends Controller
         fputcsv($file, ['=== DAILY REVENUE ===']);
         fputcsv($file, ['Date', 'Revenue', 'Commission']);
         foreach ($revenueData as $row) {
-            fputcsv($file, [$row['date'], '₱' . number_format($row['revenue'], 2), '₱' . number_format($row['commission'], 2)]);
+            fputcsv($file, [$row['date'], '₱'.number_format($row['revenue'], 2), '₱'.number_format($row['commission'], 2)]);
         }
         fputcsv($file, []);
     }
@@ -488,8 +490,8 @@ class AnalyticsController extends Controller
                 $seller['name'],
                 $seller['email'],
                 $seller['order_count'],
-                '₱' . number_format($seller['total_revenue'], 2),
-                '₱' . number_format($seller['avg_order_value'], 2),
+                '₱'.number_format($seller['total_revenue'], 2),
+                '₱'.number_format($seller['avg_order_value'], 2),
             ]);
         }
         fputcsv($file, []);
@@ -505,9 +507,9 @@ class AnalyticsController extends Controller
             fputcsv($file, [
                 $index + 1,
                 $product['name'],
-                '₱' . number_format($product['price'], 2),
+                '₱'.number_format($product['price'], 2),
                 $product['quantity_sold'],
-                '₱' . number_format($product['revenue'], 2),
+                '₱'.number_format($product['revenue'], 2),
             ]);
         }
         fputcsv($file, []);
@@ -536,8 +538,8 @@ class AnalyticsController extends Controller
         fputcsv($file, ['In Progress', $customStats['in_progress']]);
         fputcsv($file, ['Completed', $customStats['completed']]);
         fputcsv($file, ['Cancelled/Declined', $customStats['cancelled']]);
-        fputcsv($file, ['Total Value', '₱' . number_format($customStats['total_value'], 2)]);
-        fputcsv($file, ['Conversion Rate', $customStats['conversion_rate'] . '%']);
+        fputcsv($file, ['Total Value', '₱'.number_format($customStats['total_value'], 2)]);
+        fputcsv($file, ['Conversion Rate', $customStats['conversion_rate'].'%']);
         fputcsv($file, []);
     }
 }

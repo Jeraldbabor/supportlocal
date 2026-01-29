@@ -6,19 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import AppLayout from '@/layouts/app-layout';
 import { Head, Link, router } from '@inertiajs/react';
-import {
-    Calendar,
-    ChevronLeft,
-    ChevronRight,
-    Clock,
-    DollarSign,
-    Eye,
-    Inbox,
-    Package,
-    PenTool,
-    Search,
-    Sparkles,
-} from 'lucide-react';
+import { Calendar, ChevronLeft, ChevronRight, Clock, DollarSign, Eye, Inbox, Package, PenTool, Search, Sparkles } from 'lucide-react';
 import React, { useState } from 'react';
 
 interface CustomOrderRequest {
@@ -115,8 +103,20 @@ export default function CustomOrdersIndex({ requests, filters, statusCounts }: P
                         { label: 'Pending', count: statusCounts.pending, status: 'pending', color: 'bg-yellow-100 text-yellow-800', icon: Clock },
                         { label: 'Quoted', count: statusCounts.quoted, status: 'quoted', color: 'bg-blue-100 text-blue-800', icon: DollarSign },
                         { label: 'Accepted', count: statusCounts.accepted, status: 'accepted', color: 'bg-green-100 text-green-800', icon: Sparkles },
-                        { label: 'In Progress', count: statusCounts.in_progress, status: 'in_progress', color: 'bg-purple-100 text-purple-800', icon: Package },
-                        { label: 'Completed', count: statusCounts.completed, status: 'completed', color: 'bg-emerald-100 text-emerald-800', icon: Sparkles },
+                        {
+                            label: 'In Progress',
+                            count: statusCounts.in_progress,
+                            status: 'in_progress',
+                            color: 'bg-purple-100 text-purple-800',
+                            icon: Package,
+                        },
+                        {
+                            label: 'Completed',
+                            count: statusCounts.completed,
+                            status: 'completed',
+                            color: 'bg-emerald-100 text-emerald-800',
+                            icon: Sparkles,
+                        },
                     ].map((stat) => {
                         const Icon = stat.icon;
                         return (
@@ -150,9 +150,7 @@ export default function CustomOrdersIndex({ requests, filters, statusCounts }: P
                                 <h3 className="font-semibold text-yellow-900">
                                     {statusCounts.pending} pending request{statusCounts.pending > 1 ? 's' : ''} awaiting your response
                                 </h3>
-                                <p className="text-sm text-yellow-800">
-                                    Respond quickly to increase your chances of winning custom orders!
-                                </p>
+                                <p className="text-sm text-yellow-800">Respond quickly to increase your chances of winning custom orders!</p>
                             </div>
                             <Button
                                 variant="outline"
@@ -217,9 +215,7 @@ export default function CustomOrdersIndex({ requests, filters, statusCounts }: P
                                             <div className="mb-4 flex items-start justify-between">
                                                 <div>
                                                     <div className="mb-2 flex items-center gap-2">
-                                                        <Badge className={`${statusColors[request.status]} border`}>
-                                                            {request.status_label}
-                                                        </Badge>
+                                                        <Badge className={`${statusColors[request.status]} border`}>{request.status_label}</Badge>
                                                         <span className="text-sm text-gray-500">#{request.request_number}</span>
                                                         {request.status === 'pending' && (
                                                             <Badge className="bg-yellow-500 text-white">Action Needed</Badge>
@@ -304,9 +300,7 @@ export default function CustomOrdersIndex({ requests, filters, statusCounts }: P
                                 <Inbox className="h-8 w-8 text-gray-400" />
                             </div>
                             <h3 className="mb-2 text-xl font-semibold text-gray-900">No Custom Order Requests</h3>
-                            <p className="text-gray-600">
-                                When buyers send you custom order requests, they'll appear here.
-                            </p>
+                            <p className="text-gray-600">When buyers send you custom order requests, they'll appear here.</p>
                         </CardContent>
                     </Card>
                 )}
@@ -319,9 +313,7 @@ export default function CustomOrdersIndex({ requests, filters, statusCounts }: P
                                 variant="outline"
                                 size="sm"
                                 disabled={requests.current_page === 1}
-                                onClick={() =>
-                                    router.get('/seller/custom-orders', { ...filters, page: requests.current_page - 1 })
-                                }
+                                onClick={() => router.get('/seller/custom-orders', { ...filters, page: requests.current_page - 1 })}
                             >
                                 <ChevronLeft className="h-4 w-4" />
                             </Button>
@@ -332,9 +324,7 @@ export default function CustomOrdersIndex({ requests, filters, statusCounts }: P
                                 variant="outline"
                                 size="sm"
                                 disabled={requests.current_page === requests.last_page}
-                                onClick={() =>
-                                    router.get('/seller/custom-orders', { ...filters, page: requests.current_page + 1 })
-                                }
+                                onClick={() => router.get('/seller/custom-orders', { ...filters, page: requests.current_page + 1 })}
                             >
                                 <ChevronRight className="h-4 w-4" />
                             </Button>

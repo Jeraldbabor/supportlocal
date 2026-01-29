@@ -217,7 +217,7 @@ class AnalyticsController extends Controller
                 'prev_revenue' => round($prevRevenue, 2),
                 'prev_conversion_rate' => $prevConversionRate,
             ],
-            'status_breakdown' => array_filter($statusBreakdown, fn($item) => $item['count'] > 0),
+            'status_breakdown' => array_filter($statusBreakdown, fn ($item) => $item['count'] > 0),
             'recent_requests' => $recentRequests,
             'all_time' => [
                 'total' => $allTimeTotal,

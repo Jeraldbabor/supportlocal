@@ -43,6 +43,7 @@ class CustomOrderQuoteReceived extends Notification
         }
 
         $requestId = $this->customOrderRequest->id ?? $this->customOrderRequest;
+
         return CustomOrderRequest::with('seller')->findOrFail($requestId);
     }
 
@@ -55,16 +56,16 @@ class CustomOrderQuoteReceived extends Notification
         $sellerName = $request->seller->business_name ?? $request->seller->name ?? 'Seller';
 
         return (new MailMessage)
-            ->subject('Quote Received for Your Custom Order - ' . $request->request_number)
-            ->greeting('Hello ' . $notifiable->name . '!')
-            ->line('Great news! ' . $sellerName . ' has sent you a quote for your custom order request.')
-            ->line('**Request:** ' . $request->title)
-            ->line('**Quoted Price:** ₱' . number_format($request->quoted_price, 2))
-            ->line('**Estimated Delivery:** ' . $request->estimated_days . ' days')
+            ->subject('Quote Received for Your Custom Order - '.$request->request_number)
+            ->greeting('Hello '.$notifiable->name.'!')
+            ->line('Great news! '.$sellerName.' has sent you a quote for your custom order request.')
+            ->line('**Request:** '.$request->title)
+            ->line('**Quoted Price:** ₱'.number_format($request->quoted_price, 2))
+            ->line('**Estimated Delivery:** '.$request->estimated_days.' days')
             ->when($request->seller_notes, function ($message) use ($request) {
-                return $message->line('**Seller Notes:** ' . $request->seller_notes);
+                return $message->line('**Seller Notes:** '.$request->seller_notes);
             })
-            ->action('Review Quote', url('/buyer/custom-orders/' . $request->id))
+            ->action('Review Quote', url('/buyer/custom-orders/'.$request->id))
             ->line('Please review the quote and accept or decline it.');
     }
 
@@ -78,12 +79,12 @@ class CustomOrderQuoteReceived extends Notification
 
         return [
             'title' => 'Quote Received',
-            'message' => $sellerName . ' quoted ₱' . number_format($request->quoted_price, 2) . ' for your custom order "' . $request->title . '".',
+            'message' => $sellerName.' quoted ₱'.number_format($request->quoted_price, 2).' for your custom order "'.$request->title.'".',
             'custom_order_request_id' => $request->id,
             'request_number' => $request->request_number,
             'quoted_price' => $request->quoted_price,
             'seller_name' => $sellerName,
-            'action_url' => '/buyer/custom-orders/' . $request->id,
+            'action_url' => '/buyer/custom-orders/'.$request->id,
         ];
     }
 }

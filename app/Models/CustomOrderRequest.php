@@ -15,13 +15,21 @@ class CustomOrderRequest extends Model
      * Status constants
      */
     const STATUS_PENDING = 'pending';
+
     const STATUS_QUOTED = 'quoted';
+
     const STATUS_ACCEPTED = 'accepted';
+
     const STATUS_REJECTED = 'rejected';
+
     const STATUS_DECLINED = 'declined';
+
     const STATUS_IN_PROGRESS = 'in_progress';
+
     const STATUS_READY_FOR_CHECKOUT = 'ready_for_checkout';
+
     const STATUS_COMPLETED = 'completed';
+
     const STATUS_CANCELLED = 'cancelled';
 
     /**
@@ -117,7 +125,7 @@ class CustomOrderRequest extends Model
         static::creating(function ($request) {
             // Generate unique request number
             if (empty($request->request_number)) {
-                $request->request_number = 'COR-' . strtoupper(Str::random(8));
+                $request->request_number = 'COR-'.strtoupper(Str::random(8));
             }
         });
     }
@@ -175,14 +183,15 @@ class CustomOrderRequest extends Model
      */
     public function getReferenceImageUrlsAttribute(): array
     {
-        if (!$this->reference_images || !is_array($this->reference_images)) {
+        if (! $this->reference_images || ! is_array($this->reference_images)) {
             return [];
         }
 
         return array_values(array_filter(array_map(function ($path) {
-            if (is_string($path) && !empty($path)) {
+            if (is_string($path) && ! empty($path)) {
                 return \App\Helpers\ImageHelper::url($path);
             }
+
             return null;
         }, $this->reference_images)));
     }
@@ -192,19 +201,19 @@ class CustomOrderRequest extends Model
      */
     public function getFormattedBudgetAttribute(): ?string
     {
-        if (!$this->budget_min && !$this->budget_max) {
+        if (! $this->budget_min && ! $this->budget_max) {
             return null;
         }
 
         if ($this->budget_min && $this->budget_max) {
-            return '₱' . number_format($this->budget_min, 2) . ' - ₱' . number_format($this->budget_max, 2);
+            return '₱'.number_format($this->budget_min, 2).' - ₱'.number_format($this->budget_max, 2);
         }
 
         if ($this->budget_min) {
-            return 'From ₱' . number_format($this->budget_min, 2);
+            return 'From ₱'.number_format($this->budget_min, 2);
         }
 
-        return 'Up to ₱' . number_format($this->budget_max, 2);
+        return 'Up to ₱'.number_format($this->budget_max, 2);
     }
 
     /**

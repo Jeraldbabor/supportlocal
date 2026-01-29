@@ -201,13 +201,14 @@ class DashboardController extends Controller
             $commission = Order::whereDate('completed_at', $date)
                 ->where('status', Order::STATUS_COMPLETED)
                 ->sum('admin_commission');
-            
+
             $data[] = [
                 'date' => $date->format('M d'),
                 'revenue' => round($revenue, 2),
                 'commission' => round($commission, 2),
             ];
         }
+
         return $data;
     }
 
@@ -220,14 +221,14 @@ class DashboardController extends Controller
         for ($i = 11; $i >= 0; $i--) {
             $startOfMonth = Carbon::now()->subMonths($i)->startOfMonth();
             $endOfMonth = Carbon::now()->subMonths($i)->endOfMonth();
-            
+
             $buyers = User::where('role', User::ROLE_BUYER)
                 ->whereBetween('created_at', [$startOfMonth, $endOfMonth])
                 ->count();
             $sellers = User::where('role', User::ROLE_SELLER)
                 ->whereBetween('created_at', [$startOfMonth, $endOfMonth])
                 ->count();
-            
+
             $data[] = [
                 'month' => $startOfMonth->format('M Y'),
                 'buyers' => $buyers,
@@ -235,6 +236,7 @@ class DashboardController extends Controller
                 'total' => $buyers + $sellers,
             ];
         }
+
         return $data;
     }
 
@@ -246,7 +248,7 @@ class DashboardController extends Controller
         $data = [];
         for ($i = 29; $i >= 0; $i--) {
             $date = Carbon::now()->subDays($i);
-            
+
             $orders = Order::whereDate('created_at', $date)->count();
             $completed = Order::whereDate('created_at', $date)
                 ->where('status', Order::STATUS_COMPLETED)
@@ -254,7 +256,7 @@ class DashboardController extends Controller
             $cancelled = Order::whereDate('created_at', $date)
                 ->where('status', Order::STATUS_CANCELLED)
                 ->count();
-            
+
             $data[] = [
                 'date' => $date->format('M d'),
                 'total' => $orders,
@@ -262,6 +264,7 @@ class DashboardController extends Controller
                 'cancelled' => $cancelled,
             ];
         }
+
         return $data;
     }
 
@@ -273,7 +276,7 @@ class DashboardController extends Controller
         $topSellers = Order::where('status', Order::STATUS_COMPLETED)
             ->where('created_at', '>=', Carbon::now()->subDays(30))
             ->whereNotNull('seller_id')
-            ->select('seller_id', 
+            ->select('seller_id',
                 DB::raw('COUNT(*) as order_count'),
                 DB::raw('SUM(total_amount) as total_revenue'),
                 DB::raw('AVG(total_amount) as avg_order_value')
@@ -299,7 +302,7 @@ class DashboardController extends Controller
             })
             ->values()
             ->toArray();
-        
+
         return $topSellers;
     }
 

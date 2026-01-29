@@ -7,14 +7,13 @@ use App\Models\CustomOrderRequest;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\User;
-use App\Notifications\NewCustomOrderRequest;
-use App\Notifications\NewOrderReceived;
 use App\Notifications\CustomOrderQuoteAccepted;
 use App\Notifications\CustomOrderQuoteDeclined;
+use App\Notifications\NewCustomOrderRequest;
+use App\Notifications\NewOrderReceived;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
 class CustomOrderRequestController extends Controller
@@ -38,7 +37,7 @@ class CustomOrderRequestController extends Controller
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('title', 'like', "%{$search}%")
-                  ->orWhere('request_number', 'like', "%{$search}%");
+                    ->orWhere('request_number', 'like', "%{$search}%");
             });
         }
 
@@ -51,6 +50,7 @@ class CustomOrderRequestController extends Controller
                 'name' => $item->seller->name,
                 'avatar_url' => $item->seller->avatar_url,
             ];
+
             return $item;
         });
 
@@ -73,7 +73,7 @@ class CustomOrderRequestController extends Controller
             $seller = User::where('id', $sellerId)
                 ->where('role', User::ROLE_SELLER)
                 ->first();
-            
+
             if ($seller) {
                 $seller = [
                     'id' => $seller->id,
@@ -86,7 +86,7 @@ class CustomOrderRequestController extends Controller
 
         // Get all sellers with their avatar_url
         $sellers = null;
-        if (!$seller) {
+        if (! $seller) {
             $sellers = User::where('role', User::ROLE_SELLER)
                 ->where('is_active', true)
                 ->orderBy('name')
@@ -204,7 +204,7 @@ class CustomOrderRequestController extends Controller
             abort(403, 'You do not have permission to accept this quote.');
         }
 
-        if (!$customOrderRequest->canBeAccepted()) {
+        if (! $customOrderRequest->canBeAccepted()) {
             return back()->with('error', 'This quote cannot be accepted.');
         }
 
@@ -229,7 +229,7 @@ class CustomOrderRequestController extends Controller
             abort(403, 'You do not have permission to decline this quote.');
         }
 
-        if (!$customOrderRequest->canBeDeclined()) {
+        if (! $customOrderRequest->canBeDeclined()) {
             return back()->with('error', 'This quote cannot be declined.');
         }
 
@@ -258,7 +258,7 @@ class CustomOrderRequestController extends Controller
             abort(403, 'You do not have permission to cancel this request.');
         }
 
-        if (!$customOrderRequest->canBeCancelled()) {
+        if (! $customOrderRequest->canBeCancelled()) {
             return back()->with('error', 'This request cannot be cancelled.');
         }
 
@@ -279,7 +279,7 @@ class CustomOrderRequestController extends Controller
             abort(403, 'You do not have permission to checkout this order.');
         }
 
-        if (!$customOrderRequest->canBeCheckedOut()) {
+        if (! $customOrderRequest->canBeCheckedOut()) {
             return redirect()
                 ->route('buyer.custom-orders.show', $customOrderRequest)
                 ->with('error', 'This order is not ready for checkout.');
@@ -330,7 +330,7 @@ class CustomOrderRequestController extends Controller
             abort(403, 'You do not have permission to checkout this order.');
         }
 
-        if (!$customOrderRequest->canBeCheckedOut()) {
+        if (! $customOrderRequest->canBeCheckedOut()) {
             return back()->with('error', 'This order is not ready for checkout.');
         }
 
@@ -356,7 +356,7 @@ class CustomOrderRequestController extends Controller
             $order = Order::create([
                 'user_id' => auth()->id(),
                 'seller_id' => $customOrderRequest->seller_id,
-                'order_number' => 'CUS-' . strtoupper(uniqid()),
+                'order_number' => 'CUS-'.strtoupper(uniqid()),
                 'shipping_name' => auth()->user()->name,
                 'shipping_email' => auth()->user()->email,
                 'shipping_phone' => $validated['delivery_phone'],
@@ -367,7 +367,7 @@ class CustomOrderRequestController extends Controller
                 'payment_method' => $validated['payment_method'],
                 'payment_status' => $paymentStatus,
                 'gcash_reference' => $validated['gcash_reference'] ?? null,
-                'special_instructions' => 'Custom Order: ' . $customOrderRequest->title,
+                'special_instructions' => 'Custom Order: '.$customOrderRequest->title,
                 'subtotal' => $customOrderRequest->quoted_price,
                 'shipping_fee' => $shippingFee,
                 'total_amount' => $totalAmount,
@@ -382,7 +382,7 @@ class CustomOrderRequestController extends Controller
                 'order_id' => $order->id,
                 'product_id' => $customOrderRequest->product_id,
                 'seller_id' => $customOrderRequest->seller_id,
-                'product_name' => 'Custom Order: ' . $customOrderRequest->title,
+                'product_name' => 'Custom Order: '.$customOrderRequest->title,
                 'product_image' => $customOrderRequest->reference_image_urls[0] ?? null,
                 'seller_name' => $customOrderRequest->seller->name ?? 'Seller',
                 'quantity' => $customOrderRequest->quantity,
@@ -424,7 +424,7 @@ class CustomOrderRequestController extends Controller
                 'custom_order_request_id' => $customOrderRequest->id,
                 'error' => $e->getMessage(),
             ]);
-            
+
             return back()->with('error', 'Failed to place order. Please try again.');
         }
     }

@@ -160,7 +160,17 @@ interface AnalyticsProps {
     customOrders?: CustomOrderAnalytics;
 }
 
-export default function Analytics({ dateRange, overview, revenue, orders, products, customers, topProducts, recentOrders, customOrders }: AnalyticsProps) {
+export default function Analytics({
+    dateRange,
+    overview,
+    revenue,
+    orders,
+    products,
+    customers,
+    topProducts,
+    recentOrders,
+    customOrders,
+}: AnalyticsProps) {
     const [selectedRange, setSelectedRange] = useState(dateRange);
 
     const handleRangeChange = (value: string) => {
@@ -774,7 +784,9 @@ export default function Analytics({ dateRange, overview, revenue, orders, produc
                                     <DollarSign className="h-4 w-4 text-orange-500" />
                                 </CardHeader>
                                 <CardContent>
-                                    <div className="text-lg font-bold text-orange-700 sm:text-2xl">{formatCurrency(customOrders.overview.total_revenue)}</div>
+                                    <div className="text-lg font-bold text-orange-700 sm:text-2xl">
+                                        {formatCurrency(customOrders.overview.total_revenue)}
+                                    </div>
                                     <div className="flex items-center text-xs text-gray-600">
                                         {customOrders.growth.revenue >= 0 ? (
                                             <ArrowUpRight className="mr-1 h-3 w-3 text-green-600" />
@@ -908,7 +920,9 @@ export default function Analytics({ dateRange, overview, revenue, orders, produc
                                                             {request.status_label}
                                                         </Badge>
                                                         {request.quoted_price && (
-                                                            <p className="mt-1 text-sm font-semibold text-amber-600">{formatCurrency(request.quoted_price)}</p>
+                                                            <p className="mt-1 text-sm font-semibold text-amber-600">
+                                                                {formatCurrency(request.quoted_price)}
+                                                            </p>
                                                         )}
                                                     </div>
                                                 </div>

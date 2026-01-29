@@ -43,6 +43,7 @@ class CustomOrderQuoteDeclined extends Notification
         }
 
         $requestId = $this->customOrderRequest->id ?? $this->customOrderRequest;
+
         return CustomOrderRequest::with('buyer')->findOrFail($requestId);
     }
 
@@ -54,15 +55,15 @@ class CustomOrderQuoteDeclined extends Notification
         $request = $this->getRequest();
 
         return (new MailMessage)
-            ->subject('Quote Declined - ' . $request->request_number)
-            ->greeting('Hello ' . $notifiable->name . ',')
+            ->subject('Quote Declined - '.$request->request_number)
+            ->greeting('Hello '.$notifiable->name.',')
             ->line('Unfortunately, your quote has been declined by the customer.')
-            ->line('**Request:** ' . $request->title)
-            ->line('**Your Quote:** ₱' . number_format($request->quoted_price, 2))
+            ->line('**Request:** '.$request->title)
+            ->line('**Your Quote:** ₱'.number_format($request->quoted_price, 2))
             ->when($request->rejection_reason, function ($message) use ($request) {
-                return $message->line('**Reason:** ' . $request->rejection_reason);
+                return $message->line('**Reason:** '.$request->rejection_reason);
             })
-            ->action('View Details', url('/seller/custom-orders/' . $request->id))
+            ->action('View Details', url('/seller/custom-orders/'.$request->id))
             ->line('Don\'t be discouraged! You can continue serving other customers.');
     }
 
@@ -75,11 +76,11 @@ class CustomOrderQuoteDeclined extends Notification
 
         return [
             'title' => 'Quote Declined',
-            'message' => ($request->buyer->name ?? 'Customer') . ' declined your quote for "' . $request->title . '".',
+            'message' => ($request->buyer->name ?? 'Customer').' declined your quote for "'.$request->title.'".',
             'custom_order_request_id' => $request->id,
             'request_number' => $request->request_number,
             'buyer_name' => $request->buyer->name ?? 'Customer',
-            'action_url' => '/seller/custom-orders/' . $request->id,
+            'action_url' => '/seller/custom-orders/'.$request->id,
         ];
     }
 }

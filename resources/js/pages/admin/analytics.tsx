@@ -6,33 +6,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head, router } from '@inertiajs/react';
-import {
-    ArrowDownRight,
-    ArrowUpRight,
-    BarChart3,
-    Download,
-    Package,
-    PenTool,
-    ShoppingCart,
-    TrendingUp,
-    Users,
-} from 'lucide-react';
+import { ArrowDownRight, ArrowUpRight, BarChart3, Download, Package, PenTool, ShoppingCart, TrendingUp, Users } from 'lucide-react';
 import { useState } from 'react';
-import {
-    Area,
-    AreaChart,
-    Bar,
-    BarChart,
-    CartesianGrid,
-    Cell,
-    Legend,
-    Pie,
-    PieChart,
-    ResponsiveContainer,
-    Tooltip,
-    XAxis,
-    YAxis,
-} from 'recharts';
+import { Area, AreaChart, Bar, BarChart, CartesianGrid, Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -321,8 +297,24 @@ export default function AdminAnalytics({
                                             ]}
                                         />
                                         <Legend />
-                                        <Area type="monotone" dataKey="revenue" name="Revenue" stroke="#f59e0b" fillOpacity={1} fill="url(#colorRevenue)" strokeWidth={2} />
-                                        <Area type="monotone" dataKey="commission" name="Commission" stroke="#10b981" fillOpacity={1} fill="url(#colorCommission)" strokeWidth={2} />
+                                        <Area
+                                            type="monotone"
+                                            dataKey="revenue"
+                                            name="Revenue"
+                                            stroke="#f59e0b"
+                                            fillOpacity={1}
+                                            fill="url(#colorRevenue)"
+                                            strokeWidth={2}
+                                        />
+                                        <Area
+                                            type="monotone"
+                                            dataKey="commission"
+                                            name="Commission"
+                                            stroke="#10b981"
+                                            fillOpacity={1}
+                                            fill="url(#colorCommission)"
+                                            strokeWidth={2}
+                                        />
                                     </AreaChart>
                                 </ResponsiveContainer>
                             </div>
@@ -403,9 +395,31 @@ export default function AdminAnalytics({
                                             <YAxis stroke="#6b7280" fontSize={10} />
                                             <Tooltip contentStyle={{ backgroundColor: '#fff', border: '1px solid #e5e7eb', borderRadius: '8px' }} />
                                             <Legend />
-                                            <Area type="monotone" dataKey="total" name="Total" stroke="#8b5cf6" fillOpacity={1} fill="url(#colorTotal)" strokeWidth={2} />
-                                            <Area type="monotone" dataKey="completed" name="Completed" stroke="#10b981" fill="transparent" strokeWidth={2} />
-                                            <Area type="monotone" dataKey="cancelled" name="Cancelled" stroke="#ef4444" fill="transparent" strokeWidth={2} />
+                                            <Area
+                                                type="monotone"
+                                                dataKey="total"
+                                                name="Total"
+                                                stroke="#8b5cf6"
+                                                fillOpacity={1}
+                                                fill="url(#colorTotal)"
+                                                strokeWidth={2}
+                                            />
+                                            <Area
+                                                type="monotone"
+                                                dataKey="completed"
+                                                name="Completed"
+                                                stroke="#10b981"
+                                                fill="transparent"
+                                                strokeWidth={2}
+                                            />
+                                            <Area
+                                                type="monotone"
+                                                dataKey="cancelled"
+                                                name="Cancelled"
+                                                stroke="#ef4444"
+                                                fill="transparent"
+                                                strokeWidth={2}
+                                            />
                                         </AreaChart>
                                     </ResponsiveContainer>
                                 </div>
@@ -442,7 +456,7 @@ export default function AdminAnalytics({
                                                 outerRadius={90}
                                                 paddingAngle={2}
                                                 dataKey="count"
-                                                label={({ status, percent }) => `${status} ${(percent * 100).toFixed(0)}%`}
+                                                label={({ name, percent }) => `${name} ${((percent ?? 0) * 100).toFixed(0)}%`}
                                                 labelLine={false}
                                             >
                                                 {ordersByStatus.map((entry, index) => (
@@ -568,7 +582,10 @@ export default function AdminAnalytics({
                             {topSellers && topSellers.length > 0 ? (
                                 <div className="space-y-3">
                                     {topSellers.slice(0, 5).map((seller, index) => (
-                                        <div key={seller.id} className="flex items-center gap-3 rounded-lg bg-gray-50 p-3 transition-colors hover:bg-gray-100">
+                                        <div
+                                            key={seller.id}
+                                            className="flex items-center gap-3 rounded-lg bg-gray-50 p-3 transition-colors hover:bg-gray-100"
+                                        >
                                             <Badge variant="outline" className="bg-amber-100 text-amber-700">
                                                 #{index + 1}
                                             </Badge>
@@ -614,7 +631,10 @@ export default function AdminAnalytics({
                             {topProducts && topProducts.length > 0 ? (
                                 <div className="space-y-3">
                                     {topProducts.slice(0, 5).map((product, index) => (
-                                        <div key={product.id} className="flex items-center gap-3 rounded-lg bg-gray-50 p-3 transition-colors hover:bg-gray-100">
+                                        <div
+                                            key={product.id}
+                                            className="flex items-center gap-3 rounded-lg bg-gray-50 p-3 transition-colors hover:bg-gray-100"
+                                        >
                                             <Badge variant="outline" className="bg-green-100 text-green-700">
                                                 #{index + 1}
                                             </Badge>

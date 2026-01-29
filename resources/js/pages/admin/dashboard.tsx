@@ -470,7 +470,10 @@ export default function AdminDashboard() {
                                                 border: '1px solid #e5e7eb',
                                                 borderRadius: '8px',
                                             }}
-                                            formatter={(value: number, name: string) => [formatCurrency(value), name === 'revenue' ? 'Revenue' : 'Commission']}
+                                            formatter={(value: number, name: string) => [
+                                                formatCurrency(value),
+                                                name === 'revenue' ? 'Revenue' : 'Commission',
+                                            ]}
                                         />
                                         <Legend />
                                         <Area
@@ -517,7 +520,15 @@ export default function AdminDashboard() {
                                     <ResponsiveContainer width="100%" height={280}>
                                         <BarChart data={userGrowthChartData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
                                             <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                                            <XAxis dataKey="month" stroke="#6b7280" fontSize={10} tick={{ fontSize: 9 }} angle={-45} textAnchor="end" height={60} />
+                                            <XAxis
+                                                dataKey="month"
+                                                stroke="#6b7280"
+                                                fontSize={10}
+                                                tick={{ fontSize: 9 }}
+                                                angle={-45}
+                                                textAnchor="end"
+                                                height={60}
+                                            />
                                             <YAxis stroke="#6b7280" fontSize={10} />
                                             <Tooltip
                                                 contentStyle={{
@@ -559,7 +570,13 @@ export default function AdminDashboard() {
                                                 </linearGradient>
                                             </defs>
                                             <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                                            <XAxis dataKey="date" stroke="#6b7280" fontSize={10} tick={{ fontSize: 10 }} interval="preserveStartEnd" />
+                                            <XAxis
+                                                dataKey="date"
+                                                stroke="#6b7280"
+                                                fontSize={10}
+                                                tick={{ fontSize: 10 }}
+                                                interval="preserveStartEnd"
+                                            />
                                             <YAxis stroke="#6b7280" fontSize={10} />
                                             <Tooltip
                                                 contentStyle={{
@@ -569,9 +586,31 @@ export default function AdminDashboard() {
                                                 }}
                                             />
                                             <Legend />
-                                            <Area type="monotone" dataKey="total" name="Total" stroke="#8b5cf6" fillOpacity={1} fill="url(#colorTotal)" strokeWidth={2} />
-                                            <Area type="monotone" dataKey="completed" name="Completed" stroke="#10b981" fill="transparent" strokeWidth={2} />
-                                            <Area type="monotone" dataKey="cancelled" name="Cancelled" stroke="#ef4444" fill="transparent" strokeWidth={2} />
+                                            <Area
+                                                type="monotone"
+                                                dataKey="total"
+                                                name="Total"
+                                                stroke="#8b5cf6"
+                                                fillOpacity={1}
+                                                fill="url(#colorTotal)"
+                                                strokeWidth={2}
+                                            />
+                                            <Area
+                                                type="monotone"
+                                                dataKey="completed"
+                                                name="Completed"
+                                                stroke="#10b981"
+                                                fill="transparent"
+                                                strokeWidth={2}
+                                            />
+                                            <Area
+                                                type="monotone"
+                                                dataKey="cancelled"
+                                                name="Cancelled"
+                                                stroke="#ef4444"
+                                                fill="transparent"
+                                                strokeWidth={2}
+                                            />
                                         </AreaChart>
                                     </ResponsiveContainer>
                                 </div>
@@ -606,7 +645,7 @@ export default function AdminDashboard() {
                                                 outerRadius={90}
                                                 paddingAngle={2}
                                                 dataKey="value"
-                                                label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                                                label={({ name, percent }) => `${name} ${((percent ?? 0) * 100).toFixed(0)}%`}
                                                 labelLine={false}
                                             >
                                                 {orderStatusData.map((entry, index) => (
@@ -674,7 +713,10 @@ export default function AdminDashboard() {
                         {topSellers && topSellers.length > 0 ? (
                             <div className="space-y-3">
                                 {topSellers.slice(0, 5).map((seller, index) => (
-                                    <div key={seller.id || index} className="flex items-center gap-4 rounded-lg bg-gray-50 p-3 transition-colors hover:bg-gray-100">
+                                    <div
+                                        key={seller.id || index}
+                                        className="flex items-center gap-4 rounded-lg bg-gray-50 p-3 transition-colors hover:bg-gray-100"
+                                    >
                                         <div className="flex h-8 w-8 items-center justify-center rounded-full bg-amber-100 text-sm font-bold text-amber-700">
                                             #{index + 1}
                                         </div>

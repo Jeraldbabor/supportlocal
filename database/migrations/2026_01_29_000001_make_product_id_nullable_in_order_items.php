@@ -13,7 +13,7 @@ return new class extends Migration
     public function up(): void
     {
         // Add seller_id column if it doesn't exist
-        if (!Schema::hasColumn('order_items', 'seller_id')) {
+        if (! Schema::hasColumn('order_items', 'seller_id')) {
             Schema::table('order_items', function (Blueprint $table) {
                 $table->unsignedBigInteger('seller_id')->nullable()->after('product_id');
             });
@@ -22,7 +22,7 @@ return new class extends Migration
         // Check if product_id column is already nullable (skip if already done)
         $connection = Schema::getConnection();
         $driver = $connection->getDriverName();
-        
+
         // Get column info to check if already nullable
         $isNullable = false;
         if ($driver === 'pgsql') {
@@ -41,7 +41,7 @@ return new class extends Migration
             $isNullable = $result && $result->IS_NULLABLE === 'YES';
         } elseif ($driver === 'sqlite') {
             // For SQLite, check the column info
-            $columns = DB::select("PRAGMA table_info(order_items)");
+            $columns = DB::select('PRAGMA table_info(order_items)');
             foreach ($columns as $column) {
                 if ($column->name === 'product_id') {
                     $isNullable = $column->notnull == 0;
@@ -51,7 +51,7 @@ return new class extends Migration
         }
 
         // Only modify if not already nullable
-        if (!$isNullable) {
+        if (! $isNullable) {
             // Drop foreign key constraint (handle different naming conventions)
             try {
                 Schema::table('order_items', function (Blueprint $table) {

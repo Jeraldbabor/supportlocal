@@ -12,12 +12,13 @@ class CustomOrderStatusUpdated extends Notification
     use Queueable;
 
     protected $customOrderRequest;
+
     protected $customMessage;
 
     /**
      * Create a new notification instance.
      */
-    public function __construct(CustomOrderRequest $customOrderRequest, string $customMessage = null)
+    public function __construct(CustomOrderRequest $customOrderRequest, ?string $customMessage = null)
     {
         $this->customOrderRequest = $customOrderRequest;
         $this->customMessage = $customMessage;
@@ -45,6 +46,7 @@ class CustomOrderStatusUpdated extends Notification
         }
 
         $requestId = $this->customOrderRequest->id ?? $this->customOrderRequest;
+
         return CustomOrderRequest::with('seller')->findOrFail($requestId);
     }
 
@@ -57,13 +59,13 @@ class CustomOrderStatusUpdated extends Notification
         $sellerName = $request->seller->business_name ?? $request->seller->name ?? 'Seller';
 
         return (new MailMessage)
-            ->subject('Custom Order Update - ' . $request->request_number)
-            ->greeting('Hello ' . $notifiable->name . '!')
+            ->subject('Custom Order Update - '.$request->request_number)
+            ->greeting('Hello '.$notifiable->name.'!')
             ->line($this->customMessage ?? 'Your custom order has been updated.')
-            ->line('**Request:** ' . $request->title)
-            ->line('**Status:** ' . $request->status_label)
-            ->line('**Artisan:** ' . $sellerName)
-            ->action('View Details', url('/buyer/custom-orders/' . $request->id))
+            ->line('**Request:** '.$request->title)
+            ->line('**Status:** '.$request->status_label)
+            ->line('**Artisan:** '.$sellerName)
+            ->action('View Details', url('/buyer/custom-orders/'.$request->id))
             ->line('Thank you for supporting local artisans!');
     }
 
@@ -77,13 +79,13 @@ class CustomOrderStatusUpdated extends Notification
 
         return [
             'title' => 'Custom Order Update',
-            'message' => $this->customMessage ?? 'Your custom order "' . $request->title . '" status changed to ' . $request->status_label . '.',
+            'message' => $this->customMessage ?? 'Your custom order "'.$request->title.'" status changed to '.$request->status_label.'.',
             'custom_order_request_id' => $request->id,
             'request_number' => $request->request_number,
             'status' => $request->status,
             'status_label' => $request->status_label,
             'seller_name' => $sellerName,
-            'action_url' => '/buyer/custom-orders/' . $request->id,
+            'action_url' => '/buyer/custom-orders/'.$request->id,
         ];
     }
 }

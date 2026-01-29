@@ -1,10 +1,10 @@
+import StartChatButton from '@/components/StartChatButton';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
-import StartChatButton from '@/components/StartChatButton';
 import BuyerLayout from '@/layouts/BuyerLayout';
 import { Link, router, useForm } from '@inertiajs/react';
 import {
@@ -123,9 +123,13 @@ export default function CustomOrderShow({ request }: Props) {
     };
 
     const handleCancel = () => {
-        router.post(`/buyer/custom-orders/${request.id}/cancel`, {}, {
-            onSuccess: () => setShowCancelModal(false),
-        });
+        router.post(
+            `/buyer/custom-orders/${request.id}/cancel`,
+            {},
+            {
+                onSuccess: () => setShowCancelModal(false),
+            },
+        );
     };
 
     const getCurrentStep = () => {
@@ -140,10 +144,7 @@ export default function CustomOrderShow({ request }: Props) {
             <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
                 {/* Header */}
                 <div className="mb-8">
-                    <Link
-                        href="/buyer/custom-orders"
-                        className="mb-4 inline-flex items-center text-sm text-gray-500 hover:text-gray-700"
-                    >
+                    <Link href="/buyer/custom-orders" className="mb-4 inline-flex items-center text-sm text-gray-500 hover:text-gray-700">
                         <ArrowLeft className="mr-2 h-4 w-4" />
                         Back to Custom Orders
                     </Link>
@@ -212,26 +213,14 @@ export default function CustomOrderShow({ request }: Props) {
                                                             : 'border-gray-300 bg-white text-gray-400'
                                                     }`}
                                                 >
-                                                    {isActive && index < currentStep ? (
-                                                        <Check className="h-5 w-5" />
-                                                    ) : (
-                                                        <Icon className="h-5 w-5" />
-                                                    )}
+                                                    {isActive && index < currentStep ? <Check className="h-5 w-5" /> : <Icon className="h-5 w-5" />}
                                                 </div>
-                                                <p
-                                                    className={`mt-2 text-center text-xs font-medium ${
-                                                        isActive ? 'text-gray-900' : 'text-gray-400'
-                                                    }`}
-                                                >
+                                                <p className={`mt-2 text-center text-xs font-medium ${isActive ? 'text-gray-900' : 'text-gray-400'}`}>
                                                     {step.label}
                                                 </p>
                                             </div>
                                             {index < statusSteps.length - 1 && (
-                                                <div
-                                                    className={`h-1 flex-1 rounded ${
-                                                        index < currentStep ? 'bg-green-500' : 'bg-gray-200'
-                                                    }`}
-                                                />
+                                                <div className={`h-1 flex-1 rounded ${index < currentStep ? 'bg-green-500' : 'bg-gray-200'}`} />
                                             )}
                                         </React.Fragment>
                                     );
@@ -252,7 +241,8 @@ export default function CustomOrderShow({ request }: Props) {
                                 <div>
                                     <h3 className="font-semibold text-orange-900">Your Custom Order is Ready!</h3>
                                     <p className="mt-1 text-sm text-orange-800">
-                                        The artisan has completed your custom order. Proceed to checkout to complete your purchase and arrange delivery.
+                                        The artisan has completed your custom order. Proceed to checkout to complete your purchase and arrange
+                                        delivery.
                                     </p>
                                 </div>
                             </div>
@@ -277,9 +267,7 @@ export default function CustomOrderShow({ request }: Props) {
                                     {request.status === 'declined' && 'Quote Declined'}
                                     {request.status === 'cancelled' && 'Request Cancelled'}
                                 </h3>
-                                {request.rejection_reason && (
-                                    <p className="mt-1 text-sm text-red-800">Reason: {request.rejection_reason}</p>
-                                )}
+                                {request.rejection_reason && <p className="mt-1 text-sm text-red-800">Reason: {request.rejection_reason}</p>}
                             </div>
                         </CardContent>
                     </Card>
@@ -307,9 +295,7 @@ export default function CustomOrderShow({ request }: Props) {
                                     <div className="grid gap-4 sm:grid-cols-2">
                                         <div>
                                             <p className="text-sm text-gray-500">Quoted Price</p>
-                                            <p className="text-3xl font-bold text-gray-900">
-                                                ₱{Number(request.quoted_price).toLocaleString()}
-                                            </p>
+                                            <p className="text-3xl font-bold text-gray-900">₱{Number(request.quoted_price).toLocaleString()}</p>
                                             <p className="text-sm text-gray-500">for {request.quantity} item(s)</p>
                                         </div>
                                         {request.estimated_days && (
@@ -326,9 +312,7 @@ export default function CustomOrderShow({ request }: Props) {
                                         </div>
                                     )}
                                     {request.quoted_at && (
-                                        <p className="mt-4 text-xs text-gray-500">
-                                            Quoted on {new Date(request.quoted_at).toLocaleDateString()}
-                                        </p>
+                                        <p className="mt-4 text-xs text-gray-500">Quoted on {new Date(request.quoted_at).toLocaleDateString()}</p>
                                     )}
                                 </CardContent>
                             </Card>
@@ -370,9 +354,7 @@ export default function CustomOrderShow({ request }: Props) {
                                                 <Calendar className="h-4 w-4" />
                                                 Preferred Deadline
                                             </p>
-                                            <p className="font-medium text-gray-900">
-                                                {new Date(request.preferred_deadline).toLocaleDateString()}
-                                            </p>
+                                            <p className="font-medium text-gray-900">{new Date(request.preferred_deadline).toLocaleDateString()}</p>
                                         </div>
                                     )}
 
@@ -381,9 +363,7 @@ export default function CustomOrderShow({ request }: Props) {
                                             <Clock className="h-4 w-4" />
                                             Submitted
                                         </p>
-                                        <p className="font-medium text-gray-900">
-                                            {new Date(request.created_at).toLocaleDateString()}
-                                        </p>
+                                        <p className="font-medium text-gray-900">{new Date(request.created_at).toLocaleDateString()}</p>
                                     </div>
                                 </div>
 
@@ -413,11 +393,7 @@ export default function CustomOrderShow({ request }: Props) {
                                                 onClick={() => setImageModal(url)}
                                                 className="aspect-square overflow-hidden rounded-lg border transition-all hover:shadow-lg"
                                             >
-                                                <img
-                                                    src={url}
-                                                    alt={`Reference ${index + 1}`}
-                                                    className="h-full w-full object-cover"
-                                                />
+                                                <img src={url} alt={`Reference ${index + 1}`} className="h-full w-full object-cover" />
                                             </button>
                                         ))}
                                     </div>
@@ -440,9 +416,7 @@ export default function CustomOrderShow({ request }: Props) {
                                             {request.seller.name?.[0]?.toUpperCase()}
                                         </AvatarFallback>
                                     </Avatar>
-                                    <h3 className="text-lg font-semibold text-gray-900">
-                                        {request.seller.name}
-                                    </h3>
+                                    <h3 className="text-lg font-semibold text-gray-900">{request.seller.name}</h3>
                                     <p className="text-sm text-gray-500">Artisan</p>
 
                                     {request.seller.address && (
@@ -497,9 +471,7 @@ export default function CustomOrderShow({ request }: Props) {
                                         </div>
                                         <div>
                                             <p className="font-medium text-gray-900">Request Submitted</p>
-                                            <p className="text-sm text-gray-500">
-                                                {new Date(request.created_at).toLocaleDateString()}
-                                            </p>
+                                            <p className="text-sm text-gray-500">{new Date(request.created_at).toLocaleDateString()}</p>
                                         </div>
                                     </div>
 
@@ -510,9 +482,7 @@ export default function CustomOrderShow({ request }: Props) {
                                             </div>
                                             <div>
                                                 <p className="font-medium text-gray-900">Quote Received</p>
-                                                <p className="text-sm text-gray-500">
-                                                    {new Date(request.quoted_at).toLocaleDateString()}
-                                                </p>
+                                                <p className="text-sm text-gray-500">{new Date(request.quoted_at).toLocaleDateString()}</p>
                                             </div>
                                         </div>
                                     )}
@@ -524,9 +494,7 @@ export default function CustomOrderShow({ request }: Props) {
                                             </div>
                                             <div>
                                                 <p className="font-medium text-gray-900">Quote Accepted</p>
-                                                <p className="text-sm text-gray-500">
-                                                    {new Date(request.accepted_at).toLocaleDateString()}
-                                                </p>
+                                                <p className="text-sm text-gray-500">{new Date(request.accepted_at).toLocaleDateString()}</p>
                                             </div>
                                         </div>
                                     )}
@@ -538,9 +506,7 @@ export default function CustomOrderShow({ request }: Props) {
                                             </div>
                                             <div>
                                                 <p className="font-medium text-gray-900">Completed</p>
-                                                <p className="text-sm text-gray-500">
-                                                    {new Date(request.completed_at).toLocaleDateString()}
-                                                </p>
+                                                <p className="text-sm text-gray-500">{new Date(request.completed_at).toLocaleDateString()}</p>
                                             </div>
                                         </div>
                                     )}
@@ -556,9 +522,7 @@ export default function CustomOrderShow({ request }: Props) {
                 <DialogContent>
                     <DialogHeader>
                         <DialogTitle>Decline Quote</DialogTitle>
-                        <DialogDescription>
-                            Are you sure you want to decline this quote? You can provide a reason for the artisan.
-                        </DialogDescription>
+                        <DialogDescription>Are you sure you want to decline this quote? You can provide a reason for the artisan.</DialogDescription>
                     </DialogHeader>
                     <div>
                         <Textarea
@@ -609,9 +573,7 @@ export default function CustomOrderShow({ request }: Props) {
                     >
                         <X className="h-4 w-4" />
                     </button>
-                    {imageModal && (
-                        <img src={imageModal} alt="Reference" className="h-auto w-full rounded-lg" />
-                    )}
+                    {imageModal && <img src={imageModal} alt="Reference" className="h-auto w-full rounded-lg" />}
                 </DialogContent>
             </Dialog>
         </BuyerLayout>

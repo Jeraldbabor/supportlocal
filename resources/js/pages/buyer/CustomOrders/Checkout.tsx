@@ -6,17 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import BuyerLayout from '@/layouts/BuyerLayout';
 import { Head, Link, useForm } from '@inertiajs/react';
-import {
-    AlertCircle,
-    ArrowLeft,
-    Banknote,
-    CheckCircle2,
-    CreditCard,
-    Package,
-    Phone,
-    ShoppingBag,
-    Truck,
-} from 'lucide-react';
+import { AlertCircle, ArrowLeft, Banknote, CheckCircle2, CreditCard, Package, Phone, ShoppingBag, Truck } from 'lucide-react';
 import React, { useState } from 'react';
 
 interface CustomOrderRequest {
@@ -136,9 +126,7 @@ export default function Checkout({ request, user }: Props) {
                                         )}
                                         <div className="flex-1">
                                             <h3 className="font-semibold text-gray-900">{request.title}</h3>
-                                            <p className="mt-1 line-clamp-2 text-sm text-gray-500">
-                                                {request.description}
-                                            </p>
+                                            <p className="mt-1 line-clamp-2 text-sm text-gray-500">{request.description}</p>
                                             <div className="mt-2 flex items-center gap-4 text-sm">
                                                 <span className="text-gray-500">Qty: {request.quantity}</span>
                                                 <span className="font-semibold text-amber-600">
@@ -184,15 +172,13 @@ export default function Checkout({ request, user }: Props) {
                                             rows={3}
                                             className="mt-1"
                                         />
-                                        {errors.delivery_address && (
-                                            <p className="mt-1 text-sm text-red-500">{errors.delivery_address}</p>
-                                        )}
+                                        {errors.delivery_address && <p className="mt-1 text-sm text-red-500">{errors.delivery_address}</p>}
                                     </div>
 
                                     <div>
                                         <Label htmlFor="delivery_phone">Contact Number *</Label>
                                         <div className="relative mt-1">
-                                            <Phone className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+                                            <Phone className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-400" />
                                             <Input
                                                 id="delivery_phone"
                                                 type="tel"
@@ -202,9 +188,7 @@ export default function Checkout({ request, user }: Props) {
                                                 className="pl-10"
                                             />
                                         </div>
-                                        {errors.delivery_phone && (
-                                            <p className="mt-1 text-sm text-red-500">{errors.delivery_phone}</p>
-                                        )}
+                                        {errors.delivery_phone && <p className="mt-1 text-sm text-red-500">{errors.delivery_phone}</p>}
                                     </div>
 
                                     <div>
@@ -234,9 +218,7 @@ export default function Checkout({ request, user }: Props) {
                                     {/* COD Option */}
                                     <label
                                         className={`flex cursor-pointer items-start gap-4 rounded-lg border-2 p-4 transition-all ${
-                                            data.payment_method === 'cod'
-                                                ? 'border-amber-500 bg-amber-50'
-                                                : 'border-gray-200 hover:border-gray-300'
+                                            data.payment_method === 'cod' ? 'border-amber-500 bg-amber-50' : 'border-gray-200 hover:border-gray-300'
                                         }`}
                                     >
                                         <input
@@ -264,9 +246,7 @@ export default function Checkout({ request, user }: Props) {
                                     {/* GCash Option */}
                                     <label
                                         className={`flex cursor-pointer items-start gap-4 rounded-lg border-2 p-4 transition-all ${
-                                            data.payment_method === 'gcash'
-                                                ? 'border-amber-500 bg-amber-50'
-                                                : 'border-gray-200 hover:border-gray-300'
+                                            data.payment_method === 'gcash' ? 'border-amber-500 bg-amber-50' : 'border-gray-200 hover:border-gray-300'
                                         }`}
                                     >
                                         <input
@@ -302,19 +282,13 @@ export default function Checkout({ request, user }: Props) {
                                                     <p className="font-medium text-blue-900">Send payment to:</p>
                                                     {request.seller.gcash_number ? (
                                                         <>
-                                                            <p className="text-lg font-bold text-blue-800">
-                                                                {request.seller.gcash_number}
-                                                            </p>
+                                                            <p className="text-lg font-bold text-blue-800">{request.seller.gcash_number}</p>
                                                             {request.seller.gcash_name && (
-                                                                <p className="text-sm text-blue-700">
-                                                                    {request.seller.gcash_name}
-                                                                </p>
+                                                                <p className="text-sm text-blue-700">{request.seller.gcash_name}</p>
                                                             )}
                                                         </>
                                                     ) : (
-                                                        <p className="text-sm text-blue-700">
-                                                            Contact the seller for their GCash details.
-                                                        </p>
+                                                        <p className="text-sm text-blue-700">Contact the seller for their GCash details.</p>
                                                     )}
                                                 </div>
                                             </div>
@@ -328,9 +302,7 @@ export default function Checkout({ request, user }: Props) {
                                                     placeholder="Enter reference number from GCash"
                                                     className="mt-1"
                                                 />
-                                                {errors.gcash_reference && (
-                                                    <p className="mt-1 text-sm text-red-500">{errors.gcash_reference}</p>
-                                                )}
+                                                {errors.gcash_reference && <p className="mt-1 text-sm text-red-500">{errors.gcash_reference}</p>}
                                             </div>
                                         </div>
                                     )}
@@ -357,9 +329,7 @@ export default function Checkout({ request, user }: Props) {
                                         </div>
                                         <div className="flex justify-between text-sm">
                                             <span className="text-gray-500">Shipping Fee</span>
-                                            <span className="font-medium">
-                                                ₱{shippingFee.toLocaleString('en-PH', { minimumFractionDigits: 2 })}
-                                            </span>
+                                            <span className="font-medium">₱{shippingFee.toLocaleString('en-PH', { minimumFractionDigits: 2 })}</span>
                                         </div>
                                         <hr />
                                         <div className="flex justify-between">

@@ -6,18 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import BuyerLayout from '@/layouts/BuyerLayout';
 import { Link, router } from '@inertiajs/react';
-import {
-    Calendar,
-    ChevronLeft,
-    ChevronRight,
-    Clock,
-    DollarSign,
-    Eye,
-    Package,
-    PenTool,
-    Plus,
-    Search,
-} from 'lucide-react';
+import { Calendar, ChevronLeft, ChevronRight, Clock, DollarSign, Eye, Package, PenTool, Plus, Search } from 'lucide-react';
 import React, { useState } from 'react';
 
 interface CustomOrderRequest {
@@ -178,9 +167,7 @@ export default function CustomOrdersIndex({ requests, filters, statusCounts }: P
                                             <div className="mb-4 flex items-start justify-between">
                                                 <div>
                                                     <div className="mb-2 flex items-center gap-2">
-                                                        <Badge className={`${statusColors[request.status]} border`}>
-                                                            {request.status_label}
-                                                        </Badge>
+                                                        <Badge className={`${statusColors[request.status]} border`}>{request.status_label}</Badge>
                                                         <span className="text-sm text-gray-500">#{request.request_number}</span>
                                                     </div>
                                                     <h3 className="text-xl font-semibold text-gray-900">{request.title}</h3>
@@ -232,9 +219,7 @@ export default function CustomOrdersIndex({ requests, filters, statusCounts }: P
                                                         {request.seller.name?.[0]?.toUpperCase()}
                                                     </AvatarFallback>
                                                 </Avatar>
-                                                <p className="font-medium text-gray-900">
-                                                    {request.seller.name}
-                                                </p>
+                                                <p className="font-medium text-gray-900">{request.seller.name}</p>
                                                 <p className="text-sm text-gray-500">Artisan</p>
                                             </div>
 
@@ -278,9 +263,7 @@ export default function CustomOrdersIndex({ requests, filters, statusCounts }: P
                                 variant="outline"
                                 size="sm"
                                 disabled={requests.current_page === 1}
-                                onClick={() =>
-                                    router.get('/buyer/custom-orders', { ...filters, page: requests.current_page - 1 })
-                                }
+                                onClick={() => router.get('/buyer/custom-orders', { ...filters, page: requests.current_page - 1 })}
                             >
                                 <ChevronLeft className="h-4 w-4" />
                             </Button>
@@ -291,9 +274,7 @@ export default function CustomOrdersIndex({ requests, filters, statusCounts }: P
                                 variant="outline"
                                 size="sm"
                                 disabled={requests.current_page === requests.last_page}
-                                onClick={() =>
-                                    router.get('/buyer/custom-orders', { ...filters, page: requests.current_page + 1 })
-                                }
+                                onClick={() => router.get('/buyer/custom-orders', { ...filters, page: requests.current_page + 1 })}
                             >
                                 <ChevronRight className="h-4 w-4" />
                             </Button>
