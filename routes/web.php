@@ -14,6 +14,14 @@ Route::get('/about', [HomeController::class, 'about'])->name('about');
 Route::get('/contact', [HomeController::class, 'contact'])->name('contact');
 Route::post('/contact', [HomeController::class, 'sendContactMessage'])->name('contact.send');
 
+// Legal pages (required for Facebook/OAuth compliance)
+Route::get('/privacy-policy', function () {
+    return Inertia::render('PrivacyPolicy');
+})->name('privacy-policy');
+Route::get('/terms', function () {
+    return Inertia::render('Terms');
+})->name('terms');
+
 // Product browsing routes
 Route::get('/products', [PublicController::class, 'products'])->name('products');
 Route::get('/product/{product}', [PublicController::class, 'productDetail'])->name('product.detail');
