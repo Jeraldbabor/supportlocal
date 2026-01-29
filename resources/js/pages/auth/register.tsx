@@ -180,14 +180,16 @@ export default function Register({ sellerCount, featuredArtisans }: RegisterProp
                             <div className="rounded-md border border-gray-200 bg-gray-50 px-2 py-1 text-center text-[9px] leading-tight text-gray-500 dark:border-gray-700 dark:bg-gray-800/50 dark:text-gray-400">
                                 By creating an account, you agree to our{' '}
                                 <a
-                                    href="#"
+                                    href="/terms"
+                                    target="_blank"
                                     className="font-medium text-amber-700 underline transition-colors hover:text-amber-800 dark:text-amber-400 dark:hover:text-amber-300"
                                 >
                                     Terms
                                 </a>{' '}
                                 and{' '}
                                 <a
-                                    href="#"
+                                    href="/privacy-policy"
+                                    target="_blank"
                                     className="font-medium text-amber-700 underline transition-colors hover:text-amber-800 dark:text-amber-400 dark:hover:text-amber-300"
                                 >
                                     Privacy Policy

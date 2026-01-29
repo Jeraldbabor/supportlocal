@@ -568,7 +568,7 @@ export default function MainLayout({ children, title }: MainLayoutProps) {
                                 Maintain by @Jerald B Babor.
                             </p>
                             <div className="flex flex-wrap justify-center gap-4 text-sm sm:gap-6 md:justify-start">
-                                <Link href="/privacy" className="text-gray-400 transition-colors hover:text-amber-400">
+                                <Link href="/privacy-policy" className="text-gray-400 transition-colors hover:text-amber-400">
                                     Privacy Policy
                                 </Link>
                                 <Link href="/terms" className="text-gray-400 transition-colors hover:text-amber-400">
