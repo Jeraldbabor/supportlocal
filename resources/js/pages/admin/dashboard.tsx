@@ -241,7 +241,7 @@ export default function AdminDashboard() {
 
     const userGrowth = getGrowthPercentage(growthMetrics.users_this_month, growthMetrics.users_last_month);
     const applicationGrowth = getGrowthPercentage(growthMetrics.applications_this_week, growthMetrics.applications_last_week);
-    const ordersGrowth = getGrowthPercentage(growthMetrics.orders_this_month, growthMetrics.orders_last_month);
+    const _ordersGrowth = getGrowthPercentage(growthMetrics.orders_this_month, growthMetrics.orders_last_month);
 
     // Format currency
     const formatCurrency = (amount: number) => {
@@ -263,8 +263,8 @@ export default function AdminDashboard() {
         { name: 'Cancelled', value: orderStats.cancelled, color: '#ef4444' },
     ].filter((item) => item.value > 0);
 
-    // Custom order status data for pie chart
-    const customOrderStatusData = [
+    // Custom order status data for pie chart (reserved for future use)
+    const _customOrderStatusData = [
         { name: 'Pending', value: customOrderStats?.pending || 0, color: '#f59e0b' },
         { name: 'Quoted', value: customOrderStats?.quoted || 0, color: '#3b82f6' },
         { name: 'In Progress', value: customOrderStats?.in_progress || 0, color: '#8b5cf6' },

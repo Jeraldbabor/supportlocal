@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import BuyerLayout from '@/layouts/BuyerLayout';
-import { Link, router, useForm } from '@inertiajs/react';
+import { Link, useForm } from '@inertiajs/react';
 import {
     AlertCircle,
     ArrowLeft,
@@ -44,7 +44,7 @@ export default function CustomOrderCreate({ seller, sellers }: Props) {
     const [searchQuery, setSearchQuery] = useState('');
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
-    const { data, setData, post, processing, errors, reset } = useForm({
+    const { data, setData, post, processing, errors } = useForm({
         seller_id: seller?.id?.toString() || '',
         title: '',
         description: '',

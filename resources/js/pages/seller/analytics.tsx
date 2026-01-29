@@ -8,7 +8,7 @@ import { type BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/react';
 import { ArrowDownRight, ArrowUpRight, DollarSign, Download, Eye, PenTool, ShoppingCart, TrendingUp, Users } from 'lucide-react';
 import { useState } from 'react';
-import { Area, AreaChart, Bar, BarChart, CartesianGrid, Cell, Legend, Line, LineChart, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+import { Area, AreaChart, Bar, BarChart, CartesianGrid, Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {

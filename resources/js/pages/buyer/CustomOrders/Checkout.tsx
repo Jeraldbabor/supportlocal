@@ -1,5 +1,4 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -13,12 +12,10 @@ import {
     Banknote,
     CheckCircle2,
     CreditCard,
-    MapPin,
     Package,
     Phone,
     ShoppingBag,
     Truck,
-    User,
 } from 'lucide-react';
 import React, { useState } from 'react';
 
@@ -64,7 +61,7 @@ interface Props {
 }
 
 export default function Checkout({ request, user }: Props) {
-    const [paymentMethod, setPaymentMethod] = useState<'cod' | 'gcash'>('cod');
+    const [_paymentMethod, setPaymentMethod] = useState<'cod' | 'gcash'>('cod');
 
     // Build default address from user fields
     const buildDefaultAddress = () => {
