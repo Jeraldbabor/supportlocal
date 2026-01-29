@@ -14,6 +14,7 @@ import {
     Mail,
     MessageSquare,
     Package,
+    PenTool,
     ShoppingBag,
     Star,
     Users,
@@ -47,6 +48,11 @@ function getRoleNavItems(userRole?: string): NavItem[] {
                     icon: ShoppingBag,
                 },
                 {
+                    title: 'Custom Orders',
+                    href: '/seller/custom-orders',
+                    icon: PenTool,
+                },
+                {
                     title: 'Seller Ratings',
                     href: '/seller/seller-ratings',
                     icon: Star,
@@ -76,6 +82,11 @@ function getRoleNavItems(userRole?: string): NavItem[] {
                     icon: LayoutGrid,
                 },
                 {
+                    title: 'Analytics',
+                    href: '/admin/analytics',
+                    icon: BarChart3,
+                },
+                {
                     title: 'Manage Users',
                     href: '/admin/users',
                     icon: Users,
@@ -103,7 +114,7 @@ function getRoleNavItems(userRole?: string): NavItem[] {
                 {
                     title: 'System Reports',
                     href: '/admin/reports',
-                    icon: BarChart3,
+                    icon: FileSearch,
                 },
                 {
                     title: 'Logs Monitoring',

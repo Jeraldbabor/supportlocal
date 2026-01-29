@@ -1,6 +1,6 @@
 import { Product as GlobalProduct } from '@/types';
 import { Link, router, usePage } from '@inertiajs/react';
-import { ArrowLeft, Award, Calendar, Eye, Globe, Mail, MapPin, Package, Phone, ShoppingCart, Star, User } from 'lucide-react';
+import { ArrowLeft, Award, Calendar, Eye, Globe, Mail, MapPin, Package, PenTool, Phone, ShoppingCart, Star, User } from 'lucide-react';
 import React, { useState } from 'react';
 import AddToCartModal from '../components/AddToCartModal';
 import StartChatButton from '../components/StartChatButton';
@@ -243,10 +243,18 @@ export default function ArtisanProfile({ artisan, products, ratings, filters }: 
                                     )}
 
                                     {auth?.user && auth.user.id !== artisan.id && (
-                                        <div className="mt-3">
+                                        <div className="mt-3 flex flex-wrap gap-2">
                                             <StartChatButton userId={artisan.id} variant="default" className="">
                                                 Contact Seller
                                             </StartChatButton>
+                                            {auth.user.role === 'buyer' && (
+                                                <Link href={`/buyer/custom-orders/create?seller_id=${artisan.id}`}>
+                                                    <button className="inline-flex items-center gap-2 rounded-lg border-2 border-amber-300 bg-gradient-to-r from-amber-50 to-orange-50 px-4 py-2 text-sm font-medium text-amber-700 shadow-sm transition-all hover:border-amber-400 hover:from-amber-100 hover:to-orange-100 hover:shadow-md">
+                                                        <PenTool className="h-4 w-4" />
+                                                        Request Custom Order
+                                                    </button>
+                                                </Link>
+                                            )}
                                         </div>
                                     )}
                                 </div>

@@ -78,22 +78,26 @@ class OrderController extends Controller
         try {
             DB::beginTransaction();
 
-            // Check stock availability for all items
+            // Check stock availability for all items (skip for custom orders without products)
             foreach ($order->orderItems as $orderItem) {
                 $product = $orderItem->product;
-                if ($product->quantity < $orderItem->quantity) {
+                // Skip stock check for custom orders (no product linked)
+                if ($product && $product->quantity < $orderItem->quantity) {
                     throw new \Exception("Insufficient stock for product: {$product->name}");
                 }
             }
 
-            // Reduce product quantities
+            // Reduce product quantities (skip for custom orders without products)
             foreach ($order->orderItems as $orderItem) {
                 $product = $orderItem->product;
-                $product->decrement('quantity', $orderItem->quantity);
+                // Skip quantity reduction for custom orders (no product linked)
+                if ($product) {
+                    $product->decrement('quantity', $orderItem->quantity);
 
-                // Update stock status if quantity reaches zero
-                if ($product->quantity <= 0) {
-                    $product->update(['stock_status' => 'out_of_stock']);
+                    // Update stock status if quantity reaches zero
+                    if ($product->quantity <= 0) {
+                        $product->update(['stock_status' => 'out_of_stock']);
+                    }
                 }
             }
 
@@ -166,11 +170,14 @@ class OrderController extends Controller
             if ($order->status === Order::STATUS_CONFIRMED) {
                 foreach ($order->orderItems as $orderItem) {
                     $product = $orderItem->product;
-                    $product->increment('quantity', $orderItem->quantity);
+                    // Skip quantity restoration for custom orders (no product linked)
+                    if ($product) {
+                        $product->increment('quantity', $orderItem->quantity);
 
-                    // Update stock status if quantity is now available
-                    if ($product->quantity > 0 && $product->stock_status === 'out_of_stock') {
-                        $product->update(['stock_status' => 'in_stock']);
+                        // Update stock status if quantity is now available
+                        if ($product->quantity > 0 && $product->stock_status === 'out_of_stock') {
+                            $product->update(['stock_status' => 'in_stock']);
+                        }
                     }
                 }
             }
