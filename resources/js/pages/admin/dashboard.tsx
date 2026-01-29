@@ -1,5 +1,6 @@
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem, type SharedData } from '@/types';
 import { Head, Link, usePage } from '@inertiajs/react';
@@ -13,6 +14,8 @@ import {
     FileText,
     HardDrive,
     Mail,
+    Package,
+    PenTool,
     Percent,
     Server,
     Settings,
@@ -23,6 +26,7 @@ import {
     UserPlus,
     Users,
 } from 'lucide-react';
+import { Area, AreaChart, Bar, BarChart, CartesianGrid, Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 
 const PesoIcon = ({ className }: { className?: string }) => (
     <svg
@@ -83,6 +87,8 @@ interface GrowthMetrics {
     users_last_month: number;
     applications_this_week: number;
     applications_last_week: number;
+    orders_this_month: number;
+    orders_last_month: number;
 }
 
 interface OrderStats {
@@ -114,6 +120,50 @@ interface ActivityItem {
     color: string;
 }
 
+interface CustomOrderStats {
+    total: number;
+    pending: number;
+    quoted: number;
+    in_progress: number;
+    ready_for_checkout: number;
+    completed: number;
+    cancelled: number;
+    this_week: number;
+    this_month: number;
+    total_value: number;
+    avg_value: number;
+}
+
+interface RevenueChartItem {
+    date: string;
+    revenue: number;
+    commission: number;
+}
+
+interface UserGrowthChartItem {
+    month: string;
+    buyers: number;
+    sellers: number;
+    total: number;
+}
+
+interface OrderTrendsChartItem {
+    date: string;
+    total: number;
+    completed: number;
+    cancelled: number;
+}
+
+interface TopSeller {
+    id: number;
+    name: string;
+    email: string;
+    avatar_url: string | null;
+    order_count: number;
+    total_revenue: number;
+    avg_order_value: number;
+}
+
 interface DashboardProps extends SharedData {
     userStats: UserStats;
     sellerApplicationStats: SellerApplicationStats;
@@ -124,6 +174,11 @@ interface DashboardProps extends SharedData {
     recentUsersCount: number;
     recentActiveUsersCount: number;
     orderStats: OrderStats;
+    customOrderStats: CustomOrderStats;
+    revenueChartData: RevenueChartItem[];
+    userGrowthChartData: UserGrowthChartItem[];
+    orderTrendsChartData: OrderTrendsChartItem[];
+    topSellers: TopSeller[];
 }
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -175,12 +230,48 @@ export default function AdminDashboard() {
         recentUsersCount,
         recentActiveUsersCount,
         orderStats,
+        customOrderStats,
+        revenueChartData,
+        userGrowthChartData,
+        orderTrendsChartData,
+        topSellers,
     } = usePage<DashboardProps>().props;
 
     const user = auth.user;
 
     const userGrowth = getGrowthPercentage(growthMetrics.users_this_month, growthMetrics.users_last_month);
     const applicationGrowth = getGrowthPercentage(growthMetrics.applications_this_week, growthMetrics.applications_last_week);
+    const ordersGrowth = getGrowthPercentage(growthMetrics.orders_this_month, growthMetrics.orders_last_month);
+
+    // Format currency
+    const formatCurrency = (amount: number) => {
+        return new Intl.NumberFormat('en-PH', {
+            style: 'currency',
+            currency: 'PHP',
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0,
+        }).format(amount);
+    };
+
+    // Pie chart data for order status
+    const orderStatusData = [
+        { name: 'Pending', value: orderStats.pending, color: '#f59e0b' },
+        { name: 'Confirmed', value: orderStats.confirmed, color: '#3b82f6' },
+        { name: 'Shipped', value: orderStats.shipped, color: '#8b5cf6' },
+        { name: 'Delivered', value: orderStats.delivered, color: '#06b6d4' },
+        { name: 'Completed', value: orderStats.completed, color: '#10b981' },
+        { name: 'Cancelled', value: orderStats.cancelled, color: '#ef4444' },
+    ].filter((item) => item.value > 0);
+
+    // Custom order status data for pie chart
+    const customOrderStatusData = [
+        { name: 'Pending', value: customOrderStats?.pending || 0, color: '#f59e0b' },
+        { name: 'Quoted', value: customOrderStats?.quoted || 0, color: '#3b82f6' },
+        { name: 'In Progress', value: customOrderStats?.in_progress || 0, color: '#8b5cf6' },
+        { name: 'Ready', value: customOrderStats?.ready_for_checkout || 0, color: '#f97316' },
+        { name: 'Completed', value: customOrderStats?.completed || 0, color: '#10b981' },
+        { name: 'Cancelled', value: customOrderStats?.cancelled || 0, color: '#6b7280' },
+    ].filter((item) => item.value > 0);
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -335,6 +426,280 @@ export default function AdminDashboard() {
                         </CardContent>
                     </Card>
                 </div>
+
+                {/* Revenue & Commission Chart */}
+                <Card className="transition-all duration-200 hover:shadow-md">
+                    <CardHeader className="pb-3">
+                        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                            <div>
+                                <CardTitle className="flex items-center gap-2 text-base text-gray-900 sm:text-lg">
+                                    <TrendingUp className="h-5 w-5" style={{ color: '#10b981' }} />
+                                    Revenue & Commission (Last 30 Days)
+                                </CardTitle>
+                                <CardDescription className="text-gray-500">Daily revenue and admin commission earnings</CardDescription>
+                            </div>
+                            <div className="text-left sm:text-right">
+                                <div className="text-sm text-gray-500">Total (30 days)</div>
+                                <div className="text-xl font-bold text-green-600 sm:text-2xl">
+                                    {formatCurrency(revenueChartData?.reduce((sum, item) => sum + item.revenue, 0) || 0)}
+                                </div>
+                            </div>
+                        </div>
+                    </CardHeader>
+                    <CardContent>
+                        {revenueChartData && revenueChartData.length > 0 ? (
+                            <div className="w-full" style={{ height: '300px' }}>
+                                <ResponsiveContainer width="100%" height={300}>
+                                    <AreaChart data={revenueChartData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+                                        <defs>
+                                            <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
+                                                <stop offset="5%" stopColor="#10b981" stopOpacity={0.3} />
+                                                <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
+                                            </linearGradient>
+                                            <linearGradient id="colorCommission" x1="0" y1="0" x2="0" y2="1">
+                                                <stop offset="5%" stopColor="#f59e0b" stopOpacity={0.3} />
+                                                <stop offset="95%" stopColor="#f59e0b" stopOpacity={0} />
+                                            </linearGradient>
+                                        </defs>
+                                        <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                                        <XAxis dataKey="date" stroke="#6b7280" fontSize={10} tick={{ fontSize: 10 }} interval="preserveStartEnd" />
+                                        <YAxis stroke="#6b7280" fontSize={10} tickFormatter={(value) => `₱${value / 1000}k`} />
+                                        <Tooltip
+                                            contentStyle={{
+                                                backgroundColor: '#fff',
+                                                border: '1px solid #e5e7eb',
+                                                borderRadius: '8px',
+                                            }}
+                                            formatter={(value: number, name: string) => [formatCurrency(value), name === 'revenue' ? 'Revenue' : 'Commission']}
+                                        />
+                                        <Legend />
+                                        <Area
+                                            type="monotone"
+                                            dataKey="revenue"
+                                            name="Revenue"
+                                            stroke="#10b981"
+                                            fillOpacity={1}
+                                            fill="url(#colorRevenue)"
+                                            strokeWidth={2}
+                                        />
+                                        <Area
+                                            type="monotone"
+                                            dataKey="commission"
+                                            name="Commission"
+                                            stroke="#f59e0b"
+                                            fillOpacity={1}
+                                            fill="url(#colorCommission)"
+                                            strokeWidth={2}
+                                        />
+                                    </AreaChart>
+                                </ResponsiveContainer>
+                            </div>
+                        ) : (
+                            <div className="flex h-[300px] items-center justify-center text-gray-500">No revenue data available</div>
+                        )}
+                    </CardContent>
+                </Card>
+
+                {/* User Growth & Order Trends Charts */}
+                <div className="grid gap-4 sm:gap-6 lg:grid-cols-2">
+                    {/* User Growth Chart */}
+                    <Card className="transition-all duration-200 hover:shadow-md">
+                        <CardHeader className="pb-3">
+                            <CardTitle className="flex items-center gap-2 text-base text-gray-900 sm:text-lg">
+                                <Users className="h-5 w-5" style={{ color: '#3b82f6' }} />
+                                User Growth (Last 12 Months)
+                            </CardTitle>
+                            <CardDescription className="text-gray-500">New buyer and seller registrations</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            {userGrowthChartData && userGrowthChartData.length > 0 ? (
+                                <div className="w-full" style={{ height: '280px' }}>
+                                    <ResponsiveContainer width="100%" height={280}>
+                                        <BarChart data={userGrowthChartData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+                                            <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                                            <XAxis dataKey="month" stroke="#6b7280" fontSize={10} tick={{ fontSize: 9 }} angle={-45} textAnchor="end" height={60} />
+                                            <YAxis stroke="#6b7280" fontSize={10} />
+                                            <Tooltip
+                                                contentStyle={{
+                                                    backgroundColor: '#fff',
+                                                    border: '1px solid #e5e7eb',
+                                                    borderRadius: '8px',
+                                                }}
+                                            />
+                                            <Legend />
+                                            <Bar dataKey="buyers" name="Buyers" fill="#3b82f6" radius={[4, 4, 0, 0]} />
+                                            <Bar dataKey="sellers" name="Sellers" fill="#f59e0b" radius={[4, 4, 0, 0]} />
+                                        </BarChart>
+                                    </ResponsiveContainer>
+                                </div>
+                            ) : (
+                                <div className="flex h-[280px] items-center justify-center text-gray-500">No growth data available</div>
+                            )}
+                        </CardContent>
+                    </Card>
+
+                    {/* Order Trends Chart */}
+                    <Card className="transition-all duration-200 hover:shadow-md">
+                        <CardHeader className="pb-3">
+                            <CardTitle className="flex items-center gap-2 text-base text-gray-900 sm:text-lg">
+                                <ShoppingCart className="h-5 w-5" style={{ color: '#8b5cf6' }} />
+                                Order Trends (Last 30 Days)
+                            </CardTitle>
+                            <CardDescription className="text-gray-500">Daily orders, completed, and cancelled</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            {orderTrendsChartData && orderTrendsChartData.length > 0 ? (
+                                <div className="w-full" style={{ height: '280px' }}>
+                                    <ResponsiveContainer width="100%" height={280}>
+                                        <AreaChart data={orderTrendsChartData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+                                            <defs>
+                                                <linearGradient id="colorTotal" x1="0" y1="0" x2="0" y2="1">
+                                                    <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.3} />
+                                                    <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0} />
+                                                </linearGradient>
+                                            </defs>
+                                            <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                                            <XAxis dataKey="date" stroke="#6b7280" fontSize={10} tick={{ fontSize: 10 }} interval="preserveStartEnd" />
+                                            <YAxis stroke="#6b7280" fontSize={10} />
+                                            <Tooltip
+                                                contentStyle={{
+                                                    backgroundColor: '#fff',
+                                                    border: '1px solid #e5e7eb',
+                                                    borderRadius: '8px',
+                                                }}
+                                            />
+                                            <Legend />
+                                            <Area type="monotone" dataKey="total" name="Total" stroke="#8b5cf6" fillOpacity={1} fill="url(#colorTotal)" strokeWidth={2} />
+                                            <Area type="monotone" dataKey="completed" name="Completed" stroke="#10b981" fill="transparent" strokeWidth={2} />
+                                            <Area type="monotone" dataKey="cancelled" name="Cancelled" stroke="#ef4444" fill="transparent" strokeWidth={2} />
+                                        </AreaChart>
+                                    </ResponsiveContainer>
+                                </div>
+                            ) : (
+                                <div className="flex h-[280px] items-center justify-center text-gray-500">No order data available</div>
+                            )}
+                        </CardContent>
+                    </Card>
+                </div>
+
+                {/* Order Status & Custom Orders Pie Charts */}
+                <div className="grid gap-4 sm:gap-6 lg:grid-cols-2">
+                    {/* Order Status Pie Chart */}
+                    <Card className="transition-all duration-200 hover:shadow-md">
+                        <CardHeader className="pb-3">
+                            <CardTitle className="flex items-center gap-2 text-base text-gray-900 sm:text-lg">
+                                <Package className="h-5 w-5" style={{ color: '#8b5cf6' }} />
+                                Orders by Status
+                            </CardTitle>
+                            <CardDescription className="text-gray-500">Distribution of all orders</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            {orderStatusData.length > 0 ? (
+                                <div className="w-full" style={{ height: '280px' }}>
+                                    <ResponsiveContainer width="100%" height={280}>
+                                        <PieChart>
+                                            <Pie
+                                                data={orderStatusData}
+                                                cx="50%"
+                                                cy="45%"
+                                                innerRadius={50}
+                                                outerRadius={90}
+                                                paddingAngle={2}
+                                                dataKey="value"
+                                                label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                                                labelLine={false}
+                                            >
+                                                {orderStatusData.map((entry, index) => (
+                                                    <Cell key={`cell-${index}`} fill={entry.color} />
+                                                ))}
+                                            </Pie>
+                                            <Tooltip formatter={(value: number) => [`${value} orders`, '']} />
+                                            <Legend />
+                                        </PieChart>
+                                    </ResponsiveContainer>
+                                </div>
+                            ) : (
+                                <div className="flex h-[280px] items-center justify-center text-gray-500">No order data available</div>
+                            )}
+                        </CardContent>
+                    </Card>
+
+                    {/* Custom Orders Stats */}
+                    <Card className="border-amber-200 bg-gradient-to-br from-amber-50 to-orange-50 transition-all duration-200 hover:shadow-md">
+                        <CardHeader className="pb-3">
+                            <CardTitle className="flex items-center gap-2 text-base text-gray-900 sm:text-lg">
+                                <PenTool className="h-5 w-5" style={{ color: '#f59e0b' }} />
+                                Custom Order Requests
+                            </CardTitle>
+                            <CardDescription className="text-gray-600">Personalized orders from buyers</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="rounded-lg bg-white/60 p-3">
+                                    <p className="text-xs font-medium text-gray-600">Total Requests</p>
+                                    <p className="text-2xl font-bold text-amber-600">{customOrderStats?.total || 0}</p>
+                                </div>
+                                <div className="rounded-lg bg-white/60 p-3">
+                                    <p className="text-xs font-medium text-gray-600">Pending</p>
+                                    <p className="text-2xl font-bold text-yellow-600">{customOrderStats?.pending || 0}</p>
+                                </div>
+                                <div className="rounded-lg bg-white/60 p-3">
+                                    <p className="text-xs font-medium text-gray-600">In Progress</p>
+                                    <p className="text-2xl font-bold text-purple-600">{customOrderStats?.in_progress || 0}</p>
+                                </div>
+                                <div className="rounded-lg bg-white/60 p-3">
+                                    <p className="text-xs font-medium text-gray-600">Completed</p>
+                                    <p className="text-2xl font-bold text-green-600">{customOrderStats?.completed || 0}</p>
+                                </div>
+                                <div className="col-span-2 rounded-lg bg-white/60 p-3">
+                                    <p className="text-xs font-medium text-gray-600">Total Value (Completed)</p>
+                                    <p className="text-2xl font-bold text-amber-700">{formatCurrency(customOrderStats?.total_value || 0)}</p>
+                                    <p className="text-xs text-gray-500">Avg: {formatCurrency(customOrderStats?.avg_value || 0)}</p>
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
+                </div>
+
+                {/* Top Sellers */}
+                <Card className="transition-all duration-200 hover:shadow-md">
+                    <CardHeader className="pb-3">
+                        <CardTitle className="flex items-center gap-2 text-base text-gray-900 sm:text-lg">
+                            <TrendingUp className="h-5 w-5" style={{ color: '#f59e0b' }} />
+                            Top Performing Sellers (Last 30 Days)
+                        </CardTitle>
+                        <CardDescription className="text-gray-500">Sellers with highest revenue</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        {topSellers && topSellers.length > 0 ? (
+                            <div className="space-y-3">
+                                {topSellers.slice(0, 5).map((seller, index) => (
+                                    <div key={seller.id || index} className="flex items-center gap-4 rounded-lg bg-gray-50 p-3 transition-colors hover:bg-gray-100">
+                                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-amber-100 text-sm font-bold text-amber-700">
+                                            #{index + 1}
+                                        </div>
+                                        <Avatar className="h-10 w-10">
+                                            <AvatarImage src={seller.avatar_url || undefined} alt={seller.name} />
+                                            <AvatarFallback className="bg-gradient-to-br from-amber-400 to-orange-500 text-white">
+                                                {seller.name?.charAt(0) || '?'}
+                                            </AvatarFallback>
+                                        </Avatar>
+                                        <div className="min-w-0 flex-1">
+                                            <p className="truncate text-sm font-medium text-gray-900">{seller.name}</p>
+                                            <p className="truncate text-xs text-gray-500">{seller.email}</p>
+                                        </div>
+                                        <div className="text-right">
+                                            <p className="text-sm font-semibold text-green-600">{formatCurrency(seller.total_revenue)}</p>
+                                            <p className="text-xs text-gray-500">{seller.order_count} orders</p>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="flex h-[200px] items-center justify-center text-gray-500">No seller data available</div>
+                        )}
+                    </CardContent>
+                </Card>
 
                 {/* Main Content Area */}
                 <div className="grid gap-4 sm:gap-6 lg:grid-cols-3">

@@ -429,7 +429,7 @@ export default function OrderShow({ order }: OrderShowProps) {
                                             type="file"
                                             accept="image/*"
                                             onChange={handleFileSelect}
-                                            className="block w-full text-xs text-gray-500 file:mr-3 file:rounded-lg file:border-0 file:bg-primary file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-white hover:file:bg-primary/90 sm:text-sm sm:file:mr-4 sm:file:px-4 sm:file:py-2 sm:file:text-sm"
+                                            className="block w-full text-xs text-gray-700 file:mr-3 file:cursor-pointer file:rounded-lg file:border-0 file:bg-gradient-to-r file:from-amber-500 file:to-orange-500 file:px-4 file:py-2.5 file:text-xs file:font-semibold file:text-white file:shadow-sm hover:file:from-amber-600 hover:file:to-orange-600 sm:text-sm sm:file:mr-4 sm:file:px-5 sm:file:py-2.5 sm:file:text-sm"
                                             disabled={uploading}
                                         />
                                     </div>

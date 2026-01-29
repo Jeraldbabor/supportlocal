@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\ContactMessage;
+use App\Models\CustomOrderRequest;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\ProductCategory;
@@ -11,6 +12,7 @@ use App\Models\SellerApplication;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -136,6 +138,15 @@ class DashboardController extends Controller
                 ->where('created_at', '<', Carbon::now()->startOfMonth())->count(),
         ];
 
+        // Custom Order Request statistics
+        $customOrderStats = $this->getCustomOrderStats();
+
+        // Chart data for visualizations
+        $revenueChartData = $this->getRevenueChartData();
+        $userGrowthChartData = $this->getUserGrowthChartData();
+        $orderTrendsChartData = $this->getOrderTrendsChartData();
+        $topSellers = $this->getTopSellers();
+
         return Inertia::render('admin/dashboard', [
             'userStats' => $userStats,
             'productStats' => $productStats,
@@ -148,7 +159,148 @@ class DashboardController extends Controller
             'growthMetrics' => $growthMetrics,
             'recentUsersCount' => $recentUsersCount,
             'recentActiveUsersCount' => $recentActiveUsersCount,
+            'customOrderStats' => $customOrderStats,
+            'revenueChartData' => $revenueChartData,
+            'userGrowthChartData' => $userGrowthChartData,
+            'orderTrendsChartData' => $orderTrendsChartData,
+            'topSellers' => $topSellers,
         ]);
+    }
+
+    /**
+     * Get custom order statistics
+     */
+    private function getCustomOrderStats(): array
+    {
+        return [
+            'total' => CustomOrderRequest::count(),
+            'pending' => CustomOrderRequest::where('status', CustomOrderRequest::STATUS_PENDING)->count(),
+            'quoted' => CustomOrderRequest::where('status', CustomOrderRequest::STATUS_QUOTED)->count(),
+            'in_progress' => CustomOrderRequest::where('status', CustomOrderRequest::STATUS_IN_PROGRESS)->count(),
+            'ready_for_checkout' => CustomOrderRequest::where('status', CustomOrderRequest::STATUS_READY_FOR_CHECKOUT)->count(),
+            'completed' => CustomOrderRequest::where('status', CustomOrderRequest::STATUS_COMPLETED)->count(),
+            'cancelled' => CustomOrderRequest::where('status', CustomOrderRequest::STATUS_CANCELLED)->count(),
+            'this_week' => CustomOrderRequest::where('created_at', '>=', Carbon::now()->startOfWeek())->count(),
+            'this_month' => CustomOrderRequest::where('created_at', '>=', Carbon::now()->startOfMonth())->count(),
+            'total_value' => CustomOrderRequest::where('status', CustomOrderRequest::STATUS_COMPLETED)->sum('quoted_price'),
+            'avg_value' => CustomOrderRequest::where('status', CustomOrderRequest::STATUS_COMPLETED)->avg('quoted_price') ?? 0,
+        ];
+    }
+
+    /**
+     * Get revenue chart data for last 30 days
+     */
+    private function getRevenueChartData(): array
+    {
+        $data = [];
+        for ($i = 29; $i >= 0; $i--) {
+            $date = Carbon::now()->subDays($i);
+            $revenue = Order::whereDate('created_at', $date)
+                ->where('status', '!=', Order::STATUS_CANCELLED)
+                ->sum('total_amount');
+            $commission = Order::whereDate('completed_at', $date)
+                ->where('status', Order::STATUS_COMPLETED)
+                ->sum('admin_commission');
+            
+            $data[] = [
+                'date' => $date->format('M d'),
+                'revenue' => round($revenue, 2),
+                'commission' => round($commission, 2),
+            ];
+        }
+        return $data;
+    }
+
+    /**
+     * Get user growth chart data for last 12 months
+     */
+    private function getUserGrowthChartData(): array
+    {
+        $data = [];
+        for ($i = 11; $i >= 0; $i--) {
+            $startOfMonth = Carbon::now()->subMonths($i)->startOfMonth();
+            $endOfMonth = Carbon::now()->subMonths($i)->endOfMonth();
+            
+            $buyers = User::where('role', User::ROLE_BUYER)
+                ->whereBetween('created_at', [$startOfMonth, $endOfMonth])
+                ->count();
+            $sellers = User::where('role', User::ROLE_SELLER)
+                ->whereBetween('created_at', [$startOfMonth, $endOfMonth])
+                ->count();
+            
+            $data[] = [
+                'month' => $startOfMonth->format('M Y'),
+                'buyers' => $buyers,
+                'sellers' => $sellers,
+                'total' => $buyers + $sellers,
+            ];
+        }
+        return $data;
+    }
+
+    /**
+     * Get order trends chart data for last 30 days
+     */
+    private function getOrderTrendsChartData(): array
+    {
+        $data = [];
+        for ($i = 29; $i >= 0; $i--) {
+            $date = Carbon::now()->subDays($i);
+            
+            $orders = Order::whereDate('created_at', $date)->count();
+            $completed = Order::whereDate('created_at', $date)
+                ->where('status', Order::STATUS_COMPLETED)
+                ->count();
+            $cancelled = Order::whereDate('created_at', $date)
+                ->where('status', Order::STATUS_CANCELLED)
+                ->count();
+            
+            $data[] = [
+                'date' => $date->format('M d'),
+                'total' => $orders,
+                'completed' => $completed,
+                'cancelled' => $cancelled,
+            ];
+        }
+        return $data;
+    }
+
+    /**
+     * Get top performing sellers
+     */
+    private function getTopSellers(): array
+    {
+        $topSellers = Order::where('status', Order::STATUS_COMPLETED)
+            ->where('created_at', '>=', Carbon::now()->subDays(30))
+            ->whereNotNull('seller_id')
+            ->select('seller_id', 
+                DB::raw('COUNT(*) as order_count'),
+                DB::raw('SUM(total_amount) as total_revenue'),
+                DB::raw('AVG(total_amount) as avg_order_value')
+            )
+            ->groupBy('seller_id')
+            ->orderByDesc('total_revenue')
+            ->take(10)
+            ->with('seller:id,name,email,avatar')
+            ->get()
+            ->filter(function ($item) {
+                return $item->seller !== null;
+            })
+            ->map(function ($item) {
+                return [
+                    'id' => $item->seller->id,
+                    'name' => $item->seller->name,
+                    'email' => $item->seller->email,
+                    'avatar_url' => $item->seller->avatar_url,
+                    'order_count' => $item->order_count,
+                    'total_revenue' => round($item->total_revenue, 2),
+                    'avg_order_value' => round($item->avg_order_value, 2),
+                ];
+            })
+            ->values()
+            ->toArray();
+        
+        return $topSellers;
     }
 
     /**

@@ -163,6 +163,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::delete('/seller/notifications/{id}', [App\Http\Controllers\Seller\NotificationController::class, 'destroy'])->name('seller.notifications.destroy');
         Route::post('/seller/notifications/read-all', [App\Http\Controllers\Seller\NotificationController::class, 'markAllAsRead'])->name('seller.notifications.read-all');
         Route::post('/seller/notifications/clear-all', [App\Http\Controllers\Seller\NotificationController::class, 'clearAllHistory'])->name('seller.notifications.clear-all');
+
+        // Custom Order Request Routes for Sellers
+        Route::get('/seller/custom-orders', [App\Http\Controllers\Seller\CustomOrderRequestController::class, 'index'])->name('seller.custom-orders.index');
+        Route::get('/seller/custom-orders/{customOrderRequest}', [App\Http\Controllers\Seller\CustomOrderRequestController::class, 'show'])->name('seller.custom-orders.show');
+        Route::post('/seller/custom-orders/{customOrderRequest}/quote', [App\Http\Controllers\Seller\CustomOrderRequestController::class, 'submitQuote'])->name('seller.custom-orders.quote');
+        Route::post('/seller/custom-orders/{customOrderRequest}/reject', [App\Http\Controllers\Seller\CustomOrderRequestController::class, 'reject'])->name('seller.custom-orders.reject');
+        Route::post('/seller/custom-orders/{customOrderRequest}/start', [App\Http\Controllers\Seller\CustomOrderRequestController::class, 'startWork'])->name('seller.custom-orders.start');
+        Route::post('/seller/custom-orders/{customOrderRequest}/send-for-checkout', [App\Http\Controllers\Seller\CustomOrderRequestController::class, 'sendForCheckout'])->name('seller.custom-orders.send-for-checkout');
     });
 
     Route::middleware(['role:administrator'])->group(function () {
@@ -236,6 +244,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         // Reports Routes
         Route::get('/admin/reports', [App\Http\Controllers\Admin\ReportsController::class, 'index'])->name('admin.reports.index');
         Route::get('/admin/reports/export', [App\Http\Controllers\Admin\ReportsController::class, 'export'])->name('admin.reports.export');
+
+        // Analytics Routes
+        Route::get('/admin/analytics', [App\Http\Controllers\Admin\AnalyticsController::class, 'index'])->name('admin.analytics.index');
+        Route::get('/admin/analytics/export', [App\Http\Controllers\Admin\AnalyticsController::class, 'export'])->name('admin.analytics.export');
 
         // Database Backup Routes (Admin only)
         Route::post('/admin/database/backup', function () {
@@ -444,6 +456,17 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/seller/apply', [App\Http\Controllers\SellerApplicationController::class, 'showPreApplicationMessage'])->name('seller.application.confirm');
         Route::get('/seller/apply/form', [App\Http\Controllers\SellerApplicationController::class, 'create'])->name('seller.application.create');
         Route::post('/seller/apply', [App\Http\Controllers\SellerApplicationController::class, 'store'])->name('seller.application.store');
+
+        // Custom Order Request Routes for Buyers
+        Route::get('/buyer/custom-orders', [App\Http\Controllers\Buyer\CustomOrderRequestController::class, 'index'])->name('buyer.custom-orders.index');
+        Route::get('/buyer/custom-orders/create', [App\Http\Controllers\Buyer\CustomOrderRequestController::class, 'create'])->name('buyer.custom-orders.create');
+        Route::post('/buyer/custom-orders', [App\Http\Controllers\Buyer\CustomOrderRequestController::class, 'store'])->name('buyer.custom-orders.store');
+        Route::get('/buyer/custom-orders/{customOrderRequest}', [App\Http\Controllers\Buyer\CustomOrderRequestController::class, 'show'])->name('buyer.custom-orders.show');
+        Route::post('/buyer/custom-orders/{customOrderRequest}/accept', [App\Http\Controllers\Buyer\CustomOrderRequestController::class, 'acceptQuote'])->name('buyer.custom-orders.accept');
+        Route::post('/buyer/custom-orders/{customOrderRequest}/decline', [App\Http\Controllers\Buyer\CustomOrderRequestController::class, 'declineQuote'])->name('buyer.custom-orders.decline');
+        Route::post('/buyer/custom-orders/{customOrderRequest}/cancel', [App\Http\Controllers\Buyer\CustomOrderRequestController::class, 'cancel'])->name('buyer.custom-orders.cancel');
+        Route::get('/buyer/custom-orders/{customOrderRequest}/checkout', [App\Http\Controllers\Buyer\CustomOrderRequestController::class, 'checkout'])->name('buyer.custom-orders.checkout');
+        Route::post('/buyer/custom-orders/{customOrderRequest}/place-order', [App\Http\Controllers\Buyer\CustomOrderRequestController::class, 'placeOrder'])->name('buyer.custom-orders.place-order');
     });
 
     // Routes accessible by multiple roles

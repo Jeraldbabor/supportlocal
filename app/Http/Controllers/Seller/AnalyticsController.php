@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Seller;
 
 use App\Http\Controllers\Controller;
+use App\Models\CustomOrderRequest;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Product;
@@ -35,6 +36,7 @@ class AnalyticsController extends Controller
         $customersData = $this->getCustomersAnalytics($user->id, $startDate, $endDate);
         $topProducts = $this->getTopProducts($user->id, $startDate, $endDate);
         $recentOrders = $this->getRecentOrders($user->id, 10);
+        $customOrderData = $this->getCustomOrderAnalytics($user->id, $startDate, $endDate);
 
         return Inertia::render('seller/analytics', [
             'dateRange' => $dateRange,
@@ -47,7 +49,183 @@ class AnalyticsController extends Controller
             'customers' => $customersData,
             'topProducts' => $topProducts,
             'recentOrders' => $recentOrders,
+            'customOrders' => $customOrderData,
         ]);
+    }
+
+    /**
+     * Get custom order analytics data.
+     */
+    private function getCustomOrderAnalytics(int $sellerId, Carbon $startDate, Carbon $endDate): array
+    {
+        // Current period stats
+        $total = CustomOrderRequest::where('seller_id', $sellerId)
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->count();
+
+        $pending = CustomOrderRequest::where('seller_id', $sellerId)
+            ->where('status', CustomOrderRequest::STATUS_PENDING)
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->count();
+
+        $quoted = CustomOrderRequest::where('seller_id', $sellerId)
+            ->where('status', CustomOrderRequest::STATUS_QUOTED)
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->count();
+
+        $accepted = CustomOrderRequest::where('seller_id', $sellerId)
+            ->where('status', CustomOrderRequest::STATUS_ACCEPTED)
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->count();
+
+        $inProgress = CustomOrderRequest::where('seller_id', $sellerId)
+            ->where('status', CustomOrderRequest::STATUS_IN_PROGRESS)
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->count();
+
+        $readyForCheckout = CustomOrderRequest::where('seller_id', $sellerId)
+            ->where('status', CustomOrderRequest::STATUS_READY_FOR_CHECKOUT)
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->count();
+
+        $completed = CustomOrderRequest::where('seller_id', $sellerId)
+            ->where('status', CustomOrderRequest::STATUS_COMPLETED)
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->count();
+
+        $cancelled = CustomOrderRequest::where('seller_id', $sellerId)
+            ->whereIn('status', [CustomOrderRequest::STATUS_CANCELLED, CustomOrderRequest::STATUS_REJECTED, CustomOrderRequest::STATUS_DECLINED])
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->count();
+
+        // Revenue from completed custom orders
+        $totalRevenue = CustomOrderRequest::where('seller_id', $sellerId)
+            ->where('status', CustomOrderRequest::STATUS_COMPLETED)
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->sum('quoted_price');
+
+        $avgOrderValue = CustomOrderRequest::where('seller_id', $sellerId)
+            ->where('status', CustomOrderRequest::STATUS_COMPLETED)
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->avg('quoted_price');
+
+        // Calculate previous period for comparison
+        $periodDays = $startDate->diffInDays($endDate);
+        $prevStartDate = $startDate->copy()->subDays($periodDays);
+        $prevEndDate = $startDate->copy()->subDay();
+
+        $prevTotal = CustomOrderRequest::where('seller_id', $sellerId)
+            ->whereBetween('created_at', [$prevStartDate, $prevEndDate])
+            ->count();
+
+        $prevCompleted = CustomOrderRequest::where('seller_id', $sellerId)
+            ->where('status', CustomOrderRequest::STATUS_COMPLETED)
+            ->whereBetween('created_at', [$prevStartDate, $prevEndDate])
+            ->count();
+
+        $prevRevenue = CustomOrderRequest::where('seller_id', $sellerId)
+            ->where('status', CustomOrderRequest::STATUS_COMPLETED)
+            ->whereBetween('created_at', [$prevStartDate, $prevEndDate])
+            ->sum('quoted_price');
+
+        // Growth calculations
+        $requestsGrowth = $this->calculateGrowth($prevTotal, $total);
+        $completedGrowth = $this->calculateGrowth($prevCompleted, $completed);
+        $revenueGrowth = $this->calculateGrowth($prevRevenue, $totalRevenue);
+
+        // Conversion rate (completed / total requests)
+        $conversionRate = $total > 0 ? round(($completed / $total) * 100, 2) : 0;
+        $prevConversionRate = $prevTotal > 0 ? round(($prevCompleted / $prevTotal) * 100, 2) : 0;
+
+        // Recent custom orders
+        $recentRequests = CustomOrderRequest::where('seller_id', $sellerId)
+            ->with('buyer')
+            ->orderBy('created_at', 'desc')
+            ->take(5)
+            ->get()
+            ->filter(fn ($request) => $request->buyer !== null)
+            ->map(function ($request) {
+                return [
+                    'id' => $request->id,
+                    'request_number' => $request->request_number,
+                    'title' => $request->title,
+                    'buyer' => [
+                        'id' => $request->buyer->id,
+                        'name' => $request->buyer->name,
+                        'avatar_url' => $request->buyer->avatar_url,
+                    ],
+                    'status' => $request->status,
+                    'status_label' => $request->status_label,
+                    'status_color' => $request->status_color,
+                    'quoted_price' => $request->quoted_price,
+                    'created_at' => $request->created_at->format('Y-m-d H:i:s'),
+                    'created_at_human' => $request->created_at->diffForHumans(),
+                ];
+            })
+            ->values()
+            ->toArray();
+
+        // Status breakdown for chart
+        $statusBreakdown = [
+            ['status' => 'Pending', 'count' => $pending, 'color' => '#f59e0b'],
+            ['status' => 'Quoted', 'count' => $quoted, 'color' => '#3b82f6'],
+            ['status' => 'Accepted', 'count' => $accepted, 'color' => '#10b981'],
+            ['status' => 'In Progress', 'count' => $inProgress, 'color' => '#8b5cf6'],
+            ['status' => 'Ready', 'count' => $readyForCheckout, 'color' => '#f97316'],
+            ['status' => 'Completed', 'count' => $completed, 'color' => '#059669'],
+            ['status' => 'Cancelled/Declined', 'count' => $cancelled, 'color' => '#6b7280'],
+        ];
+
+        // All-time stats (not just period)
+        $allTimeTotal = CustomOrderRequest::where('seller_id', $sellerId)->count();
+        $allTimeCompleted = CustomOrderRequest::where('seller_id', $sellerId)
+            ->where('status', CustomOrderRequest::STATUS_COMPLETED)
+            ->count();
+        $allTimeRevenue = CustomOrderRequest::where('seller_id', $sellerId)
+            ->where('status', CustomOrderRequest::STATUS_COMPLETED)
+            ->sum('quoted_price');
+        $activeRequests = CustomOrderRequest::where('seller_id', $sellerId)
+            ->whereNotIn('status', [
+                CustomOrderRequest::STATUS_COMPLETED,
+                CustomOrderRequest::STATUS_CANCELLED,
+                CustomOrderRequest::STATUS_REJECTED,
+                CustomOrderRequest::STATUS_DECLINED,
+            ])
+            ->count();
+
+        return [
+            'overview' => [
+                'total' => $total,
+                'pending' => $pending,
+                'quoted' => $quoted,
+                'in_progress' => $inProgress,
+                'ready_for_checkout' => $readyForCheckout,
+                'completed' => $completed,
+                'cancelled' => $cancelled,
+                'total_revenue' => round($totalRevenue, 2),
+                'avg_order_value' => round($avgOrderValue ?? 0, 2),
+                'conversion_rate' => $conversionRate,
+            ],
+            'growth' => [
+                'requests' => $requestsGrowth,
+                'completed' => $completedGrowth,
+                'revenue' => $revenueGrowth,
+            ],
+            'comparison' => [
+                'prev_total' => $prevTotal,
+                'prev_completed' => $prevCompleted,
+                'prev_revenue' => round($prevRevenue, 2),
+                'prev_conversion_rate' => $prevConversionRate,
+            ],
+            'status_breakdown' => array_filter($statusBreakdown, fn($item) => $item['count'] > 0),
+            'recent_requests' => $recentRequests,
+            'all_time' => [
+                'total' => $allTimeTotal,
+                'completed' => $allTimeCompleted,
+                'revenue' => round($allTimeRevenue, 2),
+                'active' => $activeRequests,
+            ],
+        ];
     }
 
     /**
@@ -339,6 +517,7 @@ class AnalyticsController extends Controller
         $topCustomers = Order::where('seller_id', $sellerId)
             ->where('status', Order::STATUS_COMPLETED)
             ->whereBetween('created_at', [$startDate, $endDate])
+            ->whereNotNull('user_id')
             ->select(
                 'user_id',
                 DB::raw('COUNT(*) as order_count'),
@@ -347,8 +526,9 @@ class AnalyticsController extends Controller
             ->groupBy('user_id')
             ->orderByDesc('total_spent')
             ->take(10)
-            ->with('buyer:id,name,email,profile_picture,avatar')
+            ->with('buyer')
             ->get()
+            ->filter(fn ($item) => $item->buyer !== null)
             ->map(fn ($item) => [
                 'customer' => [
                     'id' => $item->buyer->id,
@@ -359,7 +539,8 @@ class AnalyticsController extends Controller
                 'order_count' => $item->order_count,
                 'total_spent' => round($item->total_spent, 2),
                 'avg_order_value' => round($item->total_spent / $item->order_count, 2),
-            ]);
+            ])
+            ->values();
 
         // Customer lifetime value
         $avgLifetimeValue = Order::where('seller_id', $sellerId)
@@ -389,6 +570,7 @@ class AnalyticsController extends Controller
                 ->where('status', Order::STATUS_COMPLETED)
                 ->whereBetween('created_at', [$startDate, $endDate]);
         })
+            ->whereNotNull('product_id')
             ->select(
                 'product_id',
                 DB::raw('SUM(quantity) as total_quantity'),
@@ -399,6 +581,7 @@ class AnalyticsController extends Controller
             ->take(10)
             ->with('product:id,name,price,featured_image,images')
             ->get()
+            ->filter(fn ($item) => $item->product !== null)
             ->map(fn ($item) => [
                 'product' => [
                     'id' => $item->product->id,
@@ -408,13 +591,15 @@ class AnalyticsController extends Controller
                 ],
                 'quantity_sold' => $item->total_quantity,
                 'revenue' => round($item->total_revenue, 2),
-            ]);
+            ])
+            ->values();
 
         $topByQuantity = OrderItem::whereHas('order', function ($query) use ($sellerId, $startDate, $endDate) {
             $query->where('seller_id', $sellerId)
                 ->where('status', Order::STATUS_COMPLETED)
                 ->whereBetween('created_at', [$startDate, $endDate]);
         })
+            ->whereNotNull('product_id')
             ->select(
                 'product_id',
                 DB::raw('SUM(quantity) as total_quantity'),
@@ -425,6 +610,7 @@ class AnalyticsController extends Controller
             ->take(10)
             ->with('product:id,name,price,featured_image,images')
             ->get()
+            ->filter(fn ($item) => $item->product !== null)
             ->map(fn ($item) => [
                 'product' => [
                     'id' => $item->product->id,
@@ -434,7 +620,8 @@ class AnalyticsController extends Controller
                 ],
                 'quantity_sold' => $item->total_quantity,
                 'order_count' => $item->order_count,
-            ]);
+            ])
+            ->values();
 
         return [
             'by_revenue' => $topByRevenue,

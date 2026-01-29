@@ -1,7 +1,7 @@
 import { Product as GlobalProduct } from '@/types';
 import { Head, Link, router, usePage } from '@inertiajs/react';
 import axios from 'axios';
-import { ArrowLeft, Calendar, Eye, Mail, MapPin, MessageSquare, Package, Phone, ShoppingCart, Star, Trash2, User } from 'lucide-react';
+import { ArrowLeft, Calendar, Eye, Mail, MapPin, MessageSquare, Package, PenTool, Phone, ShoppingCart, Star, Trash2, User } from 'lucide-react';
 import React, { useCallback, useEffect, useState } from 'react';
 import AddToCartModal from '../../../components/AddToCartModal';
 import SellerRatingModal from '../../../components/SellerRatingModal';
@@ -308,11 +308,17 @@ export default function Show({ seller, products, filters, userRating: initialUse
                                     )}
 
                                     {auth?.user && auth.user.id !== seller.id && (
-                                        <div className="mt-3">
+                                        <div className="mt-3 flex flex-wrap gap-2">
                                             <StartChatButton userId={seller.id} variant="default" className="">
                                                 <MessageSquare className="mr-1 h-4 w-4" />
                                                 Contact Seller
                                             </StartChatButton>
+                                            <Link href={`/buyer/custom-orders/create?seller_id=${seller.id}`}>
+                                                <button className="inline-flex items-center gap-2 rounded-lg border-2 border-amber-300 bg-gradient-to-r from-amber-50 to-orange-50 px-4 py-2 text-sm font-medium text-amber-700 shadow-sm transition-all hover:border-amber-400 hover:from-amber-100 hover:to-orange-100 hover:shadow-md">
+                                                    <PenTool className="h-4 w-4" />
+                                                    Request Custom Order
+                                                </button>
+                                            </Link>
                                         </div>
                                     )}
                                 </div>
