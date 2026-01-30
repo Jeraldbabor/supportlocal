@@ -274,7 +274,8 @@ export default function OrderShow({ order }: OrderShowProps) {
                             <p className="text-xs text-orange-700 sm:text-sm md:text-base">{order.cancellation_reason}</p>
                             {order.cancelled_at && (
                                 <p className="mt-1 text-xs text-orange-600">
-                                    Cancelled on {new Date(order.cancelled_at).toLocaleDateString()} at {new Date(order.cancelled_at).toLocaleTimeString()}
+                                    Cancelled on {new Date(order.cancelled_at).toLocaleDateString()} at{' '}
+                                    {new Date(order.cancelled_at).toLocaleTimeString()}
                                 </p>
                             )}
                         </div>
@@ -597,8 +598,8 @@ export default function OrderShow({ order }: OrderShowProps) {
                             </div>
                             <div className="mb-4">
                                 <p className="mb-3 text-sm text-gray-600">
-                                    Are you sure you want to cancel order <span className="font-semibold">#{order.order_number}</span>? Please provide a reason
-                                    for cancellation.
+                                    Are you sure you want to cancel order <span className="font-semibold">#{order.order_number}</span>? Please provide
+                                    a reason for cancellation.
                                 </p>
                                 <label htmlFor="cancel_reason" className="mb-1 block text-sm font-medium text-gray-700">
                                     Reason for cancellation <span className="text-red-500">*</span>

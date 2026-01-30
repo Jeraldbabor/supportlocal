@@ -85,10 +85,10 @@ class RegisteredUserController extends Controller
         try {
             // Refresh the user to ensure all attributes are loaded
             $user->refresh();
-            
+
             // Send the verification notification
             $user->sendEmailVerificationNotification();
-            
+
             Log::info('Verification email sent successfully during registration', [
                 'user_id' => $user->id,
                 'email' => $user->email,

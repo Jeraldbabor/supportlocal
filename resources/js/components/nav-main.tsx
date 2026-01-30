@@ -2,13 +2,7 @@ import { SidebarGroup, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, Sideba
 import { type NavItem } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
 
-export function NavMain({
-    items = [],
-    unreadMessagesCount = 0,
-}: {
-    items: NavItem[];
-    unreadMessagesCount?: number;
-}) {
+export function NavMain({ items = [], unreadMessagesCount = 0 }: { items: NavItem[]; unreadMessagesCount?: number }) {
     const page = usePage();
 
     // Function to determine if a nav item is active

@@ -1,6 +1,6 @@
 import { Link } from '@inertiajs/react';
 import { Settings, X } from 'lucide-react';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 type ConsentPreferences = {
     necessary: boolean;
@@ -87,7 +87,10 @@ export default function CookieConsent() {
                             <p className="text-sm leading-relaxed text-gray-300">
                                 <span className="font-medium text-white">Welcome!</span> We respect your privacy and your right to control how we
                                 collect, use, and share your personal data. Please read our{' '}
-                                <Link href="/privacy-policy" className="font-medium text-orange-400 underline transition-colors hover:text-orange-300">
+                                <Link
+                                    href="/privacy-policy"
+                                    className="font-medium text-orange-400 underline transition-colors hover:text-orange-300"
+                                >
                                     Privacy Policy
                                 </Link>{' '}
                                 to learn about our privacy practices.
@@ -123,7 +126,7 @@ export default function CookieConsent() {
             {/* Preferences Modal */}
             {showPreferences && (
                 <div className="fixed inset-0 z-[10000] flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm">
-                    <div className="w-full max-w-lg animate-in fade-in zoom-in-95 duration-200">
+                    <div className="w-full max-w-lg duration-200 animate-in fade-in zoom-in-95">
                         <div className="rounded-2xl border border-gray-700 bg-gray-900 shadow-2xl">
                             {/* Header */}
                             <div className="flex items-center justify-between border-b border-gray-700 px-6 py-4">
@@ -188,9 +191,7 @@ export default function CookieConsent() {
                                         <div className="flex items-center justify-between">
                                             <div>
                                                 <h3 className="font-medium text-white">Marketing Cookies</h3>
-                                                <p className="mt-1 text-sm text-gray-400">
-                                                    Used to deliver personalized advertisements to you.
-                                                </p>
+                                                <p className="mt-1 text-sm text-gray-400">Used to deliver personalized advertisements to you.</p>
                                             </div>
                                             <button
                                                 onClick={() => handlePreferenceChange('marketing')}

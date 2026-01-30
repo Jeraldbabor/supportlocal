@@ -117,7 +117,7 @@ export default function CustomOrderCreate({ categories }: Props) {
         <BuyerLayout>
             <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50/30 to-yellow-50/50">
                 {/* Decorative Background Elements */}
-                <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                <div className="pointer-events-none absolute inset-0 overflow-hidden">
                     <div className="absolute -top-40 -right-40 h-80 w-80 rounded-full bg-gradient-to-br from-amber-200/30 to-orange-200/30 blur-3xl" />
                     <div className="absolute top-1/2 -left-40 h-80 w-80 rounded-full bg-gradient-to-br from-yellow-200/30 to-amber-200/30 blur-3xl" />
                 </div>
@@ -126,7 +126,7 @@ export default function CustomOrderCreate({ categories }: Props) {
                     <div className="mx-auto max-w-4xl px-4 sm:px-6">
                         {/* Back Button */}
                         <Link href="/buyer/custom-orders">
-                            <Button variant="ghost" size="sm" className="mb-6 group hover:bg-white/60">
+                            <Button variant="ghost" size="sm" className="group mb-6 hover:bg-white/60">
                                 <ArrowLeft className="mr-2 h-4 w-4 transition-transform group-hover:-translate-x-1" />
                                 Back to My Requests
                             </Button>
@@ -136,30 +136,30 @@ export default function CustomOrderCreate({ categories }: Props) {
                         <div className="mb-10 text-center">
                             <div className="mb-6 inline-flex items-center justify-center">
                                 <div className="relative">
-                                    <div className="absolute inset-0 rounded-full bg-gradient-to-r from-amber-400 to-orange-400 blur-xl opacity-50 animate-pulse" />
+                                    <div className="absolute inset-0 animate-pulse rounded-full bg-gradient-to-r from-amber-400 to-orange-400 opacity-50 blur-xl" />
                                     <div className="relative rounded-2xl bg-gradient-to-br from-amber-500 to-orange-500 p-5 shadow-xl shadow-amber-500/25">
                                         <Gavel className="h-10 w-10 text-white" />
                                     </div>
                                 </div>
                             </div>
-                            <h1 className="mb-3 text-3xl sm:text-4xl font-bold bg-gradient-to-r from-gray-900 via-amber-900 to-orange-900 bg-clip-text text-transparent">
+                            <h1 className="mb-3 bg-gradient-to-r from-gray-900 via-amber-900 to-orange-900 bg-clip-text text-3xl font-bold text-transparent sm:text-4xl">
                                 Create Your Custom Order
                             </h1>
-                            <p className="text-gray-600 text-lg max-w-2xl mx-auto">
+                            <p className="mx-auto max-w-2xl text-lg text-gray-600">
                                 Describe your vision and let talented artisans compete to bring it to life
                             </p>
 
                             {/* Stats badges */}
                             <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
-                                <Badge variant="secondary" className="bg-white/80 backdrop-blur-sm border border-amber-200/50 px-4 py-2">
+                                <Badge variant="secondary" className="border border-amber-200/50 bg-white/80 px-4 py-2 backdrop-blur-sm">
                                     <Users className="mr-2 h-4 w-4 text-amber-600" />
                                     <span className="text-gray-700">500+ Active Artisans</span>
                                 </Badge>
-                                <Badge variant="secondary" className="bg-white/80 backdrop-blur-sm border border-green-200/50 px-4 py-2">
+                                <Badge variant="secondary" className="border border-green-200/50 bg-white/80 px-4 py-2 backdrop-blur-sm">
                                     <Clock className="mr-2 h-4 w-4 text-green-600" />
                                     <span className="text-gray-700">Avg. 3 bids within 24hrs</span>
                                 </Badge>
-                                <Badge variant="secondary" className="bg-white/80 backdrop-blur-sm border border-blue-200/50 px-4 py-2">
+                                <Badge variant="secondary" className="border border-blue-200/50 bg-white/80 px-4 py-2 backdrop-blur-sm">
                                     <Star className="mr-2 h-4 w-4 text-blue-600" />
                                     <span className="text-gray-700">4.9/5 Satisfaction Rate</span>
                                 </Badge>
@@ -167,36 +167,48 @@ export default function CustomOrderCreate({ categories }: Props) {
                         </div>
 
                         {/* How it Works - Redesigned */}
-                        <Card className="mb-8 border-0 bg-white/70 backdrop-blur-sm shadow-lg shadow-amber-100/50 overflow-hidden">
+                        <Card className="mb-8 overflow-hidden border-0 bg-white/70 shadow-lg shadow-amber-100/50 backdrop-blur-sm">
                             <CardContent className="p-0">
                                 <div className="bg-gradient-to-r from-amber-500/10 via-orange-500/10 to-yellow-500/10 p-6">
-                                    <h3 className="flex items-center gap-2 text-lg font-semibold text-gray-900 mb-6">
+                                    <h3 className="mb-6 flex items-center gap-2 text-lg font-semibold text-gray-900">
                                         <Sparkles className="h-5 w-5 text-amber-500" />
                                         How It Works
                                     </h3>
-                                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                    <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
                                         {[
-                                            { icon: PenTool, title: 'Post Request', desc: 'Describe your project', color: 'from-amber-500 to-orange-500' },
-                                            { icon: Users, title: 'Receive Bids', desc: 'Artisans send proposals', color: 'from-orange-500 to-red-500' },
+                                            {
+                                                icon: PenTool,
+                                                title: 'Post Request',
+                                                desc: 'Describe your project',
+                                                color: 'from-amber-500 to-orange-500',
+                                            },
+                                            {
+                                                icon: Users,
+                                                title: 'Receive Bids',
+                                                desc: 'Artisans send proposals',
+                                                color: 'from-orange-500 to-red-500',
+                                            },
                                             { icon: Trophy, title: 'Choose Best', desc: 'Compare & select', color: 'from-red-500 to-pink-500' },
                                             { icon: Zap, title: 'Get Started', desc: 'Work begins!', color: 'from-pink-500 to-purple-500' },
                                         ].map((step, idx) => (
-                                            <div key={idx} className="relative group">
-                                                <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100 transition-all duration-300 hover:shadow-md hover:-translate-y-1">
-                                                    <div className={cn(
-                                                        "w-12 h-12 rounded-xl bg-gradient-to-br flex items-center justify-center mb-3 shadow-lg",
-                                                        step.color
-                                                    )}>
+                                            <div key={idx} className="group relative">
+                                                <div className="rounded-xl border border-gray-100 bg-white p-4 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md">
+                                                    <div
+                                                        className={cn(
+                                                            'mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br shadow-lg',
+                                                            step.color,
+                                                        )}
+                                                    >
                                                         <step.icon className="h-6 w-6 text-white" />
                                                     </div>
-                                                    <div className="absolute -top-2 -left-2 w-6 h-6 rounded-full bg-gradient-to-br from-amber-500 to-orange-500 text-white text-xs font-bold flex items-center justify-center shadow-md">
+                                                    <div className="absolute -top-2 -left-2 flex h-6 w-6 items-center justify-center rounded-full bg-gradient-to-br from-amber-500 to-orange-500 text-xs font-bold text-white shadow-md">
                                                         {idx + 1}
                                                     </div>
-                                                    <h4 className="font-semibold text-gray-900 text-sm">{step.title}</h4>
-                                                    <p className="text-xs text-gray-500 mt-1">{step.desc}</p>
+                                                    <h4 className="text-sm font-semibold text-gray-900">{step.title}</h4>
+                                                    <p className="mt-1 text-xs text-gray-500">{step.desc}</p>
                                                 </div>
                                                 {idx < 3 && (
-                                                    <ArrowRight className="hidden md:block absolute -right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-300" />
+                                                    <ArrowRight className="absolute top-1/2 -right-3 hidden h-5 w-5 -translate-y-1/2 text-gray-300 md:block" />
                                                 )}
                                             </div>
                                         ))}
@@ -205,28 +217,28 @@ export default function CustomOrderCreate({ categories }: Props) {
                             </CardContent>
                         </Card>
 
-                        <div className="grid lg:grid-cols-3 gap-6">
+                        <div className="grid gap-6 lg:grid-cols-3">
                             {/* Main Form */}
                             <div className="lg:col-span-2">
-                                <Card className="border-0 bg-white/80 backdrop-blur-sm shadow-xl shadow-gray-200/50 overflow-hidden">
+                                <Card className="overflow-hidden border-0 bg-white/80 shadow-xl shadow-gray-200/50 backdrop-blur-sm">
                                     {/* Form Header with Progress */}
-                                    <CardHeader className="bg-gradient-to-r from-amber-500 via-orange-500 to-amber-500 text-white p-6">
+                                    <CardHeader className="bg-gradient-to-r from-amber-500 via-orange-500 to-amber-500 p-6 text-white">
                                         <div className="flex items-start justify-between">
                                             <div>
                                                 <CardTitle className="flex items-center gap-2 text-xl">
                                                     <FileText className="h-5 w-5" />
                                                     Request Details
                                                 </CardTitle>
-                                                <CardDescription className="text-amber-100 mt-1">
+                                                <CardDescription className="mt-1 text-amber-100">
                                                     The more details you provide, the better bids you'll receive
                                                 </CardDescription>
                                             </div>
                                             <div className="text-right">
-                                                <div className="text-sm text-amber-100 mb-1">Completion</div>
+                                                <div className="mb-1 text-sm text-amber-100">Completion</div>
                                                 <div className="flex items-center gap-2">
-                                                    <div className="w-20 h-2 bg-white/30 rounded-full overflow-hidden">
+                                                    <div className="h-2 w-20 overflow-hidden rounded-full bg-white/30">
                                                         <div
-                                                            className="h-full bg-white rounded-full transition-all duration-500"
+                                                            className="h-full rounded-full bg-white transition-all duration-500"
                                                             style={{ width: `${completionPercentage}%` }}
                                                         />
                                                     </div>
@@ -240,8 +252,8 @@ export default function CustomOrderCreate({ categories }: Props) {
                                         <form onSubmit={handleSubmit} className="space-y-8">
                                             {/* Basic Information Section */}
                                             <div className="space-y-6">
-                                                <div className="flex items-center gap-2 pb-2 border-b border-gray-100">
-                                                    <div className="p-1.5 rounded-lg bg-amber-100">
+                                                <div className="flex items-center gap-2 border-b border-gray-100 pb-2">
+                                                    <div className="rounded-lg bg-amber-100 p-1.5">
                                                         <Wand2 className="h-4 w-4 text-amber-600" />
                                                     </div>
                                                     <h3 className="font-semibold text-gray-900">Basic Information</h3>
@@ -249,7 +261,7 @@ export default function CustomOrderCreate({ categories }: Props) {
 
                                                 {/* Title */}
                                                 <div className="space-y-2">
-                                                    <Label htmlFor="title" className="text-gray-700 font-medium flex items-center gap-1">
+                                                    <Label htmlFor="title" className="flex items-center gap-1 font-medium text-gray-700">
                                                         Project Title <span className="text-red-500">*</span>
                                                     </Label>
                                                     <Input
@@ -258,8 +270,8 @@ export default function CustomOrderCreate({ categories }: Props) {
                                                         onChange={(e) => setData('title', e.target.value)}
                                                         placeholder="e.g., Custom Handwoven Abaca Bag for Wedding Gift"
                                                         className={cn(
-                                                            "h-12 bg-gray-50/50 border-gray-200 focus:bg-white focus:border-amber-400 focus:ring-amber-400/20 transition-all",
-                                                            errors.title && 'border-red-400 bg-red-50/50'
+                                                            'h-12 border-gray-200 bg-gray-50/50 transition-all focus:border-amber-400 focus:bg-white focus:ring-amber-400/20',
+                                                            errors.title && 'border-red-400 bg-red-50/50',
                                                         )}
                                                     />
                                                     {errors.title && (
@@ -272,14 +284,16 @@ export default function CustomOrderCreate({ categories }: Props) {
 
                                                 {/* Category */}
                                                 <div className="space-y-2">
-                                                    <Label htmlFor="category" className="text-gray-700 font-medium flex items-center gap-1">
+                                                    <Label htmlFor="category" className="flex items-center gap-1 font-medium text-gray-700">
                                                         Category <span className="text-red-500">*</span>
                                                     </Label>
                                                     <Select value={data.category} onValueChange={(value) => setData('category', value)}>
-                                                        <SelectTrigger className={cn(
-                                                            "h-12 bg-gray-50/50 border-gray-200 focus:bg-white focus:border-amber-400 focus:ring-amber-400/20",
-                                                            errors.category && 'border-red-400 bg-red-50/50'
-                                                        )}>
+                                                        <SelectTrigger
+                                                            className={cn(
+                                                                'h-12 border-gray-200 bg-gray-50/50 focus:border-amber-400 focus:bg-white focus:ring-amber-400/20',
+                                                                errors.category && 'border-red-400 bg-red-50/50',
+                                                            )}
+                                                        >
                                                             <SelectValue placeholder="Select a category for your project" />
                                                         </SelectTrigger>
                                                         <SelectContent>
@@ -300,7 +314,7 @@ export default function CustomOrderCreate({ categories }: Props) {
 
                                                 {/* Description */}
                                                 <div className="space-y-2">
-                                                    <Label htmlFor="description" className="text-gray-700 font-medium flex items-center gap-1">
+                                                    <Label htmlFor="description" className="flex items-center gap-1 font-medium text-gray-700">
                                                         Detailed Description <span className="text-red-500">*</span>
                                                     </Label>
                                                     <Textarea
@@ -310,17 +324,22 @@ export default function CustomOrderCreate({ categories }: Props) {
                                                         placeholder="Describe your project in detail. Include:&#10;• Dimensions (size, length, width)&#10;• Colors and patterns you prefer&#10;• Materials (wood type, fabric, etc.)&#10;• Style preferences and inspiration&#10;• Any specific features or requirements"
                                                         rows={6}
                                                         className={cn(
-                                                            "bg-gray-50/50 border-gray-200 focus:bg-white focus:border-amber-400 focus:ring-amber-400/20 resize-none transition-all",
-                                                            errors.description && 'border-red-400 bg-red-50/50'
+                                                            'resize-none border-gray-200 bg-gray-50/50 transition-all focus:border-amber-400 focus:bg-white focus:ring-amber-400/20',
+                                                            errors.description && 'border-red-400 bg-red-50/50',
                                                         )}
                                                     />
                                                     <div className="flex items-center justify-between text-xs">
                                                         <span className="text-gray-500">Minimum 20 characters required</span>
-                                                        <span className={cn(
-                                                            "font-medium",
-                                                            data.description.length < 20 ? 'text-gray-400' :
-                                                            data.description.length < 100 ? 'text-amber-500' : 'text-green-500'
-                                                        )}>
+                                                        <span
+                                                            className={cn(
+                                                                'font-medium',
+                                                                data.description.length < 20
+                                                                    ? 'text-gray-400'
+                                                                    : data.description.length < 100
+                                                                      ? 'text-amber-500'
+                                                                      : 'text-green-500',
+                                                            )}
+                                                        >
                                                             {data.description.length}/2000
                                                         </span>
                                                     </div>
@@ -335,8 +354,8 @@ export default function CustomOrderCreate({ categories }: Props) {
 
                                             {/* Budget & Details Section */}
                                             <div className="space-y-6">
-                                                <div className="flex items-center gap-2 pb-2 border-b border-gray-100">
-                                                    <div className="p-1.5 rounded-lg bg-green-100">
+                                                <div className="flex items-center gap-2 border-b border-gray-100 pb-2">
+                                                    <div className="rounded-lg bg-green-100 p-1.5">
                                                         <Palette className="h-4 w-4 text-green-600" />
                                                     </div>
                                                     <h3 className="font-semibold text-gray-900">Budget & Specifications</h3>
@@ -345,11 +364,13 @@ export default function CustomOrderCreate({ categories }: Props) {
                                                 {/* Budget Range */}
                                                 <div className="grid gap-4 sm:grid-cols-2">
                                                     <div className="space-y-2">
-                                                        <Label htmlFor="budget_min" className="text-gray-700 font-medium">
+                                                        <Label htmlFor="budget_min" className="font-medium text-gray-700">
                                                             Minimum Budget
                                                         </Label>
                                                         <div className="relative">
-                                                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 font-medium">₱</span>
+                                                            <span className="absolute top-1/2 left-3 -translate-y-1/2 font-medium text-gray-400">
+                                                                ₱
+                                                            </span>
                                                             <Input
                                                                 id="budget_min"
                                                                 type="number"
@@ -358,7 +379,7 @@ export default function CustomOrderCreate({ categories }: Props) {
                                                                 value={data.budget_min}
                                                                 onChange={(e) => setData('budget_min', e.target.value)}
                                                                 placeholder="0.00"
-                                                                className="pl-8 h-12 bg-gray-50/50 border-gray-200 focus:bg-white focus:border-amber-400 focus:ring-amber-400/20"
+                                                                className="h-12 border-gray-200 bg-gray-50/50 pl-8 focus:border-amber-400 focus:bg-white focus:ring-amber-400/20"
                                                             />
                                                         </div>
                                                         {errors.budget_min && (
@@ -369,11 +390,13 @@ export default function CustomOrderCreate({ categories }: Props) {
                                                         )}
                                                     </div>
                                                     <div className="space-y-2">
-                                                        <Label htmlFor="budget_max" className="text-gray-700 font-medium">
+                                                        <Label htmlFor="budget_max" className="font-medium text-gray-700">
                                                             Maximum Budget
                                                         </Label>
                                                         <div className="relative">
-                                                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 font-medium">₱</span>
+                                                            <span className="absolute top-1/2 left-3 -translate-y-1/2 font-medium text-gray-400">
+                                                                ₱
+                                                            </span>
                                                             <Input
                                                                 id="budget_max"
                                                                 type="number"
@@ -382,7 +405,7 @@ export default function CustomOrderCreate({ categories }: Props) {
                                                                 value={data.budget_max}
                                                                 onChange={(e) => setData('budget_max', e.target.value)}
                                                                 placeholder="0.00"
-                                                                className="pl-8 h-12 bg-gray-50/50 border-gray-200 focus:bg-white focus:border-amber-400 focus:ring-amber-400/20"
+                                                                className="h-12 border-gray-200 bg-gray-50/50 pl-8 focus:border-amber-400 focus:bg-white focus:ring-amber-400/20"
                                                             />
                                                         </div>
                                                         {errors.budget_max && (
@@ -397,7 +420,7 @@ export default function CustomOrderCreate({ categories }: Props) {
                                                 {/* Quantity & Deadline */}
                                                 <div className="grid gap-4 sm:grid-cols-2">
                                                     <div className="space-y-2">
-                                                        <Label htmlFor="quantity" className="text-gray-700 font-medium flex items-center gap-1">
+                                                        <Label htmlFor="quantity" className="flex items-center gap-1 font-medium text-gray-700">
                                                             <Package className="h-4 w-4 text-gray-400" />
                                                             Quantity <span className="text-red-500">*</span>
                                                         </Label>
@@ -409,8 +432,8 @@ export default function CustomOrderCreate({ categories }: Props) {
                                                             value={data.quantity}
                                                             onChange={(e) => setData('quantity', e.target.value)}
                                                             className={cn(
-                                                                "h-12 bg-gray-50/50 border-gray-200 focus:bg-white focus:border-amber-400 focus:ring-amber-400/20",
-                                                                errors.quantity && 'border-red-400 bg-red-50/50'
+                                                                'h-12 border-gray-200 bg-gray-50/50 focus:border-amber-400 focus:bg-white focus:ring-amber-400/20',
+                                                                errors.quantity && 'border-red-400 bg-red-50/50',
                                                             )}
                                                         />
                                                         {errors.quantity && (
@@ -421,7 +444,10 @@ export default function CustomOrderCreate({ categories }: Props) {
                                                         )}
                                                     </div>
                                                     <div className="space-y-2">
-                                                        <Label htmlFor="preferred_deadline" className="text-gray-700 font-medium flex items-center gap-1">
+                                                        <Label
+                                                            htmlFor="preferred_deadline"
+                                                            className="flex items-center gap-1 font-medium text-gray-700"
+                                                        >
                                                             <Calendar className="h-4 w-4 text-gray-400" />
                                                             Preferred Deadline
                                                         </Label>
@@ -431,7 +457,7 @@ export default function CustomOrderCreate({ categories }: Props) {
                                                             value={data.preferred_deadline}
                                                             onChange={(e) => setData('preferred_deadline', e.target.value)}
                                                             min={new Date(Date.now() + 86400000).toISOString().split('T')[0]}
-                                                            className="h-12 bg-gray-50/50 border-gray-200 focus:bg-white focus:border-amber-400 focus:ring-amber-400/20"
+                                                            className="h-12 border-gray-200 bg-gray-50/50 focus:border-amber-400 focus:bg-white focus:ring-amber-400/20"
                                                         />
                                                         {errors.preferred_deadline && (
                                                             <p className="flex items-center gap-1 text-sm text-red-500">
@@ -444,7 +470,7 @@ export default function CustomOrderCreate({ categories }: Props) {
 
                                                 {/* Special Requirements */}
                                                 <div className="space-y-2">
-                                                    <Label htmlFor="special_requirements" className="text-gray-700 font-medium">
+                                                    <Label htmlFor="special_requirements" className="font-medium text-gray-700">
                                                         Special Requirements or Notes
                                                         <span className="ml-2 text-xs font-normal text-gray-400">(Optional)</span>
                                                     </Label>
@@ -454,23 +480,23 @@ export default function CustomOrderCreate({ categories }: Props) {
                                                         onChange={(e) => setData('special_requirements', e.target.value)}
                                                         placeholder="Any special instructions, preferences, materials to avoid, packaging requirements, etc."
                                                         rows={3}
-                                                        className="bg-gray-50/50 border-gray-200 focus:bg-white focus:border-amber-400 focus:ring-amber-400/20 resize-none"
+                                                        className="resize-none border-gray-200 bg-gray-50/50 focus:border-amber-400 focus:bg-white focus:ring-amber-400/20"
                                                     />
                                                 </div>
                                             </div>
 
                                             {/* Reference Images Section */}
                                             <div className="space-y-4">
-                                                <div className="flex items-center gap-2 pb-2 border-b border-gray-100">
-                                                    <div className="p-1.5 rounded-lg bg-purple-100">
+                                                <div className="flex items-center gap-2 border-b border-gray-100 pb-2">
+                                                    <div className="rounded-lg bg-purple-100 p-1.5">
                                                         <ImageIcon className="h-4 w-4 text-purple-600" />
                                                     </div>
                                                     <h3 className="font-semibold text-gray-900">Reference Images</h3>
-                                                    <Badge variant="secondary" className="bg-gray-100 text-gray-600 text-xs">Optional</Badge>
+                                                    <Badge variant="secondary" className="bg-gray-100 text-xs text-gray-600">
+                                                        Optional
+                                                    </Badge>
                                                 </div>
-                                                <p className="text-sm text-gray-500">
-                                                    Upload up to 5 images to help artisans visualize your vision
-                                                </p>
+                                                <p className="text-sm text-gray-500">Upload up to 5 images to help artisans visualize your vision</p>
 
                                                 <input
                                                     ref={fileInputRef}
@@ -488,39 +514,43 @@ export default function CustomOrderCreate({ categories }: Props) {
                                                     onDrop={handleDrop}
                                                     onClick={() => previewImages.length < 5 && fileInputRef.current?.click()}
                                                     className={cn(
-                                                        "relative rounded-xl border-2 border-dashed transition-all duration-300 cursor-pointer",
+                                                        'relative cursor-pointer rounded-xl border-2 border-dashed transition-all duration-300',
                                                         isDragging
-                                                            ? "border-amber-400 bg-amber-50 scale-[1.01]"
-                                                            : "border-gray-200 bg-gray-50/50 hover:border-amber-300 hover:bg-amber-50/50",
-                                                        previewImages.length >= 5 && "pointer-events-none opacity-50"
+                                                            ? 'scale-[1.01] border-amber-400 bg-amber-50'
+                                                            : 'border-gray-200 bg-gray-50/50 hover:border-amber-300 hover:bg-amber-50/50',
+                                                        previewImages.length >= 5 && 'pointer-events-none opacity-50',
                                                     )}
                                                 >
                                                     {previewImages.length === 0 ? (
-                                                        <div className="flex flex-col items-center justify-center py-10 px-4">
-                                                            <div className={cn(
-                                                                "p-4 rounded-full mb-4 transition-colors",
-                                                                isDragging ? "bg-amber-100" : "bg-gray-100"
-                                                            )}>
-                                                                <Upload className={cn(
-                                                                    "h-8 w-8 transition-colors",
-                                                                    isDragging ? "text-amber-500" : "text-gray-400"
-                                                                )} />
+                                                        <div className="flex flex-col items-center justify-center px-4 py-10">
+                                                            <div
+                                                                className={cn(
+                                                                    'mb-4 rounded-full p-4 transition-colors',
+                                                                    isDragging ? 'bg-amber-100' : 'bg-gray-100',
+                                                                )}
+                                                            >
+                                                                <Upload
+                                                                    className={cn(
+                                                                        'h-8 w-8 transition-colors',
+                                                                        isDragging ? 'text-amber-500' : 'text-gray-400',
+                                                                    )}
+                                                                />
                                                             </div>
                                                             <p className="text-sm font-medium text-gray-700">
                                                                 {isDragging ? 'Drop your images here' : 'Drag & drop images here'}
                                                             </p>
-                                                            <p className="text-xs text-gray-500 mt-1">or click to browse</p>
-                                                            <p className="text-xs text-gray-400 mt-3">PNG, JPG, WEBP up to 5MB each</p>
+                                                            <p className="mt-1 text-xs text-gray-500">or click to browse</p>
+                                                            <p className="mt-3 text-xs text-gray-400">PNG, JPG, WEBP up to 5MB each</p>
                                                         </div>
                                                     ) : (
                                                         <div className="p-4">
-                                                            <div className="grid grid-cols-3 sm:grid-cols-5 gap-3">
+                                                            <div className="grid grid-cols-3 gap-3 sm:grid-cols-5">
                                                                 {previewImages.map((preview, index) => (
                                                                     <div key={index} className="group relative aspect-square">
                                                                         <img
                                                                             src={preview}
                                                                             alt={`Preview ${index + 1}`}
-                                                                            className="w-full h-full rounded-lg object-cover border-2 border-white shadow-md"
+                                                                            className="h-full w-full rounded-lg border-2 border-white object-cover shadow-md"
                                                                         />
                                                                         <button
                                                                             type="button"
@@ -528,23 +558,23 @@ export default function CustomOrderCreate({ categories }: Props) {
                                                                                 e.stopPropagation();
                                                                                 removeImage(index);
                                                                             }}
-                                                                            className="absolute -top-2 -right-2 p-1.5 rounded-full bg-red-500 text-white shadow-lg opacity-0 group-hover:opacity-100 transition-all duration-200 hover:bg-red-600 hover:scale-110"
+                                                                            className="absolute -top-2 -right-2 rounded-full bg-red-500 p-1.5 text-white opacity-0 shadow-lg transition-all duration-200 group-hover:opacity-100 hover:scale-110 hover:bg-red-600"
                                                                         >
                                                                             <X className="h-3 w-3" />
                                                                         </button>
-                                                                        <div className="absolute bottom-1 left-1 px-1.5 py-0.5 rounded bg-black/60 text-white text-xs font-medium">
+                                                                        <div className="absolute bottom-1 left-1 rounded bg-black/60 px-1.5 py-0.5 text-xs font-medium text-white">
                                                                             {index + 1}
                                                                         </div>
                                                                     </div>
                                                                 ))}
                                                                 {previewImages.length < 5 && (
-                                                                    <div className="aspect-square flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 text-gray-400 transition-all hover:border-amber-400 hover:text-amber-500 hover:bg-amber-50/50">
+                                                                    <div className="flex aspect-square flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 text-gray-400 transition-all hover:border-amber-400 hover:bg-amber-50/50 hover:text-amber-500">
                                                                         <Upload className="h-5 w-5" />
-                                                                        <span className="text-[10px] mt-1 font-medium">Add More</span>
+                                                                        <span className="mt-1 text-[10px] font-medium">Add More</span>
                                                                     </div>
                                                                 )}
                                                             </div>
-                                                            <p className="text-center text-xs text-gray-500 mt-3">
+                                                            <p className="mt-3 text-center text-xs text-gray-500">
                                                                 {previewImages.length}/5 images uploaded
                                                             </p>
                                                         </div>
@@ -553,11 +583,11 @@ export default function CustomOrderCreate({ categories }: Props) {
                                             </div>
 
                                             {/* Submit Button */}
-                                            <div className="pt-6 border-t border-gray-100">
+                                            <div className="border-t border-gray-100 pt-6">
                                                 <Button
                                                     type="submit"
                                                     disabled={processing}
-                                                    className="w-full h-14 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-500 text-lg font-semibold shadow-lg shadow-amber-500/25 hover:shadow-xl hover:shadow-amber-500/30 hover:scale-[1.01] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                                                    className="h-14 w-full bg-gradient-to-r from-amber-500 via-orange-500 to-amber-500 text-lg font-semibold shadow-lg shadow-amber-500/25 transition-all duration-300 hover:scale-[1.01] hover:shadow-xl hover:shadow-amber-500/30 disabled:cursor-not-allowed disabled:opacity-50"
                                                 >
                                                     {processing ? (
                                                         <>
@@ -571,7 +601,7 @@ export default function CustomOrderCreate({ categories }: Props) {
                                                         </>
                                                     )}
                                                 </Button>
-                                                <p className="mt-4 text-center text-sm text-gray-500 flex items-center justify-center gap-1">
+                                                <p className="mt-4 flex items-center justify-center gap-1 text-center text-sm text-gray-500">
                                                     <CheckCircle2 className="h-4 w-4 text-green-500" />
                                                     Your request will be visible to all verified artisans
                                                 </p>
@@ -584,10 +614,10 @@ export default function CustomOrderCreate({ categories }: Props) {
                             {/* Sidebar */}
                             <div className="space-y-6">
                                 {/* Tips Card */}
-                                <Card className="border-0 bg-gradient-to-br from-blue-50 to-indigo-50 shadow-lg overflow-hidden sticky top-6">
+                                <Card className="sticky top-6 overflow-hidden border-0 bg-gradient-to-br from-blue-50 to-indigo-50 shadow-lg">
                                     <CardContent className="p-5">
-                                        <h4 className="flex items-center gap-2 font-semibold text-blue-900 mb-4">
-                                            <div className="p-1.5 rounded-lg bg-blue-100">
+                                        <h4 className="mb-4 flex items-center gap-2 font-semibold text-blue-900">
+                                            <div className="rounded-lg bg-blue-100 p-1.5">
                                                 <Lightbulb className="h-4 w-4 text-blue-600" />
                                             </div>
                                             Pro Tips
@@ -601,7 +631,7 @@ export default function CustomOrderCreate({ categories }: Props) {
                                                 { icon: Clock, text: 'Allow enough time for quality work' },
                                             ].map((tip, idx) => (
                                                 <li key={idx} className="flex items-start gap-2.5 text-sm text-blue-800">
-                                                    <div className="mt-0.5 p-1 rounded bg-blue-100/80">
+                                                    <div className="mt-0.5 rounded bg-blue-100/80 p-1">
                                                         <tip.icon className="h-3 w-3 text-blue-600" />
                                                     </div>
                                                     <span>{tip.text}</span>
@@ -612,19 +642,23 @@ export default function CustomOrderCreate({ categories }: Props) {
                                 </Card>
 
                                 {/* Need Help Card */}
-                                <Card className="border-0 bg-gradient-to-br from-amber-50 to-orange-50 shadow-lg overflow-hidden">
+                                <Card className="overflow-hidden border-0 bg-gradient-to-br from-amber-50 to-orange-50 shadow-lg">
                                     <CardContent className="p-5">
-                                        <h4 className="flex items-center gap-2 font-semibold text-amber-900 mb-3">
-                                            <div className="p-1.5 rounded-lg bg-amber-100">
+                                        <h4 className="mb-3 flex items-center gap-2 font-semibold text-amber-900">
+                                            <div className="rounded-lg bg-amber-100 p-1.5">
                                                 <Info className="h-4 w-4 text-amber-600" />
                                             </div>
                                             Need Help?
                                         </h4>
-                                        <p className="text-sm text-amber-800 mb-4">
+                                        <p className="mb-4 text-sm text-amber-800">
                                             Not sure how to describe your project? Browse similar requests for inspiration.
                                         </p>
                                         <Link href="/buyer/custom-orders">
-                                            <Button variant="outline" size="sm" className="w-full border-amber-300 text-amber-700 hover:bg-amber-100/50">
+                                            <Button
+                                                variant="outline"
+                                                size="sm"
+                                                className="w-full border-amber-300 text-amber-700 hover:bg-amber-100/50"
+                                            >
                                                 View Sample Requests
                                             </Button>
                                         </Link>

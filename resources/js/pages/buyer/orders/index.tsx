@@ -224,27 +224,27 @@ export default function Orders({ orders }: OrdersIndexProps) {
                                             </p>
                                         </div>
                                         {/* Mobile cancel button */}
-                                                {canCancel(order.status) && (
-                                                    <button
-                                                        onClick={() => setShowCancelConfirm(order.id)}
-                                                        className="ml-2 inline-flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full border border-orange-200 bg-white text-orange-500 transition-colors hover:bg-orange-50 sm:hidden"
-                                                        disabled={isCancelling}
-                                                        title="Cancel Order"
-                                                    >
-                                                        <Ban className="h-4 w-4" />
-                                                    </button>
-                                                )}
-                                                {/* Mobile delete button */}
-                                                {canDelete(order.status) && (
-                                                    <button
-                                                        onClick={() => setShowDeleteConfirm(order.id)}
-                                                        className="ml-2 inline-flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full border border-red-200 bg-white text-red-500 transition-colors hover:bg-red-50 sm:hidden"
-                                                        disabled={isDeleting}
-                                                        title="Delete Order"
-                                                    >
-                                                        <X className="h-4 w-4" />
-                                                    </button>
-                                                )}
+                                        {canCancel(order.status) && (
+                                            <button
+                                                onClick={() => setShowCancelConfirm(order.id)}
+                                                className="ml-2 inline-flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full border border-orange-200 bg-white text-orange-500 transition-colors hover:bg-orange-50 sm:hidden"
+                                                disabled={isCancelling}
+                                                title="Cancel Order"
+                                            >
+                                                <Ban className="h-4 w-4" />
+                                            </button>
+                                        )}
+                                        {/* Mobile delete button */}
+                                        {canDelete(order.status) && (
+                                            <button
+                                                onClick={() => setShowDeleteConfirm(order.id)}
+                                                className="ml-2 inline-flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full border border-red-200 bg-white text-red-500 transition-colors hover:bg-red-50 sm:hidden"
+                                                disabled={isDeleting}
+                                                title="Delete Order"
+                                            >
+                                                <X className="h-4 w-4" />
+                                            </button>
+                                        )}
                                     </div>
 
                                     {/* Status and Price Row */}

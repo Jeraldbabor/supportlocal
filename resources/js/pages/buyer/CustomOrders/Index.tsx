@@ -233,7 +233,7 @@ export default function CustomOrdersIndex({ requests, filters, statusCounts }: P
                                     value={search}
                                     onChange={(e) => handleSearchChange(e.target.value)}
                                     onFocus={() => search && searchResults.length > 0 && setShowDropdown(true)}
-                                    className="pl-10 pr-10"
+                                    className="pr-10 pl-10"
                                 />
                                 {/* Clear Button */}
                                 {search && (
@@ -248,7 +248,7 @@ export default function CustomOrdersIndex({ requests, filters, statusCounts }: P
 
                                 {/* Search Results Dropdown */}
                                 {showDropdown && (
-                                    <div className="absolute top-full left-0 right-0 z-50 mt-1 max-h-80 overflow-auto rounded-lg border border-gray-200 bg-white shadow-lg">
+                                    <div className="absolute top-full right-0 left-0 z-50 mt-1 max-h-80 overflow-auto rounded-lg border border-gray-200 bg-white shadow-lg">
                                         {searchResults.length > 0 ? (
                                             <>
                                                 <div className="border-b border-gray-100 px-3 py-2">

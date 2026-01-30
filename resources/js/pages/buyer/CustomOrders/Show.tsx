@@ -492,12 +492,9 @@ export default function CustomOrderShow({ request }: Props) {
                                                                                 <ThumbsDown className="mr-1 h-3 w-3" />
                                                                                 Reject
                                                                             </Button>
-                                                        {bid.seller && (
-                                                            <StartChatButton
-                                                                userId={bid.seller.id}
-                                                                variant="outline"
-                                                            />
-                                                        )}
+                                                                            {bid.seller && (
+                                                                                <StartChatButton userId={bid.seller.id} variant="outline" />
+                                                                            )}
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -630,11 +627,7 @@ export default function CustomOrderShow({ request }: Props) {
                                                     View Profile
                                                 </Button>
                                             </Link>
-                                            <StartChatButton
-                                                userId={request.seller.id}
-                                                variant="outline"
-                                                className="flex-1"
-                                            />
+                                            <StartChatButton userId={request.seller.id} variant="outline" className="flex-1" />
                                         </div>
                                     </CardContent>
                                 </Card>
