@@ -64,7 +64,7 @@ class NewsletterController extends Controller
 
         $subscriber = NewsletterSubscriber::where('email', strtolower(trim($request->email)))->first();
 
-        if (!$subscriber) {
+        if (! $subscriber) {
             return response()->json([
                 'success' => false,
                 'message' => 'Email not found in our subscriber list.',

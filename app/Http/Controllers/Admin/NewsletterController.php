@@ -87,15 +87,15 @@ class NewsletterController extends Controller
 
         $headers = [
             'Content-Type' => 'text/csv',
-            'Content-Disposition' => 'attachment; filename="newsletter-subscribers-' . now()->format('Y-m-d') . '.csv"',
+            'Content-Disposition' => 'attachment; filename="newsletter-subscribers-'.now()->format('Y-m-d').'.csv"',
         ];
 
         $callback = function () use ($subscribers) {
             $file = fopen('php://output', 'w');
-            
+
             // Header row
             fputcsv($file, ['Email', 'Status', 'Subscribed At', 'Unsubscribed At']);
-            
+
             // Data rows
             foreach ($subscribers as $subscriber) {
                 fputcsv($file, [
@@ -105,7 +105,7 @@ class NewsletterController extends Controller
                     $subscriber->unsubscribed_at?->format('Y-m-d H:i:s'),
                 ]);
             }
-            
+
             fclose($file);
         };
 
