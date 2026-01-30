@@ -14,6 +14,7 @@ import {
     LayoutGrid,
     Mail,
     MessageSquare,
+    Newspaper,
     Package,
     PenTool,
     ShoppingBag,
@@ -146,6 +147,11 @@ function getRoleNavItems(userRole?: string, badges?: BadgeCounts): NavItem[] {
                     href: '/admin/contact-messages',
                     icon: Mail,
                     badge: badges?.contactMessages,
+                },
+                {
+                    title: 'Newsletter',
+                    href: '/admin/newsletter',
+                    icon: Newspaper,
                 },
             ];
 
