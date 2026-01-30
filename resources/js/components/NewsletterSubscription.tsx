@@ -39,7 +39,7 @@ export default function NewsletterSubscription({ className = '' }: NewsletterSub
             } else {
                 setMessage({ type: 'error', text: data.message || 'Failed to subscribe. Please try again.' });
             }
-        } catch (error) {
+        } catch {
             setMessage({ type: 'error', text: 'An error occurred. Please try again later.' });
         } finally {
             setIsLoading(false);
