@@ -1,52 +1,53 @@
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import BuyerLayout from '@/layouts/BuyerLayout';
+import { cn } from '@/lib/utils';
 import { Link, useForm } from '@inertiajs/react';
 import {
     AlertCircle,
     ArrowLeft,
+    ArrowRight,
     Calendar,
-    ChevronDown,
-    DollarSign,
+    CheckCircle2,
+    Clock,
+    FileText,
+    Gavel,
     Image as ImageIcon,
+    Info,
+    Lightbulb,
     Loader2,
     Package,
+    Palette,
     PenTool,
-    Search,
     Send,
     Sparkles,
+    Star,
+    Trophy,
     Upload,
-    User,
+    Users,
+    Wand2,
     X,
+    Zap,
 } from 'lucide-react';
-import React, { useEffect, useRef, useState } from 'react';
-
-interface Seller {
-    id: number;
-    name: string;
-    avatar_url: string | null;
-    address?: string;
-}
+import React, { useRef, useState } from 'react';
 
 interface Props {
-    seller: Seller | null;
-    sellers: Seller[] | null;
+    categories: Record<string, string>;
 }
 
-export default function CustomOrderCreate({ seller, sellers }: Props) {
+export default function CustomOrderCreate({ categories }: Props) {
     const fileInputRef = useRef<HTMLInputElement>(null);
-    const dropdownRef = useRef<HTMLDivElement>(null);
     const [previewImages, setPreviewImages] = useState<string[]>([]);
-    const [searchQuery, setSearchQuery] = useState('');
-    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const [isDragging, setIsDragging] = useState(false);
 
     const { data, setData, post, processing, errors } = useForm({
-        seller_id: seller?.id?.toString() || '',
         title: '',
+        category: '',
         description: '',
         budget_min: '',
         budget_max: '',
@@ -56,53 +57,48 @@ export default function CustomOrderCreate({ seller, sellers }: Props) {
         reference_images: [] as File[],
     });
 
-    // Filter sellers based on search query
-    const filteredSellers = sellers?.filter((s) => s.name.toLowerCase().includes(searchQuery.toLowerCase())) || [];
-
-    // Close dropdown when clicking outside
-    useEffect(() => {
-        const handleClickOutside = (event: MouseEvent) => {
-            if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-                setIsDropdownOpen(false);
-            }
-        };
-        document.addEventListener('mousedown', handleClickOutside);
-        return () => document.removeEventListener('mousedown', handleClickOutside);
-    }, []);
-
-    const handleSelectSeller = (selectedSeller: Seller) => {
-        setData('seller_id', selectedSeller.id.toString());
-        setSearchQuery('');
-        setIsDropdownOpen(false);
-    };
-
     const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         const files = Array.from(e.target.files || []);
-        const maxImages = 5;
-        const currentCount = data.reference_images.length;
+        addImages(files);
+    };
 
-        if (currentCount + files.length > maxImages) {
-            alert(`You can upload a maximum of ${maxImages} images.`);
+    const addImages = (files: File[]) => {
+        const imageFiles = files.filter((file) => file.type.startsWith('image/'));
+        if (imageFiles.length + data.reference_images.length > 5) {
+            alert('Maximum 5 images allowed');
             return;
         }
 
-        // Create preview URLs
-        const newPreviews = files.map((file) => URL.createObjectURL(file));
-        setPreviewImages([...previewImages, ...newPreviews]);
+        const newImages = [...data.reference_images, ...imageFiles].slice(0, 5);
+        setData('reference_images', newImages);
 
-        // Update form data
-        setData('reference_images', [...data.reference_images, ...files]);
+        const newPreviews = imageFiles.map((file) => URL.createObjectURL(file));
+        setPreviewImages((prev) => [...prev, ...newPreviews].slice(0, 5));
+    };
+
+    const handleDragOver = (e: React.DragEvent) => {
+        e.preventDefault();
+        setIsDragging(true);
+    };
+
+    const handleDragLeave = (e: React.DragEvent) => {
+        e.preventDefault();
+        setIsDragging(false);
+    };
+
+    const handleDrop = (e: React.DragEvent) => {
+        e.preventDefault();
+        setIsDragging(false);
+        const files = Array.from(e.dataTransfer.files);
+        addImages(files);
     };
 
     const removeImage = (index: number) => {
-        const newImages = [...data.reference_images];
-        newImages.splice(index, 1);
+        const newImages = data.reference_images.filter((_, i) => i !== index);
         setData('reference_images', newImages);
 
-        const newPreviews = [...previewImages];
-        URL.revokeObjectURL(newPreviews[index]);
-        newPreviews.splice(index, 1);
-        setPreviewImages(newPreviews);
+        URL.revokeObjectURL(previewImages[index]);
+        setPreviewImages((prev) => prev.filter((_, i) => i !== index));
     };
 
     const handleSubmit = (e: React.FormEvent) => {
@@ -112,461 +108,566 @@ export default function CustomOrderCreate({ seller, sellers }: Props) {
         });
     };
 
-    const selectedSeller = seller || (sellers?.find((s) => s.id.toString() === data.seller_id) ?? null);
+    // Calculate form completion percentage
+    const requiredFields = ['title', 'category', 'description', 'quantity'];
+    const completedFields = requiredFields.filter((field) => data[field as keyof typeof data]);
+    const completionPercentage = Math.round((completedFields.length / requiredFields.length) * 100);
 
     return (
-        <BuyerLayout title="Request Custom Order">
-            <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8">
-                {/* Header */}
-                <div className="mb-8">
-                    <Link href="/buyer/custom-orders" className="mb-4 inline-flex items-center text-sm text-gray-500 hover:text-gray-700">
-                        <ArrowLeft className="mr-2 h-4 w-4" />
-                        Back to Custom Orders
-                    </Link>
-                    <div className="flex items-center gap-4">
-                        <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 shadow-lg">
-                            <PenTool className="h-7 w-7 text-white" />
-                        </div>
-                        <div>
-                            <h1 className="text-3xl font-bold text-gray-900">Request Custom Order</h1>
-                            <p className="text-gray-600">Tell the artisan what you want them to create for you</p>
-                        </div>
-                    </div>
+        <BuyerLayout>
+            <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50/30 to-yellow-50/50">
+                {/* Decorative Background Elements */}
+                <div className="pointer-events-none absolute inset-0 overflow-hidden">
+                    <div className="absolute -top-40 -right-40 h-80 w-80 rounded-full bg-gradient-to-br from-amber-200/30 to-orange-200/30 blur-3xl" />
+                    <div className="absolute top-1/2 -left-40 h-80 w-80 rounded-full bg-gradient-to-br from-yellow-200/30 to-amber-200/30 blur-3xl" />
                 </div>
 
-                {/* Info Banner */}
-                <Card className="mb-8 border-amber-200 bg-gradient-to-r from-amber-50 to-orange-50">
-                    <CardContent className="flex items-start gap-4 pt-6">
-                        <Sparkles className="h-6 w-6 flex-shrink-0 text-amber-600" />
-                        <div>
-                            <h3 className="font-semibold text-amber-900">How Custom Orders Work</h3>
-                            <ul className="mt-2 space-y-1 text-sm text-amber-800">
-                                <li>1. Submit your request with details about what you want</li>
-                                <li>2. The artisan will review and send you a quote</li>
-                                <li>3. Accept the quote to proceed, or decline to find another artisan</li>
-                                <li>4. Track your order progress until completion</li>
-                            </ul>
-                        </div>
-                    </CardContent>
-                </Card>
+                <div className="relative py-8 lg:py-12">
+                    <div className="mx-auto max-w-4xl px-4 sm:px-6">
+                        {/* Back Button */}
+                        <Link href="/buyer/custom-orders">
+                            <Button variant="ghost" size="sm" className="group mb-6 hover:bg-white/60">
+                                <ArrowLeft className="mr-2 h-4 w-4 transition-transform group-hover:-translate-x-1" />
+                                Back to My Requests
+                            </Button>
+                        </Link>
 
-                <form onSubmit={handleSubmit}>
-                    <div className="space-y-6">
-                        {/* Seller Selection */}
-                        <Card>
-                            <CardHeader>
-                                <CardTitle className="flex items-center gap-2">
-                                    <User className="h-5 w-5 text-amber-600" />
-                                    Select Artisan
-                                </CardTitle>
-                                <CardDescription>Choose the artisan you want to create your custom product</CardDescription>
-                            </CardHeader>
-                            <CardContent>
-                                {seller ? (
-                                    <div className="flex items-center gap-4 rounded-lg border border-green-200 bg-green-50 p-4">
-                                        <Avatar className="h-16 w-16">
-                                            <AvatarImage src={seller.avatar_url || undefined} />
-                                            <AvatarFallback className="bg-amber-100 text-xl text-amber-700">
-                                                {seller.name?.[0]?.toUpperCase()}
-                                            </AvatarFallback>
-                                        </Avatar>
-                                        <div className="flex-1">
-                                            <p className="text-lg font-semibold text-gray-900">{seller.name}</p>
-                                            {seller.address && <p className="text-sm text-gray-500">{seller.address}</p>}
-                                        </div>
-                                        <Link href="/buyer/sellers">
-                                            <Button variant="outline" size="sm">
-                                                Change
-                                            </Button>
-                                        </Link>
+                        {/* Header Section */}
+                        <div className="mb-10 text-center">
+                            <div className="mb-6 inline-flex items-center justify-center">
+                                <div className="relative">
+                                    <div className="absolute inset-0 animate-pulse rounded-full bg-gradient-to-r from-amber-400 to-orange-400 opacity-50 blur-xl" />
+                                    <div className="relative rounded-2xl bg-gradient-to-br from-amber-500 to-orange-500 p-5 shadow-xl shadow-amber-500/25">
+                                        <Gavel className="h-10 w-10 text-white" />
                                     </div>
-                                ) : sellers && sellers.length > 0 ? (
-                                    <div>
-                                        {/* Searchable Dropdown */}
-                                        <div className="relative" ref={dropdownRef}>
-                                            <div
-                                                className={`flex cursor-pointer items-center justify-between rounded-lg border bg-white px-4 py-3 transition-all ${
-                                                    errors.seller_id ? 'border-red-500' : 'border-gray-300 hover:border-amber-400'
-                                                } ${isDropdownOpen ? 'ring-opacity-50 ring-2 ring-amber-500' : ''}`}
-                                                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                                            >
-                                                {selectedSeller ? (
-                                                    <div className="flex items-center gap-3">
-                                                        <Avatar className="h-8 w-8">
-                                                            <AvatarImage src={selectedSeller.avatar_url || undefined} />
-                                                            <AvatarFallback className="bg-amber-100 text-sm text-amber-700">
-                                                                {selectedSeller.name?.[0]?.toUpperCase()}
-                                                            </AvatarFallback>
-                                                        </Avatar>
-                                                        <span className="font-medium text-gray-900">{selectedSeller.name}</span>
+                                </div>
+                            </div>
+                            <h1 className="mb-3 bg-gradient-to-r from-gray-900 via-amber-900 to-orange-900 bg-clip-text text-3xl font-bold text-transparent sm:text-4xl">
+                                Create Your Custom Order
+                            </h1>
+                            <p className="mx-auto max-w-2xl text-lg text-gray-600">
+                                Describe your vision and let talented artisans compete to bring it to life
+                            </p>
+
+                            {/* Stats badges */}
+                            <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+                                <Badge variant="secondary" className="border border-amber-200/50 bg-white/80 px-4 py-2 backdrop-blur-sm">
+                                    <Users className="mr-2 h-4 w-4 text-amber-600" />
+                                    <span className="text-gray-700">500+ Active Artisans</span>
+                                </Badge>
+                                <Badge variant="secondary" className="border border-green-200/50 bg-white/80 px-4 py-2 backdrop-blur-sm">
+                                    <Clock className="mr-2 h-4 w-4 text-green-600" />
+                                    <span className="text-gray-700">Avg. 3 bids within 24hrs</span>
+                                </Badge>
+                                <Badge variant="secondary" className="border border-blue-200/50 bg-white/80 px-4 py-2 backdrop-blur-sm">
+                                    <Star className="mr-2 h-4 w-4 text-blue-600" />
+                                    <span className="text-gray-700">4.9/5 Satisfaction Rate</span>
+                                </Badge>
+                            </div>
+                        </div>
+
+                        {/* How it Works - Redesigned */}
+                        <Card className="mb-8 overflow-hidden border-0 bg-white/70 shadow-lg shadow-amber-100/50 backdrop-blur-sm">
+                            <CardContent className="p-0">
+                                <div className="bg-gradient-to-r from-amber-500/10 via-orange-500/10 to-yellow-500/10 p-6">
+                                    <h3 className="mb-6 flex items-center gap-2 text-lg font-semibold text-gray-900">
+                                        <Sparkles className="h-5 w-5 text-amber-500" />
+                                        How It Works
+                                    </h3>
+                                    <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+                                        {[
+                                            {
+                                                icon: PenTool,
+                                                title: 'Post Request',
+                                                desc: 'Describe your project',
+                                                color: 'from-amber-500 to-orange-500',
+                                            },
+                                            {
+                                                icon: Users,
+                                                title: 'Receive Bids',
+                                                desc: 'Artisans send proposals',
+                                                color: 'from-orange-500 to-red-500',
+                                            },
+                                            { icon: Trophy, title: 'Choose Best', desc: 'Compare & select', color: 'from-red-500 to-pink-500' },
+                                            { icon: Zap, title: 'Get Started', desc: 'Work begins!', color: 'from-pink-500 to-purple-500' },
+                                        ].map((step, idx) => (
+                                            <div key={idx} className="group relative">
+                                                <div className="rounded-xl border border-gray-100 bg-white p-4 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md">
+                                                    <div
+                                                        className={cn(
+                                                            'mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br shadow-lg',
+                                                            step.color,
+                                                        )}
+                                                    >
+                                                        <step.icon className="h-6 w-6 text-white" />
                                                     </div>
-                                                ) : (
-                                                    <span className="text-gray-500">Select an artisan...</span>
+                                                    <div className="absolute -top-2 -left-2 flex h-6 w-6 items-center justify-center rounded-full bg-gradient-to-br from-amber-500 to-orange-500 text-xs font-bold text-white shadow-md">
+                                                        {idx + 1}
+                                                    </div>
+                                                    <h4 className="text-sm font-semibold text-gray-900">{step.title}</h4>
+                                                    <p className="mt-1 text-xs text-gray-500">{step.desc}</p>
+                                                </div>
+                                                {idx < 3 && (
+                                                    <ArrowRight className="absolute top-1/2 -right-3 hidden h-5 w-5 -translate-y-1/2 text-gray-300 md:block" />
                                                 )}
-                                                <ChevronDown
-                                                    className={`h-5 w-5 text-gray-400 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`}
-                                                />
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            </CardContent>
+                        </Card>
+
+                        <div className="grid gap-6 lg:grid-cols-3">
+                            {/* Main Form */}
+                            <div className="lg:col-span-2">
+                                <Card className="overflow-hidden border-0 bg-white/80 shadow-xl shadow-gray-200/50 backdrop-blur-sm">
+                                    {/* Form Header with Progress */}
+                                    <CardHeader className="bg-gradient-to-r from-amber-500 via-orange-500 to-amber-500 p-6 text-white">
+                                        <div className="flex items-start justify-between">
+                                            <div>
+                                                <CardTitle className="flex items-center gap-2 text-xl">
+                                                    <FileText className="h-5 w-5" />
+                                                    Request Details
+                                                </CardTitle>
+                                                <CardDescription className="mt-1 text-amber-100">
+                                                    The more details you provide, the better bids you'll receive
+                                                </CardDescription>
+                                            </div>
+                                            <div className="text-right">
+                                                <div className="mb-1 text-sm text-amber-100">Completion</div>
+                                                <div className="flex items-center gap-2">
+                                                    <div className="h-2 w-20 overflow-hidden rounded-full bg-white/30">
+                                                        <div
+                                                            className="h-full rounded-full bg-white transition-all duration-500"
+                                                            style={{ width: `${completionPercentage}%` }}
+                                                        />
+                                                    </div>
+                                                    <span className="text-sm font-semibold">{completionPercentage}%</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </CardHeader>
+
+                                    <CardContent className="p-6 sm:p-8">
+                                        <form onSubmit={handleSubmit} className="space-y-8">
+                                            {/* Basic Information Section */}
+                                            <div className="space-y-6">
+                                                <div className="flex items-center gap-2 border-b border-gray-100 pb-2">
+                                                    <div className="rounded-lg bg-amber-100 p-1.5">
+                                                        <Wand2 className="h-4 w-4 text-amber-600" />
+                                                    </div>
+                                                    <h3 className="font-semibold text-gray-900">Basic Information</h3>
+                                                </div>
+
+                                                {/* Title */}
+                                                <div className="space-y-2">
+                                                    <Label htmlFor="title" className="flex items-center gap-1 font-medium text-gray-700">
+                                                        Project Title <span className="text-red-500">*</span>
+                                                    </Label>
+                                                    <Input
+                                                        id="title"
+                                                        value={data.title}
+                                                        onChange={(e) => setData('title', e.target.value)}
+                                                        placeholder="e.g., Custom Handwoven Abaca Bag for Wedding Gift"
+                                                        className={cn(
+                                                            'h-12 border-gray-200 bg-gray-50/50 transition-all focus:border-amber-400 focus:bg-white focus:ring-amber-400/20',
+                                                            errors.title && 'border-red-400 bg-red-50/50',
+                                                        )}
+                                                    />
+                                                    {errors.title && (
+                                                        <p className="flex items-center gap-1 text-sm text-red-500">
+                                                            <AlertCircle className="h-3.5 w-3.5" />
+                                                            {errors.title}
+                                                        </p>
+                                                    )}
+                                                </div>
+
+                                                {/* Category */}
+                                                <div className="space-y-2">
+                                                    <Label htmlFor="category" className="flex items-center gap-1 font-medium text-gray-700">
+                                                        Category <span className="text-red-500">*</span>
+                                                    </Label>
+                                                    <Select value={data.category} onValueChange={(value) => setData('category', value)}>
+                                                        <SelectTrigger
+                                                            className={cn(
+                                                                'h-12 border-gray-200 bg-gray-50/50 focus:border-amber-400 focus:bg-white focus:ring-amber-400/20',
+                                                                errors.category && 'border-red-400 bg-red-50/50',
+                                                            )}
+                                                        >
+                                                            <SelectValue placeholder="Select a category for your project" />
+                                                        </SelectTrigger>
+                                                        <SelectContent>
+                                                            {Object.entries(categories).map(([key, label]) => (
+                                                                <SelectItem key={key} value={key} className="py-3">
+                                                                    {label}
+                                                                </SelectItem>
+                                                            ))}
+                                                        </SelectContent>
+                                                    </Select>
+                                                    {errors.category && (
+                                                        <p className="flex items-center gap-1 text-sm text-red-500">
+                                                            <AlertCircle className="h-3.5 w-3.5" />
+                                                            {errors.category}
+                                                        </p>
+                                                    )}
+                                                </div>
+
+                                                {/* Description */}
+                                                <div className="space-y-2">
+                                                    <Label htmlFor="description" className="flex items-center gap-1 font-medium text-gray-700">
+                                                        Detailed Description <span className="text-red-500">*</span>
+                                                    </Label>
+                                                    <Textarea
+                                                        id="description"
+                                                        value={data.description}
+                                                        onChange={(e) => setData('description', e.target.value)}
+                                                        placeholder="Describe your project in detail. Include:&#10;• Dimensions (size, length, width)&#10;• Colors and patterns you prefer&#10;• Materials (wood type, fabric, etc.)&#10;• Style preferences and inspiration&#10;• Any specific features or requirements"
+                                                        rows={6}
+                                                        className={cn(
+                                                            'resize-none border-gray-200 bg-gray-50/50 transition-all focus:border-amber-400 focus:bg-white focus:ring-amber-400/20',
+                                                            errors.description && 'border-red-400 bg-red-50/50',
+                                                        )}
+                                                    />
+                                                    <div className="flex items-center justify-between text-xs">
+                                                        <span className="text-gray-500">Minimum 20 characters required</span>
+                                                        <span
+                                                            className={cn(
+                                                                'font-medium',
+                                                                data.description.length < 20
+                                                                    ? 'text-gray-400'
+                                                                    : data.description.length < 100
+                                                                      ? 'text-amber-500'
+                                                                      : 'text-green-500',
+                                                            )}
+                                                        >
+                                                            {data.description.length}/2000
+                                                        </span>
+                                                    </div>
+                                                    {errors.description && (
+                                                        <p className="flex items-center gap-1 text-sm text-red-500">
+                                                            <AlertCircle className="h-3.5 w-3.5" />
+                                                            {errors.description}
+                                                        </p>
+                                                    )}
+                                                </div>
                                             </div>
 
-                                            {isDropdownOpen && (
-                                                <div className="absolute z-50 mt-2 max-h-80 w-full overflow-hidden rounded-lg border border-gray-200 bg-white shadow-xl">
-                                                    {/* Search Input */}
-                                                    <div className="sticky top-0 border-b bg-white p-3">
+                                            {/* Budget & Details Section */}
+                                            <div className="space-y-6">
+                                                <div className="flex items-center gap-2 border-b border-gray-100 pb-2">
+                                                    <div className="rounded-lg bg-green-100 p-1.5">
+                                                        <Palette className="h-4 w-4 text-green-600" />
+                                                    </div>
+                                                    <h3 className="font-semibold text-gray-900">Budget & Specifications</h3>
+                                                </div>
+
+                                                {/* Budget Range */}
+                                                <div className="grid gap-4 sm:grid-cols-2">
+                                                    <div className="space-y-2">
+                                                        <Label htmlFor="budget_min" className="font-medium text-gray-700">
+                                                            Minimum Budget
+                                                        </Label>
                                                         <div className="relative">
-                                                            <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-400" />
-                                                            <input
-                                                                type="text"
-                                                                placeholder="Search artisan by name..."
-                                                                value={searchQuery}
-                                                                onChange={(e) => setSearchQuery(e.target.value)}
-                                                                className="w-full rounded-lg border border-gray-300 py-2 pr-4 pl-10 text-sm focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
-                                                                onClick={(e) => e.stopPropagation()}
-                                                                autoFocus
+                                                            <span className="absolute top-1/2 left-3 -translate-y-1/2 font-medium text-gray-400">
+                                                                ₱
+                                                            </span>
+                                                            <Input
+                                                                id="budget_min"
+                                                                type="number"
+                                                                min="0"
+                                                                step="0.01"
+                                                                value={data.budget_min}
+                                                                onChange={(e) => setData('budget_min', e.target.value)}
+                                                                placeholder="0.00"
+                                                                className="h-12 border-gray-200 bg-gray-50/50 pl-8 focus:border-amber-400 focus:bg-white focus:ring-amber-400/20"
                                                             />
                                                         </div>
+                                                        {errors.budget_min && (
+                                                            <p className="flex items-center gap-1 text-sm text-red-500">
+                                                                <AlertCircle className="h-3.5 w-3.5" />
+                                                                {errors.budget_min}
+                                                            </p>
+                                                        )}
                                                     </div>
-
-                                                    {/* Artisan List */}
-                                                    <div className="max-h-60 overflow-y-auto">
-                                                        {filteredSellers.length > 0 ? (
-                                                            filteredSellers.map((s) => (
-                                                                <div
-                                                                    key={s.id}
-                                                                    className={`flex cursor-pointer items-center gap-3 px-4 py-3 transition-colors hover:bg-amber-50 ${
-                                                                        data.seller_id === s.id.toString() ? 'bg-amber-50' : ''
-                                                                    }`}
-                                                                    onClick={() => handleSelectSeller(s)}
-                                                                >
-                                                                    <Avatar className="h-10 w-10">
-                                                                        <AvatarImage src={s.avatar_url || undefined} />
-                                                                        <AvatarFallback className="bg-amber-100 text-amber-700">
-                                                                            {s.name?.[0]?.toUpperCase()}
-                                                                        </AvatarFallback>
-                                                                    </Avatar>
-                                                                    <div className="flex-1">
-                                                                        <p className="font-medium text-gray-900">{s.name}</p>
-                                                                        {s.address && <p className="text-sm text-gray-500">{s.address}</p>}
-                                                                    </div>
-                                                                    {data.seller_id === s.id.toString() && (
-                                                                        <div className="flex h-5 w-5 items-center justify-center rounded-full bg-amber-500 text-white">
-                                                                            <svg
-                                                                                className="h-3 w-3"
-                                                                                fill="none"
-                                                                                viewBox="0 0 24 24"
-                                                                                stroke="currentColor"
-                                                                            >
-                                                                                <path
-                                                                                    strokeLinecap="round"
-                                                                                    strokeLinejoin="round"
-                                                                                    strokeWidth={3}
-                                                                                    d="M5 13l4 4L19 7"
-                                                                                />
-                                                                            </svg>
-                                                                        </div>
-                                                                    )}
-                                                                </div>
-                                                            ))
-                                                        ) : (
-                                                            <div className="px-4 py-8 text-center text-gray-500">
-                                                                <User className="mx-auto mb-2 h-8 w-8 text-gray-300" />
-                                                                <p>No artisans found matching "{searchQuery}"</p>
-                                                            </div>
+                                                    <div className="space-y-2">
+                                                        <Label htmlFor="budget_max" className="font-medium text-gray-700">
+                                                            Maximum Budget
+                                                        </Label>
+                                                        <div className="relative">
+                                                            <span className="absolute top-1/2 left-3 -translate-y-1/2 font-medium text-gray-400">
+                                                                ₱
+                                                            </span>
+                                                            <Input
+                                                                id="budget_max"
+                                                                type="number"
+                                                                min="0"
+                                                                step="0.01"
+                                                                value={data.budget_max}
+                                                                onChange={(e) => setData('budget_max', e.target.value)}
+                                                                placeholder="0.00"
+                                                                className="h-12 border-gray-200 bg-gray-50/50 pl-8 focus:border-amber-400 focus:bg-white focus:ring-amber-400/20"
+                                                            />
+                                                        </div>
+                                                        {errors.budget_max && (
+                                                            <p className="flex items-center gap-1 text-sm text-red-500">
+                                                                <AlertCircle className="h-3.5 w-3.5" />
+                                                                {errors.budget_max}
+                                                            </p>
                                                         )}
                                                     </div>
                                                 </div>
-                                            )}
-                                        </div>
 
-                                        {errors.seller_id && (
-                                            <p className="mt-2 flex items-center gap-1 text-sm text-red-500">
-                                                <AlertCircle className="h-4 w-4" />
-                                                {errors.seller_id}
-                                            </p>
-                                        )}
-
-                                        {/* Selected Artisan Preview */}
-                                        {selectedSeller && (
-                                            <div className="mt-4 flex items-center gap-4 rounded-lg border border-amber-200 bg-gradient-to-r from-amber-50 to-orange-50 p-4">
-                                                <Avatar className="h-14 w-14 ring-2 ring-amber-300 ring-offset-2">
-                                                    <AvatarImage src={selectedSeller.avatar_url || undefined} />
-                                                    <AvatarFallback className="bg-amber-100 text-lg text-amber-700">
-                                                        {selectedSeller.name?.[0]?.toUpperCase()}
-                                                    </AvatarFallback>
-                                                </Avatar>
-                                                <div className="flex-1">
-                                                    <p className="font-semibold text-gray-900">{selectedSeller.name}</p>
-                                                    {selectedSeller.address && <p className="text-sm text-gray-600">{selectedSeller.address}</p>}
-                                                    <p className="mt-1 text-xs text-amber-700">Selected Artisan</p>
+                                                {/* Quantity & Deadline */}
+                                                <div className="grid gap-4 sm:grid-cols-2">
+                                                    <div className="space-y-2">
+                                                        <Label htmlFor="quantity" className="flex items-center gap-1 font-medium text-gray-700">
+                                                            <Package className="h-4 w-4 text-gray-400" />
+                                                            Quantity <span className="text-red-500">*</span>
+                                                        </Label>
+                                                        <Input
+                                                            id="quantity"
+                                                            type="number"
+                                                            min="1"
+                                                            max="100"
+                                                            value={data.quantity}
+                                                            onChange={(e) => setData('quantity', e.target.value)}
+                                                            className={cn(
+                                                                'h-12 border-gray-200 bg-gray-50/50 focus:border-amber-400 focus:bg-white focus:ring-amber-400/20',
+                                                                errors.quantity && 'border-red-400 bg-red-50/50',
+                                                            )}
+                                                        />
+                                                        {errors.quantity && (
+                                                            <p className="flex items-center gap-1 text-sm text-red-500">
+                                                                <AlertCircle className="h-3.5 w-3.5" />
+                                                                {errors.quantity}
+                                                            </p>
+                                                        )}
+                                                    </div>
+                                                    <div className="space-y-2">
+                                                        <Label
+                                                            htmlFor="preferred_deadline"
+                                                            className="flex items-center gap-1 font-medium text-gray-700"
+                                                        >
+                                                            <Calendar className="h-4 w-4 text-gray-400" />
+                                                            Preferred Deadline
+                                                        </Label>
+                                                        <Input
+                                                            id="preferred_deadline"
+                                                            type="date"
+                                                            value={data.preferred_deadline}
+                                                            onChange={(e) => setData('preferred_deadline', e.target.value)}
+                                                            min={new Date(Date.now() + 86400000).toISOString().split('T')[0]}
+                                                            className="h-12 border-gray-200 bg-gray-50/50 focus:border-amber-400 focus:bg-white focus:ring-amber-400/20"
+                                                        />
+                                                        {errors.preferred_deadline && (
+                                                            <p className="flex items-center gap-1 text-sm text-red-500">
+                                                                <AlertCircle className="h-3.5 w-3.5" />
+                                                                {errors.preferred_deadline}
+                                                            </p>
+                                                        )}
+                                                    </div>
                                                 </div>
-                                                <Button
-                                                    type="button"
-                                                    variant="ghost"
-                                                    size="sm"
-                                                    onClick={() => setData('seller_id', '')}
-                                                    className="text-gray-400 hover:text-red-500"
-                                                >
-                                                    <X className="h-4 w-4" />
-                                                </Button>
+
+                                                {/* Special Requirements */}
+                                                <div className="space-y-2">
+                                                    <Label htmlFor="special_requirements" className="font-medium text-gray-700">
+                                                        Special Requirements or Notes
+                                                        <span className="ml-2 text-xs font-normal text-gray-400">(Optional)</span>
+                                                    </Label>
+                                                    <Textarea
+                                                        id="special_requirements"
+                                                        value={data.special_requirements}
+                                                        onChange={(e) => setData('special_requirements', e.target.value)}
+                                                        placeholder="Any special instructions, preferences, materials to avoid, packaging requirements, etc."
+                                                        rows={3}
+                                                        className="resize-none border-gray-200 bg-gray-50/50 focus:border-amber-400 focus:bg-white focus:ring-amber-400/20"
+                                                    />
+                                                </div>
                                             </div>
-                                        )}
-                                    </div>
-                                ) : (
-                                    <div className="rounded-lg border border-yellow-200 bg-yellow-50 p-4 text-center">
-                                        <p className="text-yellow-800">No artisans available. Please browse our artisans first.</p>
-                                        <Link href="/buyer/sellers">
-                                            <Button variant="outline" className="mt-2">
-                                                Browse Artisans
+
+                                            {/* Reference Images Section */}
+                                            <div className="space-y-4">
+                                                <div className="flex items-center gap-2 border-b border-gray-100 pb-2">
+                                                    <div className="rounded-lg bg-purple-100 p-1.5">
+                                                        <ImageIcon className="h-4 w-4 text-purple-600" />
+                                                    </div>
+                                                    <h3 className="font-semibold text-gray-900">Reference Images</h3>
+                                                    <Badge variant="secondary" className="bg-gray-100 text-xs text-gray-600">
+                                                        Optional
+                                                    </Badge>
+                                                </div>
+                                                <p className="text-sm text-gray-500">Upload up to 5 images to help artisans visualize your vision</p>
+
+                                                <input
+                                                    ref={fileInputRef}
+                                                    type="file"
+                                                    accept="image/*"
+                                                    multiple
+                                                    onChange={handleImageUpload}
+                                                    className="hidden"
+                                                />
+
+                                                {/* Drag & Drop Zone */}
+                                                <div
+                                                    onDragOver={handleDragOver}
+                                                    onDragLeave={handleDragLeave}
+                                                    onDrop={handleDrop}
+                                                    onClick={() => previewImages.length < 5 && fileInputRef.current?.click()}
+                                                    className={cn(
+                                                        'relative cursor-pointer rounded-xl border-2 border-dashed transition-all duration-300',
+                                                        isDragging
+                                                            ? 'scale-[1.01] border-amber-400 bg-amber-50'
+                                                            : 'border-gray-200 bg-gray-50/50 hover:border-amber-300 hover:bg-amber-50/50',
+                                                        previewImages.length >= 5 && 'pointer-events-none opacity-50',
+                                                    )}
+                                                >
+                                                    {previewImages.length === 0 ? (
+                                                        <div className="flex flex-col items-center justify-center px-4 py-10">
+                                                            <div
+                                                                className={cn(
+                                                                    'mb-4 rounded-full p-4 transition-colors',
+                                                                    isDragging ? 'bg-amber-100' : 'bg-gray-100',
+                                                                )}
+                                                            >
+                                                                <Upload
+                                                                    className={cn(
+                                                                        'h-8 w-8 transition-colors',
+                                                                        isDragging ? 'text-amber-500' : 'text-gray-400',
+                                                                    )}
+                                                                />
+                                                            </div>
+                                                            <p className="text-sm font-medium text-gray-700">
+                                                                {isDragging ? 'Drop your images here' : 'Drag & drop images here'}
+                                                            </p>
+                                                            <p className="mt-1 text-xs text-gray-500">or click to browse</p>
+                                                            <p className="mt-3 text-xs text-gray-400">PNG, JPG, WEBP up to 5MB each</p>
+                                                        </div>
+                                                    ) : (
+                                                        <div className="p-4">
+                                                            <div className="grid grid-cols-3 gap-3 sm:grid-cols-5">
+                                                                {previewImages.map((preview, index) => (
+                                                                    <div key={index} className="group relative aspect-square">
+                                                                        <img
+                                                                            src={preview}
+                                                                            alt={`Preview ${index + 1}`}
+                                                                            className="h-full w-full rounded-lg border-2 border-white object-cover shadow-md"
+                                                                        />
+                                                                        <button
+                                                                            type="button"
+                                                                            onClick={(e) => {
+                                                                                e.stopPropagation();
+                                                                                removeImage(index);
+                                                                            }}
+                                                                            className="absolute -top-2 -right-2 rounded-full bg-red-500 p-1.5 text-white opacity-0 shadow-lg transition-all duration-200 group-hover:opacity-100 hover:scale-110 hover:bg-red-600"
+                                                                        >
+                                                                            <X className="h-3 w-3" />
+                                                                        </button>
+                                                                        <div className="absolute bottom-1 left-1 rounded bg-black/60 px-1.5 py-0.5 text-xs font-medium text-white">
+                                                                            {index + 1}
+                                                                        </div>
+                                                                    </div>
+                                                                ))}
+                                                                {previewImages.length < 5 && (
+                                                                    <div className="flex aspect-square flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 text-gray-400 transition-all hover:border-amber-400 hover:bg-amber-50/50 hover:text-amber-500">
+                                                                        <Upload className="h-5 w-5" />
+                                                                        <span className="mt-1 text-[10px] font-medium">Add More</span>
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                            <p className="mt-3 text-center text-xs text-gray-500">
+                                                                {previewImages.length}/5 images uploaded
+                                                            </p>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </div>
+
+                                            {/* Submit Button */}
+                                            <div className="border-t border-gray-100 pt-6">
+                                                <Button
+                                                    type="submit"
+                                                    disabled={processing}
+                                                    className="h-14 w-full bg-gradient-to-r from-amber-500 via-orange-500 to-amber-500 text-lg font-semibold shadow-lg shadow-amber-500/25 transition-all duration-300 hover:scale-[1.01] hover:shadow-xl hover:shadow-amber-500/30 disabled:cursor-not-allowed disabled:opacity-50"
+                                                >
+                                                    {processing ? (
+                                                        <>
+                                                            <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                                                            Posting Your Request...
+                                                        </>
+                                                    ) : (
+                                                        <>
+                                                            <Send className="mr-2 h-5 w-5" />
+                                                            Post Request & Start Receiving Bids
+                                                        </>
+                                                    )}
+                                                </Button>
+                                                <p className="mt-4 flex items-center justify-center gap-1 text-center text-sm text-gray-500">
+                                                    <CheckCircle2 className="h-4 w-4 text-green-500" />
+                                                    Your request will be visible to all verified artisans
+                                                </p>
+                                            </div>
+                                        </form>
+                                    </CardContent>
+                                </Card>
+                            </div>
+
+                            {/* Sidebar */}
+                            <div className="space-y-6">
+                                {/* Tips Card */}
+                                <Card className="sticky top-6 overflow-hidden border-0 bg-gradient-to-br from-blue-50 to-indigo-50 shadow-lg">
+                                    <CardContent className="p-5">
+                                        <h4 className="mb-4 flex items-center gap-2 font-semibold text-blue-900">
+                                            <div className="rounded-lg bg-blue-100 p-1.5">
+                                                <Lightbulb className="h-4 w-4 text-blue-600" />
+                                            </div>
+                                            Pro Tips
+                                        </h4>
+                                        <ul className="space-y-3">
+                                            {[
+                                                { icon: PenTool, text: 'Be specific about dimensions and colors' },
+                                                { icon: Palette, text: 'Set a realistic budget range' },
+                                                { icon: ImageIcon, text: 'Add reference images when possible' },
+                                                { icon: Package, text: 'Mention preferred materials' },
+                                                { icon: Clock, text: 'Allow enough time for quality work' },
+                                            ].map((tip, idx) => (
+                                                <li key={idx} className="flex items-start gap-2.5 text-sm text-blue-800">
+                                                    <div className="mt-0.5 rounded bg-blue-100/80 p-1">
+                                                        <tip.icon className="h-3 w-3 text-blue-600" />
+                                                    </div>
+                                                    <span>{tip.text}</span>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </CardContent>
+                                </Card>
+
+                                {/* Need Help Card */}
+                                <Card className="overflow-hidden border-0 bg-gradient-to-br from-amber-50 to-orange-50 shadow-lg">
+                                    <CardContent className="p-5">
+                                        <h4 className="mb-3 flex items-center gap-2 font-semibold text-amber-900">
+                                            <div className="rounded-lg bg-amber-100 p-1.5">
+                                                <Info className="h-4 w-4 text-amber-600" />
+                                            </div>
+                                            Need Help?
+                                        </h4>
+                                        <p className="mb-4 text-sm text-amber-800">
+                                            Not sure how to describe your project? Browse similar requests for inspiration.
+                                        </p>
+                                        <Link href="/buyer/custom-orders">
+                                            <Button
+                                                variant="outline"
+                                                size="sm"
+                                                className="w-full border-amber-300 text-amber-700 hover:bg-amber-100/50"
+                                            >
+                                                View Sample Requests
                                             </Button>
                                         </Link>
-                                    </div>
-                                )}
-                            </CardContent>
-                        </Card>
-
-                        {/* Request Details */}
-                        <Card>
-                            <CardHeader>
-                                <CardTitle className="flex items-center gap-2">
-                                    <PenTool className="h-5 w-5 text-amber-600" />
-                                    Request Details
-                                </CardTitle>
-                                <CardDescription>Describe what you want the artisan to create</CardDescription>
-                            </CardHeader>
-                            <CardContent className="space-y-6">
-                                <div>
-                                    <Label htmlFor="title">Title *</Label>
-                                    <Input
-                                        id="title"
-                                        placeholder="e.g., Custom wooden name sign for nursery"
-                                        value={data.title}
-                                        onChange={(e) => setData('title', e.target.value)}
-                                        className={errors.title ? 'border-red-500' : ''}
-                                    />
-                                    {errors.title && (
-                                        <p className="mt-1 flex items-center gap-1 text-sm text-red-500">
-                                            <AlertCircle className="h-4 w-4" />
-                                            {errors.title}
-                                        </p>
-                                    )}
-                                </div>
-
-                                <div>
-                                    <Label htmlFor="description">Description *</Label>
-                                    <Textarea
-                                        id="description"
-                                        placeholder="Describe in detail what you want. Include size, colors, materials, style preferences, and any other specific requirements..."
-                                        rows={6}
-                                        value={data.description}
-                                        onChange={(e) => setData('description', e.target.value)}
-                                        className={errors.description ? 'border-red-500' : ''}
-                                    />
-                                    {errors.description && (
-                                        <p className="mt-1 flex items-center gap-1 text-sm text-red-500">
-                                            <AlertCircle className="h-4 w-4" />
-                                            {errors.description}
-                                        </p>
-                                    )}
-                                    <p className="mt-1 text-sm text-gray-500">Minimum 20 characters</p>
-                                </div>
-
-                                <div className="grid gap-4 sm:grid-cols-2">
-                                    <div>
-                                        <Label htmlFor="quantity" className="flex items-center gap-2">
-                                            <Package className="h-4 w-4 text-gray-400" />
-                                            Quantity *
-                                        </Label>
-                                        <Input
-                                            id="quantity"
-                                            type="number"
-                                            min="1"
-                                            max="100"
-                                            value={data.quantity}
-                                            onChange={(e) => setData('quantity', e.target.value)}
-                                            className={errors.quantity ? 'border-red-500' : ''}
-                                        />
-                                        {errors.quantity && (
-                                            <p className="mt-1 flex items-center gap-1 text-sm text-red-500">
-                                                <AlertCircle className="h-4 w-4" />
-                                                {errors.quantity}
-                                            </p>
-                                        )}
-                                    </div>
-
-                                    <div>
-                                        <Label htmlFor="preferred_deadline" className="flex items-center gap-2">
-                                            <Calendar className="h-4 w-4 text-gray-400" />
-                                            Preferred Deadline
-                                        </Label>
-                                        <Input
-                                            id="preferred_deadline"
-                                            type="date"
-                                            min={new Date(Date.now() + 86400000).toISOString().split('T')[0]}
-                                            value={data.preferred_deadline}
-                                            onChange={(e) => setData('preferred_deadline', e.target.value)}
-                                            className={errors.preferred_deadline ? 'border-red-500' : ''}
-                                        />
-                                        {errors.preferred_deadline && (
-                                            <p className="mt-1 flex items-center gap-1 text-sm text-red-500">
-                                                <AlertCircle className="h-4 w-4" />
-                                                {errors.preferred_deadline}
-                                            </p>
-                                        )}
-                                    </div>
-                                </div>
-                            </CardContent>
-                        </Card>
-
-                        {/* Budget */}
-                        <Card>
-                            <CardHeader>
-                                <CardTitle className="flex items-center gap-2">
-                                    <DollarSign className="h-5 w-5 text-amber-600" />
-                                    Budget Range (Optional)
-                                </CardTitle>
-                                <CardDescription>Let the artisan know your budget expectations</CardDescription>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="grid gap-4 sm:grid-cols-2">
-                                    <div>
-                                        <Label htmlFor="budget_min">Minimum Budget (₱)</Label>
-                                        <Input
-                                            id="budget_min"
-                                            type="number"
-                                            min="0"
-                                            step="0.01"
-                                            placeholder="e.g., 500"
-                                            value={data.budget_min}
-                                            onChange={(e) => setData('budget_min', e.target.value)}
-                                            className={errors.budget_min ? 'border-red-500' : ''}
-                                        />
-                                        {errors.budget_min && (
-                                            <p className="mt-1 flex items-center gap-1 text-sm text-red-500">
-                                                <AlertCircle className="h-4 w-4" />
-                                                {errors.budget_min}
-                                            </p>
-                                        )}
-                                    </div>
-                                    <div>
-                                        <Label htmlFor="budget_max">Maximum Budget (₱)</Label>
-                                        <Input
-                                            id="budget_max"
-                                            type="number"
-                                            min="0"
-                                            step="0.01"
-                                            placeholder="e.g., 2000"
-                                            value={data.budget_max}
-                                            onChange={(e) => setData('budget_max', e.target.value)}
-                                            className={errors.budget_max ? 'border-red-500' : ''}
-                                        />
-                                        {errors.budget_max && (
-                                            <p className="mt-1 flex items-center gap-1 text-sm text-red-500">
-                                                <AlertCircle className="h-4 w-4" />
-                                                {errors.budget_max}
-                                            </p>
-                                        )}
-                                    </div>
-                                </div>
-                            </CardContent>
-                        </Card>
-
-                        {/* Reference Images */}
-                        <Card>
-                            <CardHeader>
-                                <CardTitle className="flex items-center gap-2">
-                                    <ImageIcon className="h-5 w-5 text-amber-600" />
-                                    Reference Images (Optional)
-                                </CardTitle>
-                                <CardDescription>Upload images to help the artisan understand what you want (max 5 images)</CardDescription>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="space-y-4">
-                                    {previewImages.length > 0 && (
-                                        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-5">
-                                            {previewImages.map((preview, index) => (
-                                                <div key={index} className="group relative aspect-square">
-                                                    <img
-                                                        src={preview}
-                                                        alt={`Reference ${index + 1}`}
-                                                        className="h-full w-full rounded-lg border object-cover"
-                                                    />
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => removeImage(index)}
-                                                        className="absolute -top-2 -right-2 rounded-full bg-red-500 p-1 text-white opacity-0 transition-opacity group-hover:opacity-100"
-                                                    >
-                                                        <X className="h-4 w-4" />
-                                                    </button>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    )}
-
-                                    {previewImages.length < 5 && (
-                                        <div
-                                            onClick={() => fileInputRef.current?.click()}
-                                            className="flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 p-8 transition-colors hover:border-amber-400 hover:bg-amber-50"
-                                        >
-                                            <Upload className="mb-2 h-8 w-8 text-gray-400" />
-                                            <p className="text-sm font-medium text-gray-700">Click to upload images</p>
-                                            <p className="text-xs text-gray-500">PNG, JPG, GIF up to 5MB each</p>
-                                        </div>
-                                    )}
-
-                                    <input ref={fileInputRef} type="file" accept="image/*" multiple onChange={handleImageUpload} className="hidden" />
-                                </div>
-                            </CardContent>
-                        </Card>
-
-                        {/* Special Requirements */}
-                        <Card>
-                            <CardHeader>
-                                <CardTitle>Special Requirements (Optional)</CardTitle>
-                                <CardDescription>Any additional notes or special instructions</CardDescription>
-                            </CardHeader>
-                            <CardContent>
-                                <Textarea
-                                    placeholder="e.g., Gift wrapping needed, specific packaging requirements, allergies to certain materials..."
-                                    rows={4}
-                                    value={data.special_requirements}
-                                    onChange={(e) => setData('special_requirements', e.target.value)}
-                                    className={errors.special_requirements ? 'border-red-500' : ''}
-                                />
-                                {errors.special_requirements && (
-                                    <p className="mt-1 flex items-center gap-1 text-sm text-red-500">
-                                        <AlertCircle className="h-4 w-4" />
-                                        {errors.special_requirements}
-                                    </p>
-                                )}
-                            </CardContent>
-                        </Card>
-
-                        {/* Submit */}
-                        <div className="flex justify-end gap-4">
-                            <Link href="/buyer/custom-orders">
-                                <Button type="button" variant="outline">
-                                    Cancel
-                                </Button>
-                            </Link>
-                            <Button
-                                type="submit"
-                                disabled={processing || !data.seller_id}
-                                className="bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700"
-                            >
-                                {processing ? (
-                                    <>
-                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                        Submitting...
-                                    </>
-                                ) : (
-                                    <>
-                                        <Send className="mr-2 h-4 w-4" />
-                                        Submit Request
-                                    </>
-                                )}
-                            </Button>
+                                    </CardContent>
+                                </Card>
+                            </div>
                         </div>
                     </div>
-                </form>
+                </div>
             </div>
         </BuyerLayout>
     );

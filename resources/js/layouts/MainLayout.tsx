@@ -1,3 +1,4 @@
+import CookieConsent from '@/components/CookieConsent';
 import { useCart } from '@/contexts/CartContext';
 import { type SharedData } from '@/types';
 import { Link, router, usePage } from '@inertiajs/react';
@@ -582,6 +583,9 @@ export default function MainLayout({ children, title }: MainLayoutProps) {
                     </div>
                 </div>
             </footer>
+
+            {/* Cookie Consent Banner */}
+            <CookieConsent />
         </div>
     );
 }

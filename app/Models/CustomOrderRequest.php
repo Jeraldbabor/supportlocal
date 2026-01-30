@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
 
 class CustomOrderRequest extends Model
@@ -14,7 +15,9 @@ class CustomOrderRequest extends Model
     /**
      * Status constants
      */
-    const STATUS_PENDING = 'pending';
+    const STATUS_OPEN = 'open'; // Public request accepting bids
+
+    const STATUS_PENDING = 'pending'; // Direct request to specific seller
 
     const STATUS_QUOTED = 'quoted';
 
@@ -33,12 +36,33 @@ class CustomOrderRequest extends Model
     const STATUS_CANCELLED = 'cancelled';
 
     /**
+     * Categories for custom orders
+     */
+    public static $categories = [
+        'clothing' => 'Clothing & Apparel',
+        'accessories' => 'Accessories & Jewelry',
+        'home_decor' => 'Home Decor',
+        'furniture' => 'Furniture',
+        'art' => 'Art & Paintings',
+        'crafts' => 'Crafts & Handmade',
+        'food' => 'Food & Delicacies',
+        'gifts' => 'Personalized Gifts',
+        'bags' => 'Bags & Pouches',
+        'woodwork' => 'Woodwork',
+        'metalwork' => 'Metalwork',
+        'pottery' => 'Pottery & Ceramics',
+        'textiles' => 'Textiles & Weaving',
+        'other' => 'Other',
+    ];
+
+    /**
      * Status labels for display
      */
     public static $statusLabels = [
+        self::STATUS_OPEN => 'Open for Bids',
         self::STATUS_PENDING => 'Pending Review',
         self::STATUS_QUOTED => 'Quote Received',
-        self::STATUS_ACCEPTED => 'Quote Accepted',
+        self::STATUS_ACCEPTED => 'Bid Accepted',
         self::STATUS_REJECTED => 'Request Rejected',
         self::STATUS_DECLINED => 'Quote Declined',
         self::STATUS_IN_PROGRESS => 'In Progress',
@@ -51,6 +75,7 @@ class CustomOrderRequest extends Model
      * Status colors for UI badges
      */
     public static $statusColors = [
+        self::STATUS_OPEN => 'blue',
         self::STATUS_PENDING => 'yellow',
         self::STATUS_QUOTED => 'blue',
         self::STATUS_ACCEPTED => 'green',
@@ -69,7 +94,9 @@ class CustomOrderRequest extends Model
         'request_number',
         'buyer_id',
         'seller_id',
+        'is_public',
         'title',
+        'category',
         'description',
         'reference_images',
         'budget_min',
@@ -88,6 +115,7 @@ class CustomOrderRequest extends Model
         'completed_at',
         'product_id',
         'order_id',
+        'accepted_bid_id',
     ];
 
     /**
@@ -103,6 +131,7 @@ class CustomOrderRequest extends Model
         'accepted_at' => 'datetime',
         'rejected_at' => 'datetime',
         'completed_at' => 'datetime',
+        'is_public' => 'boolean',
     ];
 
     /**
@@ -113,6 +142,8 @@ class CustomOrderRequest extends Model
         'status_color',
         'reference_image_urls',
         'formatted_budget',
+        'category_label',
+        'bids_count',
     ];
 
     /**
@@ -160,6 +191,22 @@ class CustomOrderRequest extends Model
     public function order(): BelongsTo
     {
         return $this->belongsTo(Order::class);
+    }
+
+    /**
+     * Get all bids for this request
+     */
+    public function bids(): HasMany
+    {
+        return $this->hasMany(CustomOrderBid::class);
+    }
+
+    /**
+     * Get the accepted bid
+     */
+    public function acceptedBid(): BelongsTo
+    {
+        return $this->belongsTo(CustomOrderBid::class, 'accepted_bid_id');
     }
 
     /**
@@ -217,11 +264,48 @@ class CustomOrderRequest extends Model
     }
 
     /**
-     * Check if request can be quoted
+     * Get category label
+     */
+    public function getCategoryLabelAttribute(): ?string
+    {
+        return $this->category ? (self::$categories[$this->category] ?? $this->category) : null;
+    }
+
+    /**
+     * Get bids count
+     */
+    public function getBidsCountAttribute(): int
+    {
+        return $this->bids()->count();
+    }
+
+    /**
+     * Check if request is open for bidding
+     */
+    public function isOpenForBids(): bool
+    {
+        return $this->is_public && $this->status === self::STATUS_OPEN;
+    }
+
+    /**
+     * Check if a seller can bid on this request
+     */
+    public function canReceiveBidFrom(int $sellerId): bool
+    {
+        if (! $this->isOpenForBids()) {
+            return false;
+        }
+
+        // Check if seller already submitted a bid
+        return ! $this->bids()->where('seller_id', $sellerId)->exists();
+    }
+
+    /**
+     * Check if request can be quoted (for direct requests)
      */
     public function canBeQuoted(): bool
     {
-        return $this->status === self::STATUS_PENDING;
+        return $this->status === self::STATUS_PENDING && ! $this->is_public;
     }
 
     /**
@@ -321,6 +405,22 @@ class CustomOrderRequest extends Model
     public function scopePending($query)
     {
         return $query->where('status', self::STATUS_PENDING);
+    }
+
+    /**
+     * Scope: Open for bidding (public requests)
+     */
+    public function scopeOpenForBids($query)
+    {
+        return $query->where('is_public', true)->where('status', self::STATUS_OPEN);
+    }
+
+    /**
+     * Scope: Public requests
+     */
+    public function scopePublic($query)
+    {
+        return $query->where('is_public', true);
     }
 
     /**

@@ -215,7 +215,7 @@ class ProfileCompletionTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $response = $this->actingAs($user)->post('/profile/dismiss-completion-reminder');
+        $response = $this->actingAs($user)->postJson('/profile/dismiss-completion-reminder');
 
         $response->assertOk();
         $response->assertJson(['success' => true]);

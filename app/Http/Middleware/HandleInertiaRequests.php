@@ -64,6 +64,32 @@ class HandleInertiaRequests extends Middleware
                 $sharedData['newContactMessagesCount'] = \App\Models\ContactMessage::where('status', \App\Models\ContactMessage::STATUS_NEW)->count();
             }
 
+            // Add marketplace notification counts for sellers
+            if ($request->user()->role === \App\Models\User::ROLE_SELLER) {
+                // Count unread marketplace notifications (new requests)
+                $sharedData['unreadMarketplaceCount'] = $request->user()
+                    ->unreadNotifications()
+                    ->where('type', \App\Notifications\NewMarketplaceRequest::class)
+                    ->count();
+
+                // Count unread bid notifications (bid accepted/rejected)
+                $sharedData['unreadBidNotificationsCount'] = $request->user()
+                    ->unreadNotifications()
+                    ->whereIn('type', [
+                        \App\Notifications\BidAccepted::class,
+                        \App\Notifications\BidRejected::class,
+                    ])
+                    ->count();
+            }
+
+            // Add unread bid notifications for buyers
+            if ($request->user()->role === \App\Models\User::ROLE_BUYER) {
+                $sharedData['unreadBidReceivedCount'] = $request->user()
+                    ->unreadNotifications()
+                    ->where('type', \App\Notifications\NewBidReceived::class)
+                    ->count();
+            }
+
             // Add profile completion status and recommendation
             $sharedData['profileCompletion'] = [
                 'status' => $request->user()->getProfileCompletionStatus(),

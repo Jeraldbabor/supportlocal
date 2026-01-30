@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\CustomOrderBid;
 use App\Models\CustomOrderRequest;
 use App\Models\Order;
 use App\Models\Product;
@@ -36,6 +37,13 @@ class AnalyticsController extends Controller
         $ordersByStatus = $this->getOrdersByStatus($startDate, $endDate);
         $revenueByCategory = $this->getRevenueByCategory($startDate, $endDate);
 
+        // Marketplace & Bidding Analytics (Unique Feature)
+        $marketplaceStats = $this->getMarketplaceStats($startDate, $endDate);
+        $biddingTrends = $this->getBiddingTrendsData($startDate, $endDate);
+        $topBiddingSellers = $this->getTopBiddingSellers($startDate, $endDate);
+        $customOrdersByCategory = $this->getCustomOrdersByCategory($startDate, $endDate);
+        $bidActivityByHour = $this->getBidActivityByHour($startDate, $endDate);
+
         return Inertia::render('admin/analytics', [
             'dateRange' => $dateRange,
             'startDate' => $startDate->format('Y-m-d'),
@@ -49,6 +57,12 @@ class AnalyticsController extends Controller
             'customOrderStats' => $customOrderStats,
             'ordersByStatus' => $ordersByStatus,
             'revenueByCategory' => $revenueByCategory,
+            // Marketplace & Bidding (Unique Feature)
+            'marketplaceStats' => $marketplaceStats,
+            'biddingTrends' => $biddingTrends,
+            'topBiddingSellers' => $topBiddingSellers,
+            'customOrdersByCategory' => $customOrdersByCategory,
+            'bidActivityByHour' => $bidActivityByHour,
         ]);
     }
 
@@ -110,6 +124,10 @@ class AnalyticsController extends Controller
 
             if ($reportType === 'all' || $reportType === 'custom_orders') {
                 $this->exportCustomOrders($file, $startDate, $endDate);
+            }
+
+            if ($reportType === 'all' || $reportType === 'marketplace') {
+                $this->exportMarketplace($file, $startDate, $endDate);
             }
 
             fclose($file);
@@ -371,6 +389,203 @@ class AnalyticsController extends Controller
     }
 
     /**
+     * Get marketplace statistics (bidding system)
+     */
+    private function getMarketplaceStats(Carbon $startDate, Carbon $endDate): array
+    {
+        // Public requests (open for bidding)
+        $publicRequests = CustomOrderRequest::where('is_public', true)
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->count();
+
+        $openRequests = CustomOrderRequest::where('is_public', true)
+            ->where('status', CustomOrderRequest::STATUS_OPEN)
+            ->count();
+
+        // Bid statistics
+        $totalBids = CustomOrderBid::whereBetween('created_at', [$startDate, $endDate])->count();
+        $acceptedBids = CustomOrderBid::where('status', CustomOrderBid::STATUS_ACCEPTED)
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->count();
+        $rejectedBids = CustomOrderBid::where('status', CustomOrderBid::STATUS_REJECTED)
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->count();
+        $pendingBids = CustomOrderBid::where('status', CustomOrderBid::STATUS_PENDING)
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->count();
+
+        // Average bids per request
+        $requestsWithBids = CustomOrderRequest::where('is_public', true)
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->withCount('bids')
+            ->get();
+
+        $avgBidsPerRequest = $requestsWithBids->count() > 0
+            ? round($requestsWithBids->avg('bids_count'), 1)
+            : 0;
+
+        // Bid acceptance rate
+        $bidAcceptanceRate = $totalBids > 0
+            ? round(($acceptedBids / $totalBids) * 100, 2)
+            : 0;
+
+        // Total value of accepted bids
+        $acceptedBidValue = CustomOrderBid::where('status', CustomOrderBid::STATUS_ACCEPTED)
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->sum('proposed_price');
+
+        // Average bid response time (hours)
+        $avgResponseTime = CustomOrderBid::whereBetween('custom_order_bids.created_at', [$startDate, $endDate])
+            ->join('custom_order_requests', 'custom_order_bids.custom_order_request_id', '=', 'custom_order_requests.id')
+            ->selectRaw('AVG(EXTRACT(EPOCH FROM (custom_order_bids.created_at - custom_order_requests.created_at)) / 3600) as avg_hours')
+            ->value('avg_hours');
+
+        // Unique sellers who submitted bids
+        $activeBidders = CustomOrderBid::whereBetween('custom_order_bids.created_at', [$startDate, $endDate])
+            ->distinct('seller_id')
+            ->count('seller_id');
+
+        // Previous period for comparison
+        $periodDays = $startDate->diffInDays($endDate);
+        $prevStartDate = $startDate->copy()->subDays($periodDays);
+        $prevEndDate = $startDate->copy()->subDay();
+
+        $prevBids = CustomOrderBid::whereBetween('created_at', [$prevStartDate, $prevEndDate])->count();
+        $prevPublicRequests = CustomOrderRequest::where('is_public', true)
+            ->whereBetween('created_at', [$prevStartDate, $prevEndDate])
+            ->count();
+
+        return [
+            'public_requests' => $publicRequests,
+            'public_requests_growth' => $this->calculateGrowth($prevPublicRequests, $publicRequests),
+            'open_requests' => $openRequests,
+            'total_bids' => $totalBids,
+            'bids_growth' => $this->calculateGrowth($prevBids, $totalBids),
+            'accepted_bids' => $acceptedBids,
+            'rejected_bids' => $rejectedBids,
+            'pending_bids' => $pendingBids,
+            'avg_bids_per_request' => $avgBidsPerRequest,
+            'bid_acceptance_rate' => $bidAcceptanceRate,
+            'accepted_bid_value' => round($acceptedBidValue, 2),
+            'avg_response_time' => round($avgResponseTime ?? 0, 1),
+            'active_bidders' => $activeBidders,
+        ];
+    }
+
+    /**
+     * Get bidding trends chart data
+     */
+    private function getBiddingTrendsData(Carbon $startDate, Carbon $endDate): array
+    {
+        $data = [];
+        $current = $startDate->copy();
+
+        while ($current->lte($endDate)) {
+            $dayBids = CustomOrderBid::whereDate('created_at', $current)->count();
+            $dayAccepted = CustomOrderBid::whereDate('accepted_at', $current)
+                ->where('status', CustomOrderBid::STATUS_ACCEPTED)
+                ->count();
+            $dayRequests = CustomOrderRequest::where('is_public', true)
+                ->whereDate('created_at', $current)
+                ->count();
+
+            $data[] = [
+                'date' => $current->format('M d'),
+                'bids' => $dayBids,
+                'accepted' => $dayAccepted,
+                'requests' => $dayRequests,
+            ];
+
+            $current->addDay();
+        }
+
+        return $data;
+    }
+
+    /**
+     * Get top bidding sellers (most active in marketplace)
+     */
+    private function getTopBiddingSellers(Carbon $startDate, Carbon $endDate): array
+    {
+        return CustomOrderBid::whereBetween('custom_order_bids.created_at', [$startDate, $endDate])
+            ->select(
+                'seller_id',
+                DB::raw('COUNT(*) as total_bids'),
+                DB::raw('SUM(CASE WHEN status = \'accepted\' THEN 1 ELSE 0 END) as accepted_bids'),
+                DB::raw('AVG(proposed_price) as avg_bid_amount'),
+                DB::raw('SUM(CASE WHEN status = \'accepted\' THEN proposed_price ELSE 0 END) as total_won_value')
+            )
+            ->groupBy('seller_id')
+            ->orderByDesc('accepted_bids')
+            ->take(10)
+            ->with('seller')
+            ->get()
+            ->filter(fn ($item) => $item->seller !== null)
+            ->map(fn ($item) => [
+                'id' => $item->seller->id,
+                'name' => $item->seller->name,
+                'avatar_url' => $item->seller->avatar_url,
+                'total_bids' => $item->total_bids,
+                'accepted_bids' => (int) $item->accepted_bids,
+                'win_rate' => $item->total_bids > 0
+                    ? round(($item->accepted_bids / $item->total_bids) * 100, 1)
+                    : 0,
+                'avg_bid_amount' => round($item->avg_bid_amount, 2),
+                'total_won_value' => round($item->total_won_value, 2),
+            ])
+            ->values()
+            ->toArray();
+    }
+
+    /**
+     * Get custom orders by category
+     */
+    private function getCustomOrdersByCategory(Carbon $startDate, Carbon $endDate): array
+    {
+        return CustomOrderRequest::where('is_public', true)
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->whereNotNull('category')
+            ->select('category', DB::raw('COUNT(*) as count'))
+            ->groupBy('category')
+            ->orderByDesc('count')
+            ->take(10)
+            ->get()
+            ->map(function ($item) {
+                $categoryLabels = CustomOrderRequest::$categories ?? [];
+
+                return [
+                    'category' => $categoryLabels[$item->category] ?? ucfirst($item->category),
+                    'category_key' => $item->category,
+                    'count' => $item->count,
+                ];
+            })
+            ->toArray();
+    }
+
+    /**
+     * Get bid activity by hour of day
+     */
+    private function getBidActivityByHour(Carbon $startDate, Carbon $endDate): array
+    {
+        $hourlyData = CustomOrderBid::whereBetween('created_at', [$startDate, $endDate])
+            ->selectRaw('EXTRACT(HOUR FROM created_at) as hour, COUNT(*) as count')
+            ->groupBy('hour')
+            ->orderBy('hour')
+            ->pluck('count', 'hour')
+            ->toArray();
+
+        $result = [];
+        for ($i = 0; $i < 24; $i++) {
+            $result[] = [
+                'hour' => sprintf('%02d:00', $i),
+                'count' => $hourlyData[$i] ?? 0,
+            ];
+        }
+
+        return $result;
+    }
+
+    /**
      * Get orders by status
      */
     private function getOrdersByStatus(Carbon $startDate, Carbon $endDate): array
@@ -540,6 +755,52 @@ class AnalyticsController extends Controller
         fputcsv($file, ['Cancelled/Declined', $customStats['cancelled']]);
         fputcsv($file, ['Total Value', '₱'.number_format($customStats['total_value'], 2)]);
         fputcsv($file, ['Conversion Rate', $customStats['conversion_rate'].'%']);
+        fputcsv($file, []);
+    }
+
+    private function exportMarketplace($file, Carbon $startDate, Carbon $endDate): void
+    {
+        $marketplaceStats = $this->getMarketplaceStats($startDate, $endDate);
+
+        fputcsv($file, ['=== MARKETPLACE BIDDING ANALYTICS ===']);
+        fputcsv($file, ['Metric', 'Value', 'Growth %']);
+        fputcsv($file, ['Public Requests', $marketplaceStats['public_requests'], $marketplaceStats['public_requests_growth'].'%']);
+        fputcsv($file, ['Open Requests', $marketplaceStats['open_requests'], '']);
+        fputcsv($file, ['Total Bids', $marketplaceStats['total_bids'], $marketplaceStats['bids_growth'].'%']);
+        fputcsv($file, ['Accepted Bids', $marketplaceStats['accepted_bids'], '']);
+        fputcsv($file, ['Rejected Bids', $marketplaceStats['rejected_bids'], '']);
+        fputcsv($file, ['Pending Bids', $marketplaceStats['pending_bids'], '']);
+        fputcsv($file, ['Avg Bids Per Request', $marketplaceStats['avg_bids_per_request'], '']);
+        fputcsv($file, ['Bid Acceptance Rate', $marketplaceStats['bid_acceptance_rate'].'%', '']);
+        fputcsv($file, ['Accepted Bid Value', '₱'.number_format($marketplaceStats['accepted_bid_value'], 2), '']);
+        fputcsv($file, ['Avg Response Time (hours)', $marketplaceStats['avg_response_time'], '']);
+        fputcsv($file, ['Active Bidders', $marketplaceStats['active_bidders'], '']);
+        fputcsv($file, []);
+
+        // Top bidding sellers
+        $topBidders = $this->getTopBiddingSellers($startDate, $endDate);
+        fputcsv($file, ['=== TOP BIDDING ARTISANS ===']);
+        fputcsv($file, ['Rank', 'Artisan Name', 'Total Bids', 'Won Bids', 'Win Rate %', 'Avg Bid', 'Total Won Value']);
+        foreach ($topBidders as $index => $bidder) {
+            fputcsv($file, [
+                $index + 1,
+                $bidder['name'],
+                $bidder['total_bids'],
+                $bidder['accepted_bids'],
+                $bidder['win_rate'].'%',
+                '₱'.number_format($bidder['avg_bid_amount'], 2),
+                '₱'.number_format($bidder['total_won_value'], 2),
+            ]);
+        }
+        fputcsv($file, []);
+
+        // Custom orders by category
+        $categoryStats = $this->getCustomOrdersByCategory($startDate, $endDate);
+        fputcsv($file, ['=== CUSTOM ORDERS BY CATEGORY ===']);
+        fputcsv($file, ['Category', 'Request Count']);
+        foreach ($categoryStats as $cat) {
+            fputcsv($file, [$cat['category'], $cat['count']]);
+        }
         fputcsv($file, []);
     }
 }

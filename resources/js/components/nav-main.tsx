@@ -2,15 +2,7 @@ import { SidebarGroup, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, Sideba
 import { type NavItem } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
 
-export function NavMain({
-    items = [],
-    unreadMessagesCount = 0,
-    newContactMessagesCount = 0,
-}: {
-    items: NavItem[];
-    unreadMessagesCount?: number;
-    newContactMessagesCount?: number;
-}) {
+export function NavMain({ items = [], unreadMessagesCount = 0 }: { items: NavItem[]; unreadMessagesCount?: number }) {
     const page = usePage();
 
     // Function to determine if a nav item is active
@@ -51,14 +43,16 @@ export function NavMain({
                                     />
                                 )}
                                 <span className="truncate font-medium">{item.title}</span>
-                                {item.title === 'Messages' && unreadMessagesCount > 0 && (
-                                    <span className="ml-auto flex h-5 w-5 items-center justify-center rounded-full bg-blue-500 text-xs font-semibold text-white group-data-[active=true]:bg-white group-data-[active=true]:text-orange-600">
-                                        {unreadMessagesCount > 9 ? '9+' : unreadMessagesCount}
+                                {/* Generic badge from NavItem */}
+                                {item.badge && item.badge > 0 && (
+                                    <span className="ml-auto flex h-5 min-w-5 items-center justify-center rounded-full bg-amber-500 px-1.5 text-xs font-semibold text-white group-data-[active=true]:bg-white group-data-[active=true]:text-orange-600">
+                                        {item.badge > 99 ? '99+' : item.badge}
                                     </span>
                                 )}
-                                {item.title === 'Contact Messages' && newContactMessagesCount > 0 && (
-                                    <span className="ml-auto flex h-5 w-5 animate-pulse items-center justify-center rounded-full bg-blue-500 text-xs font-semibold text-white group-data-[active=true]:bg-white group-data-[active=true]:text-orange-600">
-                                        {newContactMessagesCount > 9 ? '9+' : newContactMessagesCount}
+                                {/* Messages badge */}
+                                {item.title === 'Messages' && !item.badge && unreadMessagesCount > 0 && (
+                                    <span className="ml-auto flex h-5 w-5 items-center justify-center rounded-full bg-blue-500 text-xs font-semibold text-white group-data-[active=true]:bg-white group-data-[active=true]:text-orange-600">
+                                        {unreadMessagesCount > 9 ? '9+' : unreadMessagesCount}
                                     </span>
                                 )}
                             </Link>

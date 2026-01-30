@@ -8,6 +8,7 @@ use App\Models\OrderItem;
 use App\Models\Product;
 use App\Models\User;
 use App\Notifications\NewOrderReceived;
+use App\Notifications\OrderCancelledByBuyer;
 use App\Notifications\PaymentProofUploaded;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -376,6 +377,75 @@ class OrderController extends Controller
                 'success' => false,
                 'message' => 'Failed to upload payment proof: '.$e->getMessage(),
             ], 500);
+        }
+    }
+
+    /**
+     * Cancel an order by the buyer.
+     */
+    public function cancel(Request $request, Order $order)
+    {
+        // Check if the order belongs to the authenticated buyer
+        if ($order->user_id !== auth()->id()) {
+            abort(403);
+        }
+
+        // Check if the order can be cancelled by the buyer
+        if (! $order->canBeCancelledByBuyer()) {
+            return back()->with('error', 'This order cannot be cancelled. Orders can only be cancelled before the seller confirms them.');
+        }
+
+        $request->validate([
+            'cancellation_reason' => 'required|string|max:500',
+        ]);
+
+        try {
+            DB::beginTransaction();
+
+            // Update order status to cancelled
+            $order->update([
+                'status' => Order::STATUS_CANCELLED,
+                'cancellation_reason' => $request->input('cancellation_reason'),
+                'cancelled_by' => 'buyer',
+                'cancelled_at' => now(),
+            ]);
+
+            // Restore product quantities
+            foreach ($order->orderItems as $item) {
+                $product = Product::find($item->product_id);
+                if ($product) {
+                    $product->increment('quantity', $item->quantity);
+                }
+            }
+
+            DB::commit();
+
+            // Notify seller about the cancellation
+            $seller = User::find($order->seller_id);
+            if ($seller) {
+                try {
+                    $seller->notify(new OrderCancelledByBuyer($order));
+                } catch (\Exception $e) {
+                    Log::error('Failed to send order cancellation notification', [
+                        'order_id' => $order->id,
+                        'seller_id' => $order->seller_id,
+                        'error' => $e->getMessage(),
+                    ]);
+                }
+            }
+
+            return back()->with('success', 'Order cancelled successfully.');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            Log::error('Order cancellation failed', [
+                'order_id' => $order->id,
+                'user_id' => auth()->id(),
+                'error' => $e->getMessage(),
+            ]);
+
+            return back()->with('error', 'Failed to cancel order. Please try again.');
         }
     }
 }

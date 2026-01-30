@@ -50,6 +50,9 @@ interface Order {
     tracking_number?: string | null;
     waybill_number?: string | null;
     rejection_reason?: string;
+    cancellation_reason?: string | null;
+    cancelled_by?: string | null;
+    cancelled_at?: string | null;
     created_at: string;
     updated_at: string;
     order_items: OrderItem[];
@@ -435,16 +438,45 @@ export default function OrderShow({ order }: OrderShowProps) {
                             </div>
                         </div>
 
-                        {/* Rejection Reason */}
-                        {order.status === 'cancelled' && order.rejection_reason && (
+                        {/* Rejection Reason (by Seller) */}
+                        {order.status === 'cancelled' && order.rejection_reason && !order.cancellation_reason && (
                             <div className="border-t border-red-100 bg-gradient-to-r from-red-50 to-rose-50 p-4 sm:p-6">
                                 <div className="flex items-start gap-3 sm:gap-4">
                                     <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-xl bg-red-100 sm:h-10 sm:w-10">
                                         <AlertCircle className="h-4 w-4 text-red-600 sm:h-5 sm:w-5" />
                                     </div>
                                     <div className="min-w-0 flex-1">
-                                        <h4 className="text-sm font-semibold text-red-800 sm:text-base">Cancellation Reason</h4>
+                                        <h4 className="text-sm font-semibold text-red-800 sm:text-base">Cancellation Reason (by You)</h4>
                                         <p className="mt-1 text-xs text-red-700 sm:text-sm">{order.rejection_reason}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Cancellation Reason (by Buyer) */}
+                        {order.status === 'cancelled' && order.cancellation_reason && (
+                            <div className="border-t border-orange-100 bg-gradient-to-r from-orange-50 to-amber-50 p-4 sm:p-6">
+                                <div className="flex items-start gap-3 sm:gap-4">
+                                    <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-xl bg-orange-100 sm:h-10 sm:w-10">
+                                        <AlertCircle className="h-4 w-4 text-orange-600 sm:h-5 sm:w-5" />
+                                    </div>
+                                    <div className="min-w-0 flex-1">
+                                        <h4 className="text-sm font-semibold text-orange-800 sm:text-base">
+                                            Cancellation Reason (by Buyer: {order.buyer.name})
+                                        </h4>
+                                        <p className="mt-1 text-xs text-orange-700 sm:text-sm">{order.cancellation_reason}</p>
+                                        {order.cancelled_at && (
+                                            <p className="mt-2 text-[10px] text-orange-600 sm:text-xs">
+                                                Cancelled on{' '}
+                                                {new Date(order.cancelled_at).toLocaleDateString('en-US', {
+                                                    year: 'numeric',
+                                                    month: 'long',
+                                                    day: 'numeric',
+                                                    hour: '2-digit',
+                                                    minute: '2-digit',
+                                                })}
+                                            </p>
+                                        )}
                                     </div>
                                 </div>
                             </div>

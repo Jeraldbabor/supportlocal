@@ -15,10 +15,12 @@ return new class extends Migration
             $table->id();
             $table->string('request_number')->unique();
             $table->foreignId('buyer_id')->constrained('users')->onDelete('cascade');
-            $table->foreignId('seller_id')->constrained('users')->onDelete('cascade');
+            $table->foreignId('seller_id')->nullable()->constrained('users')->onDelete('cascade');
+            $table->boolean('is_public')->default(true);
 
             // Request details
             $table->string('title');
+            $table->string('category')->nullable();
             $table->text('description');
             $table->json('reference_images')->nullable();
             $table->decimal('budget_min', 10, 2)->nullable();
@@ -29,16 +31,17 @@ return new class extends Migration
 
             // Seller response
             $table->enum('status', [
-                'pending',           // Waiting for seller response
+                'open',              // Public request open for bidding
+                'pending',           // Waiting for seller response (direct request)
                 'quoted',            // Seller sent a quote
-                'accepted',          // Buyer accepted the quote
+                'accepted',          // Buyer accepted the quote/bid
                 'rejected',          // Seller rejected the request
                 'declined',          // Buyer declined the quote
                 'in_progress',       // Work in progress
                 'ready_for_checkout', // Seller finished, waiting for buyer payment
                 'completed',         // Buyer paid, order created
                 'cancelled',          // Request cancelled
-            ])->default('pending');
+            ])->default('open');
 
             // Quote details from seller
             $table->decimal('quoted_price', 10, 2)->nullable();
@@ -55,12 +58,14 @@ return new class extends Migration
             // Link to product if seller creates one
             $table->foreignId('product_id')->nullable()->constrained('products')->onDelete('set null');
             $table->foreignId('order_id')->nullable()->constrained('orders')->onDelete('set null');
+            $table->unsignedBigInteger('accepted_bid_id')->nullable();
 
             $table->timestamps();
 
             // Indexes for better query performance
             $table->index(['buyer_id', 'status']);
             $table->index(['seller_id', 'status']);
+            $table->index(['is_public', 'status']);
             $table->index('created_at');
         });
     }

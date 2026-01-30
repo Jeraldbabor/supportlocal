@@ -10,6 +10,7 @@ import {
     FileSearch,
     FileText,
     FolderTree,
+    Gavel,
     LayoutGrid,
     Mail,
     MessageSquare,
@@ -22,8 +23,16 @@ import {
 import { useEffect, useState } from 'react';
 import AppLogo from './app-logo';
 
+// Interface for badge counts
+interface BadgeCounts {
+    marketplace?: number;
+    bidNotifications?: number;
+    bidReceived?: number;
+    contactMessages?: number;
+}
+
 // Function to get role-specific navigation items
-function getRoleNavItems(userRole?: string): NavItem[] {
+function getRoleNavItems(userRole?: string, badges?: BadgeCounts): NavItem[] {
     switch (userRole) {
         case 'seller':
             return [
@@ -51,6 +60,12 @@ function getRoleNavItems(userRole?: string): NavItem[] {
                     title: 'Custom Orders',
                     href: '/seller/custom-orders',
                     icon: PenTool,
+                },
+                {
+                    title: 'Marketplace',
+                    href: '/seller/marketplace',
+                    icon: Gavel,
+                    badge: (badges?.marketplace || 0) + (badges?.bidNotifications || 0) || undefined,
                 },
                 {
                     title: 'Seller Ratings',
@@ -130,6 +145,7 @@ function getRoleNavItems(userRole?: string): NavItem[] {
                     title: 'Contact Messages',
                     href: '/admin/contact-messages',
                     icon: Mail,
+                    badge: badges?.contactMessages,
                 },
             ];
 
@@ -155,6 +171,12 @@ function getRoleNavItems(userRole?: string): NavItem[] {
                     href: '/buyer/orders',
                     icon: ShoppingBag,
                 },
+                {
+                    title: 'My Custom Orders',
+                    href: '/buyer/custom-orders',
+                    icon: PenTool,
+                    badge: badges?.bidReceived,
+                },
             ];
 
         default:
@@ -170,14 +192,27 @@ function getRoleNavItems(userRole?: string): NavItem[] {
 
 export function AppSidebar() {
     // Get user data from the page props - this ensures session is maintained
-    const { auth, newContactMessagesCount } = usePage<SharedData & { newContactMessagesCount?: number }>().props;
+    const { auth, newContactMessagesCount, unreadMarketplaceCount, unreadBidNotificationsCount, unreadBidReceivedCount } = usePage<
+        SharedData & {
+            newContactMessagesCount?: number;
+            unreadMarketplaceCount?: number;
+            unreadBidNotificationsCount?: number;
+            unreadBidReceivedCount?: number;
+        }
+    >().props;
     const user = auth.user;
     const [unreadMessagesCount, setUnreadMessagesCount] = useState(0);
     // Track navigation to force re-subscription of Echo channels
     const [navigationCount, setNavigationCount] = useState(0);
 
-    // Get role-specific navigation items
-    const mainNavItems = getRoleNavItems(user?.role);
+    // Get role-specific navigation items with badge counts
+    const badges: BadgeCounts = {
+        marketplace: unreadMarketplaceCount,
+        bidNotifications: unreadBidNotificationsCount,
+        bidReceived: unreadBidReceivedCount,
+        contactMessages: newContactMessagesCount,
+    };
+    const mainNavItems = getRoleNavItems(user?.role, badges);
 
     // Listen for Inertia navigation to trigger re-subscription
     useEffect(() => {
@@ -240,7 +275,7 @@ export function AppSidebar() {
             </SidebarHeader>
 
             <SidebarContent className="bg-gradient-to-b from-slate-50/50 to-slate-50 py-4">
-                <NavMain items={mainNavItems} unreadMessagesCount={unreadMessagesCount} newContactMessagesCount={newContactMessagesCount || 0} />
+                <NavMain items={mainNavItems} unreadMessagesCount={unreadMessagesCount} />
             </SidebarContent>
 
             <SidebarFooter className="border-t border-gray-200 py-3">
