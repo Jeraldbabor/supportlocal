@@ -6,7 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem, type SharedData } from '@/types';
 import { Head, Link, router, usePage } from '@inertiajs/react';
-import { Download, Mail, Search, Trash2, ToggleLeft, ToggleRight, Users } from 'lucide-react';
+import { Download, Mail, Search, ToggleLeft, ToggleRight, Trash2, Users } from 'lucide-react';
 import { ChangeEvent, useState } from 'react';
 
 interface Subscriber {
@@ -87,10 +87,14 @@ export default function NewsletterIndex() {
 
     const handleToggleStatus = (id: number) => {
         setIsToggling(id);
-        router.post(`/admin/newsletter/${id}/toggle`, {}, {
-            preserveScroll: true,
-            onFinish: () => setIsToggling(null),
-        });
+        router.post(
+            `/admin/newsletter/${id}/toggle`,
+            {},
+            {
+                preserveScroll: true,
+                onFinish: () => setIsToggling(null),
+            },
+        );
     };
 
     const handleExport = () => {
@@ -219,10 +223,10 @@ export default function NewsletterIndex() {
                             <div className="overflow-x-auto">
                                 <table className="w-full">
                                     <thead>
-                                        <tr className="border-b border-gray-200 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            <th className="pb-3 pr-4">Email</th>
-                                            <th className="pb-3 pr-4">Status</th>
-                                            <th className="pb-3 pr-4 hidden sm:table-cell">Subscribed</th>
+                                        <tr className="border-b border-gray-200 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">
+                                            <th className="pr-4 pb-3">Email</th>
+                                            <th className="pr-4 pb-3">Status</th>
+                                            <th className="hidden pr-4 pb-3 sm:table-cell">Subscribed</th>
                                             <th className="pb-3 text-right">Actions</th>
                                         </tr>
                                     </thead>
@@ -231,8 +235,8 @@ export default function NewsletterIndex() {
                                             <tr key={subscriber.id} className="hover:bg-gray-50">
                                                 <td className="py-3 pr-4">
                                                     <div className="flex items-center gap-2">
-                                                        <Mail className="h-4 w-4 text-gray-400 shrink-0" />
-                                                        <span className="text-sm font-medium text-gray-900 truncate max-w-[200px] sm:max-w-none">
+                                                        <Mail className="h-4 w-4 shrink-0 text-gray-400" />
+                                                        <span className="max-w-[200px] truncate text-sm font-medium text-gray-900 sm:max-w-none">
                                                             {subscriber.email}
                                                         </span>
                                                     </div>
@@ -241,14 +245,14 @@ export default function NewsletterIndex() {
                                                     {subscriber.is_active ? (
                                                         <Badge className="bg-green-100 text-green-800">Active</Badge>
                                                     ) : (
-                                                        <Badge variant="outline" className="border-gray-300 text-gray-600">Unsubscribed</Badge>
+                                                        <Badge variant="outline" className="border-gray-300 text-gray-600">
+                                                            Unsubscribed
+                                                        </Badge>
                                                     )}
                                                 </td>
-                                                <td className="py-3 pr-4 hidden sm:table-cell">
+                                                <td className="hidden py-3 pr-4 sm:table-cell">
                                                     <span className="text-sm text-gray-500">
-                                                        {subscriber.subscribed_at 
-                                                            ? new Date(subscriber.subscribed_at).toLocaleDateString()
-                                                            : '-'}
+                                                        {subscriber.subscribed_at ? new Date(subscriber.subscribed_at).toLocaleDateString() : '-'}
                                                     </span>
                                                 </td>
                                                 <td className="py-3">

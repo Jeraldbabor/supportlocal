@@ -75,17 +75,11 @@ export default function NewsletterSubscription({ className = '' }: NewsletterSub
                                 </button>
                             </div>
                             {message && (
-                                <p
-                                    className={`mt-2 text-xs sm:text-sm ${
-                                        message.type === 'success' ? 'text-green-600' : 'text-red-600'
-                                    }`}
-                                >
+                                <p className={`mt-2 text-xs sm:text-sm ${message.type === 'success' ? 'text-green-600' : 'text-red-600'}`}>
                                     {message.text}
                                 </p>
                             )}
-                            <p className="mt-2 text-[10px] text-gray-500 sm:mt-3 sm:text-xs">
-                                We respect your privacy. Unsubscribe at any time.
-                            </p>
+                            <p className="mt-2 text-[10px] text-gray-500 sm:mt-3 sm:text-xs">We respect your privacy. Unsubscribe at any time.</p>
                         </form>
                     </div>
                 </div>
