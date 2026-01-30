@@ -3,6 +3,7 @@
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\GeocodeController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\NewsletterController;
 use App\Http\Controllers\PublicController;
 use App\Http\Controllers\WishlistController;
 use Illuminate\Support\Facades\Route;
@@ -13,6 +14,10 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/about', [HomeController::class, 'about'])->name('about');
 Route::get('/contact', [HomeController::class, 'contact'])->name('contact');
 Route::post('/contact', [HomeController::class, 'sendContactMessage'])->name('contact.send');
+
+// Newsletter subscription routes
+Route::post('/api/newsletter/subscribe', [NewsletterController::class, 'subscribe'])->name('newsletter.subscribe');
+Route::post('/api/newsletter/unsubscribe', [NewsletterController::class, 'unsubscribe'])->name('newsletter.unsubscribe');
 
 // Legal pages (required for Facebook/OAuth compliance)
 Route::get('/privacy-policy', function () {
@@ -310,6 +315,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/admin/contact-messages/{contactMessage}/update-status', [App\Http\Controllers\Admin\ContactMessageController::class, 'updateStatus'])->name('admin.contact-messages.update-status');
         Route::post('/admin/contact-messages/{contactMessage}/reply', [App\Http\Controllers\Admin\ContactMessageController::class, 'reply'])->name('admin.contact-messages.reply');
         Route::delete('/admin/contact-messages/{contactMessage}', [App\Http\Controllers\Admin\ContactMessageController::class, 'destroy'])->name('admin.contact-messages.destroy');
+
+        // Newsletter Subscribers Management Routes
+        Route::get('/admin/newsletter', [App\Http\Controllers\Admin\NewsletterController::class, 'index'])->name('admin.newsletter.index');
+        Route::get('/admin/newsletter/export', [App\Http\Controllers\Admin\NewsletterController::class, 'export'])->name('admin.newsletter.export');
+        Route::post('/admin/newsletter/{subscriber}/toggle', [App\Http\Controllers\Admin\NewsletterController::class, 'toggleStatus'])->name('admin.newsletter.toggle');
+        Route::delete('/admin/newsletter/{subscriber}', [App\Http\Controllers\Admin\NewsletterController::class, 'destroy'])->name('admin.newsletter.destroy');
     });
 
     Route::middleware(['role:buyer'])->group(function () {

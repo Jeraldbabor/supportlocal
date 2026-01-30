@@ -4,6 +4,7 @@ import { ArrowRight, CheckCircle, Gavel, HandHeart, MessageSquare, Package, Shie
 import { useState } from 'react';
 import AddToCartModal from '../components/AddToCartModal';
 import ImageCarousel from '../components/ImageCarousel';
+import NewsletterSubscription from '../components/NewsletterSubscription';
 import ProductCard from '../components/ProductCard';
 import ProductCarousel from '../components/ProductCarousel';
 import Toast from '../components/Toast';
@@ -783,32 +784,7 @@ export default function Home({
             </section>
 
             {/* Newsletter Section */}
-            <section className="bg-white py-8 sm:py-12">
-                <div className="mx-auto max-w-4xl px-3 sm:px-4 lg:px-8">
-                    <div className="rounded-xl border border-gray-200 bg-gradient-to-br from-amber-50 to-orange-50 p-6 shadow-sm sm:rounded-2xl sm:p-8 md:p-12">
-                        <div className="text-center">
-                            <h2 className="mb-2 text-xl font-bold text-gray-900 sm:text-2xl lg:text-3xl">Stay Updated</h2>
-                            <p className="mb-4 text-xs text-gray-600 sm:mb-6 sm:text-sm lg:text-base">
-                                Get the latest updates on new products and exclusive deals
-                            </p>
-                            <div className="mx-auto max-w-md">
-                                <div className="flex flex-col gap-2 sm:gap-3">
-                                    <input
-                                        type="email"
-                                        placeholder="Enter your email"
-                                        style={{ colorScheme: 'light', color: '#111827', backgroundColor: '#ffffff' }}
-                                        className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 focus:outline-none sm:px-4 sm:py-3"
-                                    />
-                                    <button className="w-full rounded-lg bg-amber-600 px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-amber-700 sm:w-auto sm:px-6 sm:py-3">
-                                        Subscribe
-                                    </button>
-                                </div>
-                                <p className="mt-2 text-[10px] text-gray-500 sm:mt-3 sm:text-xs">We respect your privacy. Unsubscribe at any time.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
+            <NewsletterSubscription />
 
             {/* Add to Cart Modal */}
             {modalProduct && (
