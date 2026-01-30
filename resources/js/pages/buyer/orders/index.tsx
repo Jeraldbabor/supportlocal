@@ -1,7 +1,7 @@
 import BuyerLayout from '@/layouts/BuyerLayout';
 import { formatPeso } from '@/utils/currency';
 import { Head, Link, router } from '@inertiajs/react';
-import { CheckCircle, Clock, Eye, MessageSquare, Package, Trash2, X, XCircle } from 'lucide-react';
+import { Ban, CheckCircle, Clock, Eye, MessageSquare, Package, Trash2, X, XCircle } from 'lucide-react';
 import { useState } from 'react';
 
 interface OrderItem {
@@ -27,6 +27,9 @@ interface Order {
     updated_at: string;
     order_items: OrderItem[];
     seller_confirmed_at: string | null;
+    cancellation_reason?: string | null;
+    cancelled_by?: string | null;
+    cancelled_at?: string | null;
 }
 
 interface OrdersIndexProps {
@@ -42,7 +45,10 @@ interface OrdersIndexProps {
 export default function Orders({ orders }: OrdersIndexProps) {
     const [showClearAllConfirm, setShowClearAllConfirm] = useState(false);
     const [showDeleteConfirm, setShowDeleteConfirm] = useState<number | null>(null);
+    const [showCancelConfirm, setShowCancelConfirm] = useState<number | null>(null);
+    const [cancellationReason, setCancellationReason] = useState('');
     const [isDeleting, setIsDeleting] = useState(false);
+    const [isCancelling, setIsCancelling] = useState(false);
 
     const handleClearAllHistory = () => {
         setIsDeleting(true);
@@ -70,8 +76,31 @@ export default function Orders({ orders }: OrdersIndexProps) {
         });
     };
 
+    const handleCancelOrder = (orderId: number) => {
+        if (!cancellationReason.trim()) {
+            return;
+        }
+        setIsCancelling(true);
+        router.post(
+            `/buyer/orders/${orderId}/cancel`,
+            { cancellation_reason: cancellationReason },
+            {
+                preserveState: true,
+                onFinish: () => {
+                    setIsCancelling(false);
+                    setShowCancelConfirm(null);
+                    setCancellationReason('');
+                },
+            },
+        );
+    };
+
     const canDelete = (status: string) => {
         return ['cancelled', 'delivered', 'completed'].includes(status);
+    };
+
+    const canCancel = (status: string) => {
+        return status === 'pending';
     };
     const getStatusIcon = (status: string) => {
         switch (status) {
@@ -194,17 +223,28 @@ export default function Orders({ orders }: OrdersIndexProps) {
                                                 Placed on {new Date(order.created_at).toLocaleDateString()}
                                             </p>
                                         </div>
-                                        {/* Mobile delete button */}
-                                        {canDelete(order.status) && (
-                                            <button
-                                                onClick={() => setShowDeleteConfirm(order.id)}
-                                                className="ml-2 inline-flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full border border-red-200 bg-white text-red-500 transition-colors hover:bg-red-50 sm:hidden"
-                                                disabled={isDeleting}
-                                                title="Delete Order"
-                                            >
-                                                <X className="h-4 w-4" />
-                                            </button>
-                                        )}
+                                        {/* Mobile cancel button */}
+                                                {canCancel(order.status) && (
+                                                    <button
+                                                        onClick={() => setShowCancelConfirm(order.id)}
+                                                        className="ml-2 inline-flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full border border-orange-200 bg-white text-orange-500 transition-colors hover:bg-orange-50 sm:hidden"
+                                                        disabled={isCancelling}
+                                                        title="Cancel Order"
+                                                    >
+                                                        <Ban className="h-4 w-4" />
+                                                    </button>
+                                                )}
+                                                {/* Mobile delete button */}
+                                                {canDelete(order.status) && (
+                                                    <button
+                                                        onClick={() => setShowDeleteConfirm(order.id)}
+                                                        className="ml-2 inline-flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full border border-red-200 bg-white text-red-500 transition-colors hover:bg-red-50 sm:hidden"
+                                                        disabled={isDeleting}
+                                                        title="Delete Order"
+                                                    >
+                                                        <X className="h-4 w-4" />
+                                                    </button>
+                                                )}
                                     </div>
 
                                     {/* Status and Price Row */}
@@ -226,6 +266,17 @@ export default function Orders({ orders }: OrdersIndexProps) {
                                                 </div>
                                             </div>
 
+                                            {/* Desktop cancel button */}
+                                            {canCancel(order.status) && (
+                                                <button
+                                                    onClick={() => setShowCancelConfirm(order.id)}
+                                                    className="hidden h-9 w-9 items-center justify-center rounded-full border border-orange-200 bg-white text-orange-500 transition-colors hover:bg-orange-50 hover:text-orange-700 sm:inline-flex"
+                                                    disabled={isCancelling}
+                                                    title="Cancel Order"
+                                                >
+                                                    <Ban className="h-4 w-4" />
+                                                </button>
+                                            )}
                                             {/* Desktop delete button */}
                                             {canDelete(order.status) && (
                                                 <button
@@ -307,6 +358,17 @@ export default function Orders({ orders }: OrdersIndexProps) {
                                             <Eye className="h-4 w-4" />
                                             View Details
                                         </Link>
+
+                                        {canCancel(order.status) && (
+                                            <button
+                                                onClick={() => setShowCancelConfirm(order.id)}
+                                                className="inline-flex flex-1 items-center justify-center gap-2 rounded-lg border border-orange-300 bg-white px-4 py-2.5 text-sm font-medium text-orange-600 transition-colors hover:bg-orange-50 sm:flex-none"
+                                                disabled={isCancelling}
+                                            >
+                                                <Ban className="h-4 w-4" />
+                                                Cancel Order
+                                            </button>
+                                        )}
 
                                         {order.status === 'completed' && order.order_items?.length > 0 && (
                                             <Link
@@ -409,6 +471,59 @@ export default function Orders({ orders }: OrdersIndexProps) {
                                     disabled={isDeleting}
                                 >
                                     {isDeleting ? 'Deleting...' : 'Delete'}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* Cancel Order Confirmation Dialog */}
+                {showCancelConfirm && (
+                    <div className="bg-opacity-50 fixed inset-0 z-50 flex items-center justify-center bg-black">
+                        <div className="mx-4 w-full max-w-md rounded-lg bg-white p-6">
+                            <div className="mb-4 flex items-center">
+                                <div className="flex-shrink-0">
+                                    <Ban className="h-6 w-6 text-orange-600" />
+                                </div>
+                                <div className="ml-3">
+                                    <h3 className="text-lg font-medium text-gray-900">Cancel Order</h3>
+                                </div>
+                            </div>
+                            <div className="mb-4">
+                                <p className="mb-3 text-sm text-gray-600">
+                                    Are you sure you want to cancel this order? Please provide a reason for cancellation.
+                                </p>
+                                <label htmlFor="cancellation_reason" className="mb-1 block text-sm font-medium text-gray-700">
+                                    Reason for cancellation <span className="text-red-500">*</span>
+                                </label>
+                                <textarea
+                                    id="cancellation_reason"
+                                    value={cancellationReason}
+                                    onChange={(e) => setCancellationReason(e.target.value)}
+                                    placeholder="Please tell us why you want to cancel this order..."
+                                    className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-orange-500 focus:ring-orange-500 focus:outline-none"
+                                    rows={3}
+                                    maxLength={500}
+                                />
+                                <p className="mt-1 text-xs text-gray-500">{cancellationReason.length}/500 characters</p>
+                            </div>
+                            <div className="flex justify-end gap-3">
+                                <button
+                                    onClick={() => {
+                                        setShowCancelConfirm(null);
+                                        setCancellationReason('');
+                                    }}
+                                    className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                                    disabled={isCancelling}
+                                >
+                                    Go Back
+                                </button>
+                                <button
+                                    onClick={() => handleCancelOrder(showCancelConfirm)}
+                                    className="rounded-md border border-transparent bg-orange-600 px-4 py-2 text-sm font-medium text-white hover:bg-orange-700 disabled:opacity-50"
+                                    disabled={isCancelling || !cancellationReason.trim()}
+                                >
+                                    {isCancelling ? 'Cancelling...' : 'Cancel Order'}
                                 </button>
                             </div>
                         </div>

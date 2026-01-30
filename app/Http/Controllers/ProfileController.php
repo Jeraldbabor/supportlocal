@@ -205,7 +205,12 @@ class ProfileController extends Controller
         $user = $request->user();
         $user->dismissProfileCompletionReminder();
 
-        return response()->json(['success' => true]);
+        // Return JSON for AJAX requests, redirect back for Inertia requests
+        if ($request->wantsJson() && ! $request->header('X-Inertia')) {
+            return response()->json(['success' => true]);
+        }
+
+        return back();
     }
 
     /**

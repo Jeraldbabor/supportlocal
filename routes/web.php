@@ -164,13 +164,21 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/seller/notifications/read-all', [App\Http\Controllers\Seller\NotificationController::class, 'markAllAsRead'])->name('seller.notifications.read-all');
         Route::post('/seller/notifications/clear-all', [App\Http\Controllers\Seller\NotificationController::class, 'clearAllHistory'])->name('seller.notifications.clear-all');
 
-        // Custom Order Request Routes for Sellers
+        // Custom Order Request Routes for Sellers (direct requests)
         Route::get('/seller/custom-orders', [App\Http\Controllers\Seller\CustomOrderRequestController::class, 'index'])->name('seller.custom-orders.index');
         Route::get('/seller/custom-orders/{customOrderRequest}', [App\Http\Controllers\Seller\CustomOrderRequestController::class, 'show'])->name('seller.custom-orders.show');
         Route::post('/seller/custom-orders/{customOrderRequest}/quote', [App\Http\Controllers\Seller\CustomOrderRequestController::class, 'submitQuote'])->name('seller.custom-orders.quote');
         Route::post('/seller/custom-orders/{customOrderRequest}/reject', [App\Http\Controllers\Seller\CustomOrderRequestController::class, 'reject'])->name('seller.custom-orders.reject');
         Route::post('/seller/custom-orders/{customOrderRequest}/start', [App\Http\Controllers\Seller\CustomOrderRequestController::class, 'startWork'])->name('seller.custom-orders.start');
         Route::post('/seller/custom-orders/{customOrderRequest}/send-for-checkout', [App\Http\Controllers\Seller\CustomOrderRequestController::class, 'sendForCheckout'])->name('seller.custom-orders.send-for-checkout');
+
+        // Marketplace Routes for Sellers (public bidding)
+        Route::get('/seller/marketplace', [App\Http\Controllers\Seller\MarketplaceController::class, 'index'])->name('seller.marketplace.index');
+        Route::get('/seller/marketplace/my-bids', [App\Http\Controllers\Seller\MarketplaceController::class, 'myBids'])->name('seller.marketplace.my-bids');
+        Route::get('/seller/marketplace/{customOrderRequest}', [App\Http\Controllers\Seller\MarketplaceController::class, 'show'])->name('seller.marketplace.show');
+        Route::post('/seller/marketplace/{customOrderRequest}/bid', [App\Http\Controllers\Seller\MarketplaceController::class, 'submitBid'])->name('seller.marketplace.bid');
+        Route::put('/seller/marketplace/bids/{bid}', [App\Http\Controllers\Seller\MarketplaceController::class, 'updateBid'])->name('seller.marketplace.update-bid');
+        Route::delete('/seller/marketplace/bids/{bid}', [App\Http\Controllers\Seller\MarketplaceController::class, 'withdrawBid'])->name('seller.marketplace.withdraw-bid');
     });
 
     Route::middleware(['role:administrator'])->group(function () {
@@ -433,6 +441,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         // Additional order routes
         Route::post('/buyer/orders/clear-all', [App\Http\Controllers\Buyer\OrderController::class, 'clearAllHistory'])->name('buyer.orders.clear-all');
         Route::post('/buyer/orders/{order}/upload-payment-proof', [App\Http\Controllers\Buyer\OrderController::class, 'uploadPaymentProof'])->name('buyer.orders.upload-payment-proof');
+        Route::post('/buyer/orders/{order}/cancel', [App\Http\Controllers\Buyer\OrderController::class, 'cancel'])->name('buyer.orders.cancel');
 
         // Buyer Notification Routes
         Route::get('/buyer/notifications', [App\Http\Controllers\Buyer\NotificationController::class, 'index'])->name('buyer.notifications.index');
@@ -467,6 +476,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/buyer/custom-orders/{customOrderRequest}/cancel', [App\Http\Controllers\Buyer\CustomOrderRequestController::class, 'cancel'])->name('buyer.custom-orders.cancel');
         Route::get('/buyer/custom-orders/{customOrderRequest}/checkout', [App\Http\Controllers\Buyer\CustomOrderRequestController::class, 'checkout'])->name('buyer.custom-orders.checkout');
         Route::post('/buyer/custom-orders/{customOrderRequest}/place-order', [App\Http\Controllers\Buyer\CustomOrderRequestController::class, 'placeOrder'])->name('buyer.custom-orders.place-order');
+
+        // Bid management routes for buyers
+        Route::post('/buyer/custom-orders/{customOrderRequest}/bids/{bid}/accept', [App\Http\Controllers\Buyer\CustomOrderRequestController::class, 'acceptBid'])->name('buyer.custom-orders.accept-bid');
+        Route::post('/buyer/custom-orders/{customOrderRequest}/bids/{bid}/reject', [App\Http\Controllers\Buyer\CustomOrderRequestController::class, 'rejectBid'])->name('buyer.custom-orders.reject-bid');
     });
 
     // Routes accessible by multiple roles

@@ -76,17 +76,35 @@ class RegisteredUserController extends Controller
             'user_agent' => $request->userAgent(),
         ]);
 
+        // Login the user first
+        Auth::login($user);
+
+        // Send verification email directly and synchronously
+        // We call this directly instead of relying on the Registered event
+        // to ensure the email is sent immediately before redirect
         try {
+            // Refresh the user to ensure all attributes are loaded
+            $user->refresh();
+            
+            // Send the verification notification
             $user->sendEmailVerificationNotification();
+            
+            Log::info('Verification email sent successfully during registration', [
+                'user_id' => $user->id,
+                'email' => $user->email,
+            ]);
         } catch (\Throwable $e) {
-            Log::error('Failed to send verification email', [
+            // Log the error with full details for debugging
+            Log::error('Failed to send verification email during registration', [
                 'user_id' => $user->id,
                 'email' => $user->email,
                 'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
             ]);
         }
 
-        Auth::login($user);
+        // Fire the Registered event for any other listeners (but not for email - already sent above)
+        event(new Registered($user));
 
         // Store guest cart data in session for transfer after email verification
         if ($request->has('guestCart')) {

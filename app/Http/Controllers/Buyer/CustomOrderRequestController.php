@@ -3,13 +3,14 @@
 namespace App\Http\Controllers\Buyer;
 
 use App\Http\Controllers\Controller;
+use App\Models\CustomOrderBid;
 use App\Models\CustomOrderRequest;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\User;
+use App\Notifications\BidAccepted;
 use App\Notifications\CustomOrderQuoteAccepted;
 use App\Notifications\CustomOrderQuoteDeclined;
-use App\Notifications\NewCustomOrderRequest;
 use App\Notifications\NewOrderReceived;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -24,12 +25,22 @@ class CustomOrderRequestController extends Controller
     public function index(Request $request)
     {
         $query = CustomOrderRequest::with(['seller'])
+            ->withCount('bids')
             ->forBuyer(auth()->id())
             ->latest();
 
         // Filter by status
         if ($request->filled('status') && $request->status !== 'all') {
             $query->withStatus($request->status);
+        }
+
+        // Filter by type (public/direct)
+        if ($request->filled('type')) {
+            if ($request->type === 'public') {
+                $query->where('is_public', true);
+            } elseif ($request->type === 'direct') {
+                $query->where('is_public', false);
+            }
         }
 
         // Search by title or request number
@@ -45,19 +56,22 @@ class CustomOrderRequestController extends Controller
 
         // Transform to include seller's avatar_url
         $requests->getCollection()->transform(function ($item) {
-            $item->seller = [
-                'id' => $item->seller->id,
-                'name' => $item->seller->name,
-                'avatar_url' => $item->seller->avatar_url,
-            ];
+            if ($item->seller) {
+                $item->seller = [
+                    'id' => $item->seller->id,
+                    'name' => $item->seller->name,
+                    'avatar_url' => $item->seller->avatar_url,
+                ];
+            }
 
             return $item;
         });
 
         return Inertia::render('buyer/CustomOrders/Index', [
             'requests' => $requests,
-            'filters' => $request->only(['status', 'search']),
+            'filters' => $request->only(['status', 'search', 'type']),
             'statusCounts' => $this->getStatusCounts(auth()->id()),
+            'categories' => CustomOrderRequest::$categories,
         ]);
     }
 
@@ -66,55 +80,19 @@ class CustomOrderRequestController extends Controller
      */
     public function create(Request $request)
     {
-        $sellerId = $request->query('seller_id');
-        $seller = null;
-
-        if ($sellerId) {
-            $seller = User::where('id', $sellerId)
-                ->where('role', User::ROLE_SELLER)
-                ->first();
-
-            if ($seller) {
-                $seller = [
-                    'id' => $seller->id,
-                    'name' => $seller->name,
-                    'avatar_url' => $seller->avatar_url,
-                    'address' => $seller->address,
-                ];
-            }
-        }
-
-        // Get all sellers with their avatar_url
-        $sellers = null;
-        if (! $seller) {
-            $sellers = User::where('role', User::ROLE_SELLER)
-                ->where('is_active', true)
-                ->orderBy('name')
-                ->get()
-                ->map(function ($user) {
-                    return [
-                        'id' => $user->id,
-                        'name' => $user->name,
-                        'avatar_url' => $user->avatar_url,
-                        'address' => $user->address,
-                    ];
-                });
-        }
-
         return Inertia::render('buyer/CustomOrders/Create', [
-            'seller' => $seller,
-            'sellers' => $sellers,
+            'categories' => CustomOrderRequest::$categories,
         ]);
     }
 
     /**
-     * Store a newly created custom order request.
+     * Store a newly created custom order request (public bidding).
      */
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'seller_id' => 'required|exists:users,id',
             'title' => 'required|string|max:255',
+            'category' => 'required|string|in:'.implode(',', array_keys(CustomOrderRequest::$categories)),
             'description' => 'required|string|min:20|max:2000',
             'budget_min' => 'nullable|numeric|min:0',
             'budget_max' => 'nullable|numeric|min:0|gte:budget_min',
@@ -125,11 +103,6 @@ class CustomOrderRequestController extends Controller
             'reference_images.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:5120',
         ]);
 
-        // Verify seller exists and is a seller
-        $seller = User::where('id', $validated['seller_id'])
-            ->where('role', User::ROLE_SELLER)
-            ->firstOrFail();
-
         // Handle reference images upload
         $imagePaths = [];
         if ($request->hasFile('reference_images')) {
@@ -139,11 +112,13 @@ class CustomOrderRequestController extends Controller
             }
         }
 
-        // Create the custom order request
+        // Create the public custom order request
         $customOrderRequest = CustomOrderRequest::create([
             'buyer_id' => auth()->id(),
-            'seller_id' => $seller->id,
+            'seller_id' => null, // No seller yet - open for bidding
+            'is_public' => true,
             'title' => $validated['title'],
+            'category' => $validated['category'],
             'description' => $validated['description'],
             'budget_min' => $validated['budget_min'] ?? null,
             'budget_max' => $validated['budget_max'] ?? null,
@@ -151,15 +126,15 @@ class CustomOrderRequestController extends Controller
             'preferred_deadline' => $validated['preferred_deadline'] ?? null,
             'special_requirements' => $validated['special_requirements'] ?? null,
             'reference_images' => $imagePaths ?: null,
-            'status' => CustomOrderRequest::STATUS_PENDING,
+            'status' => CustomOrderRequest::STATUS_OPEN,
         ]);
 
-        // Notify seller
-        $seller->notify(new NewCustomOrderRequest($customOrderRequest));
+        // Notify all active sellers about the new marketplace request
+        $this->notifySellersAboutNewRequest($customOrderRequest);
 
         return redirect()
             ->route('buyer.custom-orders.show', $customOrderRequest)
-            ->with('success', 'Custom order request submitted successfully! The seller will review your request and respond soon.');
+            ->with('success', 'Your custom order request is now live! Artisans can view and submit bids on your project.');
     }
 
     /**
@@ -176,22 +151,171 @@ class CustomOrderRequestController extends Controller
             'seller',
             'product:id,name,price,primary_image,slug',
             'order:id,order_number,status,total_amount',
+            'bids.seller',
+            'acceptedBid.seller',
         ]);
 
         // Transform the request to include seller's avatar_url
         $requestData = $customOrderRequest->toArray();
-        $requestData['seller'] = [
-            'id' => $customOrderRequest->seller->id,
-            'name' => $customOrderRequest->seller->name,
-            'email' => $customOrderRequest->seller->email,
-            'phone_number' => $customOrderRequest->seller->phone_number,
-            'address' => $customOrderRequest->seller->address,
-            'avatar_url' => $customOrderRequest->seller->avatar_url,
-        ];
+
+        if ($customOrderRequest->seller) {
+            $requestData['seller'] = [
+                'id' => $customOrderRequest->seller->id,
+                'name' => $customOrderRequest->seller->name,
+                'email' => $customOrderRequest->seller->email,
+                'phone_number' => $customOrderRequest->seller->phone_number,
+                'address' => $customOrderRequest->seller->address,
+                'avatar_url' => $customOrderRequest->seller->avatar_url,
+            ];
+        } else {
+            $requestData['seller'] = null;
+        }
+
+        // Transform bids with seller info
+        $requestData['bids'] = $customOrderRequest->bids
+            ->sortByDesc('created_at')
+            ->map(function ($bid) {
+                return $bid->toArrayWithSeller();
+            })
+            ->values()
+            ->toArray();
 
         return Inertia::render('buyer/CustomOrders/Show', [
             'request' => $requestData,
+            'categories' => CustomOrderRequest::$categories,
         ]);
+    }
+
+    /**
+     * Accept a bid on a public request.
+     */
+    public function acceptBid(CustomOrderRequest $customOrderRequest, CustomOrderBid $bid)
+    {
+        // Ensure buyer owns this request
+        if ($customOrderRequest->buyer_id !== auth()->id()) {
+            abort(403, 'You do not have permission to accept this bid.');
+        }
+
+        // Ensure bid belongs to this request
+        if ($bid->custom_order_request_id !== $customOrderRequest->id) {
+            abort(403, 'This bid does not belong to this request.');
+        }
+
+        if (! $bid->canBeAccepted()) {
+            return back()->with('error', 'This bid cannot be accepted.');
+        }
+
+        DB::beginTransaction();
+        try {
+            // Update the bid status
+            $bid->update([
+                'status' => CustomOrderBid::STATUS_ACCEPTED,
+                'accepted_at' => now(),
+            ]);
+
+            // Get other pending bids before rejecting them (for notifications)
+            $rejectedBids = $customOrderRequest->bids()
+                ->where('id', '!=', $bid->id)
+                ->where('status', CustomOrderBid::STATUS_PENDING)
+                ->with('seller')
+                ->get();
+
+            // Reject all other pending bids
+            $customOrderRequest->bids()
+                ->where('id', '!=', $bid->id)
+                ->where('status', CustomOrderBid::STATUS_PENDING)
+                ->update([
+                    'status' => CustomOrderBid::STATUS_REJECTED,
+                    'rejected_at' => now(),
+                    'rejection_reason' => 'Another bid was accepted',
+                ]);
+
+            // Update the request with seller info and accepted bid
+            $customOrderRequest->update([
+                'seller_id' => $bid->seller_id,
+                'status' => CustomOrderRequest::STATUS_ACCEPTED,
+                'quoted_price' => $bid->proposed_price,
+                'estimated_days' => $bid->estimated_days,
+                'seller_notes' => $bid->message,
+                'quoted_at' => $bid->created_at,
+                'accepted_at' => now(),
+                'accepted_bid_id' => $bid->id,
+            ]);
+
+            DB::commit();
+
+            // Notify the winning seller
+            $bid->seller->notify(new BidAccepted($bid));
+
+            // Notify other sellers that their bids were not selected
+            foreach ($rejectedBids as $rejectedBid) {
+                try {
+                    $rejectedBid->seller->notify(new \App\Notifications\BidRejected($rejectedBid, true));
+                } catch (\Exception $e) {
+                    Log::warning('Failed to notify seller about rejected bid', [
+                        'bid_id' => $rejectedBid->id,
+                        'seller_id' => $rejectedBid->seller_id,
+                        'error' => $e->getMessage(),
+                    ]);
+                }
+            }
+
+            return back()->with('success', 'Bid accepted! The artisan will start working on your custom order.');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Failed to accept bid', [
+                'bid_id' => $bid->id,
+                'request_id' => $customOrderRequest->id,
+                'error' => $e->getMessage(),
+            ]);
+
+            return back()->with('error', 'Failed to accept bid. Please try again.');
+        }
+    }
+
+    /**
+     * Reject a bid on a public request.
+     */
+    public function rejectBid(Request $request, CustomOrderRequest $customOrderRequest, CustomOrderBid $bid)
+    {
+        // Ensure buyer owns this request
+        if ($customOrderRequest->buyer_id !== auth()->id()) {
+            abort(403, 'You do not have permission to reject this bid.');
+        }
+
+        // Ensure bid belongs to this request
+        if ($bid->custom_order_request_id !== $customOrderRequest->id) {
+            abort(403, 'This bid does not belong to this request.');
+        }
+
+        if (! $bid->canBeRejected()) {
+            return back()->with('error', 'This bid cannot be rejected.');
+        }
+
+        $validated = $request->validate([
+            'reason' => 'nullable|string|max:500',
+        ]);
+
+        $bid->update([
+            'status' => CustomOrderBid::STATUS_REJECTED,
+            'rejected_at' => now(),
+            'rejection_reason' => $validated['reason'] ?? 'Bid rejected by buyer',
+        ]);
+
+        // Notify the seller about the rejection
+        try {
+            $bid->load('seller');
+            $bid->seller->notify(new \App\Notifications\BidRejected($bid, false));
+        } catch (\Exception $e) {
+            Log::warning('Failed to notify seller about rejected bid', [
+                'bid_id' => $bid->id,
+                'seller_id' => $bid->seller_id,
+                'error' => $e->getMessage(),
+            ]);
+        }
+
+        return back()->with('success', 'Bid rejected.');
     }
 
     /**
@@ -442,6 +566,7 @@ class CustomOrderRequestController extends Controller
 
         return [
             'all' => array_sum($counts),
+            'open' => $counts[CustomOrderRequest::STATUS_OPEN] ?? 0,
             'pending' => $counts[CustomOrderRequest::STATUS_PENDING] ?? 0,
             'quoted' => $counts[CustomOrderRequest::STATUS_QUOTED] ?? 0,
             'accepted' => $counts[CustomOrderRequest::STATUS_ACCEPTED] ?? 0,
@@ -449,5 +574,29 @@ class CustomOrderRequestController extends Controller
             'ready_for_checkout' => $counts[CustomOrderRequest::STATUS_READY_FOR_CHECKOUT] ?? 0,
             'completed' => $counts[CustomOrderRequest::STATUS_COMPLETED] ?? 0,
         ];
+    }
+
+    /**
+     * Notify all active sellers about a new marketplace request.
+     */
+    private function notifySellersAboutNewRequest(CustomOrderRequest $customOrderRequest): void
+    {
+        // Get all active sellers
+        $sellers = User::where('role', User::ROLE_SELLER)
+            ->where('is_active', true)
+            ->get();
+
+        // Send notification to each seller
+        foreach ($sellers as $seller) {
+            try {
+                $seller->notify(new \App\Notifications\NewMarketplaceRequest($customOrderRequest));
+            } catch (\Exception $e) {
+                Log::warning('Failed to notify seller about new marketplace request', [
+                    'seller_id' => $seller->id,
+                    'request_id' => $customOrderRequest->id,
+                    'error' => $e->getMessage(),
+                ]);
+            }
+        }
     }
 }

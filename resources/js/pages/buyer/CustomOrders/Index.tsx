@@ -3,17 +3,17 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import BuyerLayout from '@/layouts/BuyerLayout';
 import { Link, router } from '@inertiajs/react';
-import { Calendar, ChevronLeft, ChevronRight, Clock, DollarSign, Eye, Package, PenTool, Plus, Search } from 'lucide-react';
-import React, { useState } from 'react';
+import { Calendar, ChevronLeft, ChevronRight, Clock, DollarSign, Eye, Gavel, Loader2, Package, Plus, Search, Users, X } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
 
 interface CustomOrderRequest {
     id: number;
     request_number: string;
     title: string;
     description: string;
+    is_public: boolean;
     status: string;
     status_label: string;
     status_color: string;
@@ -24,12 +24,13 @@ interface CustomOrderRequest {
     preferred_deadline: string | null;
     quoted_price: number | null;
     estimated_days: number | null;
+    bids_count: number;
     created_at: string;
     seller: {
         id: number;
         name: string;
         avatar_url: string | null;
-    };
+    } | null;
 }
 
 interface Props {
@@ -43,18 +44,23 @@ interface Props {
     filters: {
         status?: string;
         search?: string;
+        type?: string;
     };
     statusCounts: {
         all: number;
+        open: number;
         pending: number;
         quoted: number;
         accepted: number;
         in_progress: number;
+        ready_for_checkout: number;
         completed: number;
     };
+    categories?: Record<string, string>;
 }
 
 const statusColors: Record<string, string> = {
+    open: 'bg-blue-100 text-blue-800 border-blue-200',
     pending: 'bg-yellow-100 text-yellow-800 border-yellow-200',
     quoted: 'bg-blue-100 text-blue-800 border-blue-200',
     accepted: 'bg-green-100 text-green-800 border-green-200',
@@ -68,219 +74,370 @@ const statusColors: Record<string, string> = {
 
 export default function CustomOrdersIndex({ requests, filters, statusCounts }: Props) {
     const [search, setSearch] = useState(filters.search || '');
+    const [status, setStatus] = useState(filters.status || 'all');
+    const [isSearching, setIsSearching] = useState(false);
+    const [showDropdown, setShowDropdown] = useState(false);
+    const [searchResults, setSearchResults] = useState<CustomOrderRequest[]>([]);
+    const debounceRef = useRef<NodeJS.Timeout | null>(null);
+    const inputRef = useRef<HTMLInputElement>(null);
+    const dropdownRef = useRef<HTMLDivElement>(null);
 
-    const handleSearch = (e: React.FormEvent) => {
-        e.preventDefault();
-        router.get('/buyer/custom-orders', { ...filters, search }, { preserveState: true });
+    // Filter results locally for dropdown
+    const filterResults = (searchValue: string) => {
+        if (!searchValue.trim()) {
+            setSearchResults([]);
+            setShowDropdown(false);
+            return;
+        }
+
+        const query = searchValue.toLowerCase();
+        const filtered = requests.data.filter(
+            (request) =>
+                request.title.toLowerCase().includes(query) ||
+                request.request_number.toLowerCase().includes(query) ||
+                request.description.toLowerCase().includes(query),
+        );
+        setSearchResults(filtered.slice(0, 5)); // Show max 5 results
+        setShowDropdown(true);
+        setIsSearching(false);
     };
 
-    const handleFilterChange = (key: string, value: string) => {
-        router.get('/buyer/custom-orders', { ...filters, [key]: value }, { preserveState: true });
+    // Handle search input change with debounce
+    const handleSearchChange = (value: string) => {
+        setSearch(value);
+        setIsSearching(true);
+
+        // Clear existing timeout
+        if (debounceRef.current) {
+            clearTimeout(debounceRef.current);
+        }
+
+        // Set new timeout for live search (200ms delay)
+        debounceRef.current = setTimeout(() => {
+            filterResults(value);
+        }, 200);
+    };
+
+    // Clear search
+    const clearSearch = () => {
+        setSearch('');
+        setSearchResults([]);
+        setShowDropdown(false);
+        inputRef.current?.focus();
+    };
+
+    // Handle click outside to close dropdown
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+                setShowDropdown(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, []);
+
+    // Cleanup timeout on unmount
+    useEffect(() => {
+        return () => {
+            if (debounceRef.current) {
+                clearTimeout(debounceRef.current);
+            }
+        };
+    }, []);
+
+    // Handle status filter change
+    const handleStatusChange = (newStatus: string) => {
+        setStatus(newStatus);
+        router.get(
+            '/buyer/custom-orders',
+            {
+                status: newStatus !== 'all' ? newStatus : undefined,
+                search: search || undefined,
+            },
+            { preserveState: true },
+        );
+    };
+
+    const handlePageChange = (page: number) => {
+        router.get('/buyer/custom-orders', { ...filters, page }, { preserveState: true });
+    };
+
+    const formatDate = (date: string) => {
+        return new Date(date).toLocaleDateString('en-PH', {
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric',
+        });
     };
 
     return (
-        <BuyerLayout title="My Custom Orders">
-            <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-                {/* Header */}
-                <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                    <div>
-                        <h1 className="text-3xl font-bold text-gray-900">My Custom Orders</h1>
-                        <p className="mt-1 text-gray-600">Track and manage your custom order requests</p>
-                    </div>
-                    <Link href="/buyer/custom-orders/create">
-                        <Button className="bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700">
-                            <Plus className="mr-2 h-4 w-4" />
-                            New Custom Request
-                        </Button>
-                    </Link>
-                </div>
-
-                {/* Stats Cards */}
-                <div className="mb-8 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
-                    {[
-                        { label: 'All Requests', count: statusCounts.all, status: 'all', color: 'bg-gray-100 text-gray-800' },
-                        { label: 'Pending', count: statusCounts.pending, status: 'pending', color: 'bg-yellow-100 text-yellow-800' },
-                        { label: 'Quoted', count: statusCounts.quoted, status: 'quoted', color: 'bg-blue-100 text-blue-800' },
-                        { label: 'Accepted', count: statusCounts.accepted, status: 'accepted', color: 'bg-green-100 text-green-800' },
-                        { label: 'In Progress', count: statusCounts.in_progress, status: 'in_progress', color: 'bg-purple-100 text-purple-800' },
-                        { label: 'Completed', count: statusCounts.completed, status: 'completed', color: 'bg-emerald-100 text-emerald-800' },
-                    ].map((stat) => (
-                        <button
-                            key={stat.status}
-                            onClick={() => handleFilterChange('status', stat.status)}
-                            className={`rounded-xl border p-4 text-left transition-all hover:shadow-md ${
-                                filters.status === stat.status || (!filters.status && stat.status === 'all')
-                                    ? 'border-amber-300 bg-amber-50 ring-2 ring-amber-200'
-                                    : 'border-gray-200 bg-white hover:border-gray-300'
-                            }`}
-                        >
-                            <p className="text-2xl font-bold text-gray-900">{stat.count}</p>
-                            <p className={`text-sm font-medium ${stat.color.split(' ')[1]}`}>{stat.label}</p>
-                        </button>
-                    ))}
-                </div>
-
-                {/* Filters */}
-                <Card className="mb-6">
-                    <CardContent className="pt-6">
-                        <div className="flex flex-col gap-4 sm:flex-row">
-                            <form onSubmit={handleSearch} className="flex-1">
-                                <div className="relative">
-                                    <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-400" />
-                                    <Input
-                                        placeholder="Search by title or request number..."
-                                        value={search}
-                                        onChange={(e) => setSearch(e.target.value)}
-                                        className="pl-10"
-                                    />
-                                </div>
-                            </form>
-                            <Select value={filters.status || 'all'} onValueChange={(value) => handleFilterChange('status', value)}>
-                                <SelectTrigger className="w-full sm:w-48">
-                                    <SelectValue placeholder="Filter by status" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="all">All Statuses</SelectItem>
-                                    <SelectItem value="pending">Pending</SelectItem>
-                                    <SelectItem value="quoted">Quoted</SelectItem>
-                                    <SelectItem value="accepted">Accepted</SelectItem>
-                                    <SelectItem value="in_progress">In Progress</SelectItem>
-                                    <SelectItem value="completed">Completed</SelectItem>
-                                    <SelectItem value="rejected">Rejected</SelectItem>
-                                    <SelectItem value="declined">Declined</SelectItem>
-                                    <SelectItem value="cancelled">Cancelled</SelectItem>
-                                </SelectContent>
-                            </Select>
+        <BuyerLayout>
+            <div className="min-h-screen bg-gradient-to-b from-amber-50/50 to-white py-8">
+                <div className="mx-auto max-w-6xl px-4">
+                    {/* Header */}
+                    <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                        <div>
+                            <h1 className="flex items-center gap-2 text-2xl font-bold text-gray-900">
+                                <Gavel className="h-7 w-7 text-amber-500" />
+                                My Custom Orders
+                            </h1>
+                            <p className="mt-1 text-gray-600">Manage your custom order requests and bids</p>
                         </div>
-                    </CardContent>
-                </Card>
+                        <Link href="/buyer/custom-orders/create">
+                            <Button className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600">
+                                <Plus className="mr-2 h-4 w-4" />
+                                New Request
+                            </Button>
+                        </Link>
+                    </div>
 
-                {/* Requests List */}
-                {requests.data.length > 0 ? (
-                    <div className="space-y-4">
-                        {requests.data.map((request) => (
-                            <Card key={request.id} className="overflow-hidden transition-all hover:shadow-lg">
-                                <CardContent className="p-0">
-                                    <div className="flex flex-col lg:flex-row">
-                                        {/* Left Section - Request Info */}
-                                        <div className="flex-1 p-6">
-                                            <div className="mb-4 flex items-start justify-between">
-                                                <div>
-                                                    <div className="mb-2 flex items-center gap-2">
-                                                        <Badge className={`${statusColors[request.status]} border`}>{request.status_label}</Badge>
-                                                        <span className="text-sm text-gray-500">#{request.request_number}</span>
-                                                    </div>
-                                                    <h3 className="text-xl font-semibold text-gray-900">{request.title}</h3>
-                                                </div>
-                                            </div>
-
-                                            <p className="mb-4 line-clamp-2 text-gray-600">{request.description}</p>
-
-                                            <div className="flex flex-wrap gap-4 text-sm text-gray-600">
-                                                {request.formatted_budget && (
-                                                    <div className="flex items-center gap-1">
-                                                        <DollarSign className="h-4 w-4 text-green-600" />
-                                                        <span>{request.formatted_budget}</span>
-                                                    </div>
-                                                )}
-                                                <div className="flex items-center gap-1">
-                                                    <Package className="h-4 w-4 text-blue-600" />
-                                                    <span>Qty: {request.quantity}</span>
-                                                </div>
-                                                {request.preferred_deadline && (
-                                                    <div className="flex items-center gap-1">
-                                                        <Calendar className="h-4 w-4 text-orange-600" />
-                                                        <span>By {new Date(request.preferred_deadline).toLocaleDateString()}</span>
-                                                    </div>
-                                                )}
-                                                <div className="flex items-center gap-1">
-                                                    <Clock className="h-4 w-4 text-gray-400" />
-                                                    <span>{new Date(request.created_at).toLocaleDateString()}</span>
-                                                </div>
-                                            </div>
-
-                                            {/* Quote Info */}
-                                            {request.quoted_price && (
-                                                <div className="mt-4 rounded-lg border border-blue-200 bg-blue-50 p-3">
-                                                    <p className="text-sm font-medium text-blue-800">
-                                                        Quoted: ₱{Number(request.quoted_price).toLocaleString()}
-                                                        {request.estimated_days && ` · ${request.estimated_days} days delivery`}
-                                                    </p>
-                                                </div>
-                                            )}
-                                        </div>
-
-                                        {/* Right Section - Seller Info & Actions */}
-                                        <div className="flex flex-col items-center justify-between border-t bg-gray-50 p-6 lg:w-64 lg:border-t-0 lg:border-l">
-                                            <div className="mb-4 flex flex-col items-center text-center">
-                                                <Avatar className="mb-2 h-12 w-12">
-                                                    <AvatarImage src={request.seller.avatar_url || undefined} />
-                                                    <AvatarFallback className="bg-amber-100 text-amber-700">
-                                                        {request.seller.name?.[0]?.toUpperCase()}
-                                                    </AvatarFallback>
-                                                </Avatar>
-                                                <p className="font-medium text-gray-900">{request.seller.name}</p>
-                                                <p className="text-sm text-gray-500">Artisan</p>
-                                            </div>
-
-                                            <Link href={`/buyer/custom-orders/${request.id}`} className="w-full">
-                                                <Button variant="outline" className="w-full">
-                                                    <Eye className="mr-2 h-4 w-4" />
-                                                    View Details
-                                                </Button>
-                                            </Link>
-                                        </div>
-                                    </div>
-                                </CardContent>
-                            </Card>
+                    {/* Status Tabs */}
+                    <div className="mb-6 flex flex-wrap gap-2">
+                        {[
+                            { key: 'all', label: 'All', count: statusCounts.all },
+                            { key: 'open', label: 'Open for Bids', count: statusCounts.open },
+                            { key: 'accepted', label: 'In Progress', count: statusCounts.accepted + statusCounts.in_progress },
+                            { key: 'ready_for_checkout', label: 'Ready', count: statusCounts.ready_for_checkout },
+                            { key: 'completed', label: 'Completed', count: statusCounts.completed },
+                        ].map((tab) => (
+                            <button
+                                key={tab.key}
+                                onClick={() => handleStatusChange(tab.key)}
+                                className={`rounded-full px-4 py-2 text-sm font-medium transition-all ${
+                                    status === tab.key ? 'bg-amber-500 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                                }`}
+                            >
+                                {tab.label}
+                                <span className="ml-2 rounded-full bg-white/20 px-2 py-0.5 text-xs">{tab.count}</span>
+                            </button>
                         ))}
                     </div>
-                ) : (
-                    <Card>
-                        <CardContent className="py-16 text-center">
-                            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-amber-100">
-                                <PenTool className="h-8 w-8 text-amber-600" />
+
+                    {/* Live Search with Dropdown */}
+                    <Card className="mb-6">
+                        <CardContent className="p-4">
+                            <div className="relative" ref={dropdownRef}>
+                                {/* Search Icon or Loading Spinner */}
+                                {isSearching ? (
+                                    <Loader2 className="absolute top-1/2 left-3 z-10 h-4 w-4 -translate-y-1/2 animate-spin text-amber-500" />
+                                ) : (
+                                    <Search className="absolute top-1/2 left-3 z-10 h-4 w-4 -translate-y-1/2 text-gray-400" />
+                                )}
+                                <Input
+                                    ref={inputRef}
+                                    placeholder="Search by title or request number..."
+                                    value={search}
+                                    onChange={(e) => handleSearchChange(e.target.value)}
+                                    onFocus={() => search && searchResults.length > 0 && setShowDropdown(true)}
+                                    className="pl-10 pr-10"
+                                />
+                                {/* Clear Button */}
+                                {search && (
+                                    <button
+                                        onClick={clearSearch}
+                                        className="absolute top-1/2 right-3 z-10 -translate-y-1/2 rounded-full p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+                                        title="Clear search"
+                                    >
+                                        <X className="h-4 w-4" />
+                                    </button>
+                                )}
+
+                                {/* Search Results Dropdown */}
+                                {showDropdown && (
+                                    <div className="absolute top-full left-0 right-0 z-50 mt-1 max-h-80 overflow-auto rounded-lg border border-gray-200 bg-white shadow-lg">
+                                        {searchResults.length > 0 ? (
+                                            <>
+                                                <div className="border-b border-gray-100 px-3 py-2">
+                                                    <p className="text-xs font-medium text-gray-500">
+                                                        {searchResults.length} result{searchResults.length !== 1 ? 's' : ''} found
+                                                    </p>
+                                                </div>
+                                                {searchResults.map((request) => (
+                                                    <Link
+                                                        key={request.id}
+                                                        href={`/buyer/custom-orders/${request.id}`}
+                                                        className="flex items-center gap-3 border-b border-gray-50 px-3 py-3 transition-colors last:border-0 hover:bg-amber-50"
+                                                        onClick={() => setShowDropdown(false)}
+                                                    >
+                                                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-amber-100">
+                                                            <Gavel className="h-5 w-5 text-amber-600" />
+                                                        </div>
+                                                        <div className="min-w-0 flex-1">
+                                                            <p className="truncate text-sm font-medium text-gray-900">{request.title}</p>
+                                                            <div className="flex items-center gap-2">
+                                                                <span className="text-xs text-gray-500">#{request.request_number}</span>
+                                                                <Badge className={`${statusColors[request.status]} scale-75`}>
+                                                                    {request.status_label}
+                                                                </Badge>
+                                                            </div>
+                                                        </div>
+                                                        <Eye className="h-4 w-4 shrink-0 text-gray-400" />
+                                                    </Link>
+                                                ))}
+                                            </>
+                                        ) : (
+                                            <div className="px-3 py-6 text-center">
+                                                <Search className="mx-auto mb-2 h-8 w-8 text-gray-300" />
+                                                <p className="text-sm text-gray-500">No matching orders found</p>
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
                             </div>
-                            <h3 className="mb-2 text-xl font-semibold text-gray-900">No Custom Orders Yet</h3>
-                            <p className="mb-6 text-gray-600">
-                                Start by creating a custom order request to get a personalized product from our talented artisans.
-                            </p>
-                            <Link href="/buyer/custom-orders/create">
-                                <Button className="bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700">
-                                    <Plus className="mr-2 h-4 w-4" />
-                                    Create Your First Request
-                                </Button>
-                            </Link>
                         </CardContent>
                     </Card>
-                )}
 
-                {/* Pagination */}
-                {requests.last_page > 1 && (
-                    <div className="mt-8 flex justify-center">
-                        <div className="flex items-center gap-2">
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                disabled={requests.current_page === 1}
-                                onClick={() => router.get('/buyer/custom-orders', { ...filters, page: requests.current_page - 1 })}
-                            >
-                                <ChevronLeft className="h-4 w-4" />
-                            </Button>
-                            <span className="px-4 text-sm text-gray-600">
-                                Page {requests.current_page} of {requests.last_page}
-                            </span>
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                disabled={requests.current_page === requests.last_page}
-                                onClick={() => router.get('/buyer/custom-orders', { ...filters, page: requests.current_page + 1 })}
-                            >
-                                <ChevronRight className="h-4 w-4" />
-                            </Button>
+                    {/* Requests List */}
+                    {requests.data.length === 0 ? (
+                        <Card>
+                            <CardContent className="flex flex-col items-center justify-center py-16">
+                                <Gavel className="mb-4 h-16 w-16 text-gray-300" />
+                                <h3 className="text-lg font-semibold text-gray-900">No custom orders yet</h3>
+                                <p className="mt-1 text-gray-500">Create your first request to get started</p>
+                                <Link href="/buyer/custom-orders/create">
+                                    <Button className="mt-4 bg-amber-500 hover:bg-amber-600">
+                                        <Plus className="mr-2 h-4 w-4" />
+                                        Create Request
+                                    </Button>
+                                </Link>
+                            </CardContent>
+                        </Card>
+                    ) : (
+                        <div className="space-y-4">
+                            {requests.data.map((request) => (
+                                <Card key={request.id} className="overflow-hidden transition-shadow hover:shadow-md">
+                                    <CardContent className="p-0">
+                                        <div className="flex flex-col md:flex-row">
+                                            {/* Main Info */}
+                                            <div className="flex-1 p-4 md:p-6">
+                                                <div className="mb-3 flex flex-wrap items-center gap-2">
+                                                    <Badge className={statusColors[request.status]}>{request.status_label}</Badge>
+                                                    {request.is_public && (
+                                                        <Badge variant="outline" className="border-amber-300 bg-amber-50 text-amber-700">
+                                                            <Gavel className="mr-1 h-3 w-3" />
+                                                            Bidding
+                                                        </Badge>
+                                                    )}
+                                                </div>
+
+                                                <h3 className="mb-1 text-lg font-semibold text-gray-900">{request.title}</h3>
+                                                <p className="mb-3 text-sm text-gray-500">
+                                                    #{request.request_number} • Created {formatDate(request.created_at)}
+                                                </p>
+
+                                                <p className="mb-4 line-clamp-2 text-sm text-gray-600">{request.description}</p>
+
+                                                <div className="flex flex-wrap gap-4 text-sm">
+                                                    {request.formatted_budget && (
+                                                        <span className="flex items-center gap-1 text-gray-600">
+                                                            <DollarSign className="h-4 w-4 text-green-600" />
+                                                            {request.formatted_budget}
+                                                        </span>
+                                                    )}
+                                                    <span className="flex items-center gap-1 text-gray-600">
+                                                        <Package className="h-4 w-4 text-amber-600" />
+                                                        Qty: {request.quantity}
+                                                    </span>
+                                                    {request.preferred_deadline && (
+                                                        <span className="flex items-center gap-1 text-gray-600">
+                                                            <Calendar className="h-4 w-4 text-orange-600" />
+                                                            {formatDate(request.preferred_deadline)}
+                                                        </span>
+                                                    )}
+                                                    {request.is_public && request.status === 'open' && (
+                                                        <span className="flex items-center gap-1 font-medium text-blue-600">
+                                                            <Users className="h-4 w-4" />
+                                                            {request.bids_count} bid{request.bids_count !== 1 ? 's' : ''}
+                                                        </span>
+                                                    )}
+                                                </div>
+                                            </div>
+
+                                            {/* Right Section */}
+                                            <div className="flex flex-col justify-between border-t bg-gray-50 p-4 md:w-56 md:border-t-0 md:border-l">
+                                                {/* Seller/Bid Info */}
+                                                {request.seller ? (
+                                                    <div className="mb-4 flex items-center gap-3">
+                                                        <Avatar className="h-10 w-10">
+                                                            <AvatarImage src={request.seller.avatar_url || undefined} />
+                                                            <AvatarFallback className="bg-amber-100 text-amber-700">
+                                                                {request.seller.name.charAt(0)}
+                                                            </AvatarFallback>
+                                                        </Avatar>
+                                                        <div className="min-w-0">
+                                                            <p className="truncate text-sm font-medium text-gray-900">{request.seller.name}</p>
+                                                            <p className="text-xs text-gray-500">Artisan</p>
+                                                        </div>
+                                                    </div>
+                                                ) : request.is_public && request.status === 'open' ? (
+                                                    <div className="mb-4 rounded-lg bg-blue-100 p-3 text-center">
+                                                        <Users className="mx-auto mb-1 h-6 w-6 text-blue-600" />
+                                                        <p className="text-sm font-medium text-blue-800">{request.bids_count} Bids</p>
+                                                        <p className="text-xs text-blue-600">Waiting for more</p>
+                                                    </div>
+                                                ) : (
+                                                    <div className="mb-4 rounded-lg bg-gray-100 p-3 text-center">
+                                                        <Clock className="mx-auto mb-1 h-6 w-6 text-gray-400" />
+                                                        <p className="text-sm text-gray-600">No artisan yet</p>
+                                                    </div>
+                                                )}
+
+                                                {/* Price Info */}
+                                                {request.quoted_price && (
+                                                    <div className="mb-4 text-center">
+                                                        <p className="text-xs text-gray-500">Agreed Price</p>
+                                                        <p className="text-lg font-bold text-green-600">
+                                                            ₱{Number(request.quoted_price).toLocaleString()}
+                                                        </p>
+                                                    </div>
+                                                )}
+
+                                                {/* Action Button */}
+                                                <Link href={`/buyer/custom-orders/${request.id}`}>
+                                                    <Button className="w-full bg-amber-500 hover:bg-amber-600">
+                                                        <Eye className="mr-2 h-4 w-4" />
+                                                        {request.is_public && request.status === 'open' ? 'View Bids' : 'View Details'}
+                                                    </Button>
+                                                </Link>
+                                            </div>
+                                        </div>
+                                    </CardContent>
+                                </Card>
+                            ))}
                         </div>
-                    </div>
-                )}
+                    )}
+
+                    {/* Pagination */}
+                    {requests.last_page > 1 && (
+                        <div className="mt-6 flex items-center justify-between">
+                            <p className="text-sm text-gray-600">
+                                Page {requests.current_page} of {requests.last_page} ({requests.total} total)
+                            </p>
+                            <div className="flex gap-2">
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => handlePageChange(requests.current_page - 1)}
+                                    disabled={requests.current_page === 1}
+                                >
+                                    <ChevronLeft className="h-4 w-4" />
+                                </Button>
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => handlePageChange(requests.current_page + 1)}
+                                    disabled={requests.current_page === requests.last_page}
+                                >
+                                    <ChevronRight className="h-4 w-4" />
+                                </Button>
+                            </div>
+                        </div>
+                    )}
+                </div>
             </div>
         </BuyerLayout>
     );

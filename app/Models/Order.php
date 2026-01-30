@@ -84,6 +84,9 @@ class Order extends Model
         'seller_net_amount',
         'status',
         'rejection_reason',
+        'cancellation_reason',
+        'cancelled_by',
+        'cancelled_at',
         'seller_confirmed_at',
         'shipped_at',
         'delivered_at',
@@ -105,6 +108,7 @@ class Order extends Model
         'delivered_at' => 'datetime',
         'completed_at' => 'datetime',
         'payment_verified_at' => 'datetime',
+        'cancelled_at' => 'datetime',
     ];
 
     /**
@@ -267,6 +271,15 @@ class Order extends Model
     public function canBeCancelled(): bool
     {
         return in_array($this->status, [self::STATUS_PENDING, self::STATUS_CONFIRMED]);
+    }
+
+    /**
+     * Check if order can be cancelled by buyer.
+     * Buyers can only cancel orders that are still pending (not yet confirmed by seller).
+     */
+    public function canBeCancelledByBuyer(): bool
+    {
+        return $this->status === self::STATUS_PENDING;
     }
 
     /**

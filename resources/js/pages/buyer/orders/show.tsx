@@ -1,7 +1,7 @@
 import BuyerLayout from '@/layouts/BuyerLayout';
 import { formatPeso } from '@/utils/currency';
 import { Head, router, usePage } from '@inertiajs/react';
-import { ArrowLeft, CheckCircle, Clock, CreditCard, MapPin, MessageSquare, Package, Truck, Upload, User, X, XCircle } from 'lucide-react';
+import { ArrowLeft, Ban, CheckCircle, Clock, CreditCard, MapPin, MessageSquare, Package, Truck, Upload, User, X, XCircle } from 'lucide-react';
 import { useState } from 'react';
 import StartChatButton from '../../../components/StartChatButton';
 
@@ -32,6 +32,9 @@ interface Order {
     tracking_number?: string | null;
     waybill_number?: string | null;
     rejection_reason?: string;
+    cancellation_reason?: string | null;
+    cancelled_by?: string | null;
+    cancelled_at?: string | null;
     created_at: string;
     updated_at: string;
     order_items: OrderItem[];
@@ -54,6 +57,30 @@ export default function OrderShow({ order }: OrderShowProps) {
     const [uploadSuccess, setUploadSuccess] = useState(false);
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [preview, setPreview] = useState<string | null>(order.payment_proof_url || null);
+    const [showCancelModal, setShowCancelModal] = useState(false);
+    const [cancellationReason, setCancellationReason] = useState('');
+    const [isCancelling, setIsCancelling] = useState(false);
+
+    const handleCancelOrder = () => {
+        if (!cancellationReason.trim()) {
+            return;
+        }
+        setIsCancelling(true);
+        router.post(
+            `/buyer/orders/${order.id}/cancel`,
+            { cancellation_reason: cancellationReason },
+            {
+                preserveState: false,
+                onFinish: () => {
+                    setIsCancelling(false);
+                    setShowCancelModal(false);
+                    setCancellationReason('');
+                },
+            },
+        );
+    };
+
+    const canCancelOrder = order.status === 'pending';
 
     const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -230,11 +257,26 @@ export default function OrderShow({ order }: OrderShowProps) {
                         <p className="text-xs text-gray-700 sm:text-sm md:text-base">{getStatusMessage(order.status)}</p>
                     </div>
 
-                    {/* Rejection Reason */}
-                    {order.status === 'cancelled' && order.rejection_reason && (
+                    {/* Rejection Reason (by seller) */}
+                    {order.status === 'cancelled' && order.rejection_reason && !order.cancellation_reason && (
                         <div className="mt-3 rounded-lg border border-red-200 bg-red-50 p-2.5 sm:mt-4 sm:p-3">
-                            <h4 className="mb-1.5 text-xs font-medium text-red-800 sm:text-sm md:text-base">Cancellation Reason:</h4>
+                            <h4 className="mb-1.5 text-xs font-medium text-red-800 sm:text-sm md:text-base">Rejection Reason (by Seller):</h4>
                             <p className="text-xs text-red-700 sm:text-sm md:text-base">{order.rejection_reason}</p>
+                        </div>
+                    )}
+
+                    {/* Cancellation Reason (by buyer) */}
+                    {order.status === 'cancelled' && order.cancellation_reason && (
+                        <div className="mt-3 rounded-lg border border-orange-200 bg-orange-50 p-2.5 sm:mt-4 sm:p-3">
+                            <h4 className="mb-1.5 text-xs font-medium text-orange-800 sm:text-sm md:text-base">
+                                Cancellation Reason {order.cancelled_by === 'buyer' && '(by You)'}:
+                            </h4>
+                            <p className="text-xs text-orange-700 sm:text-sm md:text-base">{order.cancellation_reason}</p>
+                            {order.cancelled_at && (
+                                <p className="mt-1 text-xs text-orange-600">
+                                    Cancelled on {new Date(order.cancelled_at).toLocaleDateString()} at {new Date(order.cancelled_at).toLocaleTimeString()}
+                                </p>
+                            )}
                         </div>
                     )}
                 </div>
@@ -512,20 +554,85 @@ export default function OrderShow({ order }: OrderShowProps) {
                 )}
 
                 {/* Order Actions */}
-                {order.status === 'pending' && order.seller?.email && (
+                {order.status === 'pending' && (
                     <div className="mt-6 rounded-lg border border-gray-200 bg-white p-3 shadow-sm sm:mt-8 sm:p-5">
-                        <h2 className="mb-3 text-sm font-semibold text-gray-900 sm:mb-4 sm:text-base md:text-lg">Need Help?</h2>
+                        <h2 className="mb-3 text-sm font-semibold text-gray-900 sm:mb-4 sm:text-base md:text-lg">Order Actions</h2>
                         <p className="mb-3 text-xs text-gray-600 sm:mb-4 sm:text-sm">
-                            If you need to make changes to your order or have questions, please contact the seller directly.
+                            Made a mistake? You can cancel this order before the seller confirms it.
                         </p>
-                        <div className="flex space-x-2 sm:space-x-3">
-                            <a
-                                href={`mailto:${order.seller.email}?subject=Order ${order.order_number} Inquiry`}
-                                className="inline-flex items-center rounded-lg bg-primary px-3 py-1.5 text-xs font-medium text-white hover:bg-primary/90 sm:px-4 sm:py-2 sm:text-sm"
-                            >
-                                <MessageSquare className="mr-1.5 h-3.5 w-3.5 sm:mr-2 sm:h-4 sm:w-4" />
-                                Contact Seller
-                            </a>
+                        <div className="flex flex-wrap gap-2 sm:gap-3">
+                            {canCancelOrder && (
+                                <button
+                                    onClick={() => setShowCancelModal(true)}
+                                    className="inline-flex items-center rounded-lg border border-orange-300 bg-white px-3 py-1.5 text-xs font-medium text-orange-600 transition-colors hover:bg-orange-50 sm:px-4 sm:py-2 sm:text-sm"
+                                >
+                                    <Ban className="mr-1.5 h-3.5 w-3.5 sm:mr-2 sm:h-4 sm:w-4" />
+                                    Cancel Order
+                                </button>
+                            )}
+                            {order.seller?.email && (
+                                <a
+                                    href={`mailto:${order.seller.email}?subject=Order ${order.order_number} Inquiry`}
+                                    className="inline-flex items-center rounded-lg bg-primary px-3 py-1.5 text-xs font-medium text-white hover:bg-primary/90 sm:px-4 sm:py-2 sm:text-sm"
+                                >
+                                    <MessageSquare className="mr-1.5 h-3.5 w-3.5 sm:mr-2 sm:h-4 sm:w-4" />
+                                    Contact Seller
+                                </a>
+                            )}
+                        </div>
+                    </div>
+                )}
+
+                {/* Cancel Order Modal */}
+                {showCancelModal && (
+                    <div className="bg-opacity-50 fixed inset-0 z-50 flex items-center justify-center bg-black">
+                        <div className="mx-4 w-full max-w-md rounded-lg bg-white p-6">
+                            <div className="mb-4 flex items-center">
+                                <div className="flex-shrink-0">
+                                    <Ban className="h-6 w-6 text-orange-600" />
+                                </div>
+                                <div className="ml-3">
+                                    <h3 className="text-lg font-medium text-gray-900">Cancel Order</h3>
+                                </div>
+                            </div>
+                            <div className="mb-4">
+                                <p className="mb-3 text-sm text-gray-600">
+                                    Are you sure you want to cancel order <span className="font-semibold">#{order.order_number}</span>? Please provide a reason
+                                    for cancellation.
+                                </p>
+                                <label htmlFor="cancel_reason" className="mb-1 block text-sm font-medium text-gray-700">
+                                    Reason for cancellation <span className="text-red-500">*</span>
+                                </label>
+                                <textarea
+                                    id="cancel_reason"
+                                    value={cancellationReason}
+                                    onChange={(e) => setCancellationReason(e.target.value)}
+                                    placeholder="Please tell us why you want to cancel this order..."
+                                    className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-orange-500 focus:ring-orange-500 focus:outline-none"
+                                    rows={3}
+                                    maxLength={500}
+                                />
+                                <p className="mt-1 text-xs text-gray-500">{cancellationReason.length}/500 characters</p>
+                            </div>
+                            <div className="flex justify-end gap-3">
+                                <button
+                                    onClick={() => {
+                                        setShowCancelModal(false);
+                                        setCancellationReason('');
+                                    }}
+                                    className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                                    disabled={isCancelling}
+                                >
+                                    Go Back
+                                </button>
+                                <button
+                                    onClick={handleCancelOrder}
+                                    className="rounded-md border border-transparent bg-orange-600 px-4 py-2 text-sm font-medium text-white hover:bg-orange-700 disabled:opacity-50"
+                                    disabled={isCancelling || !cancellationReason.trim()}
+                                >
+                                    {isCancelling ? 'Cancelling...' : 'Cancel Order'}
+                                </button>
+                            </div>
                         </div>
                     </div>
                 )}
