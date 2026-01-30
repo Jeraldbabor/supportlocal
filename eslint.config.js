@@ -53,6 +53,7 @@ export default [
             'tailwind.config.js',
             'resources/views/**/*.blade.php',
             '**/*.blade.php',
+            'resources/js/actions/**', // Auto-generated route action files
         ],
     },
     prettier, // Turn off all rules that might conflict with Prettier
