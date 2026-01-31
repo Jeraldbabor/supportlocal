@@ -129,7 +129,7 @@ export default function SellerDetailScreen() {
       <Ionicons name="cube-outline" size={64} color={colors.textSecondary} />
       <Text style={styles.emptyTitle}>No products yet</Text>
       <Text style={styles.emptySubtitle}>
-        This seller hasn't listed any products
+        This seller hasn&apos;t listed any products
       </Text>
     </View>
   );

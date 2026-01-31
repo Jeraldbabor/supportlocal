@@ -274,11 +274,11 @@ export default function SellerDashboardScreen() {
           <View style={styles.quickStatsRow}>
             <View style={styles.quickStatCard}>
               <Text style={styles.quickStatValue}>{quickStats.today_orders}</Text>
-              <Text style={styles.quickStatLabel}>Today's Orders</Text>
+              <Text style={styles.quickStatLabel}>Today&apos;s Orders</Text>
             </View>
             <View style={styles.quickStatCard}>
               <Text style={styles.quickStatValue}>{formatCurrency(quickStats.today_revenue)}</Text>
-              <Text style={styles.quickStatLabel}>Today's Revenue</Text>
+              <Text style={styles.quickStatLabel}>Today&apos;s Revenue</Text>
             </View>
             <View style={styles.quickStatCard}>
               <Text style={styles.quickStatValue}>{quickStats.pending_orders}</Text>

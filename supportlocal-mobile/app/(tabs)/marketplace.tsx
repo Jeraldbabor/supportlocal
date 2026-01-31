@@ -18,7 +18,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Colors, Spacing, BorderRadius } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useAuthStore } from '@/store/authStore';
-import { apiClient } from '@/services/api';
+import apiClient from '@/services/api';
 import { ENDPOINTS } from '@/constants/api';
 
 interface MarketplaceRequest {
@@ -296,7 +296,7 @@ export default function MarketplaceScreen() {
     return (
       <TouchableOpacity
         style={styles.requestCard}
-        onPress={() => router.push(`/marketplace-request/${item.id}`)}
+        onPress={() => router.push(`/marketplace-request/${item.id}` as any)}
       >
         <View style={styles.requestHeader}>
           {item.reference_image ? (
@@ -508,7 +508,7 @@ export default function MarketplaceScreen() {
             return (
               <TouchableOpacity
                 style={styles.requestCard}
-                onPress={() => router.push(`/marketplace-request/${bid.request?.id}`)}
+                onPress={() => router.push(`/marketplace-request/${bid.request?.id}` as any)}
               >
                 <View style={styles.requestHeader}>
                   {bid.request?.reference_image ? (
@@ -541,7 +541,7 @@ export default function MarketplaceScreen() {
             <View style={styles.emptyContainer}>
               <Ionicons name="document-text-outline" size={64} color={colors.textSecondary} />
               <Text style={styles.emptyText}>
-                You haven't submitted any bids yet.{'\n'}Browse requests and start bidding!
+                You haven&apos;t submitted any bids yet.{'\n'}Browse requests and start bidding!
               </Text>
             </View>
           }
