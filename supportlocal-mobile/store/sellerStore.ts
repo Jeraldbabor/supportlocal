@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { apiClient } from '@/services/api';
+import apiClient from '@/services/api';
 import { ENDPOINTS } from '@/constants/api';
 import type {
   SellerDashboard,

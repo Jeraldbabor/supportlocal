@@ -17,7 +17,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Colors, Spacing, BorderRadius } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useAuthStore } from '@/store/authStore';
-import { apiClient } from '@/services/api';
+import apiClient from '@/services/api';
 import { ENDPOINTS } from '@/constants/api';
 
 interface Conversation {
@@ -253,7 +253,7 @@ export default function MessagesScreen() {
     return (
       <TouchableOpacity
         style={[styles.conversationCard, hasUnread && styles.unreadCard]}
-        onPress={() => router.push(`/chat/${item.id}`)}
+        onPress={() => router.push(`/chat/${item.id}` as any)}
       >
         <Image
           source={{ uri: item.other_user.avatar || 'https://via.placeholder.com/56' }}
