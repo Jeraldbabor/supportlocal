@@ -1,7 +1,11 @@
 import * as SecureStore from 'expo-secure-store';
+import { Platform } from 'react-native';
 import { API_BASE_URL, API_TIMEOUT } from '../constants/api';
 
 const TOKEN_KEY = 'auth_token';
+
+// Check if we're running on web
+const isWeb = Platform.OS === 'web';
 
 class ApiClient {
   private baseUrl: string;
@@ -12,9 +16,13 @@ class ApiClient {
     this.timeout = API_TIMEOUT;
   }
 
-  // Token management
+  // Token management - uses SecureStore on native, localStorage on web
   async getToken(): Promise<string | null> {
     try {
+      if (isWeb) {
+        // Use localStorage for web
+        return localStorage.getItem(TOKEN_KEY);
+      }
       return await SecureStore.getItemAsync(TOKEN_KEY);
     } catch {
       return null;
@@ -23,6 +31,11 @@ class ApiClient {
 
   async setToken(token: string): Promise<void> {
     try {
+      if (isWeb) {
+        // Use localStorage for web
+        localStorage.setItem(TOKEN_KEY, token);
+        return;
+      }
       await SecureStore.setItemAsync(TOKEN_KEY, token);
     } catch (error) {
       console.error('Failed to save token:', error);
@@ -31,6 +44,11 @@ class ApiClient {
 
   async removeToken(): Promise<void> {
     try {
+      if (isWeb) {
+        // Use localStorage for web
+        localStorage.removeItem(TOKEN_KEY);
+        return;
+      }
       await SecureStore.deleteItemAsync(TOKEN_KEY);
     } catch (error) {
       console.error('Failed to remove token:', error);

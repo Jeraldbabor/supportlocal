@@ -10,7 +10,6 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
 
 class ChatController extends Controller
 {
@@ -28,7 +27,7 @@ class ChatController extends Controller
             ->with(['buyer:id,name,avatar', 'seller:id,name,avatar,business_name'])
             ->withCount(['messages as unread_count' => function ($query) use ($user) {
                 $query->where('sender_id', '!=', $user->id)
-                    ->whereNull('read_at');
+                    ->where('is_read', false);
             }])
             ->orderBy('updated_at', 'desc')
             ->get();
@@ -45,8 +44,8 @@ class ChatController extends Controller
                     'avatar' => $otherUser->avatar,
                 ],
                 'last_message' => $lastMessage ? [
-                    'content' => $lastMessage->content,
-                    'type' => $lastMessage->type,
+                    'content' => $lastMessage->message,
+                    'image' => $lastMessage->image_url,
                     'is_mine' => $lastMessage->sender_id === $user->id,
                     'created_at' => $lastMessage->created_at->toIso8601String(),
                 ] : null,
@@ -122,8 +121,8 @@ class ChatController extends Controller
         // Mark messages as read
         $conversation->messages()
             ->where('sender_id', '!=', $user->id)
-            ->whereNull('read_at')
-            ->update(['read_at' => now()]);
+            ->where('is_read', false)
+            ->update(['is_read' => true, 'read_at' => now()]);
 
         // Get messages with pagination (newest first, then reverse for display)
         $perPage = min($request->input('per_page', 50), 100);
@@ -135,15 +134,15 @@ class ChatController extends Controller
         $data = $messages->getCollection()->reverse()->values()->map(function ($msg) use ($user) {
             return [
                 'id' => $msg->id,
-                'content' => $msg->content,
-                'type' => $msg->type,
-                'attachment_url' => $msg->attachment_url,
+                'content' => $msg->message,
+                'image' => $msg->image_url,
                 'is_mine' => $msg->sender_id === $user->id,
                 'sender' => [
                     'id' => $msg->sender->id,
                     'name' => $msg->sender->name,
                     'avatar' => $msg->sender->avatar,
                 ],
+                'is_read' => $msg->is_read,
                 'read_at' => $msg->read_at?->toIso8601String(),
                 'created_at' => $msg->created_at->toIso8601String(),
             ];
@@ -187,27 +186,24 @@ class ChatController extends Controller
         }
 
         $validated = $request->validate([
-            'content' => 'required_without:attachment|string|max:2000',
-            'attachment' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
+            'message' => 'required_without:image|string|max:2000',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
         ]);
 
         DB::beginTransaction();
         try {
-            $type = 'text';
-            $attachmentUrl = null;
+            $imagePath = null;
 
-            if ($request->hasFile('attachment')) {
-                $type = 'image';
-                $path = $request->file('attachment')->store('chat-attachments', 'public');
-                $attachmentUrl = Storage::url($path);
+            if ($request->hasFile('image')) {
+                $path = $request->file('image')->store('chat-attachments', 'public');
+                $imagePath = $path;
             }
 
             $message = Message::create([
                 'conversation_id' => $conversation->id,
                 'sender_id' => $user->id,
-                'content' => $validated['content'] ?? '',
-                'type' => $type,
-                'attachment_url' => $attachmentUrl,
+                'message' => $validated['message'] ?? '',
+                'image' => $imagePath,
             ]);
 
             // Update conversation timestamp
@@ -219,9 +215,8 @@ class ChatController extends Controller
                 'success' => true,
                 'data' => [
                     'id' => $message->id,
-                    'content' => $message->content,
-                    'type' => $message->type,
-                    'attachment_url' => $message->attachment_url,
+                    'content' => $message->message,
+                    'image' => $message->image_url,
                     'is_mine' => true,
                     'created_at' => $message->created_at->toIso8601String(),
                 ],
@@ -272,7 +267,7 @@ class ChatController extends Controller
                 ->orWhere('seller_id', $user->id);
         })
             ->where('sender_id', '!=', $user->id)
-            ->whereNull('read_at')
+            ->where('is_read', false)
             ->count();
 
         return response()->json([

@@ -17,7 +17,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Colors, Spacing, BorderRadius } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useAuthStore } from '@/store/authStore';
-import { apiClient } from '@/services/api';
+import apiClient from '@/services/api';
 import { ENDPOINTS } from '@/constants/api';
 
 interface CustomOrderRequest {

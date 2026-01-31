@@ -21,7 +21,7 @@ import * as ImagePicker from 'expo-image-picker';
 
 import { Colors, Spacing, BorderRadius } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
-import { apiClient } from '@/services/api';
+import apiClient from '@/services/api';
 import { ENDPOINTS } from '@/constants/api';
 
 interface Category {
