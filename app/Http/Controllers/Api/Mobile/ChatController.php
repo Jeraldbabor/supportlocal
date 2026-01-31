@@ -34,6 +34,12 @@ class ChatController extends Controller
 
         $data = $conversations->map(function ($conv) use ($user) {
             $otherUser = $conv->buyer_id === $user->id ? $conv->seller : $conv->buyer;
+
+            // Skip conversations where the other user doesn't exist
+            if (! $otherUser) {
+                return null;
+            }
+
             $lastMessage = $conv->messages()->latest()->first();
 
             return [
@@ -41,18 +47,18 @@ class ChatController extends Controller
                 'other_user' => [
                     'id' => $otherUser->id,
                     'name' => $otherUser->business_name ?? $otherUser->name,
-                    'avatar' => $otherUser->avatar,
+                    'avatar' => $otherUser->avatar ?? null,
                 ],
                 'last_message' => $lastMessage ? [
-                    'content' => $lastMessage->message,
+                    'content' => $lastMessage->message ?? '',
                     'image' => $lastMessage->image_url,
                     'is_mine' => $lastMessage->sender_id === $user->id,
                     'created_at' => $lastMessage->created_at->toIso8601String(),
                 ] : null,
-                'unread_count' => $conv->unread_count,
+                'unread_count' => $conv->unread_count ?? 0,
                 'updated_at' => $conv->updated_at->toIso8601String(),
             ];
-        });
+        })->filter();
 
         return response()->json([
             'success' => true,
@@ -134,13 +140,17 @@ class ChatController extends Controller
         $data = $messages->getCollection()->reverse()->values()->map(function ($msg) use ($user) {
             return [
                 'id' => $msg->id,
-                'content' => $msg->message,
+                'content' => $msg->message ?? '',
                 'image' => $msg->image_url,
                 'is_mine' => $msg->sender_id === $user->id,
-                'sender' => [
+                'sender' => $msg->sender ? [
                     'id' => $msg->sender->id,
-                    'name' => $msg->sender->name,
-                    'avatar' => $msg->sender->avatar,
+                    'name' => $msg->sender->name ?? 'Unknown',
+                    'avatar' => $msg->sender->avatar ?? null,
+                ] : [
+                    'id' => $msg->sender_id,
+                    'name' => 'Unknown',
+                    'avatar' => null,
                 ],
                 'is_read' => $msg->is_read,
                 'read_at' => $msg->read_at?->toIso8601String(),
@@ -153,10 +163,14 @@ class ChatController extends Controller
             'data' => [
                 'conversation' => [
                     'id' => $conversation->id,
-                    'other_user' => [
+                    'other_user' => $otherUser ? [
                         'id' => $otherUser->id,
-                        'name' => $otherUser->business_name ?? $otherUser->name,
-                        'avatar' => $otherUser->avatar,
+                        'name' => $otherUser->business_name ?? $otherUser->name ?? 'Unknown',
+                        'avatar' => $otherUser->avatar ?? null,
+                    ] : [
+                        'id' => 0,
+                        'name' => 'Unknown',
+                        'avatar' => null,
                     ],
                 ],
                 'messages' => $data,
