@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   RefreshControl,
+  ScrollView,
 } from 'react-native';
 import { useQuery } from '@tanstack/react-query';
 import { Ionicons } from '@expo/vector-icons';
@@ -166,9 +167,14 @@ export default function ProductsScreen() {
         </View>
       )}
 
-      {/* Categories */}
+      {/* Categories - Horizontal Scrollable */}
       {categoriesData?.categories && categoriesData.categories.length > 0 && (
-        <View style={styles.categoriesContainer}>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          style={styles.categoriesScrollView}
+          contentContainerStyle={styles.categoriesContainer}
+        >
           <TouchableOpacity
             style={[
               styles.categoryChip,
@@ -199,12 +205,13 @@ export default function ProductsScreen() {
                   styles.categoryText,
                   selectedCategory === category.id && styles.categoryTextActive,
                 ]}
+                numberOfLines={1}
               >
                 {category.name}
               </Text>
             </TouchableOpacity>
           ))}
-        </View>
+        </ScrollView>
       )}
 
       {/* Results count */}
@@ -337,12 +344,13 @@ const createStyles = (colors: typeof Colors.light) =>
     sortChipTextActive: {
       color: '#fff',
     },
+    categoriesScrollView: {
+      marginBottom: Spacing.md,
+    },
     categoriesContainer: {
       flexDirection: 'row',
-      flexWrap: 'wrap',
       paddingHorizontal: Spacing.lg,
       gap: Spacing.sm,
-      marginBottom: Spacing.md,
     },
     categoryChip: {
       paddingHorizontal: Spacing.md,
@@ -351,6 +359,8 @@ const createStyles = (colors: typeof Colors.light) =>
       backgroundColor: colors.inputBackground,
       borderWidth: 1,
       borderColor: colors.border,
+      minWidth: 60,
+      alignItems: 'center',
     },
     categoryChipActive: {
       backgroundColor: colors.primary,

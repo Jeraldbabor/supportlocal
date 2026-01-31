@@ -94,25 +94,30 @@ export function ProductCard({ product, onPress }: ProductCardProps) {
 
       {/* Details */}
       <View style={styles.details}>
-        <Text style={styles.name} numberOfLines={2}>
-          {product.name}
-        </Text>
+        {/* Fixed height name container for 2 lines */}
+        <View style={styles.nameContainer}>
+          <Text style={styles.name} numberOfLines={2}>
+            {product.name}
+          </Text>
+        </View>
 
         {/* Seller */}
-        {product.seller && (
-          <Text style={styles.seller} numberOfLines={1}>
-            by {product.seller.name}
-          </Text>
-        )}
+        <Text style={styles.seller} numberOfLines={1}>
+          {product.seller ? `by ${product.seller.name}` : ' '}
+        </Text>
 
-        {/* Rating */}
-        {product.review_count > 0 && (
-          <View style={styles.ratingContainer}>
-            <Ionicons name="star" size={12} color="#f59e0b" />
-            <Text style={styles.rating}>{product.rating.toFixed(1)}</Text>
-            <Text style={styles.reviewCount}>({product.review_count})</Text>
-          </View>
-        )}
+        {/* Rating - always show container for consistent height */}
+        <View style={styles.ratingContainer}>
+          {product.review_count > 0 ? (
+            <>
+              <Ionicons name="star" size={12} color="#f59e0b" />
+              <Text style={styles.rating}>{product.rating.toFixed(1)}</Text>
+              <Text style={styles.reviewCount}>({product.review_count})</Text>
+            </>
+          ) : (
+            <Text style={styles.noRating}>No reviews yet</Text>
+          )}
+        </View>
 
         {/* Price */}
         <View style={styles.priceContainer}>
@@ -193,23 +198,29 @@ const createStyles = (colors: typeof Colors.light) =>
     },
     details: {
       padding: Spacing.sm,
+      minHeight: 100, // Consistent height for all cards
+    },
+    nameContainer: {
+      height: 36, // Fixed height for 2 lines (18px line height * 2)
+      marginBottom: 2,
     },
     name: {
       fontSize: 14,
       fontWeight: '600',
       color: colors.text,
-      marginBottom: 2,
       lineHeight: 18,
     },
     seller: {
       fontSize: 11,
       color: colors.textSecondary,
       marginBottom: 4,
+      height: 14, // Fixed height for seller line
     },
     ratingContainer: {
       flexDirection: 'row',
       alignItems: 'center',
       marginBottom: 4,
+      height: 16, // Fixed height for rating row
     },
     rating: {
       fontSize: 12,
@@ -221,6 +232,11 @@ const createStyles = (colors: typeof Colors.light) =>
       fontSize: 11,
       color: colors.textSecondary,
       marginLeft: 2,
+    },
+    noRating: {
+      fontSize: 11,
+      color: colors.textSecondary,
+      fontStyle: 'italic',
     },
     priceContainer: {
       flexDirection: 'row',
