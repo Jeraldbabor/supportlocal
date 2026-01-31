@@ -55,7 +55,7 @@ class MarketplaceController extends Controller
         // Sorting
         $sortBy = $request->input('sort_by', 'created_at');
         $sortOrder = $request->input('sort_order', 'desc');
-        
+
         switch ($sortBy) {
             case 'budget':
                 $query->orderBy('budget_max', $sortOrder);
@@ -102,7 +102,7 @@ class MarketplaceController extends Controller
                 ],
                 'reference_image' => $req->reference_images[0] ?? null,
                 'created_at' => $req->created_at->toIso8601String(),
-                'days_left' => $req->preferred_deadline 
+                'days_left' => $req->preferred_deadline
                     ? max(0, now()->diffInDays($req->preferred_deadline, false))
                     : null,
             ];
@@ -135,7 +135,7 @@ class MarketplaceController extends Controller
         }
 
         // Only show public open requests or requests assigned to this seller
-        if (!$customOrder->is_public && $customOrder->seller_id !== $user->id) {
+        if (! $customOrder->is_public && $customOrder->seller_id !== $user->id) {
             return response()->json([
                 'success' => false,
                 'message' => 'Request not found.',
@@ -197,7 +197,7 @@ class MarketplaceController extends Controller
             ], 403);
         }
 
-        if (!$customOrder->canReceiveBidFrom($user->id)) {
+        if (! $customOrder->canReceiveBidFrom($user->id)) {
             return response()->json([
                 'success' => false,
                 'message' => 'You cannot bid on this request.',
@@ -237,6 +237,7 @@ class MarketplaceController extends Controller
             ], 201);
         } catch (\Exception $e) {
             DB::rollBack();
+
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to submit bid.',
@@ -294,7 +295,7 @@ class MarketplaceController extends Controller
             ], 404);
         }
 
-        if (!$bid->canBeWithdrawn()) {
+        if (! $bid->canBeWithdrawn()) {
             return response()->json([
                 'success' => false,
                 'message' => 'This bid cannot be withdrawn.',
@@ -452,7 +453,7 @@ class MarketplaceController extends Controller
             ], 404);
         }
 
-        if (!$customOrder->canBeQuoted()) {
+        if (! $customOrder->canBeQuoted()) {
             return response()->json([
                 'success' => false,
                 'message' => 'This request cannot be quoted.',
@@ -496,7 +497,7 @@ class MarketplaceController extends Controller
             ], 404);
         }
 
-        if (!$customOrder->canStartWork()) {
+        if (! $customOrder->canStartWork()) {
             return response()->json([
                 'success' => false,
                 'message' => 'Work cannot be started on this request.',
@@ -527,7 +528,7 @@ class MarketplaceController extends Controller
             ], 404);
         }
 
-        if (!$customOrder->canBeSentForCheckout()) {
+        if (! $customOrder->canBeSentForCheckout()) {
             return response()->json([
                 'success' => false,
                 'message' => 'This request cannot be sent for checkout.',

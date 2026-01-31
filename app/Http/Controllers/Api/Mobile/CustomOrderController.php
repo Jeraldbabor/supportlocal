@@ -5,9 +5,7 @@ namespace App\Http\Controllers\Api\Mobile;
 use App\Http\Controllers\Controller;
 use App\Models\CustomOrderBid;
 use App\Models\CustomOrderRequest;
-use App\Models\ProductCategory;
 use App\Notifications\CustomOrderAccepted;
-use App\Notifications\CustomOrderRejected;
 use App\Notifications\NewCustomOrderRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -140,7 +138,7 @@ class CustomOrderController extends Controller
                     'name' => $customOrder->seller->name,
                     'avatar' => $customOrder->seller->avatar,
                 ] : null,
-                'bids' => $customOrder->bids->map(fn($bid) => [
+                'bids' => $customOrder->bids->map(fn ($bid) => [
                     'id' => $bid->id,
                     'proposed_price' => $bid->proposed_price,
                     'estimated_days' => $bid->estimated_days,
@@ -181,7 +179,7 @@ class CustomOrderController extends Controller
 
         $validated = $request->validate([
             'title' => 'required|string|max:255',
-            'category' => 'required|string|in:' . implode(',', array_keys(CustomOrderRequest::CATEGORIES)),
+            'category' => 'required|string|in:'.implode(',', array_keys(CustomOrderRequest::CATEGORIES)),
             'description' => 'required|string|max:2000',
             'budget_min' => 'required|numeric|min:1',
             'budget_max' => 'required|numeric|gte:budget_min',
@@ -195,9 +193,9 @@ class CustomOrderController extends Controller
         ]);
 
         // If direct request, verify seller exists and is a seller
-        if (!$validated['is_public'] && $validated['seller_id']) {
+        if (! $validated['is_public'] && $validated['seller_id']) {
             $seller = \App\Models\User::find($validated['seller_id']);
-            if (!$seller || $seller->role !== 'seller') {
+            if (! $seller || $seller->role !== 'seller') {
                 return response()->json([
                     'success' => false,
                     'message' => 'Invalid seller selected.',
@@ -217,7 +215,7 @@ class CustomOrderController extends Controller
             }
 
             $customOrder = CustomOrderRequest::create([
-                'request_number' => 'COR-' . strtoupper(Str::random(8)),
+                'request_number' => 'COR-'.strtoupper(Str::random(8)),
                 'buyer_id' => $user->id,
                 'seller_id' => $validated['is_public'] ? null : $validated['seller_id'],
                 'is_public' => $validated['is_public'],
@@ -234,7 +232,7 @@ class CustomOrderController extends Controller
             ]);
 
             // Notify seller if direct request
-            if (!$validated['is_public'] && $customOrder->seller) {
+            if (! $validated['is_public'] && $customOrder->seller) {
                 $customOrder->seller->notify(new NewCustomOrderRequest($customOrder));
             }
 
@@ -252,6 +250,7 @@ class CustomOrderController extends Controller
             ], 201);
         } catch (\Exception $e) {
             DB::rollBack();
+
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to create request.',
@@ -281,7 +280,7 @@ class CustomOrderController extends Controller
             ], 404);
         }
 
-        if (!$bid->canBeAccepted()) {
+        if (! $bid->canBeAccepted()) {
             return response()->json([
                 'success' => false,
                 'message' => 'This bid cannot be accepted.',
@@ -327,6 +326,7 @@ class CustomOrderController extends Controller
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
+
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to accept bid.',
@@ -348,7 +348,7 @@ class CustomOrderController extends Controller
             ], 404);
         }
 
-        if (!$customOrder->canBeAccepted()) {
+        if (! $customOrder->canBeAccepted()) {
             return response()->json([
                 'success' => false,
                 'message' => 'This quote cannot be accepted.',
@@ -385,7 +385,7 @@ class CustomOrderController extends Controller
             ], 404);
         }
 
-        if (!$customOrder->canBeDeclined()) {
+        if (! $customOrder->canBeDeclined()) {
             return response()->json([
                 'success' => false,
                 'message' => 'This quote cannot be declined.',
@@ -422,7 +422,7 @@ class CustomOrderController extends Controller
             ], 404);
         }
 
-        if (!$customOrder->canBeCancelled()) {
+        if (! $customOrder->canBeCancelled()) {
             return response()->json([
                 'success' => false,
                 'message' => 'This request cannot be cancelled.',
@@ -446,7 +446,7 @@ class CustomOrderController extends Controller
     {
         return response()->json([
             'success' => true,
-            'data' => collect(CustomOrderRequest::CATEGORIES)->map(fn($label, $key) => [
+            'data' => collect(CustomOrderRequest::CATEGORIES)->map(fn ($label, $key) => [
                 'key' => $key,
                 'label' => $label,
             ])->values(),

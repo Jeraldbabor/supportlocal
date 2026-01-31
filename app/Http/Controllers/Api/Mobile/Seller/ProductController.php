@@ -149,7 +149,7 @@ class ProductController extends Controller
             $originalSlug = $slug;
             $counter = 1;
             while (Product::where('slug', $slug)->exists()) {
-                $slug = $originalSlug . '-' . $counter++;
+                $slug = $originalSlug.'-'.$counter++;
             }
 
             // Generate SKU if not provided
@@ -193,6 +193,7 @@ class ProductController extends Controller
             ], 201);
         } catch (\Exception $e) {
             DB::rollBack();
+
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to create product.',
@@ -239,7 +240,7 @@ class ProductController extends Controller
         try {
             // Handle image removals
             $currentImages = $product->images ?? [];
-            if (!empty($validated['remove_images'])) {
+            if (! empty($validated['remove_images'])) {
                 foreach ($validated['remove_images'] as $imageToRemove) {
                     $key = array_search($imageToRemove, $currentImages);
                     if ($key !== false) {
@@ -266,7 +267,7 @@ class ProductController extends Controller
                 $originalSlug = $slug;
                 $counter = 1;
                 while (Product::where('slug', $slug)->where('id', '!=', $product->id)->exists()) {
-                    $slug = $originalSlug . '-' . $counter++;
+                    $slug = $originalSlug.'-'.$counter++;
                 }
                 $validated['slug'] = $slug;
             }
@@ -290,6 +291,7 @@ class ProductController extends Controller
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
+
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to update product.',

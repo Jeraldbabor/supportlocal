@@ -4,8 +4,6 @@ namespace App\Http\Controllers\Api\Mobile\Seller;
 
 use App\Http\Controllers\Controller;
 use App\Models\Order;
-use App\Models\OrderItem;
-use App\Models\Product;
 use App\Notifications\OrderStatusUpdated;
 use App\Notifications\PaymentRejected;
 use App\Notifications\PaymentVerified;
@@ -31,7 +29,7 @@ class OrderController extends Controller
         }
 
         $query = Order::whereHas('items', function ($q) use ($user) {
-            $q->whereHas('product', fn($q) => $q->where('seller_id', $user->id));
+            $q->whereHas('product', fn ($q) => $q->where('seller_id', $user->id));
         });
 
         // Filter by status
@@ -60,7 +58,7 @@ class OrderController extends Controller
         if ($search = $request->input('search')) {
             $query->where(function ($q) use ($search) {
                 $q->where('order_number', 'like', "%{$search}%")
-                    ->orWhereHas('user', fn($q) => $q->where('name', 'like', "%{$search}%"));
+                    ->orWhereHas('user', fn ($q) => $q->where('name', 'like', "%{$search}%"));
             });
         }
 
@@ -73,21 +71,22 @@ class OrderController extends Controller
         $orders = $query->with([
             'user:id,name,email,avatar,phone',
             'items' => function ($q) use ($user) {
-                $q->whereHas('product', fn($q) => $q->where('seller_id', $user->id))
+                $q->whereHas('product', fn ($q) => $q->where('seller_id', $user->id))
                     ->with('product:id,name,images,price');
             },
         ])->paginate($perPage);
 
         // Transform orders to include seller-specific totals
         $transformedOrders = $orders->getCollection()->map(function ($order) {
-            $sellerTotal = $order->items->sum(fn($item) => $item->price * $item->quantity);
+            $sellerTotal = $order->items->sum(fn ($item) => $item->price * $item->quantity);
+
             return [
                 'id' => $order->id,
                 'order_number' => $order->order_number,
                 'status' => $order->status,
                 'payment_status' => $order->payment_status,
                 'payment_method' => $order->payment_method,
-                'has_payment_proof' => !empty($order->payment_proof),
+                'has_payment_proof' => ! empty($order->payment_proof),
                 'seller_total' => $sellerTotal,
                 'items_count' => $order->items->count(),
                 'customer' => $order->user ? [
@@ -125,9 +124,9 @@ class OrderController extends Controller
         $user = Auth::user();
 
         // Check if order contains seller's products
-        $hasSellerItems = $order->items()->whereHas('product', fn($q) => $q->where('seller_id', $user->id))->exists();
+        $hasSellerItems = $order->items()->whereHas('product', fn ($q) => $q->where('seller_id', $user->id))->exists();
 
-        if (!$hasSellerItems) {
+        if (! $hasSellerItems) {
             return response()->json([
                 'success' => false,
                 'message' => 'Order not found.',
@@ -137,12 +136,12 @@ class OrderController extends Controller
         $order->load([
             'user:id,name,email,avatar,phone,address',
             'items' => function ($q) use ($user) {
-                $q->whereHas('product', fn($q) => $q->where('seller_id', $user->id))
+                $q->whereHas('product', fn ($q) => $q->where('seller_id', $user->id))
                     ->with('product:id,name,images,price,sku');
             },
         ]);
 
-        $sellerTotal = $order->items->sum(fn($item) => $item->price * $item->quantity);
+        $sellerTotal = $order->items->sum(fn ($item) => $item->price * $item->quantity);
 
         return response()->json([
             'success' => true,
@@ -168,7 +167,7 @@ class OrderController extends Controller
                     'phone' => $order->user->phone,
                     'avatar' => $order->user->avatar,
                 ] : null,
-                'items' => $order->items->map(fn($item) => [
+                'items' => $order->items->map(fn ($item) => [
                     'id' => $item->id,
                     'product_id' => $item->product_id,
                     'name' => $item->product->name ?? 'Unknown',
@@ -194,9 +193,9 @@ class OrderController extends Controller
     {
         $user = Auth::user();
 
-        $hasSellerItems = $order->items()->whereHas('product', fn($q) => $q->where('seller_id', $user->id))->exists();
+        $hasSellerItems = $order->items()->whereHas('product', fn ($q) => $q->where('seller_id', $user->id))->exists();
 
-        if (!$hasSellerItems) {
+        if (! $hasSellerItems) {
             return response()->json([
                 'success' => false,
                 'message' => 'Order not found.',
@@ -213,13 +212,14 @@ class OrderController extends Controller
         DB::beginTransaction();
         try {
             // Get seller's items
-            $sellerItems = $order->items()->whereHas('product', fn($q) => $q->where('seller_id', $user->id))->get();
+            $sellerItems = $order->items()->whereHas('product', fn ($q) => $q->where('seller_id', $user->id))->get();
 
             // Check and reduce stock
             foreach ($sellerItems as $item) {
                 $product = $item->product;
                 if ($product->quantity < $item->quantity) {
                     DB::rollBack();
+
                     return response()->json([
                         'success' => false,
                         'message' => "Insufficient stock for {$product->name}. Available: {$product->quantity}",
@@ -249,6 +249,7 @@ class OrderController extends Controller
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
+
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to confirm order.',
@@ -264,16 +265,16 @@ class OrderController extends Controller
     {
         $user = Auth::user();
 
-        $hasSellerItems = $order->items()->whereHas('product', fn($q) => $q->where('seller_id', $user->id))->exists();
+        $hasSellerItems = $order->items()->whereHas('product', fn ($q) => $q->where('seller_id', $user->id))->exists();
 
-        if (!$hasSellerItems) {
+        if (! $hasSellerItems) {
             return response()->json([
                 'success' => false,
                 'message' => 'Order not found.',
             ], 404);
         }
 
-        if (!in_array($order->status, ['pending', 'confirmed'])) {
+        if (! in_array($order->status, ['pending', 'confirmed'])) {
             return response()->json([
                 'success' => false,
                 'message' => 'This order cannot be rejected.',
@@ -288,7 +289,7 @@ class OrderController extends Controller
         try {
             // Restore stock if order was confirmed
             if ($order->status === 'confirmed') {
-                $sellerItems = $order->items()->whereHas('product', fn($q) => $q->where('seller_id', $user->id))->get();
+                $sellerItems = $order->items()->whereHas('product', fn ($q) => $q->where('seller_id', $user->id))->get();
                 foreach ($sellerItems as $item) {
                     $item->product->increment('quantity', $item->quantity);
                 }
@@ -316,6 +317,7 @@ class OrderController extends Controller
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
+
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to reject order.',
@@ -331,9 +333,9 @@ class OrderController extends Controller
     {
         $user = Auth::user();
 
-        $hasSellerItems = $order->items()->whereHas('product', fn($q) => $q->where('seller_id', $user->id))->exists();
+        $hasSellerItems = $order->items()->whereHas('product', fn ($q) => $q->where('seller_id', $user->id))->exists();
 
-        if (!$hasSellerItems) {
+        if (! $hasSellerItems) {
             return response()->json([
                 'success' => false,
                 'message' => 'Order not found.',
@@ -382,9 +384,9 @@ class OrderController extends Controller
     {
         $user = Auth::user();
 
-        $hasSellerItems = $order->items()->whereHas('product', fn($q) => $q->where('seller_id', $user->id))->exists();
+        $hasSellerItems = $order->items()->whereHas('product', fn ($q) => $q->where('seller_id', $user->id))->exists();
 
-        if (!$hasSellerItems) {
+        if (! $hasSellerItems) {
             return response()->json([
                 'success' => false,
                 'message' => 'Order not found.',
@@ -424,9 +426,9 @@ class OrderController extends Controller
     {
         $user = Auth::user();
 
-        $hasSellerItems = $order->items()->whereHas('product', fn($q) => $q->where('seller_id', $user->id))->exists();
+        $hasSellerItems = $order->items()->whereHas('product', fn ($q) => $q->where('seller_id', $user->id))->exists();
 
-        if (!$hasSellerItems) {
+        if (! $hasSellerItems) {
             return response()->json([
                 'success' => false,
                 'message' => 'Order not found.',
@@ -473,9 +475,9 @@ class OrderController extends Controller
     {
         $user = Auth::user();
 
-        $hasSellerItems = $order->items()->whereHas('product', fn($q) => $q->where('seller_id', $user->id))->exists();
+        $hasSellerItems = $order->items()->whereHas('product', fn ($q) => $q->where('seller_id', $user->id))->exists();
 
-        if (!$hasSellerItems) {
+        if (! $hasSellerItems) {
             return response()->json([
                 'success' => false,
                 'message' => 'Order not found.',
@@ -520,8 +522,8 @@ class OrderController extends Controller
             ], 403);
         }
 
-        $baseQuery = fn() => Order::whereHas('items', function ($q) use ($user) {
-            $q->whereHas('product', fn($q) => $q->where('seller_id', $user->id));
+        $baseQuery = fn () => Order::whereHas('items', function ($q) use ($user) {
+            $q->whereHas('product', fn ($q) => $q->where('seller_id', $user->id));
         });
 
         $stats = [

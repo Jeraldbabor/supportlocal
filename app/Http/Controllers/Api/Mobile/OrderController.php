@@ -184,7 +184,7 @@ class OrderController extends Controller
             $order = Order::create([
                 'user_id' => $user->id,
                 'seller_id' => $sellerId,
-                'order_number' => 'ORD-' . strtoupper(uniqid()),
+                'order_number' => 'ORD-'.strtoupper(uniqid()),
                 'shipping_name' => $validated['shipping_name'],
                 'shipping_phone' => $validated['shipping_phone'],
                 'shipping_address' => $validated['shipping_address'],

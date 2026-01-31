@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Product;
-use App\Models\SellerApplication;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -34,20 +33,20 @@ class DashboardController extends Controller
         $days = $request->input('days', 30);
         $startDate = Carbon::now()->subDays($days)->startOfDay();
         $endDate = Carbon::now()->endOfDay();
-        
+
         // Previous period for comparison
         $prevStartDate = Carbon::now()->subDays($days * 2)->startOfDay();
         $prevEndDate = Carbon::now()->subDays($days)->endOfDay();
 
         // Product stats
         $productStats = $this->getProductStats($user->id);
-        
+
         // Order stats
         $orderStats = $this->getOrderStats($user->id, $startDate, $endDate, $prevStartDate, $prevEndDate);
-        
+
         // Revenue stats
         $revenueStats = $this->getRevenueStats($user->id, $startDate, $endDate, $prevStartDate, $prevEndDate);
-        
+
         // Customer stats
         $customerStats = $this->getCustomerStats($user->id, $startDate, $endDate, $prevStartDate, $prevEndDate);
 
@@ -105,21 +104,21 @@ class DashboardController extends Controller
 
         // Today's stats
         $todayOrders = Order::whereHas('items', function ($q) use ($user) {
-            $q->whereHas('product', fn($q) => $q->where('seller_id', $user->id));
+            $q->whereHas('product', fn ($q) => $q->where('seller_id', $user->id));
         })->whereDate('created_at', $today)->count();
 
-        $todayRevenue = OrderItem::whereHas('product', fn($q) => $q->where('seller_id', $user->id))
-            ->whereHas('order', fn($q) => $q->whereDate('created_at', $today)->where('status', 'completed'))
+        $todayRevenue = OrderItem::whereHas('product', fn ($q) => $q->where('seller_id', $user->id))
+            ->whereHas('order', fn ($q) => $q->whereDate('created_at', $today)->where('status', 'completed'))
             ->sum(DB::raw('price * quantity'));
 
         // This month's stats
-        $monthRevenue = OrderItem::whereHas('product', fn($q) => $q->where('seller_id', $user->id))
-            ->whereHas('order', fn($q) => $q->where('created_at', '>=', $thisMonth)->where('status', 'completed'))
+        $monthRevenue = OrderItem::whereHas('product', fn ($q) => $q->where('seller_id', $user->id))
+            ->whereHas('order', fn ($q) => $q->where('created_at', '>=', $thisMonth)->where('status', 'completed'))
             ->sum(DB::raw('price * quantity'));
 
         // Pending orders count
         $pendingOrders = Order::whereHas('items', function ($q) use ($user) {
-            $q->whereHas('product', fn($q) => $q->where('seller_id', $user->id));
+            $q->whereHas('product', fn ($q) => $q->where('seller_id', $user->id));
         })->whereIn('status', ['pending', 'confirmed'])->count();
 
         // Low stock products
@@ -165,7 +164,7 @@ class DashboardController extends Controller
     {
         $getOrderCount = function ($start, $end, $status = null) use ($sellerId) {
             $query = Order::whereHas('items', function ($q) use ($sellerId) {
-                $q->whereHas('product', fn($q) => $q->where('seller_id', $sellerId));
+                $q->whereHas('product', fn ($q) => $q->where('seller_id', $sellerId));
             })->whereBetween('created_at', [$start, $end]);
 
             if ($status) {
@@ -199,8 +198,8 @@ class DashboardController extends Controller
     private function getRevenueStats(int $sellerId, $startDate, $endDate, $prevStartDate, $prevEndDate): array
     {
         $getRevenue = function ($start, $end) use ($sellerId) {
-            return OrderItem::whereHas('product', fn($q) => $q->where('seller_id', $sellerId))
-                ->whereHas('order', fn($q) => $q->whereBetween('created_at', [$start, $end])->where('status', 'completed'))
+            return OrderItem::whereHas('product', fn ($q) => $q->where('seller_id', $sellerId))
+                ->whereHas('order', fn ($q) => $q->whereBetween('created_at', [$start, $end])->where('status', 'completed'))
                 ->sum(DB::raw('price * quantity'));
         };
 
@@ -224,7 +223,7 @@ class DashboardController extends Controller
     {
         $getCustomerCount = function ($start, $end) use ($sellerId) {
             return Order::whereHas('items', function ($q) use ($sellerId) {
-                $q->whereHas('product', fn($q) => $q->where('seller_id', $sellerId));
+                $q->whereHas('product', fn ($q) => $q->where('seller_id', $sellerId));
             })->whereBetween('created_at', [$start, $end])
                 ->distinct('user_id')
                 ->count('user_id');
@@ -236,7 +235,7 @@ class DashboardController extends Controller
 
         // Total unique customers ever
         $totalCustomers = Order::whereHas('items', function ($q) use ($sellerId) {
-            $q->whereHas('product', fn($q) => $q->where('seller_id', $sellerId));
+            $q->whereHas('product', fn ($q) => $q->where('seller_id', $sellerId));
         })->distinct('user_id')->count('user_id');
 
         return [
@@ -249,10 +248,10 @@ class DashboardController extends Controller
     private function getRecentOrders(int $sellerId, int $limit): array
     {
         $orders = Order::whereHas('items', function ($q) use ($sellerId) {
-            $q->whereHas('product', fn($q) => $q->where('seller_id', $sellerId));
+            $q->whereHas('product', fn ($q) => $q->where('seller_id', $sellerId));
         })
             ->with(['user:id,name,email,avatar', 'items' => function ($q) use ($sellerId) {
-                $q->whereHas('product', fn($q) => $q->where('seller_id', $sellerId))
+                $q->whereHas('product', fn ($q) => $q->where('seller_id', $sellerId))
                     ->with('product:id,name,images');
             }])
             ->orderBy('created_at', 'desc')
@@ -264,7 +263,7 @@ class DashboardController extends Controller
                 'id' => $order->id,
                 'order_number' => $order->order_number,
                 'status' => $order->status,
-                'total' => $order->items->sum(fn($item) => $item->price * $item->quantity),
+                'total' => $order->items->sum(fn ($item) => $item->price * $item->quantity),
                 'items_count' => $order->items->count(),
                 'customer' => [
                     'name' => $order->user->name ?? 'Guest',
@@ -287,7 +286,7 @@ class DashboardController extends Controller
 
         // Profile completeness (30 points)
         $profileFields = ['name', 'email', 'phone', 'address', 'avatar'];
-        $filledFields = collect($profileFields)->filter(fn($field) => !empty($user->$field))->count();
+        $filledFields = collect($profileFields)->filter(fn ($field) => ! empty($user->$field))->count();
         $profileScore = ($filledFields / count($profileFields)) * 30;
         $score += $profileScore;
         $items[] = [
@@ -320,7 +319,7 @@ class DashboardController extends Controller
 
         // Recent activity (20 points)
         $recentOrder = Order::whereHas('items', function ($q) use ($user) {
-            $q->whereHas('product', fn($q) => $q->where('seller_id', $user->id));
+            $q->whereHas('product', fn ($q) => $q->where('seller_id', $user->id));
         })->where('created_at', '>=', Carbon::now()->subDays(30))->exists();
         $activityScore = $recentOrder ? 20 : 0;
         $score += $activityScore;
@@ -345,7 +344,7 @@ class DashboardController extends Controller
 
         // Pending orders
         $pendingOrders = Order::whereHas('items', function ($q) use ($sellerId) {
-            $q->whereHas('product', fn($q) => $q->where('seller_id', $sellerId));
+            $q->whereHas('product', fn ($q) => $q->where('seller_id', $sellerId));
         })->where('status', 'pending')->count();
 
         if ($pendingOrders > 0) {
@@ -359,7 +358,7 @@ class DashboardController extends Controller
 
         // Unverified payments
         $unverifiedPayments = Order::whereHas('items', function ($q) use ($sellerId) {
-            $q->whereHas('product', fn($q) => $q->where('seller_id', $sellerId));
+            $q->whereHas('product', fn ($q) => $q->where('seller_id', $sellerId));
         })->where('payment_method', 'gcash')
             ->where('payment_status', 'pending')
             ->whereNotNull('payment_proof')

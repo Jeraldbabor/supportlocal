@@ -61,7 +61,7 @@ class CartController extends Controller
         if ($product->quantity < $validated['quantity']) {
             return response()->json([
                 'success' => false,
-                'message' => 'Insufficient stock. Only ' . $product->quantity . ' items available.',
+                'message' => 'Insufficient stock. Only '.$product->quantity.' items available.',
             ], 422);
         }
 
@@ -76,7 +76,7 @@ class CartController extends Controller
             if ($newQuantity > $product->quantity) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Cannot add more items. Maximum available: ' . $product->quantity,
+                    'message' => 'Cannot add more items. Maximum available: '.$product->quantity,
                 ], 422);
             }
 
@@ -134,7 +134,7 @@ class CartController extends Controller
         if ($validated['quantity'] > $product->quantity) {
             return response()->json([
                 'success' => false,
-                'message' => 'Insufficient stock. Only ' . $product->quantity . ' items available.',
+                'message' => 'Insufficient stock. Only '.$product->quantity.' items available.',
             ], 422);
         }
 
@@ -222,7 +222,7 @@ class CartController extends Controller
                 'status' => 'cart',
             ],
             [
-                'order_number' => 'CART-' . $user->id . '-' . time(),
+                'order_number' => 'CART-'.$user->id.'-'.time(),
                 'total_amount' => 0,
             ]
         );

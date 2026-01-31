@@ -25,13 +25,13 @@ class ChatController extends Controller
             $query->where('buyer_id', $user->id)
                 ->orWhere('seller_id', $user->id);
         })
-        ->with(['buyer:id,name,avatar', 'seller:id,name,avatar,business_name'])
-        ->withCount(['messages as unread_count' => function ($query) use ($user) {
-            $query->where('sender_id', '!=', $user->id)
-                ->whereNull('read_at');
-        }])
-        ->orderBy('updated_at', 'desc')
-        ->get();
+            ->with(['buyer:id,name,avatar', 'seller:id,name,avatar,business_name'])
+            ->withCount(['messages as unread_count' => function ($query) use ($user) {
+                $query->where('sender_id', '!=', $user->id)
+                    ->whereNull('read_at');
+            }])
+            ->orderBy('updated_at', 'desc')
+            ->get();
 
         $data = $conversations->map(function ($conv) use ($user) {
             $otherUser = $conv->buyer_id === $user->id ? $conv->seller : $conv->buyer;
@@ -115,8 +115,8 @@ class ChatController extends Controller
             ], 404);
         }
 
-        $otherUser = $conversation->buyer_id === $user->id 
-            ? $conversation->seller 
+        $otherUser = $conversation->buyer_id === $user->id
+            ? $conversation->seller
             : $conversation->buyer;
 
         // Mark messages as read
@@ -228,6 +228,7 @@ class ChatController extends Controller
             ], 201);
         } catch (\Exception $e) {
             DB::rollBack();
+
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to send message.',
@@ -270,9 +271,9 @@ class ChatController extends Controller
             $query->where('buyer_id', $user->id)
                 ->orWhere('seller_id', $user->id);
         })
-        ->where('sender_id', '!=', $user->id)
-        ->whereNull('read_at')
-        ->count();
+            ->where('sender_id', '!=', $user->id)
+            ->whereNull('read_at')
+            ->count();
 
         return response()->json([
             'success' => true,
