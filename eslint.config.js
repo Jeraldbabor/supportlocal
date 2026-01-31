@@ -54,6 +54,7 @@ export default [
             'resources/views/**/*.blade.php',
             '**/*.blade.php',
             'resources/js/actions/**', // Auto-generated route action files
+            'supportlocal-mobile/**', // Mobile app has its own ESLint config
         ],
     },
     prettier, // Turn off all rules that might conflict with Prettier
