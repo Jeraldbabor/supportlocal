@@ -801,7 +801,7 @@ export default function Index({
                                         return (
                                             <div
                                                 key={product.id}
-                                                className="group relative cursor-pointer overflow-hidden rounded-lg border border-gray-200 bg-white transition-all hover:border-orange-300 hover:shadow-lg"
+                                                className="group relative flex cursor-pointer flex-col overflow-hidden rounded-lg border border-gray-200 bg-white transition-all hover:border-orange-300 hover:shadow-lg"
                                                 onClick={() => handleProductClick(product.id)}
                                             >
                                                 {/* Product Image */}
@@ -850,7 +850,7 @@ export default function Index({
                                                 </div>
 
                                                 {/* Product Info */}
-                                                <div className="p-1.5 sm:p-2 md:p-3">
+                                                <div className="flex flex-1 flex-col p-1.5 sm:p-2 md:p-3">
                                                     {/* Store Name */}
                                                     {product.seller && (
                                                         <div className="mb-0.5 line-clamp-1 text-[10px] text-gray-500 sm:mb-1 sm:text-xs">
@@ -859,7 +859,7 @@ export default function Index({
                                                     )}
 
                                                     {/* Product Title */}
-                                                    <h3 className="mb-1 line-clamp-2 text-[11px] leading-tight font-medium text-gray-900 group-hover:text-orange-600 sm:mb-1.5 sm:text-xs md:mb-2 md:text-sm">
+                                                    <h3 className="mb-1 line-clamp-2 min-h-[2rem] text-[11px] leading-tight font-medium text-gray-900 group-hover:text-orange-600 sm:mb-1.5 sm:min-h-[2.25rem] sm:text-xs md:mb-2 md:min-h-[2.5rem] md:text-sm">
                                                         {product.name}
                                                     </h3>
 
@@ -914,7 +914,7 @@ export default function Index({
 
                                                     {/* Action Buttons */}
                                                     <div
-                                                        className="mt-1.5 flex gap-1 sm:mt-2 sm:gap-1.5 md:mt-3 md:gap-2"
+                                                        className="mt-auto flex gap-1 pt-1.5 sm:gap-1.5 sm:pt-2 md:gap-2 md:pt-3"
                                                         onClick={(e) => e.stopPropagation()}
                                                     >
                                                         <button
