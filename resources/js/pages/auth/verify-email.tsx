@@ -1,6 +1,6 @@
 import EmailVerificationNotificationController from '@/actions/App/Http/Controllers/Auth/EmailVerificationNotificationController';
 import { Form, Head, Link } from '@inertiajs/react';
-import { Clock, LoaderCircle, Mail } from 'lucide-react';
+import { LoaderCircle, Mail } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
@@ -22,11 +22,14 @@ export default function VerifyEmail({ status, sellerCount, featuredArtisans, coo
     const [countdown, setCountdown] = useState(cooldownSeconds);
     const [localResendCount, setLocalResendCount] = useState(resendCount);
 
-    // Format seconds to MM:SS
+    // Format seconds to readable text
     const formatTime = useCallback((seconds: number) => {
         const mins = Math.floor(seconds / 60);
         const secs = seconds % 60;
-        return `${mins}:${secs.toString().padStart(2, '0')}`;
+        if (mins > 0) {
+            return secs > 0 ? `${mins} min ${secs} sec` : `${mins} min`;
+        }
+        return `${secs} sec`;
     }, []);
 
     // Countdown timer effect
@@ -102,19 +105,6 @@ export default function VerifyEmail({ status, sellerCount, featuredArtisans, coo
                     </div>
                 </div>
 
-                {/* Cooldown timer display */}
-                {isOnCooldown && (
-                    <div className="rounded-lg border-2 border-blue-200 bg-gradient-to-r from-blue-50 to-indigo-50 p-4 dark:border-blue-800 dark:from-blue-900/20 dark:to-indigo-900/20">
-                        <div className="flex items-center justify-center space-x-3">
-                            <Clock className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-                            <div className="text-center">
-                                <p className="text-sm font-medium text-blue-900 dark:text-blue-300">Please wait before resending</p>
-                                <p className="mt-1 text-2xl font-bold text-blue-700 tabular-nums dark:text-blue-400">{formatTime(countdown)}</p>
-                            </div>
-                        </div>
-                    </div>
-                )}
-
                 <Form
                     action={EmailVerificationNotificationController.store().url}
                     method={EmailVerificationNotificationController.store().method}
@@ -132,15 +122,17 @@ export default function VerifyEmail({ status, sellerCount, featuredArtisans, coo
                                         <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />
                                         Sending...
                                     </>
-                                ) : isOnCooldown ? (
-                                    <>
-                                        <Clock className="mr-2 h-4 w-4" />
-                                        Wait {formatTime(countdown)}
-                                    </>
                                 ) : (
                                     'Resend Verification Email'
                                 )}
                             </Button>
+
+                            {/* Cooldown reminder text */}
+                            {isOnCooldown && (
+                                <p className="text-center text-sm text-gray-600 dark:text-gray-400">
+                                    Please wait {formatTime(countdown)} before resending
+                                </p>
+                            )}
 
                             {/* Resend attempts info */}
                             {!isOnCooldown && localResendCount > 0 && attemptsRemaining > 0 && (
