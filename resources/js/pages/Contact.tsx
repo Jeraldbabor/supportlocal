@@ -224,9 +224,12 @@ export default function Contact({ flash, pageContents = {} }: ContactProps = {})
                                         value={formData.email}
                                         onChange={handleInputChange}
                                         required
-                                        className="w-full rounded-md border border-gray-300 px-4 py-3 focus:border-primary focus:ring-2 focus:ring-primary"
+                                        className={`w-full rounded-md border px-4 py-3 focus:ring-2 focus:ring-primary ${
+                                            errors.email ? 'border-red-300 focus:border-red-500' : 'border-gray-300 focus:border-primary'
+                                        }`}
                                         placeholder="Enter your email address"
                                     />
+                                    {errors.email && <p className="mt-1 text-sm text-red-600">{errors.email}</p>}
                                 </div>
 
                                 <div>
