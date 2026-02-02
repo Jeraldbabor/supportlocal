@@ -244,6 +244,7 @@ class HomeController extends Controller
 
     /**
      * Handle contact form submission
+     * Each email can only send one contact message
      */
     public function sendContactMessage(Request $request)
     {
@@ -253,6 +254,14 @@ class HomeController extends Controller
             'subject' => 'required|string|max:255',
             'message' => 'required|string|max:2000',
         ]);
+
+        // Check if this email has already sent a contact message
+        $existingMessage = ContactMessage::where('email', $validated['email'])->first();
+        if ($existingMessage) {
+            return back()->withErrors([
+                'email' => 'This email address has already been used to send a message. Please use a different email address.',
+            ])->withInput();
+        }
 
         // Store the message in the database
         $contactMessage = ContactMessage::create([
