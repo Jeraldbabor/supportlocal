@@ -108,12 +108,8 @@ export default function VerifyEmail({ status, sellerCount, featuredArtisans, coo
                         <div className="flex items-center justify-center space-x-3">
                             <Clock className="h-5 w-5 text-blue-600 dark:text-blue-400" />
                             <div className="text-center">
-                                <p className="text-sm font-medium text-blue-900 dark:text-blue-300">
-                                    Please wait before resending
-                                </p>
-                                <p className="mt-1 text-2xl font-bold tabular-nums text-blue-700 dark:text-blue-400">
-                                    {formatTime(countdown)}
-                                </p>
+                                <p className="text-sm font-medium text-blue-900 dark:text-blue-300">Please wait before resending</p>
+                                <p className="mt-1 text-2xl font-bold text-blue-700 tabular-nums dark:text-blue-400">{formatTime(countdown)}</p>
                             </div>
                         </div>
                     </div>
