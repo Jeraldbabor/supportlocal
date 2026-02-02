@@ -700,27 +700,27 @@ export default function Show({ seller, products, filters, userRating: initialUse
                                                     <button
                                                         onClick={(e) => handleAddToCart(e, product)}
                                                         disabled={product.stock_status === 'out_of_stock' || isLoading}
-                                                        className={`flex flex-1 transform items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium transition-all duration-200 ${
+                                                        className={`flex transform items-center justify-center rounded-lg px-4 py-2.5 text-sm font-medium transition-all duration-200 ${
                                                             product.stock_status === 'out_of_stock' || isLoading
                                                                 ? 'cursor-not-allowed bg-gray-100 text-gray-400'
                                                                 : 'bg-gradient-to-r from-amber-600 to-orange-600 text-white shadow-md hover:-translate-y-0.5 hover:from-amber-700 hover:to-orange-700 hover:shadow-lg focus:ring-2 focus:ring-amber-200 active:transform-none'
                                                         }`}
+                                                        title="Add to Cart"
                                                     >
                                                         <ShoppingCart className="h-4 w-4" />
-                                                        {product.stock_status === 'out_of_stock' ? 'Out of Stock' : 'Add to Cart'}
                                                     </button>
 
                                                     <button
                                                         onClick={(e) => handleBuyNow(e, product)}
                                                         disabled={product.stock_status === 'out_of_stock' || isLoading}
-                                                        className={`flex transform items-center justify-center rounded-lg px-4 py-2.5 text-sm font-medium transition-all duration-200 ${
+                                                        className={`flex flex-1 transform items-center justify-center rounded-lg px-4 py-2.5 text-sm font-medium transition-all duration-200 ${
                                                             product.stock_status === 'out_of_stock' || isLoading
                                                                 ? 'cursor-not-allowed bg-gray-100 text-gray-400'
                                                                 : 'border-2 border-amber-300 bg-white text-amber-700 shadow-sm hover:-translate-y-0.5 hover:border-amber-400 hover:bg-gradient-to-r hover:from-amber-50 hover:to-orange-50 hover:shadow-md focus:ring-2 focus:ring-amber-200 active:transform-none'
                                                         }`}
                                                         title="Buy Now"
                                                     >
-                                                        Buy Now
+                                                        Buy
                                                     </button>
                                                 </div>
                                             </div>

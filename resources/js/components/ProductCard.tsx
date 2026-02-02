@@ -198,20 +198,19 @@ export default function ProductCard({ product, isInWishlist = false, onAddToCart
                 </div>
 
                 {/* Action Buttons */}
-                <div className="flex flex-col gap-2 sm:flex-row sm:gap-2.5">
+                <div className="flex flex-row gap-2 sm:gap-2.5">
                     <button
                         onClick={(e) => onAddToCart?.(e, product)}
-                        className="group/btn flex min-w-0 flex-1 items-center justify-center gap-1.5 rounded-lg bg-gradient-to-r from-amber-600 to-orange-600 px-3 py-2 text-xs font-semibold text-white shadow-lg transition-all duration-200 hover:scale-105 hover:from-amber-700 hover:to-orange-700 hover:shadow-xl active:scale-95 sm:rounded-xl sm:px-4 sm:py-3 sm:text-sm"
+                        className="group/btn flex items-center justify-center rounded-lg bg-gradient-to-r from-amber-600 to-orange-600 px-3 py-2 text-xs font-semibold text-white shadow-lg transition-all duration-200 hover:scale-105 hover:from-amber-700 hover:to-orange-700 hover:shadow-xl active:scale-95 sm:rounded-xl sm:px-4 sm:py-3 sm:text-sm"
+                        title="Add to Cart"
                     >
-                        <ShoppingCart className="h-3.5 w-3.5 flex-shrink-0 transition-transform group-hover/btn:scale-110 sm:h-4 sm:w-4" />
-                        <span className="hidden whitespace-nowrap sm:inline">Add to Cart</span>
-                        <span className="whitespace-nowrap sm:hidden">Add</span>
+                        <ShoppingCart className="h-4 w-4 flex-shrink-0 transition-transform group-hover/btn:scale-110 sm:h-5 sm:w-5" />
                     </button>
                     <button
                         onClick={(e) => onBuyNow?.(e, product)}
                         className="flex-1 rounded-lg border-2 border-amber-500 bg-white px-3 py-2 text-xs font-semibold whitespace-nowrap text-amber-700 shadow-sm transition-all duration-200 hover:scale-105 hover:border-amber-600 hover:bg-amber-50 hover:shadow-md active:scale-95 sm:rounded-xl sm:px-4 sm:py-3 sm:text-sm"
                     >
-                        Buy Now
+                        Buy
                     </button>
                 </div>
             </div>
