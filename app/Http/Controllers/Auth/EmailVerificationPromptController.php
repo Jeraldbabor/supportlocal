@@ -47,7 +47,7 @@ class EmailVerificationPromptController extends Controller
 
         $cooldownSeconds = 0;
         if ($cooldownUntil && now()->lt($cooldownUntil)) {
-            $cooldownSeconds = now()->diffInSeconds($cooldownUntil);
+            $cooldownSeconds = (int) now()->diffInSeconds($cooldownUntil);
         }
 
         return Inertia::render('auth/verify-email', [
