@@ -221,58 +221,52 @@ export default function SettingsIndex() {
                                             rows={2}
                                         />
                                     </div>
-                                                    <div className="space-y-4 rounded-lg border border-gray-200 bg-gray-50 p-4 dark:border-gray-700 dark:bg-gray-800/50">
-                                                        <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300">Site Access Controls</h4>
-                                                        <div className="flex items-center justify-between">
-                                                            <div className="space-y-0.5">
-                                                                <Label htmlFor="registration_enabled" className="text-sm font-medium">
-                                                                    User Registration
-                                                                </Label>
-                                                                <p className="text-xs text-muted-foreground">
-                                                                    Allow new users to create accounts
-                                                                </p>
-                                                            </div>
-                                                            <Switch
-                                                                id="registration_enabled"
-                                                                checked={generalSettings.registration_enabled}
-                                                                onCheckedChange={(checked) =>
-                                                                    setGeneralSettings({ ...generalSettings, registration_enabled: checked })
-                                                                }
-                                                            />
-                                                        </div>
-                                                        {!generalSettings.registration_enabled && (
-                                                            <div className="rounded-md bg-amber-50 p-3 text-sm text-amber-800 dark:bg-amber-900/30 dark:text-amber-200">
-                                                                <strong>Warning:</strong> Registration is currently disabled. New users cannot create
-                                                                accounts.
-                                                            </div>
-                                                        )}
-                                                        <div className="flex items-center justify-between border-t border-gray-200 pt-4 dark:border-gray-700">
-                                                            <div className="space-y-0.5">
-                                                                <Label htmlFor="maintenance_mode" className="text-sm font-medium">
-                                                                    Maintenance Mode
-                                                                </Label>
-                                                                <p className="text-xs text-muted-foreground">
-                                                                    Show maintenance page to visitors (admins can still access)
-                                                                </p>
-                                                            </div>
-                                                            <Switch
-                                                                id="maintenance_mode"
-                                                                checked={generalSettings.maintenance_mode}
-                                                                onCheckedChange={(checked) =>
-                                                                    setGeneralSettings({ ...generalSettings, maintenance_mode: checked })
-                                                                }
-                                                            />
-                                                        </div>
-                                                        {generalSettings.maintenance_mode && (
-                                                            <div className="rounded-md bg-amber-50 p-3 text-sm text-amber-800 dark:bg-amber-900/30 dark:text-amber-200">
-                                                                <strong>Warning:</strong> Maintenance mode is enabled. Regular users cannot access the
-                                                                site.
-                                                            </div>
-                                                        )}
-                                                    </div>
-                                                    <Button type="submit" disabled={isSubmitting}>
-                                                        {isSubmitting ? 'Saving...' : 'Save General Settings'}
-                                                    </Button>
+                                    <div className="space-y-4 rounded-lg border border-gray-200 bg-gray-50 p-4 dark:border-gray-700 dark:bg-gray-800/50">
+                                        <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300">Site Access Controls</h4>
+                                        <div className="flex items-center justify-between">
+                                            <div className="space-y-0.5">
+                                                <Label htmlFor="registration_enabled" className="text-sm font-medium">
+                                                    User Registration
+                                                </Label>
+                                                <p className="text-xs text-muted-foreground">Allow new users to create accounts</p>
+                                            </div>
+                                            <Switch
+                                                id="registration_enabled"
+                                                checked={generalSettings.registration_enabled}
+                                                onCheckedChange={(checked) =>
+                                                    setGeneralSettings({ ...generalSettings, registration_enabled: checked })
+                                                }
+                                            />
+                                        </div>
+                                        {!generalSettings.registration_enabled && (
+                                            <div className="rounded-md bg-amber-50 p-3 text-sm text-amber-800 dark:bg-amber-900/30 dark:text-amber-200">
+                                                <strong>Warning:</strong> Registration is currently disabled. New users cannot create accounts.
+                                            </div>
+                                        )}
+                                        <div className="flex items-center justify-between border-t border-gray-200 pt-4 dark:border-gray-700">
+                                            <div className="space-y-0.5">
+                                                <Label htmlFor="maintenance_mode" className="text-sm font-medium">
+                                                    Maintenance Mode
+                                                </Label>
+                                                <p className="text-xs text-muted-foreground">
+                                                    Show maintenance page to visitors (admins can still access)
+                                                </p>
+                                            </div>
+                                            <Switch
+                                                id="maintenance_mode"
+                                                checked={generalSettings.maintenance_mode}
+                                                onCheckedChange={(checked) => setGeneralSettings({ ...generalSettings, maintenance_mode: checked })}
+                                            />
+                                        </div>
+                                        {generalSettings.maintenance_mode && (
+                                            <div className="rounded-md bg-amber-50 p-3 text-sm text-amber-800 dark:bg-amber-900/30 dark:text-amber-200">
+                                                <strong>Warning:</strong> Maintenance mode is enabled. Regular users cannot access the site.
+                                            </div>
+                                        )}
+                                    </div>
+                                    <Button type="submit" disabled={isSubmitting}>
+                                        {isSubmitting ? 'Saving...' : 'Save General Settings'}
+                                    </Button>
                                 </form>
                             </CardContent>
                         </Card>
