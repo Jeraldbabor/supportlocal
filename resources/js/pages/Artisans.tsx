@@ -505,9 +505,9 @@ export default function Artisans({ artisans, locations = [], filters = {} }: Art
                                             <div
                                                 key={artisan.id}
                                                 onClick={() => handleArtisanClick(artisan.id)}
-                                                className="group cursor-pointer overflow-hidden rounded-lg border border-gray-200 bg-white transition-all hover:border-orange-300 hover:shadow-lg"
+                                                className="group flex cursor-pointer flex-col overflow-hidden rounded-lg border border-gray-200 bg-white transition-all hover:border-orange-300 hover:shadow-lg"
                                             >
-                                                <div className="p-3 sm:p-4">
+                                                <div className="flex flex-1 flex-col p-3 sm:p-4">
                                                     {/* Artisan Header */}
                                                     <div className="flex items-start gap-2 sm:gap-3">
                                                         {/* Avatar */}
@@ -574,9 +574,9 @@ export default function Artisans({ artisans, locations = [], filters = {} }: Art
                                                     </div>
 
                                                     {/* Bio */}
-                                                    {artisan.bio && (
-                                                        <p className="mt-2 line-clamp-2 text-xs text-gray-600 sm:mt-3 sm:text-sm">{artisan.bio}</p>
-                                                    )}
+                                                    <p className="mt-2 line-clamp-2 min-h-[2rem] text-xs text-gray-600 sm:mt-3 sm:min-h-[2.5rem] sm:text-sm">
+                                                        {artisan.bio || '\u00A0'}
+                                                    </p>
 
                                                     {/* Specialties */}
                                                     {artisan.specialties && artisan.specialties.length > 0 && (
@@ -620,7 +620,7 @@ export default function Artisans({ artisans, locations = [], filters = {} }: Art
                                                     </div>
 
                                                     {/* Action Button */}
-                                                    <div className="mt-3 sm:mt-4" onClick={(e) => e.stopPropagation()}>
+                                                    <div className="mt-auto pt-3 sm:pt-4" onClick={(e) => e.stopPropagation()}>
                                                         {auth?.user && auth.user.id !== artisan.id ? (
                                                             <StartChatButton
                                                                 userId={artisan.id}
