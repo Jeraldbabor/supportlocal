@@ -7,6 +7,7 @@ use App\Models\ActivityLog;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Product;
+use App\Models\Setting;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
@@ -41,9 +42,13 @@ class RegisteredUserController extends Controller
                 ];
             });
 
+        // Check if registration is enabled
+        $registrationEnabled = Setting::get('registration_enabled', true);
+
         return Inertia::render('auth/register', [
             'sellerCount' => $sellerCount,
             'featuredArtisans' => $featuredArtisans,
+            'registrationEnabled' => $registrationEnabled,
         ]);
     }
 
@@ -54,6 +59,12 @@ class RegisteredUserController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
+        // Check if registration is enabled
+        if (! Setting::get('registration_enabled', true)) {
+            return redirect()->route('register')
+                ->with('error', 'Registration is currently disabled. Please try again later.');
+        }
+
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|lowercase|email|max:255|unique:'.User::class,
