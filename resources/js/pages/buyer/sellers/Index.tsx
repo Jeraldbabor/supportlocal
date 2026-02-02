@@ -517,9 +517,9 @@ export default function Index({ sellers, locations = [], filters }: SellersIndex
                                             <div
                                                 key={seller.id}
                                                 onClick={() => handleSellerClick(seller.id)}
-                                                className="group cursor-pointer overflow-hidden rounded-lg border border-gray-200 bg-white transition-all hover:border-orange-300 hover:shadow-lg"
+                                                className="group flex cursor-pointer flex-col overflow-hidden rounded-lg border border-gray-200 bg-white transition-all hover:border-orange-300 hover:shadow-lg"
                                             >
-                                                <div className="p-3 sm:p-4">
+                                                <div className="flex flex-1 flex-col p-3 sm:p-4">
                                                     {/* Seller Header */}
                                                     <div className="flex items-start gap-2 sm:gap-3">
                                                         {/* Avatar */}
@@ -588,11 +588,9 @@ export default function Index({ sellers, locations = [], filters }: SellersIndex
                                                     </div>
 
                                                     {/* Business Description - Hidden on mobile to save space */}
-                                                    {seller.business_description && (
-                                                        <p className="mt-2 line-clamp-2 hidden text-xs text-gray-600 sm:mt-3 sm:block sm:text-sm">
-                                                            {seller.business_description}
-                                                        </p>
-                                                    )}
+                                                    <p className="mt-2 line-clamp-2 hidden text-xs text-gray-600 sm:mt-3 sm:block sm:min-h-[2.5rem] sm:text-sm">
+                                                        {seller.business_description || '\u00A0'}
+                                                    </p>
 
                                                     {/* Stats */}
                                                     <div className="mt-2 grid grid-cols-3 gap-1.5 border-t border-gray-100 pt-2 sm:mt-3 sm:gap-2 sm:pt-2.5 md:mt-4 md:gap-3 md:pt-3">
@@ -617,7 +615,7 @@ export default function Index({ sellers, locations = [], filters }: SellersIndex
                                                     </div>
 
                                                     {/* Action Button */}
-                                                    <div className="mt-2 sm:mt-3 md:mt-4" onClick={(e) => e.stopPropagation()}>
+                                                    <div className="mt-auto pt-2 sm:pt-3 md:pt-4" onClick={(e) => e.stopPropagation()}>
                                                         {auth?.user && auth.user.id !== seller.id ? (
                                                             <StartChatButton
                                                                 userId={seller.id}
