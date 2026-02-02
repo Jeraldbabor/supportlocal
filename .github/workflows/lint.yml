@@ -1,22 +1,23 @@
 name: linter
 
 on:
-  push:
-    branches:
-      - develop
-      - main
-      - production
   pull_request:
     branches:
       - develop
       - main
       - production
+  workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   quality:
+    name: quality
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
