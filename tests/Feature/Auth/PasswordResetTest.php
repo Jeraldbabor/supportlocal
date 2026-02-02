@@ -49,8 +49,8 @@ test('password can be reset with valid token', function () {
         $response = $this->post(route('password.store'), [
             'token' => $notification->token,
             'email' => $user->email,
-            'password' => 'password',
-            'password_confirmation' => 'password',
+            'password' => 'NewPassword123!',
+            'password_confirmation' => 'NewPassword123!',
         ]);
 
         $response
@@ -67,8 +67,8 @@ test('password cannot be reset with invalid token', function () {
     $response = $this->post(route('password.store'), [
         'token' => 'invalid-token',
         'email' => $user->email,
-        'password' => 'newpassword123',
-        'password_confirmation' => 'newpassword123',
+        'password' => 'NewPassword123!',
+        'password_confirmation' => 'NewPassword123!',
     ]);
 
     $response->assertSessionHasErrors('email');

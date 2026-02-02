@@ -64,8 +64,7 @@ class RegisteredUserController extends Controller
                     ->letters()
                     ->mixedCase()
                     ->numbers()
-                    ->symbols()
-                    ->uncompromised(),
+                    ->symbols(),
             ],
         ], [
             'password.min' => 'Password must be at least 8 characters.',
@@ -73,7 +72,6 @@ class RegisteredUserController extends Controller
             'password.mixed' => 'Password must contain both uppercase and lowercase letters.',
             'password.numbers' => 'Password must contain at least one number.',
             'password.symbols' => 'Password must contain at least one special character (@, #, $, %, etc.).',
-            'password.uncompromised' => 'This password has appeared in a data breach. Please choose a different password.',
         ]);
 
         $user = User::create([
