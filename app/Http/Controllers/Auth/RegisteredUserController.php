@@ -79,27 +79,52 @@ class RegisteredUserController extends Controller
         // Login the user first
         Auth::login($user);
 
-        // Send verification email directly and synchronously
+        // Send verification email directly and synchronously with retry logic
         // We call this directly instead of relying on the Registered event
         // to ensure the email is sent immediately before redirect
-        try {
-            // Refresh the user to ensure all attributes are loaded
-            $user->refresh();
+        $maxAttempts = 3;
+        $attempt = 0;
+        $emailSent = false;
 
-            // Send the verification notification
-            $user->sendEmailVerificationNotification();
+        // Refresh the user to ensure all attributes are loaded
+        $user->refresh();
 
-            Log::info('Verification email sent successfully during registration', [
+        while ($attempt < $maxAttempts && !$emailSent) {
+            $attempt++;
+            try {
+                // Send the verification notification
+                $user->sendEmailVerificationNotification();
+
+                Log::info('Verification email sent successfully during registration', [
+                    'user_id' => $user->id,
+                    'email' => $user->email,
+                    'attempt' => $attempt,
+                ]);
+
+                $emailSent = true;
+            } catch (\Throwable $e) {
+                // Log the error with full details for debugging
+                Log::error('Failed to send verification email during registration', [
+                    'user_id' => $user->id,
+                    'email' => $user->email,
+                    'attempt' => $attempt,
+                    'max_attempts' => $maxAttempts,
+                    'error' => $e->getMessage(),
+                    'trace' => $e->getTraceAsString(),
+                ]);
+
+                // Wait 1 second before retrying (except on last attempt)
+                if ($attempt < $maxAttempts) {
+                    sleep(1);
+                }
+            }
+        }
+
+        if (!$emailSent) {
+            Log::warning('All verification email attempts failed during registration', [
                 'user_id' => $user->id,
                 'email' => $user->email,
-            ]);
-        } catch (\Throwable $e) {
-            // Log the error with full details for debugging
-            Log::error('Failed to send verification email during registration', [
-                'user_id' => $user->id,
-                'email' => $user->email,
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
+                'total_attempts' => $maxAttempts,
             ]);
         }
 

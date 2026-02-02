@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Validation\Rules\Password as PasswordRule;
 use Illuminate\Validation\ValidationException;
@@ -33,8 +34,44 @@ class AuthController extends Controller
             'is_active' => true,
         ]);
 
-        // Send email verification
-        $user->sendEmailVerificationNotification();
+        // Send email verification with retry logic (3 attempts)
+        $maxAttempts = 3;
+        $attempt = 0;
+        $emailSent = false;
+
+        while ($attempt < $maxAttempts && !$emailSent) {
+            $attempt++;
+            try {
+                $user->sendEmailVerificationNotification();
+                Log::info('Verification email sent successfully during mobile registration', [
+                    'user_id' => $user->id,
+                    'email' => $user->email,
+                    'attempt' => $attempt,
+                ]);
+                $emailSent = true;
+            } catch (\Throwable $e) {
+                Log::error('Failed to send verification email during mobile registration', [
+                    'user_id' => $user->id,
+                    'email' => $user->email,
+                    'attempt' => $attempt,
+                    'max_attempts' => $maxAttempts,
+                    'error' => $e->getMessage(),
+                ]);
+
+                // Wait 1 second before retrying (except on last attempt)
+                if ($attempt < $maxAttempts) {
+                    sleep(1);
+                }
+            }
+        }
+
+        if (!$emailSent) {
+            Log::warning('All verification email attempts failed during mobile registration', [
+                'user_id' => $user->id,
+                'email' => $user->email,
+                'total_attempts' => $maxAttempts,
+            ]);
+        }
 
         $token = $user->createToken('mobile-app')->plainTextToken;
 

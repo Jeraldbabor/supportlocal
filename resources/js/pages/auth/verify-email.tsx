@@ -1,7 +1,7 @@
 import EmailVerificationNotificationController from '@/actions/App/Http/Controllers/Auth/EmailVerificationNotificationController';
 import { Form, Head, Link } from '@inertiajs/react';
-import { LoaderCircle, Mail } from 'lucide-react';
-import { useEffect } from 'react';
+import { Clock, LoaderCircle, Mail } from 'lucide-react';
+import { useCallback, useEffect, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import AuthLayout from '@/layouts/auth-layout';
@@ -14,9 +14,63 @@ interface VerifyEmailProps {
         name: string;
         avatar_url: string;
     }>;
+    cooldownSeconds?: number;
+    resendCount?: number;
 }
 
-export default function VerifyEmail({ status, sellerCount, featuredArtisans }: VerifyEmailProps) {
+export default function VerifyEmail({ status, sellerCount, featuredArtisans, cooldownSeconds = 0, resendCount = 0 }: VerifyEmailProps) {
+    const [countdown, setCountdown] = useState(cooldownSeconds);
+    const [localResendCount, setLocalResendCount] = useState(resendCount);
+
+    // Format seconds to MM:SS
+    const formatTime = useCallback((seconds: number) => {
+        const mins = Math.floor(seconds / 60);
+        const secs = seconds % 60;
+        return `${mins}:${secs.toString().padStart(2, '0')}`;
+    }, []);
+
+    // Countdown timer effect
+    useEffect(() => {
+        if (countdown <= 0) return;
+
+        const timer = setInterval(() => {
+            setCountdown((prev) => {
+                if (prev <= 1) {
+                    clearInterval(timer);
+                    return 0;
+                }
+                return prev - 1;
+            });
+        }, 1000);
+
+        return () => clearInterval(timer);
+    }, [countdown]);
+
+    // Update countdown when props change (after form submission)
+    useEffect(() => {
+        if (cooldownSeconds > 0) {
+            setCountdown(cooldownSeconds);
+        }
+        if (resendCount !== localResendCount) {
+            setLocalResendCount(resendCount);
+        }
+    }, [cooldownSeconds, resendCount, localResendCount]);
+
+    // Handle successful resend - set local cooldown
+    useEffect(() => {
+        if (status === 'verification-link-sent' && countdown === 0) {
+            // If resend was successful and no server cooldown, set local cooldown
+            const newCount = localResendCount + 1;
+            setLocalResendCount(newCount);
+            // 1 minute for first 2 resends, 10 minutes for 3rd
+            const cooldownTime = newCount >= 3 ? 600 : 60;
+            setCountdown(cooldownTime);
+            if (newCount >= 3) {
+                setLocalResendCount(0); // Reset after 3rd
+            }
+        }
+    }, [status]);
+
     useEffect(() => {
         // Prevent back button navigation
         window.history.pushState(null, '', window.location.href);
@@ -31,6 +85,9 @@ export default function VerifyEmail({ status, sellerCount, featuredArtisans }: V
             window.removeEventListener('popstate', handlePopState);
         };
     }, []);
+
+    const isOnCooldown = countdown > 0;
+    const attemptsRemaining = 3 - localResendCount;
 
     return (
         <AuthLayout
@@ -64,6 +121,23 @@ export default function VerifyEmail({ status, sellerCount, featuredArtisans }: V
                     </div>
                 </div>
 
+                {/* Cooldown timer display */}
+                {isOnCooldown && (
+                    <div className="rounded-lg border-2 border-blue-200 bg-gradient-to-r from-blue-50 to-indigo-50 p-4 dark:border-blue-800 dark:from-blue-900/20 dark:to-indigo-900/20">
+                        <div className="flex items-center justify-center space-x-3">
+                            <Clock className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                            <div className="text-center">
+                                <p className="text-sm font-medium text-blue-900 dark:text-blue-300">
+                                    Please wait before resending
+                                </p>
+                                <p className="mt-1 text-2xl font-bold tabular-nums text-blue-700 dark:text-blue-400">
+                                    {formatTime(countdown)}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
                 <Form
                     action={EmailVerificationNotificationController.store().url}
                     method={EmailVerificationNotificationController.store().method}
@@ -73,18 +147,30 @@ export default function VerifyEmail({ status, sellerCount, featuredArtisans }: V
                         <>
                             <Button
                                 type="submit"
-                                disabled={processing}
-                                className="h-10 w-full rounded-lg bg-gradient-to-r from-amber-600 via-amber-700 to-orange-600 text-sm font-bold text-white shadow-lg transition-all duration-300 hover:scale-[1.02] hover:from-amber-700 hover:via-amber-800 hover:to-orange-700 hover:shadow-2xl active:scale-[0.98]"
+                                disabled={processing || isOnCooldown}
+                                className="h-10 w-full rounded-lg bg-gradient-to-r from-amber-600 via-amber-700 to-orange-600 text-sm font-bold text-white shadow-lg transition-all duration-300 hover:scale-[1.02] hover:from-amber-700 hover:via-amber-800 hover:to-orange-700 hover:shadow-2xl active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:scale-100"
                             >
                                 {processing ? (
                                     <>
                                         <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />
                                         Sending...
                                     </>
+                                ) : isOnCooldown ? (
+                                    <>
+                                        <Clock className="mr-2 h-4 w-4" />
+                                        Wait {formatTime(countdown)}
+                                    </>
                                 ) : (
                                     'Resend Verification Email'
                                 )}
                             </Button>
+
+                            {/* Resend attempts info */}
+                            {!isOnCooldown && localResendCount > 0 && attemptsRemaining > 0 && (
+                                <p className="text-center text-xs text-gray-500 dark:text-gray-400">
+                                    {attemptsRemaining} resend{attemptsRemaining !== 1 ? 's' : ''} remaining before 10-minute cooldown
+                                </p>
+                            )}
 
                             <div className="pt-2 text-center">
                                 <Link
