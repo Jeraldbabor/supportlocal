@@ -46,30 +46,11 @@ export default function VerifyEmail({ status, sellerCount, featuredArtisans, coo
         return () => clearInterval(timer);
     }, [countdown]);
 
-    // Update countdown when props change (after form submission)
+    // Update countdown when props change (after form submission/page load)
     useEffect(() => {
-        if (cooldownSeconds > 0) {
-            setCountdown(cooldownSeconds);
-        }
-        if (resendCount !== localResendCount) {
-            setLocalResendCount(resendCount);
-        }
-    }, [cooldownSeconds, resendCount, localResendCount]);
-
-    // Handle successful resend - set local cooldown
-    useEffect(() => {
-        if (status === 'verification-link-sent' && countdown === 0) {
-            // If resend was successful and no server cooldown, set local cooldown
-            const newCount = localResendCount + 1;
-            setLocalResendCount(newCount);
-            // 1 minute for first 2 resends, 10 minutes for 3rd
-            const cooldownTime = newCount >= 3 ? 600 : 60;
-            setCountdown(cooldownTime);
-            if (newCount >= 3) {
-                setLocalResendCount(0); // Reset after 3rd
-            }
-        }
-    }, [status]);
+        setCountdown(cooldownSeconds);
+        setLocalResendCount(resendCount);
+    }, [cooldownSeconds, resendCount]);
 
     useEffect(() => {
         // Prevent back button navigation

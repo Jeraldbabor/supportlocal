@@ -89,7 +89,7 @@ class RegisteredUserController extends Controller
         // Refresh the user to ensure all attributes are loaded
         $user->refresh();
 
-        while ($attempt < $maxAttempts && !$emailSent) {
+        while ($attempt < $maxAttempts && ! $emailSent) {
             $attempt++;
             try {
                 // Send the verification notification
@@ -120,7 +120,7 @@ class RegisteredUserController extends Controller
             }
         }
 
-        if (!$emailSent) {
+        if (! $emailSent) {
             Log::warning('All verification email attempts failed during registration', [
                 'user_id' => $user->id,
                 'email' => $user->email,

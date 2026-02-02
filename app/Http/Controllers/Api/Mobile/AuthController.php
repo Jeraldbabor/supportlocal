@@ -39,7 +39,7 @@ class AuthController extends Controller
         $attempt = 0;
         $emailSent = false;
 
-        while ($attempt < $maxAttempts && !$emailSent) {
+        while ($attempt < $maxAttempts && ! $emailSent) {
             $attempt++;
             try {
                 $user->sendEmailVerificationNotification();
@@ -65,7 +65,7 @@ class AuthController extends Controller
             }
         }
 
-        if (!$emailSent) {
+        if (! $emailSent) {
             Log::warning('All verification email attempts failed during mobile registration', [
                 'user_id' => $user->id,
                 'email' => $user->email,
