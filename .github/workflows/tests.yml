@@ -1,20 +1,17 @@
 name: tests
 
 on:
+  push:
+    branches:
+      - develop
+      - main
   pull_request:
     branches:
       - develop
       - main
-      - production
-  workflow_dispatch:
-
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
 
 jobs:
   ci:
-    name: ci
     runs-on: ubuntu-latest
 
     steps:
