@@ -29,6 +29,12 @@ export interface SharedData {
     auth: Auth;
     sidebarOpen: boolean;
     wishlistCount?: number;
+    flash: {
+        success?: string;
+        error?: string;
+        message?: string;
+        status?: string;
+    };
     [key: string]: unknown;
 }
 
