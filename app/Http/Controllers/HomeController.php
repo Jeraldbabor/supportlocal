@@ -175,7 +175,7 @@ class HomeController extends Controller
             ],
             [
                 'id' => 2,
-                'name' => 'Sir Jonas Parreño MIT',
+                'name' => 'Jonas Parreño, MIT',
                 'specialty' => 'Analysis/Capstone Adviser',
                 'image' => '/sirjd.jpg',
                 'description' => 'An experienced adviser specializing in analysis and capstone project guidance, helping students excel in their academic journey.',

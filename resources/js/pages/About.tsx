@@ -38,7 +38,7 @@ export default function About({ artisans = [], pageContents = {} }: AboutProps) 
         },
         {
             id: 2,
-            name: 'Sir Jonas Parreño MIT',
+            name: 'Jonas Parreño, MIT',
             specialty: 'Analysis/Capstone Adviser',
             image: '/sirjd.jpg',
             description:
