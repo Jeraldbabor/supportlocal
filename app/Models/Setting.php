@@ -23,6 +23,7 @@ class Setting extends Model
         'site_phone' => ['value' => '', 'type' => 'string', 'group' => 'general'],
         'site_address' => ['value' => '', 'type' => 'string', 'group' => 'general'],
         'maintenance_mode' => ['value' => false, 'type' => 'boolean', 'group' => 'general'],
+        'registration_enabled' => ['value' => true, 'type' => 'boolean', 'group' => 'general'],
 
         // E-commerce Settings
         'currency' => ['value' => 'PHP', 'type' => 'string', 'group' => 'ecommerce'],

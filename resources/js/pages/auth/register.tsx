@@ -18,9 +18,10 @@ interface RegisterProps {
         name: string;
         avatar_url: string;
     }>;
+    registrationEnabled?: boolean;
 }
 
-export default function Register({ sellerCount, featuredArtisans }: RegisterProps) {
+export default function Register({ sellerCount, featuredArtisans, registrationEnabled = true }: RegisterProps) {
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
@@ -30,6 +31,47 @@ export default function Register({ sellerCount, featuredArtisans }: RegisterProp
     // Get form props from the controller action
     const route = RegisteredUserController.store();
     const formProps = { action: route.url, method: route.method };
+
+    // If registration is disabled, show a notice
+    if (!registrationEnabled) {
+        return (
+            <AuthLayout
+                title="Registration Closed"
+                description="We're not accepting new registrations at this time"
+                sellerCount={sellerCount}
+                featuredArtisans={featuredArtisans}
+            >
+                <Head title="Registration Closed" />
+                <div className="space-y-4">
+                    <div className="rounded-lg border-2 border-amber-200 bg-amber-50 p-6 text-center dark:border-amber-800 dark:bg-amber-900/20">
+                        <div className="mb-4 flex justify-center">
+                            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-amber-100 dark:bg-amber-900/40">
+                                <Lock className="h-8 w-8 text-amber-600 dark:text-amber-400" />
+                            </div>
+                        </div>
+                        <h3 className="mb-2 text-lg font-semibold text-amber-800 dark:text-amber-200">Registration Currently Closed</h3>
+                        <p className="mb-4 text-sm text-amber-700 dark:text-amber-300">
+                            We're not accepting new user registrations at the moment. Please check back later or contact us for more information.
+                        </p>
+                        <div className="flex flex-col gap-2">
+                            <TextLink
+                                href={login.url()}
+                                className="inline-flex h-10 w-full items-center justify-center rounded-lg bg-gradient-to-r from-amber-600 to-orange-600 px-4 py-2 text-sm font-semibold text-white shadow-lg transition-all duration-300 hover:scale-[1.02] hover:from-amber-700 hover:to-orange-700 hover:shadow-xl"
+                            >
+                                Sign in to existing account
+                            </TextLink>
+                            <TextLink
+                                href="/"
+                                className="inline-flex h-10 w-full items-center justify-center rounded-lg border-2 border-gray-200 bg-white px-4 py-2 text-sm font-semibold text-gray-700 transition-all hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
+                            >
+                                Return to Home
+                            </TextLink>
+                        </div>
+                    </div>
+                </div>
+            </AuthLayout>
+        );
+    }
 
     return (
         <AuthLayout

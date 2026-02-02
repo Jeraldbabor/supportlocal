@@ -32,10 +32,12 @@ class SettingsController extends Controller
             'site_phone' => ['nullable', 'string', 'max:20'],
             'site_address' => ['nullable', 'string', 'max:500'],
             'maintenance_mode' => ['nullable'],
+            'registration_enabled' => ['nullable'],
         ]);
 
-        // Convert maintenance_mode to boolean
+        // Convert boolean fields
         $validated['maintenance_mode'] = filter_var($request->input('maintenance_mode'), FILTER_VALIDATE_BOOLEAN);
+        $validated['registration_enabled'] = filter_var($request->input('registration_enabled'), FILTER_VALIDATE_BOOLEAN);
 
         Setting::setMany($validated, 'general');
 
