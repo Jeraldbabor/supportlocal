@@ -375,7 +375,7 @@ class DashboardController extends Controller
         $completedOrdersQuery = Order::where('seller_id', $userId)->where('status', Order::STATUS_COMPLETED);
 
         // Get commission rate from settings
-        $commissionRate = (float) \Illuminate\Support\Facades\Cache::get('settings.seller_commission_rate', 2);
+        $commissionRate = seller_commission_rate();
 
         $revenueStats = [
             'total' => $completedOrdersQuery->sum('total_amount') ?? 0,

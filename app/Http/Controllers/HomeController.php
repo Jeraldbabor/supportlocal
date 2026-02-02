@@ -166,7 +166,7 @@ class HomeController extends Controller
         $artisans = [
             [
                 'id' => 1,
-                'name' => 'Jerald Babor',
+                'name' => 'JERALD B. BABOR',
                 'specialty' => 'Full-Stack Web Developer',
                 'image' => '/jerald.jfif',
                 'description' => 'A skilled full-stack web developer creating innovative digital solutions and web applications, and the only one who developed this website and maintained it.',
@@ -175,8 +175,8 @@ class HomeController extends Controller
             ],
             [
                 'id' => 2,
-                'name' => 'Jonas Parreño, MIT',
-                'specialty' => 'Analysis/Capstone Adviser',
+                'name' => 'JONAS D. PARREÑO, MIT',
+                'specialty' => 'System Analyst/Capstone Adviser',
                 'image' => '/sirjd.jpg',
                 'description' => 'An experienced adviser specializing in analysis and capstone project guidance, helping students excel in their academic journey.',
                 'location' => 'Philippines',
@@ -184,7 +184,7 @@ class HomeController extends Controller
             ],
             [
                 'id' => 3,
-                'name' => 'Decery Alihid',
+                'name' => 'DECEY B. ALIHID',
                 'specialty' => 'Documentator',
                 'image' => '/decery.jfif',
                 'description' => 'A dedicated documentator ensuring clear, comprehensive documentation for projects and processes.',
@@ -193,7 +193,7 @@ class HomeController extends Controller
             ],
             [
                 'id' => 4,
-                'name' => 'Micaela Oliamina',
+                'name' => 'MICALEA OLIAMINA',
                 'specialty' => 'Documentator',
                 'image' => '/mekay.jfif',
                 'description' => 'A meticulous documentator creating detailed documentation to support project success and knowledge sharing.',

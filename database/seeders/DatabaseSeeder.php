@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
             UserRolesSeeder::class,
             ProductCategorySeeder::class,
             PageContentSeeder::class,
+            SettingsSeeder::class,
         ]);
 
         // User::factory(10)->create();

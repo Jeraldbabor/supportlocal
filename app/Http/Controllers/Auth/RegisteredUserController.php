@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\ActivityLog;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Product;
@@ -13,7 +14,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Validation\Rules;
+use Illuminate\Validation\Rules\Password;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -56,7 +57,21 @@ class RegisteredUserController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|lowercase|email|max:255|unique:'.User::class,
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'password' => [
+                'required',
+                'confirmed',
+                Password::min(8)
+                    ->letters()
+                    ->mixedCase()
+                    ->numbers()
+                    ->symbols(),
+            ],
+        ], [
+            'password.min' => 'Password must be at least 8 characters.',
+            'password.letters' => 'Password must contain at least one letter.',
+            'password.mixed' => 'Password must contain both uppercase and lowercase letters.',
+            'password.numbers' => 'Password must contain at least one number.',
+            'password.symbols' => 'Password must contain at least one special character (@, #, $, %, etc.).',
         ]);
 
         $user = User::create([
@@ -75,6 +90,9 @@ class RegisteredUserController extends Controller
             'ip_address' => $request->ip(),
             'user_agent' => $request->userAgent(),
         ]);
+
+        // Log to activity log
+        ActivityLog::logRegistration($user, $request);
 
         // Login the user first
         Auth::login($user);

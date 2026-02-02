@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\ActivityLog;
 use App\Models\User;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Http\RedirectResponse;
@@ -10,7 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
-use Illuminate\Validation\Rules;
+use Illuminate\Validation\Rules\Password as PasswordRule;
 use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -38,7 +39,21 @@ class NewPasswordController extends Controller
         $request->validate([
             'token' => 'required',
             'email' => 'required|email',
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'password' => [
+                'required',
+                'confirmed',
+                PasswordRule::min(8)
+                    ->letters()
+                    ->mixedCase()
+                    ->numbers()
+                    ->symbols(),
+            ],
+        ], [
+            'password.min' => 'Password must be at least 8 characters.',
+            'password.letters' => 'Password must contain at least one letter.',
+            'password.mixed' => 'Password must contain both uppercase and lowercase letters.',
+            'password.numbers' => 'Password must contain at least one number.',
+            'password.symbols' => 'Password must contain at least one special character (@, #, $, %, etc.).',
         ]);
 
         // Here we will attempt to reset the user's password. If it is successful we
@@ -51,6 +66,9 @@ class NewPasswordController extends Controller
                     'password' => Hash::make($request->password),
                     'remember_token' => Str::random(60),
                 ])->save();
+
+                // Log password change activity
+                ActivityLog::logPasswordChange($user, $request);
 
                 event(new PasswordReset($user));
             }

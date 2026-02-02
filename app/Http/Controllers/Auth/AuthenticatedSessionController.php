@@ -4,7 +4,12 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
+use App\Models\ActivityLog;
+use App\Models\AdminAuditLog;
+use App\Models\Setting;
 use App\Models\User;
+use App\Notifications\AdminEmailNotifiable;
+use App\Notifications\AdminLoginAlert;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -65,6 +70,25 @@ class AuthenticatedSessionController extends Controller
             'user_agent' => $request->userAgent(),
         ]);
 
+        // Log to activity log (all users)
+        ActivityLog::logLogin($user, $request);
+
+        // Log admin login to audit log and send email notification (admin only)
+        if ($user->isAdministrator()) {
+            AdminAuditLog::create([
+                'user_id' => $user->id,
+                'action' => 'login',
+                'description' => "Admin {$user->name} logged in",
+                'ip_address' => $request->ip(),
+                'user_agent' => $request->userAgent(),
+                'route' => 'login',
+                'method' => 'POST',
+            ]);
+
+            // Send email notification to admin email from settings
+            $this->sendAdminLoginNotification($user, $request);
+        }
+
         // Store user role in session for middleware
         $request->session()->put('user_role', $user->role);
 
@@ -95,6 +119,57 @@ class AuthenticatedSessionController extends Controller
     }
 
     /**
+     * Send admin login notification email
+     */
+    private function sendAdminLoginNotification(User $admin, Request $request): void
+    {
+        try {
+            // Check if email notifications are enabled
+            $emailNotificationsEnabled = Setting::get('email_notifications_enabled', true);
+            if (! $emailNotificationsEnabled) {
+                Log::info('Admin login notification skipped - email notifications disabled');
+
+                return;
+            }
+
+            // Check if admin login alerts are enabled
+            $adminLoginAlertEnabled = Setting::get('admin_login_alert', true);
+            if (! $adminLoginAlertEnabled) {
+                Log::info('Admin login notification skipped - admin login alerts disabled');
+
+                return;
+            }
+
+            // Get admin email from settings
+            $adminEmail = Setting::get('admin_email', '');
+            if (empty($adminEmail)) {
+                // Fallback to the logged-in admin's email if no admin email is configured
+                $adminEmail = $admin->email;
+            }
+
+            // Send the notification
+            $notifiable = new AdminEmailNotifiable($adminEmail);
+            $notifiable->notify(new AdminLoginAlert(
+                $admin,
+                $request->ip(),
+                $request->userAgent() ?? 'Unknown'
+            ));
+
+            Log::info('Admin login notification sent', [
+                'admin_id' => $admin->id,
+                'admin_email' => $admin->email,
+                'notification_email' => $adminEmail,
+            ]);
+        } catch (\Exception $e) {
+            // Log the error but don't fail the login
+            Log::error('Failed to send admin login notification', [
+                'admin_id' => $admin->id,
+                'error' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    /**
      * Destroy an authenticated session.
      */
     public function destroy(Request $request): RedirectResponse
@@ -110,6 +185,22 @@ class AuthenticatedSessionController extends Controller
                 'role' => $user->role,
                 'ip_address' => $request->ip(),
             ]);
+
+            // Log to activity log (all users)
+            ActivityLog::logLogout($user, $request);
+
+            // Log admin logout to audit log (admin only)
+            if ($user->isAdministrator()) {
+                AdminAuditLog::create([
+                    'user_id' => $user->id,
+                    'action' => 'logout',
+                    'description' => "Admin {$user->name} logged out",
+                    'ip_address' => $request->ip(),
+                    'user_agent' => $request->userAgent(),
+                    'route' => 'logout',
+                    'method' => 'POST',
+                ]);
+            }
         }
 
         Auth::guard('web')->logout();
