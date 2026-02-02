@@ -9,11 +9,14 @@ use Illuminate\Notifications\Notification;
 
 class AdminLoginAlert extends Notification
 {
-
     protected User $admin;
+
     protected string $ipAddress;
+
     protected string $userAgent;
+
     protected string $loginTime;
+
     protected ?string $location;
 
     /**
@@ -48,7 +51,7 @@ class AdminLoginAlert extends Notification
 
         return (new MailMessage)
             ->subject("🔐 Admin Login Alert - {$siteName}")
-            ->greeting("Admin Login Detected")
+            ->greeting('Admin Login Detected')
             ->line("An administrator account has just logged in to {$siteName}.")
             ->line('')
             ->line('**Login Details:**')
@@ -101,10 +104,15 @@ class AdminLoginAlert extends Notification
         // Detect platform
         if (preg_match('/Windows/i', $userAgent)) {
             $platform = 'Windows';
-            if (preg_match('/Windows NT 10/i', $userAgent)) $platform = 'Windows 10/11';
-            elseif (preg_match('/Windows NT 6.3/i', $userAgent)) $platform = 'Windows 8.1';
-            elseif (preg_match('/Windows NT 6.2/i', $userAgent)) $platform = 'Windows 8';
-            elseif (preg_match('/Windows NT 6.1/i', $userAgent)) $platform = 'Windows 7';
+            if (preg_match('/Windows NT 10/i', $userAgent)) {
+                $platform = 'Windows 10/11';
+            } elseif (preg_match('/Windows NT 6.3/i', $userAgent)) {
+                $platform = 'Windows 8.1';
+            } elseif (preg_match('/Windows NT 6.2/i', $userAgent)) {
+                $platform = 'Windows 8';
+            } elseif (preg_match('/Windows NT 6.1/i', $userAgent)) {
+                $platform = 'Windows 7';
+            }
         } elseif (preg_match('/Macintosh|Mac OS X/i', $userAgent)) {
             $platform = 'macOS';
         } elseif (preg_match('/Linux/i', $userAgent)) {
@@ -116,18 +124,18 @@ class AdminLoginAlert extends Notification
         }
 
         // Detect browser
-        if (preg_match('/Chrome\/[\d.]+/i', $userAgent) && !preg_match('/Edg/i', $userAgent)) {
+        if (preg_match('/Chrome\/[\d.]+/i', $userAgent) && ! preg_match('/Edg/i', $userAgent)) {
             preg_match('/Chrome\/([\d.]+)/i', $userAgent, $matches);
-            $browser = 'Chrome ' . ($matches[1] ?? '');
+            $browser = 'Chrome '.($matches[1] ?? '');
         } elseif (preg_match('/Firefox\/[\d.]+/i', $userAgent)) {
             preg_match('/Firefox\/([\d.]+)/i', $userAgent, $matches);
-            $browser = 'Firefox ' . ($matches[1] ?? '');
-        } elseif (preg_match('/Safari\/[\d.]+/i', $userAgent) && !preg_match('/Chrome/i', $userAgent)) {
+            $browser = 'Firefox '.($matches[1] ?? '');
+        } elseif (preg_match('/Safari\/[\d.]+/i', $userAgent) && ! preg_match('/Chrome/i', $userAgent)) {
             preg_match('/Version\/([\d.]+)/i', $userAgent, $matches);
-            $browser = 'Safari ' . ($matches[1] ?? '');
+            $browser = 'Safari '.($matches[1] ?? '');
         } elseif (preg_match('/Edg\/[\d.]+/i', $userAgent)) {
             preg_match('/Edg\/([\d.]+)/i', $userAgent, $matches);
-            $browser = 'Edge ' . ($matches[1] ?? '');
+            $browser = 'Edge '.($matches[1] ?? '');
         } elseif (preg_match('/Opera|OPR\/[\d.]+/i', $userAgent)) {
             $browser = 'Opera';
         }
@@ -160,7 +168,7 @@ class AdminLoginAlert extends Notification
     protected function getLocationFromIp(string $ip): ?string
     {
         // Skip for local/private IPs
-        if (in_array($ip, ['127.0.0.1', '::1']) || 
+        if (in_array($ip, ['127.0.0.1', '::1']) ||
             preg_match('/^(10\.|172\.(1[6-9]|2[0-9]|3[0-1])\.|192\.168\.)/', $ip)) {
             return 'Local Network';
         }

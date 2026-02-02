@@ -692,7 +692,7 @@ class User extends Authenticatable implements MustVerifyEmail
             $browser = 'Edge';
         } elseif (preg_match('/chrome/i', $userAgent)) {
             $browser = 'Chrome';
-        } elseif (preg_match('/safari/i', $userAgent) && !preg_match('/chrome/i', $userAgent)) {
+        } elseif (preg_match('/safari/i', $userAgent) && ! preg_match('/chrome/i', $userAgent)) {
             $browser = 'Safari';
         } elseif (preg_match('/firefox/i', $userAgent)) {
             $browser = 'Firefox';

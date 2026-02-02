@@ -1,3 +1,4 @@
+import Toast from '@/components/Toast';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -26,7 +27,6 @@ import {
     XCircle,
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import Toast from '@/components/Toast';
 
 interface LogEntry {
     raw: string;
@@ -111,8 +111,8 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 export default function LogsIndex() {
-    const { logs, pagination, filters, stats, level_counts, activityLogs, activityStats, availableActions } = usePage<SharedData & Props>().props;
-    const flash = (usePage().props as any).flash;
+    const { logs, pagination, filters, stats, level_counts, activityLogs, activityStats } = usePage<SharedData & Props>().props;
+    const { flash } = usePage<SharedData>().props;
     const [selectedFilter, setSelectedFilter] = useState(filters.filter);
     const [selectedRoleFilter, setSelectedRoleFilter] = useState(filters.role_filter);
     const [selectedActionFilter, setSelectedActionFilter] = useState(filters.action_filter);
@@ -419,11 +419,7 @@ export default function LogsIndex() {
                                         <RefreshCw className="mr-2 h-4 w-4" />
                                         Refresh
                                     </Button>
-                                    <Button
-                                        variant="destructive"
-                                        onClick={handleClearActivityLogs}
-                                        className="w-full sm:w-auto"
-                                    >
+                                    <Button variant="destructive" onClick={handleClearActivityLogs} className="w-full sm:w-auto">
                                         <Trash2 className="mr-2 h-4 w-4" />
                                         Clear Activity Logs
                                     </Button>
@@ -460,13 +456,9 @@ export default function LogsIndex() {
                                                             </div>
                                                             <div className="text-sm text-gray-700">
                                                                 <span className="font-medium">{log.user_name}</span>
-                                                                {log.user_email && (
-                                                                    <span className="text-gray-500"> ({log.user_email})</span>
-                                                                )}
+                                                                {log.user_email && <span className="text-gray-500"> ({log.user_email})</span>}
                                                             </div>
-                                                            {log.description && (
-                                                                <p className="text-sm text-gray-600 mt-1">{log.description}</p>
-                                                            )}
+                                                            {log.description && <p className="mt-1 text-sm text-gray-600">{log.description}</p>}
                                                             <div className="mt-1 flex flex-wrap items-center gap-3 text-xs text-gray-500">
                                                                 <span className="flex items-center gap-1">
                                                                     {getDeviceIcon(log.device_type)}
@@ -495,7 +487,7 @@ export default function LogsIndex() {
                         </Card>
 
                         {/* Activity Pagination */}
-                        <div className="flex flex-wrap items-center justify-center gap-2 mt-4">
+                        <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
                             <Button
                                 variant="outline"
                                 disabled={activityLogs.current_page === 1}
@@ -626,11 +618,7 @@ export default function LogsIndex() {
                                             Download
                                         </Button>
                                     </Link>
-                                    <Button
-                                        variant="destructive"
-                                        onClick={handleClearApplicationLogs}
-                                        className="w-full sm:w-auto"
-                                    >
+                                    <Button variant="destructive" onClick={handleClearApplicationLogs} className="w-full sm:w-auto">
                                         <Trash2 className="mr-2 h-4 w-4" />
                                         Clear Logs
                                     </Button>
@@ -692,7 +680,7 @@ export default function LogsIndex() {
                         </Card>
 
                         {/* Pagination */}
-                        <div className="flex flex-wrap items-center justify-center gap-2 mt-4">
+                        <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
                             <Button
                                 variant="outline"
                                 disabled={pagination.current_page === 1}

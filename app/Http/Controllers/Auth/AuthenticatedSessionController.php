@@ -126,15 +126,17 @@ class AuthenticatedSessionController extends Controller
         try {
             // Check if email notifications are enabled
             $emailNotificationsEnabled = Setting::get('email_notifications_enabled', true);
-            if (!$emailNotificationsEnabled) {
+            if (! $emailNotificationsEnabled) {
                 Log::info('Admin login notification skipped - email notifications disabled');
+
                 return;
             }
 
             // Check if admin login alerts are enabled
             $adminLoginAlertEnabled = Setting::get('admin_login_alert', true);
-            if (!$adminLoginAlertEnabled) {
+            if (! $adminLoginAlertEnabled) {
                 Log::info('Admin login notification skipped - admin login alerts disabled');
+
                 return;
             }
 

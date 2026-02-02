@@ -64,7 +64,7 @@ class Setting extends Model
     public static function get(string $key, mixed $default = null): mixed
     {
         $settings = self::getAllCached();
-        
+
         if (isset($settings[$key])) {
             return $settings[$key];
         }
@@ -100,7 +100,7 @@ class Setting extends Model
     /**
      * Set multiple settings at once
      */
-    public static function setMany(array $settings, string $group = null): void
+    public static function setMany(array $settings, ?string $group = null): void
     {
         foreach ($settings as $key => $value) {
             $type = self::$defaults[$key]['type'] ?? 'string';
@@ -124,7 +124,7 @@ class Setting extends Model
     {
         return Cache::remember(self::$cacheKey, 3600, function () {
             $settings = [];
-            
+
             // Start with defaults
             foreach (self::$defaults as $key => $config) {
                 $settings[$key] = $config['value'];
@@ -150,7 +150,7 @@ class Setting extends Model
 
         foreach (self::$defaults as $key => $config) {
             $group = $config['group'];
-            if (!isset($grouped[$group])) {
+            if (! isset($grouped[$group])) {
                 $grouped[$group] = [];
             }
             $grouped[$group][$key] = $settings[$key] ?? $config['value'];
@@ -214,7 +214,7 @@ class Setting extends Model
                 ]
             );
         }
-        
+
         self::clearCache();
     }
 }

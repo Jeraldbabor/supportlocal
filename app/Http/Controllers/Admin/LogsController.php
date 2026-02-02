@@ -133,7 +133,7 @@ class LogsController extends Controller
         }
 
         $activityLogsPaginated = $activityQuery->paginate(50, ['*'], 'activity_page');
-        
+
         $activityLogs = [
             'data' => $activityLogsPaginated->map(function ($log) {
                 return [

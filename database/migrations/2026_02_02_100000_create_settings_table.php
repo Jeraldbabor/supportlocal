@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('type')->default('string'); // string, boolean, integer, float, json
             $table->string('group')->default('general'); // general, ecommerce, seller, notifications, seo
             $table->timestamps();
-            
+
             $table->index('key');
             $table->index('group');
         });

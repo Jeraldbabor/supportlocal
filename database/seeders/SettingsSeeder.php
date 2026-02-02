@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\Setting;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class SettingsSeeder extends Seeder
@@ -14,7 +13,7 @@ class SettingsSeeder extends Seeder
     public function run(): void
     {
         Setting::seedDefaults();
-        
+
         $this->command->info('Settings seeded successfully!');
     }
 }

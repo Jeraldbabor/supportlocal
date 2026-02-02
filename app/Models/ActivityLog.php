@@ -179,7 +179,7 @@ class ActivityLog extends Model
      */
     protected static function parseUserAgent(?string $userAgent): array
     {
-        if (!$userAgent) {
+        if (! $userAgent) {
             return [
                 'device_type' => 'unknown',
                 'browser' => 'Unknown',
@@ -196,15 +196,15 @@ class ActivityLog extends Model
         // Detect browser
         $browser = 'Unknown';
         if (preg_match('/Firefox\/([0-9.]+)/i', $userAgent, $matches)) {
-            $browser = 'Firefox ' . explode('.', $matches[1])[0];
+            $browser = 'Firefox '.explode('.', $matches[1])[0];
         } elseif (preg_match('/Edg\/([0-9.]+)/i', $userAgent, $matches)) {
-            $browser = 'Edge ' . explode('.', $matches[1])[0];
+            $browser = 'Edge '.explode('.', $matches[1])[0];
         } elseif (preg_match('/Chrome\/([0-9.]+)/i', $userAgent, $matches)) {
-            $browser = 'Chrome ' . explode('.', $matches[1])[0];
-        } elseif (preg_match('/Safari\/([0-9.]+)/i', $userAgent) && !preg_match('/Chrome/i', $userAgent)) {
+            $browser = 'Chrome '.explode('.', $matches[1])[0];
+        } elseif (preg_match('/Safari\/([0-9.]+)/i', $userAgent) && ! preg_match('/Chrome/i', $userAgent)) {
             $browser = 'Safari';
         } elseif (preg_match('/OPR\/([0-9.]+)/i', $userAgent, $matches)) {
-            $browser = 'Opera ' . explode('.', $matches[1])[0];
+            $browser = 'Opera '.explode('.', $matches[1])[0];
         }
 
         // Detect platform

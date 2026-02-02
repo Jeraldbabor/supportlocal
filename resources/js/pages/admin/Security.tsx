@@ -1,3 +1,4 @@
+import Toast from '@/components/Toast';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -7,24 +8,10 @@ import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import AppLayout from '@/layouts/app-layout';
-import { type BreadcrumbItem } from '@/types';
+import { type BreadcrumbItem, type SharedData } from '@/types';
 import { Head, Link, router, useForm, usePage } from '@inertiajs/react';
-import {
-    CheckCircle,
-    Eye,
-    EyeOff,
-    FileText,
-    Key,
-    Laptop,
-    Lock,
-    LogOut,
-    Monitor,
-    Shield,
-    Smartphone,
-    Tablet,
-} from 'lucide-react';
+import { CheckCircle, Eye, EyeOff, FileText, Key, Laptop, Lock, LogOut, Monitor, Shield, Smartphone, Tablet } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import Toast from '@/components/Toast';
 
 interface ActiveSession {
     id: string;
@@ -89,7 +76,7 @@ const getActionColor = (action: string) => {
 };
 
 export default function Security({ activeSessions, auditLogs }: Props) {
-    const { flash } = usePage().props as any;
+    const { flash } = usePage<SharedData>().props;
     const [showCurrentPassword, setShowCurrentPassword] = useState(false);
     const [showNewPassword, setShowNewPassword] = useState(false);
     const [showToast, setShowToast] = useState(false);
@@ -154,14 +141,12 @@ export default function Security({ activeSessions, auditLogs }: Props) {
                 {/* Header */}
                 <div>
                     <h1 className="text-3xl font-bold">Security Settings</h1>
-                    <p className="text-muted-foreground mt-1">
-                        Manage your password, active sessions, and view audit logs.
-                    </p>
+                    <p className="mt-1 text-muted-foreground">Manage your password, active sessions, and view audit logs.</p>
                 </div>
 
                 {/* Flash Messages */}
                 {flash?.status && (
-                    <Alert className="bg-green-50 border-green-200">
+                    <Alert className="border-green-200 bg-green-50">
                         <CheckCircle className="h-4 w-4 text-green-600" />
                         <AlertTitle className="text-green-800">Success</AlertTitle>
                         <AlertDescription className="text-green-700">{flash.status}</AlertDescription>
@@ -227,8 +212,7 @@ export default function Security({ activeSessions, auditLogs }: Props) {
                                     Active Sessions
                                 </CardTitle>
                                 <CardDescription>
-                                    These are the devices currently logged into your account. You can log out any
-                                    session you don't recognize.
+                                    These are the devices currently logged into your account. You can log out any session you don't recognize.
                                 </CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-4">
@@ -276,29 +260,19 @@ export default function Security({ activeSessions, auditLogs }: Props) {
                                         <Separator />
                                         <form onSubmit={handleRevokeOtherSessions} className="space-y-4">
                                             <div className="space-y-2">
-                                                <Label htmlFor="revoke_password">
-                                                    Log Out of All Other Sessions
-                                                </Label>
+                                                <Label htmlFor="revoke_password">Log Out of All Other Sessions</Label>
                                                 <Input
                                                     id="revoke_password"
                                                     type="password"
                                                     placeholder="Enter your password to confirm"
                                                     value={revokeSessionsForm.data.password}
-                                                    onChange={(e) =>
-                                                        revokeSessionsForm.setData('password', e.target.value)
-                                                    }
+                                                    onChange={(e) => revokeSessionsForm.setData('password', e.target.value)}
                                                 />
                                                 {revokeSessionsForm.errors.password && (
-                                                    <p className="text-sm text-red-500">
-                                                        {revokeSessionsForm.errors.password}
-                                                    </p>
+                                                    <p className="text-sm text-red-500">{revokeSessionsForm.errors.password}</p>
                                                 )}
                                             </div>
-                                            <Button
-                                                type="submit"
-                                                variant="destructive"
-                                                disabled={revokeSessionsForm.processing}
-                                            >
+                                            <Button type="submit" variant="destructive" disabled={revokeSessionsForm.processing}>
                                                 <LogOut className="mr-2 h-4 w-4" />
                                                 Log Out All Other Sessions
                                             </Button>
@@ -318,8 +292,7 @@ export default function Security({ activeSessions, auditLogs }: Props) {
                                     Change Password
                                 </CardTitle>
                                 <CardDescription>
-                                    Use a strong password with at least 12 characters, including uppercase, lowercase,
-                                    numbers, and symbols.
+                                    Use a strong password with at least 12 characters, including uppercase, lowercase, numbers, and symbols.
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
@@ -331,28 +304,20 @@ export default function Security({ activeSessions, auditLogs }: Props) {
                                                 id="current_password"
                                                 type={showCurrentPassword ? 'text' : 'password'}
                                                 value={passwordForm.data.current_password}
-                                                onChange={(e) =>
-                                                    passwordForm.setData('current_password', e.target.value)
-                                                }
+                                                onChange={(e) => passwordForm.setData('current_password', e.target.value)}
                                             />
                                             <Button
                                                 type="button"
                                                 variant="ghost"
                                                 size="sm"
-                                                className="absolute right-2 top-1/2 -translate-y-1/2"
+                                                className="absolute top-1/2 right-2 -translate-y-1/2"
                                                 onClick={() => setShowCurrentPassword(!showCurrentPassword)}
                                             >
-                                                {showCurrentPassword ? (
-                                                    <EyeOff className="h-4 w-4" />
-                                                ) : (
-                                                    <Eye className="h-4 w-4" />
-                                                )}
+                                                {showCurrentPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                                             </Button>
                                         </div>
                                         {passwordForm.errors.current_password && (
-                                            <p className="text-sm text-red-500">
-                                                {passwordForm.errors.current_password}
-                                            </p>
+                                            <p className="text-sm text-red-500">{passwordForm.errors.current_password}</p>
                                         )}
                                     </div>
 
@@ -369,19 +334,13 @@ export default function Security({ activeSessions, auditLogs }: Props) {
                                                 type="button"
                                                 variant="ghost"
                                                 size="sm"
-                                                className="absolute right-2 top-1/2 -translate-y-1/2"
+                                                className="absolute top-1/2 right-2 -translate-y-1/2"
                                                 onClick={() => setShowNewPassword(!showNewPassword)}
                                             >
-                                                {showNewPassword ? (
-                                                    <EyeOff className="h-4 w-4" />
-                                                ) : (
-                                                    <Eye className="h-4 w-4" />
-                                                )}
+                                                {showNewPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                                             </Button>
                                         </div>
-                                        {passwordForm.errors.password && (
-                                            <p className="text-sm text-red-500">{passwordForm.errors.password}</p>
-                                        )}
+                                        {passwordForm.errors.password && <p className="text-sm text-red-500">{passwordForm.errors.password}</p>}
                                         <p className="text-xs text-muted-foreground">
                                             Min 12 characters with uppercase, lowercase, numbers, and symbols.
                                         </p>
@@ -393,9 +352,7 @@ export default function Security({ activeSessions, auditLogs }: Props) {
                                             id="password_confirmation"
                                             type="password"
                                             value={passwordForm.data.password_confirmation}
-                                            onChange={(e) =>
-                                                passwordForm.setData('password_confirmation', e.target.value)
-                                            }
+                                            onChange={(e) => passwordForm.setData('password_confirmation', e.target.value)}
                                         />
                                     </div>
 
@@ -429,26 +386,17 @@ export default function Security({ activeSessions, auditLogs }: Props) {
                                     <Shield className="h-5 w-5" />
                                     Recent Audit Logs
                                 </CardTitle>
-                                <CardDescription>
-                                    A log of recent administrative actions in the system.
-                                </CardDescription>
+                                <CardDescription>A log of recent administrative actions in the system.</CardDescription>
                             </CardHeader>
                             <CardContent>
                                 <div className="space-y-2">
                                     {auditLogs.length === 0 ? (
-                                        <p className="text-center text-muted-foreground py-8">
-                                            No audit logs yet.
-                                        </p>
+                                        <p className="py-8 text-center text-muted-foreground">No audit logs yet.</p>
                                     ) : (
                                         auditLogs.map((log) => (
-                                            <div
-                                                key={log.id}
-                                                className="flex items-center justify-between rounded-lg border p-3"
-                                            >
+                                            <div key={log.id} className="flex items-center justify-between rounded-lg border p-3">
                                                 <div className="flex items-center gap-3">
-                                                    <Badge className={getActionColor(log.action)}>
-                                                        {log.action_label}
-                                                    </Badge>
+                                                    <Badge className={getActionColor(log.action)}>{log.action_label}</Badge>
                                                     <div>
                                                         <p className="text-sm font-medium">{log.description}</p>
                                                         <p className="text-xs text-muted-foreground">

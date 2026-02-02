@@ -113,6 +113,7 @@ class SecurityController extends Controller
 
         if ($user->revokeSession($sessionId)) {
             AdminAuditLog::log('revoke_session', 'Revoked an active session');
+
             return back()->with('status', 'Session has been revoked.');
         }
 
@@ -233,7 +234,7 @@ class SecurityController extends Controller
             $userName = $log->user ? str_replace(',', ' ', $log->user->name) : 'System';
             $userEmail = $log->user ? $log->user->email : '';
             $description = str_replace([',', "\n", "\r"], [' ', ' ', ' '], $log->description ?? '');
-            
+
             $csvContent .= sprintf(
                 "%d,%s,%s,%s,%s,%s,%s,%s,%s\n",
                 $log->id,
@@ -250,7 +251,7 @@ class SecurityController extends Controller
 
         AdminAuditLog::log('export_audit_logs', "Exported {$logs->count()} audit log records");
 
-        $filename = 'audit-logs-' . date('Y-m-d-His') . '.csv';
+        $filename = 'audit-logs-'.date('Y-m-d-His').'.csv';
 
         return response($csvContent)
             ->header('Content-Type', 'text/csv')

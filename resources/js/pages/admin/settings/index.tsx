@@ -1,3 +1,4 @@
+import Toast from '@/components/Toast';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -5,7 +6,6 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
-import Toast from '@/components/Toast';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem, type SharedData } from '@/types';
 import { Head, Link, router, usePage } from '@inertiajs/react';
@@ -62,7 +62,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 
 export default function SettingsIndex() {
     const { settings } = usePage<SharedData & Props>().props;
-    const flash = (usePage().props as any).flash;
+    const { flash } = usePage<SharedData>().props;
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [showToast, setShowToast] = useState(false);
     const [toastMessage, setToastMessage] = useState('');
@@ -153,7 +153,7 @@ export default function SettingsIndex() {
                 </div>
 
                 <Tabs defaultValue="general" className="w-full">
-                    <TabsList className="grid w-full grid-cols-7 mb-4">
+                    <TabsList className="mb-4 grid w-full grid-cols-7">
                         <TabsTrigger value="general">General</TabsTrigger>
                         <TabsTrigger value="ecommerce">E-commerce</TabsTrigger>
                         <TabsTrigger value="seller">Seller</TabsTrigger>
@@ -292,7 +292,9 @@ export default function SettingsIndex() {
                                                 min="0"
                                                 placeholder="0"
                                                 value={ecommerceSettings.default_shipping_cost}
-                                                onChange={(e) => setEcommerceSettings({ ...ecommerceSettings, default_shipping_cost: e.target.value })}
+                                                onChange={(e) =>
+                                                    setEcommerceSettings({ ...ecommerceSettings, default_shipping_cost: e.target.value })
+                                                }
                                             />
                                         </div>
                                         <div className="space-y-2">
@@ -304,7 +306,9 @@ export default function SettingsIndex() {
                                                 min="0"
                                                 placeholder="0"
                                                 value={ecommerceSettings.free_shipping_threshold}
-                                                onChange={(e) => setEcommerceSettings({ ...ecommerceSettings, free_shipping_threshold: e.target.value })}
+                                                onChange={(e) =>
+                                                    setEcommerceSettings({ ...ecommerceSettings, free_shipping_threshold: e.target.value })
+                                                }
                                             />
                                         </div>
                                     </div>
@@ -340,7 +344,9 @@ export default function SettingsIndex() {
                                         <Switch
                                             id="seller_application_enabled"
                                             checked={sellerSettings.seller_application_enabled}
-                                            onCheckedChange={(checked) => setSellerSettings({ ...sellerSettings, seller_application_enabled: checked })}
+                                            onCheckedChange={(checked) =>
+                                                setSellerSettings({ ...sellerSettings, seller_application_enabled: checked })
+                                            }
                                         />
                                         <Label htmlFor="seller_application_enabled">Enable Seller Applications</Label>
                                     </div>
@@ -387,7 +393,9 @@ export default function SettingsIndex() {
                                         <Switch
                                             id="email_notifications_enabled"
                                             checked={notificationSettings.email_notifications_enabled}
-                                            onCheckedChange={(checked) => setNotificationSettings({ ...notificationSettings, email_notifications_enabled: checked })}
+                                            onCheckedChange={(checked) =>
+                                                setNotificationSettings({ ...notificationSettings, email_notifications_enabled: checked })
+                                            }
                                         />
                                         <Label htmlFor="email_notifications_enabled">Enable Email Notifications</Label>
                                     </div>
@@ -400,16 +408,20 @@ export default function SettingsIndex() {
                                             onChange={(e) => setNotificationSettings({ ...notificationSettings, admin_email: e.target.value })}
                                             required
                                         />
-                                        <p className="text-xs text-muted-foreground">This email will receive all admin notifications including login alerts</p>
+                                        <p className="text-xs text-muted-foreground">
+                                            This email will receive all admin notifications including login alerts
+                                        </p>
                                     </div>
-                                    
-                                    <div className="border-t pt-4 mt-4">
-                                        <h4 className="text-sm font-medium mb-3">Security Notifications</h4>
+
+                                    <div className="mt-4 border-t pt-4">
+                                        <h4 className="mb-3 text-sm font-medium">Security Notifications</h4>
                                         <div className="flex items-center space-x-2">
                                             <Switch
                                                 id="admin_login_alert"
                                                 checked={notificationSettings.admin_login_alert}
-                                                onCheckedChange={(checked) => setNotificationSettings({ ...notificationSettings, admin_login_alert: checked })}
+                                                onCheckedChange={(checked) =>
+                                                    setNotificationSettings({ ...notificationSettings, admin_login_alert: checked })
+                                                }
                                             />
                                             <div>
                                                 <Label htmlFor="admin_login_alert">Admin Login Alerts</Label>
@@ -418,13 +430,15 @@ export default function SettingsIndex() {
                                         </div>
                                     </div>
 
-                                    <div className="border-t pt-4 mt-4">
-                                        <h4 className="text-sm font-medium mb-3">Activity Notifications</h4>
+                                    <div className="mt-4 border-t pt-4">
+                                        <h4 className="mb-3 text-sm font-medium">Activity Notifications</h4>
                                         <div className="flex items-center space-x-2">
                                             <Switch
                                                 id="new_order_notification"
                                                 checked={notificationSettings.new_order_notification}
-                                                onCheckedChange={(checked) => setNotificationSettings({ ...notificationSettings, new_order_notification: checked })}
+                                                onCheckedChange={(checked) =>
+                                                    setNotificationSettings({ ...notificationSettings, new_order_notification: checked })
+                                                }
                                             />
                                             <Label htmlFor="new_order_notification">Notify on New Orders</Label>
                                         </div>
@@ -433,7 +447,9 @@ export default function SettingsIndex() {
                                         <Switch
                                             id="new_user_notification"
                                             checked={notificationSettings.new_user_notification}
-                                            onCheckedChange={(checked) => setNotificationSettings({ ...notificationSettings, new_user_notification: checked })}
+                                            onCheckedChange={(checked) =>
+                                                setNotificationSettings({ ...notificationSettings, new_user_notification: checked })
+                                            }
                                         />
                                         <Label htmlFor="new_user_notification">Notify on New Users</Label>
                                     </div>
@@ -441,7 +457,9 @@ export default function SettingsIndex() {
                                         <Switch
                                             id="new_seller_application_notification"
                                             checked={notificationSettings.new_seller_application_notification}
-                                            onCheckedChange={(checked) => setNotificationSettings({ ...notificationSettings, new_seller_application_notification: checked })}
+                                            onCheckedChange={(checked) =>
+                                                setNotificationSettings({ ...notificationSettings, new_seller_application_notification: checked })
+                                            }
                                         />
                                         <Label htmlFor="new_seller_application_notification">Notify on Seller Applications</Label>
                                     </div>
@@ -511,51 +529,45 @@ export default function SettingsIndex() {
                                     <Shield className="h-5 w-5" />
                                     Security Settings
                                 </CardTitle>
-                                <CardDescription>
-                                    Manage your account security, active sessions, and view audit logs
-                                </CardDescription>
+                                <CardDescription>Manage your account security, active sessions, and view audit logs</CardDescription>
                             </CardHeader>
-                            <CardContent className="pt-6 space-y-6">
+                            <CardContent className="space-y-6 pt-6">
                                 <div className="grid gap-4 md:grid-cols-3">
-                                    <div className="rounded-lg border p-4 hover:bg-muted/50 transition-colors">
-                                        <div className="flex items-center gap-3 mb-2">
+                                    <div className="rounded-lg border p-4 transition-colors hover:bg-muted/50">
+                                        <div className="mb-2 flex items-center gap-3">
                                             <div className="rounded-full bg-purple-100 p-2">
                                                 <Laptop className="h-5 w-5 text-purple-600" />
                                             </div>
                                             <h3 className="font-semibold">Active Sessions</h3>
                                         </div>
-                                        <p className="text-sm text-muted-foreground mb-3">
+                                        <p className="mb-3 text-sm text-muted-foreground">
                                             View and manage devices currently logged into your account.
                                         </p>
                                     </div>
 
-                                    <div className="rounded-lg border p-4 hover:bg-muted/50 transition-colors">
-                                        <div className="flex items-center gap-3 mb-2">
+                                    <div className="rounded-lg border p-4 transition-colors hover:bg-muted/50">
+                                        <div className="mb-2 flex items-center gap-3">
                                             <div className="rounded-full bg-orange-100 p-2">
                                                 <Key className="h-5 w-5 text-orange-600" />
                                             </div>
                                             <h3 className="font-semibold">Password Policy</h3>
                                         </div>
-                                        <p className="text-sm text-muted-foreground mb-3">
-                                            Change your password with strong security requirements.
-                                        </p>
+                                        <p className="mb-3 text-sm text-muted-foreground">Change your password with strong security requirements.</p>
                                     </div>
 
-                                    <div className="rounded-lg border p-4 hover:bg-muted/50 transition-colors">
-                                        <div className="flex items-center gap-3 mb-2">
+                                    <div className="rounded-lg border p-4 transition-colors hover:bg-muted/50">
+                                        <div className="mb-2 flex items-center gap-3">
                                             <div className="rounded-full bg-blue-100 p-2">
                                                 <FileText className="h-5 w-5 text-blue-600" />
                                             </div>
                                             <h3 className="font-semibold">Audit Logs</h3>
                                         </div>
-                                        <p className="text-sm text-muted-foreground mb-3">
-                                            Track administrative actions and account activity.
-                                        </p>
+                                        <p className="mb-3 text-sm text-muted-foreground">Track administrative actions and account activity.</p>
                                     </div>
                                 </div>
 
                                 <div className="rounded-lg border bg-muted/50 p-4">
-                                    <p className="text-sm text-muted-foreground mb-4">
+                                    <p className="mb-4 text-sm text-muted-foreground">
                                         Access the full security dashboard to manage sessions, change your password, and view detailed audit logs.
                                     </p>
                                     <Button asChild>
@@ -576,7 +588,7 @@ export default function SettingsIndex() {
                                 <CardTitle>Database Backup</CardTitle>
                                 <CardDescription>Manage automated database backups</CardDescription>
                             </CardHeader>
-                            <CardContent className="pt-6 space-y-4">
+                            <CardContent className="space-y-4 pt-6">
                                 <div className="rounded-lg border bg-muted/50 p-4">
                                     <h3 className="mb-2 font-semibold">Automated Backups</h3>
                                     <p className="mb-4 text-sm text-muted-foreground">
@@ -606,19 +618,23 @@ export default function SettingsIndex() {
                                     <Button
                                         variant="outline"
                                         onClick={() => {
-                                            router.post('/admin/database/backup', {}, {
-                                                preserveScroll: true,
-                                                onSuccess: () => {
-                                                    setToastMessage('Database backup initiated successfully!');
-                                                    setToastType('success');
-                                                    setShowToast(true);
+                                            router.post(
+                                                '/admin/database/backup',
+                                                {},
+                                                {
+                                                    preserveScroll: true,
+                                                    onSuccess: () => {
+                                                        setToastMessage('Database backup initiated successfully!');
+                                                        setToastType('success');
+                                                        setShowToast(true);
+                                                    },
+                                                    onError: () => {
+                                                        setToastMessage('Failed to create backup.');
+                                                        setToastType('error');
+                                                        setShowToast(true);
+                                                    },
                                                 },
-                                                onError: () => {
-                                                    setToastMessage('Failed to create backup.');
-                                                    setToastType('error');
-                                                    setShowToast(true);
-                                                },
-                                            });
+                                            );
                                         }}
                                     >
                                         Create Backup Now

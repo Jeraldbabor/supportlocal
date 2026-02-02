@@ -71,7 +71,7 @@ class AdminAuditLog extends Model
         $user = Auth::user();
 
         // Only log if user is authenticated and is an administrator
-        if (!$user || !$user->isAdministrator()) {
+        if (! $user || ! $user->isAdministrator()) {
             return null;
         }
 
@@ -97,7 +97,7 @@ class AdminAuditLog extends Model
     {
         return self::log(
             'create',
-            $description ?? 'Created ' . class_basename($model) . ' #' . $model->id,
+            $description ?? 'Created '.class_basename($model).' #'.$model->id,
             $model,
             null,
             $model->toArray()
@@ -113,7 +113,7 @@ class AdminAuditLog extends Model
 
         return self::log(
             'update',
-            $description ?? 'Updated ' . class_basename($model) . ' #' . $model->id,
+            $description ?? 'Updated '.class_basename($model).' #'.$model->id,
             $model,
             $oldValues,
             $changedValues
@@ -127,7 +127,7 @@ class AdminAuditLog extends Model
     {
         return self::log(
             'delete',
-            $description ?? 'Deleted ' . class_basename($model) . ' #' . $model->id,
+            $description ?? 'Deleted '.class_basename($model).' #'.$model->id,
             $model,
             $model->toArray(),
             null
