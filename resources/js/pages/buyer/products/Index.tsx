@@ -920,20 +920,19 @@ export default function Index({
                                                         <button
                                                             onClick={(e) => handleAddToCart(e, product)}
                                                             disabled={isOutOfStock(product) || isLoading}
-                                                            className={`flex min-w-0 flex-1 items-center justify-center gap-0.5 rounded bg-orange-500 px-1.5 py-1 text-[9px] font-medium text-white transition-colors sm:gap-1 sm:px-2 sm:py-1.5 sm:text-[10px] md:px-3 md:text-xs ${
+                                                            className={`flex items-center justify-center rounded bg-orange-500 px-2 py-1 text-[9px] font-medium text-white transition-colors sm:px-2.5 sm:py-1.5 sm:text-[10px] md:px-3 md:text-xs ${
                                                                 isOutOfStock(product) || isLoading
                                                                     ? 'cursor-not-allowed bg-gray-300'
                                                                     : 'hover:bg-orange-600 active:bg-orange-700'
                                                             }`}
+                                                            title="Add to Cart"
                                                         >
-                                                            <ShoppingCart className="h-3 w-3 flex-shrink-0 sm:h-3.5 sm:w-3.5 md:h-4 md:w-4" />
-                                                            <span className="hidden whitespace-nowrap sm:inline md:hidden">Add</span>
-                                                            <span className="hidden whitespace-nowrap md:inline">Add to Cart</span>
+                                                            <ShoppingCart className="h-3.5 w-3.5 flex-shrink-0 sm:h-4 sm:w-4 md:h-4 md:w-4" />
                                                         </button>
                                                         <button
                                                             onClick={(e) => handleBuyNow(e, product)}
                                                             disabled={isOutOfStock(product) || isLoading}
-                                                            className={`rounded border border-orange-500 px-1.5 py-1 text-[9px] font-medium whitespace-nowrap text-orange-500 transition-colors sm:px-2 sm:py-1.5 sm:text-[10px] md:px-3 md:text-xs ${
+                                                            className={`flex-1 rounded border border-orange-500 px-1.5 py-1 text-[9px] font-medium whitespace-nowrap text-orange-500 transition-colors sm:px-2 sm:py-1.5 sm:text-[10px] md:px-3 md:text-xs ${
                                                                 isOutOfStock(product) || isLoading
                                                                     ? 'cursor-not-allowed border-gray-300 text-gray-300'
                                                                     : 'hover:bg-orange-50 active:bg-orange-100'
