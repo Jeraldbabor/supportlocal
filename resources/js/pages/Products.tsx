@@ -849,7 +849,7 @@ export default function Products({ products, categories = [], sellers = [], loca
                                         return (
                                             <div
                                                 key={product.id}
-                                                className="group relative cursor-pointer overflow-hidden rounded-lg border border-gray-200 bg-white transition-all hover:border-orange-300 hover:shadow-lg"
+                                                className="group relative flex cursor-pointer flex-col overflow-hidden rounded-lg border border-gray-200 bg-white transition-all hover:border-orange-300 hover:shadow-lg"
                                                 onClick={() => handleProductClick(product.id)}
                                             >
                                                 {/* Product Image */}
@@ -896,12 +896,12 @@ export default function Products({ products, categories = [], sellers = [], loca
                                                 </div>
 
                                                 {/* Product Info */}
-                                                <div className="p-3">
+                                                <div className="flex flex-1 flex-col p-3">
                                                     {/* Store Name */}
                                                     {product.seller && <div className="mb-1 text-xs text-gray-500">{product.seller.name}</div>}
 
                                                     {/* Product Title */}
-                                                    <h3 className="mb-2 line-clamp-2 text-sm font-medium text-gray-900 group-hover:text-orange-600">
+                                                    <h3 className="mb-2 line-clamp-2 min-h-[2.5rem] text-sm font-medium text-gray-900 group-hover:text-orange-600">
                                                         {product.name}
                                                     </h3>
 
@@ -949,7 +949,7 @@ export default function Products({ products, categories = [], sellers = [], loca
                                                     {product.location && <div className="text-xs text-gray-500">{product.location}</div>}
 
                                                     {/* Action Buttons */}
-                                                    <div className="mt-3 flex gap-2" onClick={(e) => e.stopPropagation()}>
+                                                    <div className="mt-auto flex gap-2 pt-3" onClick={(e) => e.stopPropagation()}>
                                                         <button
                                                             onClick={(e) => handleAddToCart(e, product)}
                                                             disabled={isOutOfStock(product) || isLoading}
