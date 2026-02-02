@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -36,10 +37,25 @@ class EmailVerificationPromptController extends Controller
                 ];
             });
 
+        // Get cooldown info for the user
+        $userId = $request->user()->id;
+        $cooldownKey = "email_verification_cooldown_{$userId}";
+        $countKey = "email_verification_count_{$userId}";
+
+        $cooldownUntil = Cache::get($cooldownKey);
+        $resendCount = Cache::get($countKey, 0);
+
+        $cooldownSeconds = 0;
+        if ($cooldownUntil && now()->lt($cooldownUntil)) {
+            $cooldownSeconds = now()->diffInSeconds($cooldownUntil);
+        }
+
         return Inertia::render('auth/verify-email', [
             'status' => $request->session()->get('status'),
             'sellerCount' => $sellerCount,
             'featuredArtisans' => $featuredArtisans,
+            'cooldownSeconds' => $cooldownSeconds,
+            'resendCount' => $resendCount,
         ]);
     }
 }
