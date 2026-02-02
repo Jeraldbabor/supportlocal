@@ -19,6 +19,7 @@ interface Settings {
         site_email: string;
         site_phone: string;
         site_address: string;
+        registration_enabled: boolean;
         maintenance_mode: boolean;
     };
     ecommerce: {
@@ -217,13 +218,51 @@ export default function SettingsIndex() {
                                             rows={2}
                                         />
                                     </div>
-                                    <div className="flex items-center space-x-2">
-                                        <Switch
-                                            id="maintenance_mode"
-                                            checked={generalSettings.maintenance_mode}
-                                            onCheckedChange={(checked) => setGeneralSettings({ ...generalSettings, maintenance_mode: checked })}
-                                        />
-                                        <Label htmlFor="maintenance_mode">Maintenance Mode</Label>
+                                    {/* Access Control Section */}
+                                    <div className="space-y-4 rounded-lg border bg-muted/30 p-4">
+                                        <h4 className="font-medium">Access Control</h4>
+                                        <div className="space-y-3">
+                                            <div className="flex items-center justify-between">
+                                                <div className="space-y-0.5">
+                                                    <Label htmlFor="registration_enabled">User Registration</Label>
+                                                    <p className="text-sm text-muted-foreground">
+                                                        Allow new users to register accounts
+                                                    </p>
+                                                </div>
+                                                <Switch
+                                                    id="registration_enabled"
+                                                    checked={generalSettings.registration_enabled}
+                                                    onCheckedChange={(checked) =>
+                                                        setGeneralSettings({ ...generalSettings, registration_enabled: checked })
+                                                    }
+                                                />
+                                            </div>
+                                            {!generalSettings.registration_enabled && (
+                                                <div className="rounded-md bg-amber-50 p-3 text-sm text-amber-800 dark:bg-amber-900/20 dark:text-amber-200">
+                                                    ⚠️ Registration is disabled. New users cannot create accounts.
+                                                </div>
+                                            )}
+                                            <div className="flex items-center justify-between">
+                                                <div className="space-y-0.5">
+                                                    <Label htmlFor="maintenance_mode">Maintenance Mode</Label>
+                                                    <p className="text-sm text-muted-foreground">
+                                                        Put the site in maintenance mode (only admins can access)
+                                                    </p>
+                                                </div>
+                                                <Switch
+                                                    id="maintenance_mode"
+                                                    checked={generalSettings.maintenance_mode}
+                                                    onCheckedChange={(checked) =>
+                                                        setGeneralSettings({ ...generalSettings, maintenance_mode: checked })
+                                                    }
+                                                />
+                                            </div>
+                                            {generalSettings.maintenance_mode && (
+                                                <div className="rounded-md bg-red-50 p-3 text-sm text-red-800 dark:bg-red-900/20 dark:text-red-200">
+                                                    🚧 Maintenance mode is active. Only administrators can access the site.
+                                                </div>
+                                            )}
+                                        </div>
                                     </div>
                                     <Button type="submit" disabled={isSubmitting}>
                                         {isSubmitting ? 'Saving...' : 'Save General Settings'}

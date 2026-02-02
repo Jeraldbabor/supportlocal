@@ -22,6 +22,7 @@ class Setting extends Model
         'site_email' => ['value' => '', 'type' => 'string', 'group' => 'general'],
         'site_phone' => ['value' => '', 'type' => 'string', 'group' => 'general'],
         'site_address' => ['value' => '', 'type' => 'string', 'group' => 'general'],
+        'registration_enabled' => ['value' => true, 'type' => 'boolean', 'group' => 'general'],
         'maintenance_mode' => ['value' => false, 'type' => 'boolean', 'group' => 'general'],
 
         // E-commerce Settings

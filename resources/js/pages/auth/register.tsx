@@ -5,8 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { login } from '@/routes';
-import { Form, Head } from '@inertiajs/react';
-import { Eye, EyeOff, LoaderCircle, Lock, Mail, Shield, User } from 'lucide-react';
+import { Form, Head, usePage } from '@inertiajs/react';
+import { AlertTriangle, Eye, EyeOff, LoaderCircle, Lock, Mail, Shield, User } from 'lucide-react';
 import { useState } from 'react';
 
 import AuthLayout from '@/layouts/auth-layout';
@@ -18,9 +18,11 @@ interface RegisterProps {
         name: string;
         avatar_url: string;
     }>;
+    registrationEnabled?: boolean;
 }
 
-export default function Register({ sellerCount, featuredArtisans }: RegisterProps) {
+export default function Register({ sellerCount, featuredArtisans, registrationEnabled = true }: RegisterProps) {
+    const { flash } = usePage<{ flash: { error?: string; success?: string } }>().props;
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
@@ -39,12 +41,47 @@ export default function Register({ sellerCount, featuredArtisans }: RegisterProp
             featuredArtisans={featuredArtisans}
         >
             <Head title="Register" />
+
+            {/* Registration Disabled Notice */}
+            {!registrationEnabled && (
+                <div className="mb-4 rounded-lg border-2 border-amber-300 bg-amber-50 p-4 dark:border-amber-700 dark:bg-amber-900/20">
+                    <div className="flex items-start gap-3">
+                        <AlertTriangle className="mt-0.5 h-5 w-5 flex-shrink-0 text-amber-600 dark:text-amber-400" />
+                        <div>
+                            <h3 className="font-semibold text-amber-800 dark:text-amber-200">Registration Temporarily Closed</h3>
+                            <p className="mt-1 text-sm text-amber-700 dark:text-amber-300">
+                                We're not accepting new registrations at the moment. Please check back later or contact us for more information.
+                            </p>
+                            <div className="mt-3">
+                                <TextLink
+                                    href={login.url()}
+                                    className="inline-flex items-center text-sm font-medium text-amber-700 underline hover:text-amber-800 dark:text-amber-400 dark:hover:text-amber-300"
+                                >
+                                    Already have an account? Sign in
+                                </TextLink>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Flash Error Message */}
+            {flash?.error && (
+                <div className="mb-4 rounded-lg border-2 border-red-300 bg-red-50 p-4 dark:border-red-700 dark:bg-red-900/20">
+                    <div className="flex items-center gap-2 text-sm text-red-700 dark:text-red-300">
+                        <AlertTriangle className="h-4 w-4" />
+                        {flash.error}
+                    </div>
+                </div>
+            )}
+
             <Form {...formProps} className="space-y-2.5">
                 {({ processing, errors }) => (
                     <>
                         {/* Hidden field for guest cart */}
                         {guestCart && <input type="hidden" name="guest_cart" value={guestCart} />}
 
+                        <fieldset disabled={!registrationEnabled} className={!registrationEnabled ? 'opacity-50' : ''}>
                         <div className="space-y-2">
                             <div className="group space-y-1">
                                 <Label htmlFor="name" className="text-xs font-semibold text-gray-700 dark:text-gray-300">
@@ -166,15 +203,18 @@ export default function Register({ sellerCount, featuredArtisans }: RegisterProp
                         <div className="space-y-2 pt-0.5">
                             <Button
                                 type="submit"
-                                className="h-9 w-full rounded-lg bg-gradient-to-r from-amber-600 via-amber-700 to-orange-600 text-sm font-bold text-white shadow-lg transition-all duration-300 hover:scale-[1.02] hover:from-amber-700 hover:via-amber-800 hover:to-orange-700 hover:shadow-2xl active:scale-[0.98]"
+                                className="h-9 w-full rounded-lg bg-gradient-to-r from-amber-600 via-amber-700 to-orange-600 text-sm font-bold text-white shadow-lg transition-all duration-300 hover:scale-[1.02] hover:from-amber-700 hover:via-amber-800 hover:to-orange-700 hover:shadow-2xl active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
                                 tabIndex={5}
                                 data-test="register-user-button"
+                                disabled={!registrationEnabled || processing}
                             >
                                 {processing ? (
                                     <>
                                         <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />
                                         Creating...
                                     </>
+                                ) : !registrationEnabled ? (
+                                    'Registration Closed'
                                 ) : (
                                     'Create account'
                                 )}
@@ -267,6 +307,7 @@ export default function Register({ sellerCount, featuredArtisans }: RegisterProp
                                 </TextLink>
                             </div>
                         </div>
+                        </fieldset>
                     </>
                 )}
             </Form>
