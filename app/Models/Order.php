@@ -301,7 +301,7 @@ class Order extends Model
     {
         // Get commission rate from settings if not provided
         if ($commissionRate === null) {
-            $commissionRate = (float) \Illuminate\Support\Facades\Cache::get('settings.seller_commission_rate', 2);
+            $commissionRate = seller_commission_rate();
         }
 
         $totalAmount = (float) $this->total_amount;

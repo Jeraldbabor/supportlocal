@@ -123,6 +123,9 @@ export default function Register({ sellerCount, featuredArtisans }: RegisterProp
                                     </button>
                                 </div>
                                 <InputError message={errors.password} />
+                                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                    Min 8 characters with uppercase, lowercase, number & symbol
+                                </p>
                             </div>
 
                             <div className="group space-y-1">

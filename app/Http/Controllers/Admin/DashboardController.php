@@ -110,7 +110,7 @@ class DashboardController extends Controller
             'this_month_commission' => Order::where('completed_at', '>=', Carbon::now()->startOfMonth())
                 ->where('status', Order::STATUS_COMPLETED)
                 ->sum('admin_commission'),
-            'commission_rate' => \Illuminate\Support\Facades\Cache::get('settings.seller_commission_rate', 2),
+            'commission_rate' => seller_commission_rate(),
         ];
 
         // Category statistics

@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use App\Helpers\WishlistHelper;
+use App\Models\Setting;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
@@ -39,9 +40,12 @@ class HandleInertiaRequests extends Middleware
     {
         [$message, $author] = str(Inspiring::quotes()->random())->explode('-');
 
+        // Get app settings (cached for performance)
+        $appSettings = Setting::getAllCached();
+
         $sharedData = [
             ...parent::share($request),
-            'name' => config('app.name'),
+            'name' => $appSettings['site_name'] ?? config('app.name'),
             'quote' => ['message' => trim($message), 'author' => trim($author)],
             'auth' => [
                 'user' => $request->user() ? tap($request->user(), function ($user) {
@@ -52,6 +56,24 @@ class HandleInertiaRequests extends Middleware
             'flash' => [
                 'success' => $request->session()->get('success'),
                 'error' => $request->session()->get('error'),
+                'message' => $request->session()->get('message'),
+            ],
+            // Global app settings available to all pages
+            'appSettings' => [
+                'site_name' => $appSettings['site_name'] ?? config('app.name'),
+                'site_description' => $appSettings['site_description'] ?? '',
+                'site_email' => $appSettings['site_email'] ?? '',
+                'site_phone' => $appSettings['site_phone'] ?? '',
+                'currency' => $appSettings['currency'] ?? 'PHP',
+                'currency_symbol' => $appSettings['currency_symbol'] ?? '₱',
+                'shipping_enabled' => $appSettings['shipping_enabled'] ?? true,
+                'free_shipping_threshold' => $appSettings['free_shipping_threshold'] ?? 0,
+                'maintenance_mode' => $appSettings['maintenance_mode'] ?? false,
+                // SEO settings
+                'meta_title' => $appSettings['meta_title'] ?? '',
+                'meta_description' => $appSettings['meta_description'] ?? '',
+                'meta_keywords' => $appSettings['meta_keywords'] ?? '',
+                'google_analytics_id' => $appSettings['google_analytics_id'] ?? '',
             ],
         ];
 

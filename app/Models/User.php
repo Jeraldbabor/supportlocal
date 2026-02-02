@@ -631,4 +631,106 @@ class User extends Authenticatable implements MustVerifyEmail
 
         return $this->update($data);
     }
+
+    // ==========================================
+    // SESSION MANAGEMENT
+    // ==========================================
+
+    /**
+     * Get all active sessions for this user.
+     */
+    public function getActiveSessions(): \Illuminate\Support\Collection
+    {
+        return \DB::table('sessions')
+            ->where('user_id', $this->id)
+            ->orderBy('last_activity', 'desc')
+            ->get()
+            ->map(function ($session) {
+                $payload = @unserialize(base64_decode($session->payload));
+                $userAgent = $payload['_user_agent'] ?? $session->user_agent ?? null;
+                $parsed = $userAgent ? $this->parseUserAgent($userAgent) : [];
+
+                return (object) [
+                    'id' => $session->id,
+                    'ip_address' => $session->ip_address,
+                    'user_agent' => $userAgent,
+                    'device_type' => $parsed['device_type'] ?? 'Unknown',
+                    'browser' => $parsed['browser'] ?? 'Unknown',
+                    'platform' => $parsed['platform'] ?? 'Unknown',
+                    'last_activity' => \Carbon\Carbon::createFromTimestamp($session->last_activity),
+                    'is_current' => $session->id === session()->getId(),
+                ];
+            });
+    }
+
+    /**
+     * Parse user agent to extract device info.
+     */
+    protected function parseUserAgent(string $userAgent): array
+    {
+        $deviceType = 'desktop';
+        $browser = 'Unknown';
+        $platform = 'Unknown';
+
+        // Detect platform
+        if (preg_match('/windows/i', $userAgent)) {
+            $platform = 'Windows';
+        } elseif (preg_match('/macintosh|mac os x/i', $userAgent)) {
+            $platform = 'Mac';
+        } elseif (preg_match('/linux/i', $userAgent)) {
+            $platform = 'Linux';
+        } elseif (preg_match('/iphone|ipad/i', $userAgent)) {
+            $platform = 'iOS';
+            $deviceType = preg_match('/ipad/i', $userAgent) ? 'tablet' : 'mobile';
+        } elseif (preg_match('/android/i', $userAgent)) {
+            $platform = 'Android';
+            $deviceType = preg_match('/mobile/i', $userAgent) ? 'mobile' : 'tablet';
+        }
+
+        // Detect browser
+        if (preg_match('/edge/i', $userAgent)) {
+            $browser = 'Edge';
+        } elseif (preg_match('/chrome/i', $userAgent)) {
+            $browser = 'Chrome';
+        } elseif (preg_match('/safari/i', $userAgent) && !preg_match('/chrome/i', $userAgent)) {
+            $browser = 'Safari';
+        } elseif (preg_match('/firefox/i', $userAgent)) {
+            $browser = 'Firefox';
+        } elseif (preg_match('/opera|opr/i', $userAgent)) {
+            $browser = 'Opera';
+        }
+
+        // Mobile detection
+        if (preg_match('/mobile/i', $userAgent) && $deviceType === 'desktop') {
+            $deviceType = 'mobile';
+        }
+
+        return [
+            'device_type' => $deviceType,
+            'browser' => $browser,
+            'platform' => $platform,
+        ];
+    }
+
+    /**
+     * Revoke a specific session.
+     */
+    public function revokeSession(string $sessionId): bool
+    {
+        return \DB::table('sessions')
+            ->where('id', $sessionId)
+            ->where('user_id', $this->id)
+            ->delete() > 0;
+    }
+
+    /**
+     * Revoke all sessions except the current one.
+     */
+    public function revokeOtherSessions(): int
+    {
+        return \DB::table('sessions')
+            ->where('user_id', $this->id)
+            ->where('id', '!=', session()->getId())
+            ->delete();
+    }
 }

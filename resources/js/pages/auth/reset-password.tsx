@@ -44,6 +44,9 @@ export default function ResetPassword({ token, email }: ResetPasswordProps) {
                                 placeholder="Password"
                             />
                             <InputError message={errors.password} />
+                            <p className="text-xs text-muted-foreground">
+                                Min 8 characters with uppercase, lowercase, number & symbol
+                            </p>
                         </div>
 
                         <div className="grid gap-2">

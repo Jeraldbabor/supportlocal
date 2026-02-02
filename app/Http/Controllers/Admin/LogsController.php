@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\ActivityLog;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use Inertia\Inertia;
@@ -21,6 +23,7 @@ class LogsController extends Controller
         $currentPage = $request->get('page', 1);
         $perPage = 100;
         $filter = $request->get('filter', 'all'); // all, error, warning, info, debug
+        $activeTab = $request->get('tab', 'activity'); // activity, application
 
         // Ensure log directory and file exist
         $logDir = storage_path('logs');
@@ -113,19 +116,85 @@ class LogsController extends Controller
             }
         }
 
+        // Get activity logs for the Activity tab
+        $activityQuery = ActivityLog::query()
+            ->orderBy('created_at', 'desc');
+
+        // Filter by role
+        $roleFilter = $request->get('role_filter', 'all');
+        if ($roleFilter !== 'all') {
+            $activityQuery->where('user_role', $roleFilter);
+        }
+
+        // Filter by action
+        $actionFilter = $request->get('action_filter', 'all');
+        if ($actionFilter !== 'all') {
+            $activityQuery->where('action', $actionFilter);
+        }
+
+        $activityLogsPaginated = $activityQuery->paginate(50, ['*'], 'activity_page');
+        
+        $activityLogs = [
+            'data' => $activityLogsPaginated->map(function ($log) {
+                return [
+                    'id' => $log->id,
+                    'user_id' => $log->user_id,
+                    'user_name' => $log->user_name ?? 'Unknown',
+                    'user_email' => $log->user_email,
+                    'user_role' => $log->user_role,
+                    'role_display' => $log->role_display,
+                    'action' => $log->action,
+                    'action_label' => $log->action_label,
+                    'description' => $log->description,
+                    'ip_address' => $log->ip_address,
+                    'device_type' => $log->device_type,
+                    'browser' => $log->browser,
+                    'platform' => $log->platform,
+                    'is_successful' => $log->is_successful,
+                    'failure_reason' => $log->failure_reason,
+                    'created_at' => $log->created_at->format('M j, Y g:i A'),
+                    'created_at_relative' => $log->created_at->diffForHumans(),
+                ];
+            })->toArray(),
+            'current_page' => $activityLogsPaginated->currentPage(),
+            'last_page' => $activityLogsPaginated->lastPage(),
+            'per_page' => $activityLogsPaginated->perPage(),
+            'total' => $activityLogsPaginated->total(),
+        ];
+
+        // Get activity stats
+        $activityStats = [
+            'total_logins' => ActivityLog::where('action', 'login')->count(),
+            'total_logouts' => ActivityLog::where('action', 'logout')->count(),
+            'failed_logins' => ActivityLog::where('action', 'login_failed')->count(),
+            'today_logins' => ActivityLog::where('action', 'login')->whereDate('created_at', today())->count(),
+            'buyers_active' => ActivityLog::where('user_role', User::ROLE_BUYER)->where('action', 'login')->whereDate('created_at', today())->count(),
+            'sellers_active' => ActivityLog::where('user_role', User::ROLE_SELLER)->where('action', 'login')->whereDate('created_at', today())->count(),
+            'admins_active' => ActivityLog::where('user_role', User::ROLE_ADMINISTRATOR)->where('action', 'login')->whereDate('created_at', today())->count(),
+        ];
+
+        // Get unique actions for filter
+        $availableActions = ActivityLog::select('action')->distinct()->pluck('action')->toArray();
+
         return Inertia::render('admin/logs/index', [
             'logs' => $logs,
             'pagination' => [
-                'current_page' => $currentPage,
+                'current_page' => (int) $currentPage,
                 'per_page' => $perPage,
                 'total' => $totalLines,
                 'total_pages' => $totalPages,
             ],
             'filters' => [
                 'filter' => $filter,
+                'role_filter' => $roleFilter,
+                'action_filter' => $actionFilter,
+                'tab' => $activeTab,
             ],
             'stats' => $logStats,
             'level_counts' => $levelCounts,
+            'activityLogs' => $activityLogs,
+            'activityStats' => $activityStats,
+            'availableActions' => $availableActions,
         ]);
     }
 
@@ -217,16 +286,26 @@ class LogsController extends Controller
     }
 
     /**
-     * Clear log file.
+     * Clear application log file.
      */
-    public function clear()
+    public function clear(Request $request)
     {
         $logFile = storage_path('logs/laravel.log');
 
         // Clear file content but keep the file
         File::put($logFile, '['.date('Y-m-d H:i:s').'] local.INFO: Logs cleared by administrator'."\n");
 
-        return back()->with('message', 'Log file cleared successfully.');
+        return redirect('/admin/logs?tab=application')->with('message', 'Application logs cleared successfully.');
+    }
+
+    /**
+     * Clear activity logs.
+     */
+    public function clearActivity(Request $request)
+    {
+        $deleted = ActivityLog::query()->delete();
+
+        return redirect('/admin/logs?tab=activity')->with('message', "Activity logs cleared successfully. ({$deleted} records deleted)");
     }
 
     /**

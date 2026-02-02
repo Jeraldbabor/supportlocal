@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Setting;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cache;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -16,54 +16,8 @@ class SettingsController extends Controller
     public function index(): Response
     {
         return Inertia::render('admin/settings/index', [
-            'settings' => $this->getSettings(),
+            'settings' => Setting::getGrouped(),
         ]);
-    }
-
-    /**
-     * Get all system settings.
-     */
-    private function getSettings(): array
-    {
-        // In a real application, you'd store these in a database
-        // For now, we'll use config/cache
-        return [
-            'general' => [
-                'site_name' => config('app.name', 'Support Local'),
-                'site_description' => Cache::get('settings.site_description', ''),
-                'site_email' => Cache::get('settings.site_email', config('mail.from.address')),
-                'site_phone' => Cache::get('settings.site_phone', ''),
-                'site_address' => Cache::get('settings.site_address', ''),
-                'maintenance_mode' => Cache::get('settings.maintenance_mode', false),
-            ],
-            'ecommerce' => [
-                'currency' => Cache::get('settings.currency', 'PHP'),
-                'currency_symbol' => Cache::get('settings.currency_symbol', '₱'),
-                'tax_rate' => Cache::get('settings.tax_rate', 0),
-                'shipping_enabled' => Cache::get('settings.shipping_enabled', true),
-                'default_shipping_cost' => Cache::get('settings.default_shipping_cost', 50),
-                'free_shipping_threshold' => Cache::get('settings.free_shipping_threshold', 0),
-                'low_stock_threshold' => Cache::get('settings.low_stock_threshold', 5),
-            ],
-            'seller' => [
-                'seller_application_enabled' => Cache::get('settings.seller_application_enabled', true),
-                'seller_approval_required' => Cache::get('settings.seller_approval_required', true),
-                'seller_commission_rate' => Cache::get('settings.seller_commission_rate', 0),
-            ],
-            'notifications' => [
-                'email_notifications_enabled' => Cache::get('settings.email_notifications_enabled', true),
-                'admin_email' => Cache::get('settings.admin_email', config('mail.from.address')),
-                'new_order_notification' => Cache::get('settings.new_order_notification', true),
-                'new_user_notification' => Cache::get('settings.new_user_notification', true),
-                'new_seller_application_notification' => Cache::get('settings.new_seller_application_notification', true),
-            ],
-            'seo' => [
-                'meta_title' => Cache::get('settings.meta_title', ''),
-                'meta_description' => Cache::get('settings.meta_description', ''),
-                'meta_keywords' => Cache::get('settings.meta_keywords', ''),
-                'google_analytics_id' => Cache::get('settings.google_analytics_id', ''),
-            ],
-        ];
     }
 
     /**
@@ -77,13 +31,13 @@ class SettingsController extends Controller
             'site_email' => ['required', 'email', 'max:255'],
             'site_phone' => ['nullable', 'string', 'max:20'],
             'site_address' => ['nullable', 'string', 'max:500'],
-            'maintenance_mode' => ['boolean'],
+            'maintenance_mode' => ['nullable'],
         ]);
 
-        // Update config (in production, you'd update database)
-        foreach ($validated as $key => $value) {
-            Cache::forever("settings.{$key}", $value);
-        }
+        // Convert maintenance_mode to boolean
+        $validated['maintenance_mode'] = filter_var($request->input('maintenance_mode'), FILTER_VALIDATE_BOOLEAN);
+
+        Setting::setMany($validated, 'general');
 
         return back()->with('message', 'General settings updated successfully.');
     }
@@ -97,15 +51,16 @@ class SettingsController extends Controller
             'currency' => ['required', 'string', 'max:10'],
             'currency_symbol' => ['required', 'string', 'max:10'],
             'tax_rate' => ['nullable', 'numeric', 'min:0', 'max:100'],
-            'shipping_enabled' => ['boolean'],
+            'shipping_enabled' => ['nullable'],
             'default_shipping_cost' => ['nullable', 'numeric', 'min:0'],
             'free_shipping_threshold' => ['nullable', 'numeric', 'min:0'],
             'low_stock_threshold' => ['nullable', 'integer', 'min:0'],
         ]);
 
-        foreach ($validated as $key => $value) {
-            Cache::forever("settings.{$key}", $value);
-        }
+        // Convert shipping_enabled to boolean
+        $validated['shipping_enabled'] = filter_var($request->input('shipping_enabled'), FILTER_VALIDATE_BOOLEAN);
+
+        Setting::setMany($validated, 'ecommerce');
 
         return back()->with('message', 'E-commerce settings updated successfully.');
     }
@@ -116,14 +71,16 @@ class SettingsController extends Controller
     public function updateSeller(Request $request)
     {
         $validated = $request->validate([
-            'seller_application_enabled' => ['boolean'],
-            'seller_approval_required' => ['boolean'],
+            'seller_application_enabled' => ['nullable'],
+            'seller_approval_required' => ['nullable'],
             'seller_commission_rate' => ['nullable', 'numeric', 'min:0', 'max:100'],
         ]);
 
-        foreach ($validated as $key => $value) {
-            Cache::forever("settings.{$key}", $value);
-        }
+        // Convert boolean fields
+        $validated['seller_application_enabled'] = filter_var($request->input('seller_application_enabled'), FILTER_VALIDATE_BOOLEAN);
+        $validated['seller_approval_required'] = filter_var($request->input('seller_approval_required'), FILTER_VALIDATE_BOOLEAN);
+
+        Setting::setMany($validated, 'seller');
 
         return back()->with('message', 'Seller settings updated successfully.');
     }
@@ -134,16 +91,22 @@ class SettingsController extends Controller
     public function updateNotifications(Request $request)
     {
         $validated = $request->validate([
-            'email_notifications_enabled' => ['boolean'],
+            'email_notifications_enabled' => ['nullable'],
             'admin_email' => ['required', 'email', 'max:255'],
-            'new_order_notification' => ['boolean'],
-            'new_user_notification' => ['boolean'],
-            'new_seller_application_notification' => ['boolean'],
+            'admin_login_alert' => ['nullable'],
+            'new_order_notification' => ['nullable'],
+            'new_user_notification' => ['nullable'],
+            'new_seller_application_notification' => ['nullable'],
         ]);
 
-        foreach ($validated as $key => $value) {
-            Cache::forever("settings.{$key}", $value);
-        }
+        // Convert boolean fields
+        $validated['email_notifications_enabled'] = filter_var($request->input('email_notifications_enabled'), FILTER_VALIDATE_BOOLEAN);
+        $validated['admin_login_alert'] = filter_var($request->input('admin_login_alert'), FILTER_VALIDATE_BOOLEAN);
+        $validated['new_order_notification'] = filter_var($request->input('new_order_notification'), FILTER_VALIDATE_BOOLEAN);
+        $validated['new_user_notification'] = filter_var($request->input('new_user_notification'), FILTER_VALIDATE_BOOLEAN);
+        $validated['new_seller_application_notification'] = filter_var($request->input('new_seller_application_notification'), FILTER_VALIDATE_BOOLEAN);
+
+        Setting::setMany($validated, 'notifications');
 
         return back()->with('message', 'Notification settings updated successfully.');
     }
@@ -160,9 +123,7 @@ class SettingsController extends Controller
             'google_analytics_id' => ['nullable', 'string', 'max:100'],
         ]);
 
-        foreach ($validated as $key => $value) {
-            Cache::forever("settings.{$key}", $value);
-        }
+        Setting::setMany($validated, 'seo');
 
         return back()->with('message', 'SEO settings updated successfully.');
     }
@@ -175,6 +136,9 @@ class SettingsController extends Controller
         \Artisan::call('cache:clear');
         \Artisan::call('config:clear');
         \Artisan::call('view:clear');
+
+        // Re-cache settings after clearing
+        Setting::clearCache();
 
         return back()->with('message', 'Cache cleared successfully.');
     }

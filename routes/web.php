@@ -300,6 +300,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/admin/logs', [App\Http\Controllers\Admin\LogsController::class, 'index'])->name('admin.logs.index');
         Route::get('/admin/logs/download', [App\Http\Controllers\Admin\LogsController::class, 'download'])->name('admin.logs.download');
         Route::post('/admin/logs/clear', [App\Http\Controllers\Admin\LogsController::class, 'clear'])->name('admin.logs.clear');
+        Route::post('/admin/logs/clear-activity', [App\Http\Controllers\Admin\LogsController::class, 'clearActivity'])->name('admin.logs.clear-activity');
         Route::get('/admin/logs/show', [App\Http\Controllers\Admin\LogsController::class, 'show'])->name('admin.logs.show');
 
         // Page Content Management Routes
@@ -321,6 +322,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/admin/newsletter/export', [App\Http\Controllers\Admin\NewsletterController::class, 'export'])->name('admin.newsletter.export');
         Route::post('/admin/newsletter/{subscriber}/toggle', [App\Http\Controllers\Admin\NewsletterController::class, 'toggleStatus'])->name('admin.newsletter.toggle');
         Route::delete('/admin/newsletter/{subscriber}', [App\Http\Controllers\Admin\NewsletterController::class, 'destroy'])->name('admin.newsletter.destroy');
+
+        // Admin Security Routes
+        Route::get('/admin/security', [App\Http\Controllers\Admin\SecurityController::class, 'index'])->name('admin.security.index');
+        Route::post('/admin/security/password', [App\Http\Controllers\Admin\SecurityController::class, 'changePassword'])->name('admin.security.password');
+        Route::delete('/admin/security/sessions/{session}', [App\Http\Controllers\Admin\SecurityController::class, 'revokeSession'])->name('admin.security.sessions.revoke');
+        Route::post('/admin/security/sessions/revoke-others', [App\Http\Controllers\Admin\SecurityController::class, 'revokeOtherSessions'])->name('admin.security.sessions.revoke-others');
+        Route::get('/admin/security/audit-logs', [App\Http\Controllers\Admin\SecurityController::class, 'auditLogs'])->name('admin.security.audit-logs');
+        Route::post('/admin/security/audit-logs/clear', [App\Http\Controllers\Admin\SecurityController::class, 'clearAuditLogs'])->name('admin.security.audit-logs.clear');
+        Route::get('/admin/security/audit-logs/export', [App\Http\Controllers\Admin\SecurityController::class, 'exportAuditLogs'])->name('admin.security.audit-logs.export');
     });
 
     Route::middleware(['role:buyer'])->group(function () {
