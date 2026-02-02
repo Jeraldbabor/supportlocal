@@ -90,7 +90,7 @@ export default function About({ artisans = [], pageContents = {} }: AboutProps) 
                         <>
                             <h2 className="mb-6 text-3xl font-bold text-gray-900 md:text-4xl">Our Mission</h2>
                             <p className="mb-8 text-xl leading-relaxed text-gray-600">
-                                At ArtisanLocal, We believe in the power of handmade craftsmanship and the importance of supporting local artisans.
+                                At ArtisanLocal, we believe in the power of handmade craftsmanship and the importance of supporting local artisans.
                                 Our platform connects skilled craftspeople with customers who appreciate the beauty, quality, and story behind each
                                 handmade piece.
                             </p>
