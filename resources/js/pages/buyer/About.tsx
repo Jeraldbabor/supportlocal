@@ -29,7 +29,7 @@ export default function About({ artisans = [], pageContents = {} }: AboutProps) 
     const defaultArtisans: Artisan[] = [
         {
             id: 1,
-            name: 'Jerald Babor',
+            name: 'JERALD B. BABOR',
             specialty: 'Full-Stack Web Developer',
             image: '/jerald.jfif',
             description:
@@ -39,7 +39,7 @@ export default function About({ artisans = [], pageContents = {} }: AboutProps) 
         },
         {
             id: 2,
-            name: 'Sir Jonas Parreño MIT',
+            name: 'JONAS D. PARREÑO, MIT',
             specialty: 'Analysis/Capstone Adviser',
             image: '/sirjd.jpg',
             description:
@@ -49,7 +49,7 @@ export default function About({ artisans = [], pageContents = {} }: AboutProps) 
         },
         {
             id: 3,
-            name: 'Decery Alihid',
+            name: 'DECERY B. ALIHID',
             specialty: 'Documentator',
             image: '/decery.jfif',
             description: 'A dedicated documentator ensuring clear, comprehensive documentation for projects and processes.',
@@ -58,7 +58,7 @@ export default function About({ artisans = [], pageContents = {} }: AboutProps) 
         },
         {
             id: 4,
-            name: 'Micaela Oliamina',
+            name: 'MICAELA OLIAMINA',
             specialty: 'Documentator',
             image: '/mekay.jfif',
             description: 'A meticulous documentator creating detailed documentation to support project success and knowledge sharing.',

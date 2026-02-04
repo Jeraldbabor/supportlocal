@@ -48,7 +48,7 @@ export default function About({ artisans = [], pageContents = {} }: AboutProps) 
         },
         {
             id: 3,
-            name: 'DECEY B. ALIHID',
+            name: 'DECERY B. ALIHID',
             specialty: 'Documentator',
             image: '/decery.jfif',
             description: 'A dedicated documentator ensuring clear, comprehensive documentation for projects and processes.',
@@ -57,7 +57,7 @@ export default function About({ artisans = [], pageContents = {} }: AboutProps) 
         },
         {
             id: 4,
-            name: 'MICALEA OLIAMINA',
+            name: 'MICAELA OLIAMINA',
             specialty: 'Documentator',
             image: '/mekay.jfif',
             description: 'A meticulous documentator creating detailed documentation to support project success and knowledge sharing.',
