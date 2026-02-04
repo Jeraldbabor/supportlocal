@@ -184,7 +184,7 @@ class HomeController extends Controller
             ],
             [
                 'id' => 3,
-                'name' => 'DECEY B. ALIHID',
+                'name' => 'DECERY B. ALIHID',
                 'specialty' => 'Documentator',
                 'image' => '/decery.jfif',
                 'description' => 'A dedicated documentator ensuring clear, comprehensive documentation for projects and processes.',
@@ -193,7 +193,7 @@ class HomeController extends Controller
             ],
             [
                 'id' => 4,
-                'name' => 'MICALEA OLIAMINA',
+                'name' => 'MICAELA OLIAMINA',
                 'specialty' => 'Documentator',
                 'image' => '/mekay.jfif',
                 'description' => 'A meticulous documentator creating detailed documentation to support project success and knowledge sharing.',
