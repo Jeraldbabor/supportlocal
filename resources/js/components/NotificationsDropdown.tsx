@@ -11,6 +11,7 @@ interface Notification {
         title?: string;
         message?: string;
         action_url?: string;
+        url?: string; // Legacy field for backward compatibility
     };
     read_at: string | null;
     created_at: string;
@@ -79,7 +80,7 @@ export default function NotificationsDropdown({ userRole = 'buyer', buttonClassN
         }
 
         // Navigate to action URL (check both action_url and legacy url field)
-        const targetUrl = notification.data.action_url || (notification.data as any).url;
+        const targetUrl = notification.data.action_url || notification.data.url;
         if (targetUrl) {
             router.visit(targetUrl);
             setIsOpen(false);
@@ -166,9 +167,8 @@ export default function NotificationsDropdown({ userRole = 'buyer', buttonClassN
                                             <button
                                                 key={notification.id}
                                                 onClick={() => handleNotificationClick(notification)}
-                                                className={`w-full px-4 py-3 text-left transition-colors duration-200 ${
-                                                    isUnread ? 'bg-orange-50 hover:bg-orange-100' : 'hover:bg-gray-50'
-                                                }`}
+                                                className={`w-full px-4 py-3 text-left transition-colors duration-200 ${isUnread ? 'bg-orange-50 hover:bg-orange-100' : 'hover:bg-gray-50'
+                                                    }`}
                                             >
                                                 <div className="flex items-start gap-3">
                                                     {isUnread && <div className="mt-1.5 h-2 w-2 flex-shrink-0 rounded-full bg-orange-500"></div>}
