@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Helpers\ImageHelper;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Laravel\Socialite\Facades\Socialite;
 
@@ -118,24 +121,41 @@ class SocialAuthController extends Controller
                 $user = User::where('email', $email)->first();
 
                 if ($user) {
+                    // Download and store avatar to R2 (only if user doesn't have a profile picture already)
+                    $storedAvatarPath = null;
+                    if (empty($user->profile_picture)) {
+                        $storedAvatarPath = $this->downloadAndStoreAvatar($avatarUrl, (string) $socialUser->getId(), $provider);
+                    }
+
                     // Update existing user with social auth details
-                    $user->update([
+                    $updateData = [
                         'provider' => $provider,
                         'provider_id' => $socialUser->getId(),
                         'provider_token' => $socialUser->token,
-                        'avatar' => $avatarUrl,
+                        'avatar' => $avatarUrl, // Keep original URL for reference
                         'email_verified_at' => $user->email_verified_at ?? now(),
-                    ]);
+                    ];
+
+                    // Only update profile_picture if we successfully stored the avatar
+                    if ($storedAvatarPath) {
+                        $updateData['profile_picture'] = $storedAvatarPath;
+                    }
+
+                    $user->update($updateData);
                 } else {
                     // Create new user
                     try {
+                        // Download and store avatar to R2
+                        $storedAvatarPath = $this->downloadAndStoreAvatar($avatarUrl, (string) $socialUser->getId(), $provider);
+
                         $userData = [
                             'name' => $socialUser->getName() ?? $socialUser->getNickname() ?? 'Facebook User',
                             'email' => $email,
                             'provider' => $provider,
                             'provider_id' => (string) $socialUser->getId(),
                             'provider_token' => $socialUser->token ?? null,
-                            'avatar' => $avatarUrl ?? null,
+                            'avatar' => $avatarUrl ?? null, // Keep original URL for reference
+                            'profile_picture' => $storedAvatarPath, // Store the R2 path
                             'password' => bcrypt(Str::random(32)), // Random password for social users
                             'email_verified_at' => now(), // Auto-verify email for social logins
                             'role' => User::ROLE_BUYER, // Default role
@@ -146,6 +166,7 @@ class SocialAuthController extends Controller
                             'email' => $userData['email'],
                             'provider' => $userData['provider'],
                             'provider_id' => $userData['provider_id'],
+                            'profile_picture' => $userData['profile_picture'],
                         ]));
 
                         $user = User::create($userData);
@@ -158,11 +179,21 @@ class SocialAuthController extends Controller
                     }
                 }
             } else {
-                // Update existing social user's token and avatar
-                $user->update([
+                // Update existing social user's token
+                // Only re-download avatar if user doesn't have a profile picture
+                $updateData = [
                     'provider_token' => $socialUser->token,
-                    'avatar' => $avatarUrl,
-                ]);
+                    'avatar' => $avatarUrl, // Keep original URL for reference
+                ];
+
+                if (empty($user->profile_picture)) {
+                    $storedAvatarPath = $this->downloadAndStoreAvatar($avatarUrl, (string) $socialUser->getId(), $provider);
+                    if ($storedAvatarPath) {
+                        $updateData['profile_picture'] = $storedAvatarPath;
+                    }
+                }
+
+                $user->update($updateData);
             }
 
             // Update last login timestamp
@@ -222,6 +253,72 @@ class SocialAuthController extends Controller
 
             // Fallback to home page
             return redirect('/');
+        }
+    }
+
+    /**
+     * Download and store avatar from social provider to R2 storage.
+     *
+     * @param  string|null  $avatarUrl  The external avatar URL from social provider
+     * @param  string  $providerId  The social provider ID (used for unique filename)
+     * @param  string  $provider  The provider name (google, facebook)
+     * @return string|null The stored path in R2, or null if download failed
+     */
+    protected function downloadAndStoreAvatar(?string $avatarUrl, string $providerId, string $provider): ?string
+    {
+        if (empty($avatarUrl)) {
+            return null;
+        }
+
+        try {
+            // Download the image from the external URL
+            $response = Http::timeout(10)->get($avatarUrl);
+
+            if (! $response->successful()) {
+                Log::warning('Failed to download avatar from social provider', [
+                    'provider' => $provider,
+                    'url' => $avatarUrl,
+                    'status' => $response->status(),
+                ]);
+
+                return null;
+            }
+
+            $imageContent = $response->body();
+            $contentType = $response->header('Content-Type');
+
+            // Determine file extension from content type
+            $extension = match (true) {
+                str_contains($contentType, 'jpeg'), str_contains($contentType, 'jpg') => 'jpg',
+                str_contains($contentType, 'png') => 'png',
+                str_contains($contentType, 'gif') => 'gif',
+                str_contains($contentType, 'webp') => 'webp',
+                default => 'jpg', // Default to jpg
+            };
+
+            // Generate a unique filename
+            $filename = "avatars/{$provider}_{$providerId}_".Str::random(8).".{$extension}";
+
+            // Store to the appropriate disk (R2 if configured, otherwise public)
+            $disk = ImageHelper::getDisk();
+            Storage::disk($disk)->put($filename, $imageContent);
+
+            Log::info('Successfully stored social avatar to storage', [
+                'provider' => $provider,
+                'provider_id' => $providerId,
+                'path' => $filename,
+                'disk' => $disk,
+            ]);
+
+            return $filename;
+        } catch (\Exception $e) {
+            Log::error('Error downloading/storing social avatar', [
+                'provider' => $provider,
+                'url' => $avatarUrl,
+                'error' => $e->getMessage(),
+            ]);
+
+            return null;
         }
     }
 }
