@@ -11,6 +11,7 @@ interface Notification {
         title?: string;
         message?: string;
         action_url?: string;
+        url?: string; // Legacy field for backward compatibility
     };
     read_at: string | null;
     created_at: string;
@@ -78,9 +79,10 @@ export default function NotificationsDropdown({ userRole = 'buyer', buttonClassN
             setNotifications((prev) => prev.map((n) => (n.id === notification.id ? { ...n, read_at: new Date().toISOString() } : n)));
         }
 
-        // Navigate to action URL or close dropdown
-        if (notification.data.action_url) {
-            router.visit(notification.data.action_url);
+        // Navigate to action URL (check both action_url and legacy url field)
+        const targetUrl = notification.data.action_url || notification.data.url;
+        if (targetUrl) {
+            router.visit(targetUrl);
             setIsOpen(false);
         } else {
             setIsOpen(false);

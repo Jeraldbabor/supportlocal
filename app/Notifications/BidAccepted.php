@@ -60,6 +60,7 @@ class BidAccepted extends Notification implements ShouldQueue
 
         return [
             'type' => 'bid_accepted',
+            'title' => 'Bid Accepted!',
             'bid_id' => $this->bid->id,
             'request_id' => $request->id,
             'request_number' => $request->request_number,
@@ -69,7 +70,7 @@ class BidAccepted extends Notification implements ShouldQueue
             'agreed_price' => $this->bid->proposed_price,
             'estimated_days' => $this->bid->estimated_days,
             'message' => 'Your bid on "'.$request->title.'" was accepted by '.$buyer->name,
-            'url' => '/seller/custom-orders/'.$request->id,
+            'action_url' => '/seller/custom-orders/'.$request->id,
         ];
     }
 }
