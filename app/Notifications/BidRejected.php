@@ -71,6 +71,7 @@ class BidRejected extends Notification implements ShouldQueue
 
         return [
             'type' => 'bid_rejected',
+            'title' => 'Bid Update',
             'bid_id' => $this->bid->id,
             'request_id' => $request->id,
             'request_number' => $request->request_number,
@@ -81,7 +82,7 @@ class BidRejected extends Notification implements ShouldQueue
             'another_bid_accepted' => $this->anotherBidAccepted,
             'rejection_reason' => $this->bid->rejection_reason,
             'message' => $message,
-            'url' => '/seller/marketplace',
+            'action_url' => '/seller/marketplace',
         ];
     }
 }

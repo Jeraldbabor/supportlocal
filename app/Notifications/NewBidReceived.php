@@ -60,6 +60,7 @@ class NewBidReceived extends Notification implements ShouldQueue
 
         return [
             'type' => 'new_bid_received',
+            'title' => 'New Bid Received',
             'bid_id' => $this->bid->id,
             'request_id' => $request->id,
             'request_number' => $request->request_number,
@@ -69,7 +70,7 @@ class NewBidReceived extends Notification implements ShouldQueue
             'proposed_price' => $this->bid->proposed_price,
             'estimated_days' => $this->bid->estimated_days,
             'message' => 'New bid from '.$seller->name.' on "'.$request->title.'"',
-            'url' => '/buyer/custom-orders/'.$request->id,
+            'action_url' => '/buyer/custom-orders/'.$request->id,
         ];
     }
 }
