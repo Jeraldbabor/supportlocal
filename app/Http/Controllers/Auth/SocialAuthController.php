@@ -274,12 +274,13 @@ class SocialAuthController extends Controller
             // Download the image from the external URL
             $response = Http::timeout(10)->get($avatarUrl);
 
-            if (!$response->successful()) {
+            if (! $response->successful()) {
                 Log::warning('Failed to download avatar from social provider', [
                     'provider' => $provider,
                     'url' => $avatarUrl,
                     'status' => $response->status(),
                 ]);
+
                 return null;
             }
 
@@ -296,7 +297,7 @@ class SocialAuthController extends Controller
             };
 
             // Generate a unique filename
-            $filename = "avatars/{$provider}_{$providerId}_" . Str::random(8) . ".{$extension}";
+            $filename = "avatars/{$provider}_{$providerId}_".Str::random(8).".{$extension}";
 
             // Store to the appropriate disk (R2 if configured, otherwise public)
             $disk = ImageHelper::getDisk();
@@ -316,6 +317,7 @@ class SocialAuthController extends Controller
                 'url' => $avatarUrl,
                 'error' => $e->getMessage(),
             ]);
+
             return null;
         }
     }
