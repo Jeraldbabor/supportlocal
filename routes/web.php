@@ -1,4 +1,4 @@
-<?php
+    <?php
 
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\GeocodeController;

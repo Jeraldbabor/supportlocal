@@ -160,10 +160,11 @@ class MarketplaceController extends Controller
     {
         $user = Auth::user();
 
-        // Must be a public open request
-        if (! $customOrderRequest->isOpenForBids()) {
+        // Must be a public request (but can be any status for viewing purposes)
+        // Sellers can view details even if the request is no longer accepting bids
+        if (! $customOrderRequest->is_public) {
             return redirect()->route('seller.marketplace.index')
-                ->with('error', 'This request is no longer accepting bids.');
+                ->with('error', 'This is a private custom order request.');
         }
 
         $customOrderRequest->load('buyer');
