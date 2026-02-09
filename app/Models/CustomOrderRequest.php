@@ -338,8 +338,9 @@ class CustomOrderRequest extends Model
     public function canBeCancelled(): bool
     {
         return in_array($this->status, [
-            self::STATUS_PENDING,
-            self::STATUS_QUOTED,
+            self::STATUS_OPEN,      // Public requests open for bidding
+            self::STATUS_PENDING,   // Direct requests awaiting quote
+            self::STATUS_QUOTED,    // Requests with a quote (not yet accepted)
         ]);
     }
 
