@@ -2,6 +2,7 @@ import BuyerChatModal from '@/components/BuyerChatModal';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { deleteWithCsrf, fetchWithCsrf } from '@/lib/csrf';
 import Echo from '@/lib/echo';
 import { router } from '@inertiajs/react';
 import { formatDistanceToNow } from 'date-fns';
@@ -97,7 +98,7 @@ export default function MessagesDropdown({ currentUserId }: MessagesDropdownProp
 
             setIsLoading(true);
             try {
-                const response = await fetch('/api/chat/conversations');
+                const response = await fetchWithCsrf('/api/chat/conversations');
                 if (response.ok) {
                     const data = await response.json();
                     setConversations(data || []);
@@ -236,12 +237,7 @@ export default function MessagesDropdown({ currentUserId }: MessagesDropdownProp
 
         if (result.isConfirmed) {
             try {
-                const response = await fetch(`/chat/conversations/${convId}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
-                    },
-                });
+                const response = await deleteWithCsrf(`/chat/conversations/${convId}`);
 
                 if (response.ok) {
                     setConversations((prev) => prev.filter((c) => c.id !== convId));
