@@ -167,8 +167,9 @@ export default function NotificationsDropdown({ userRole = 'buyer', buttonClassN
                                             <button
                                                 key={notification.id}
                                                 onClick={() => handleNotificationClick(notification)}
-                                                className={`w-full px-4 py-3 text-left transition-colors duration-200 ${isUnread ? 'bg-orange-50 hover:bg-orange-100' : 'hover:bg-gray-50'
-                                                    }`}
+                                                className={`w-full px-4 py-3 text-left transition-colors duration-200 ${
+                                                    isUnread ? 'bg-orange-50 hover:bg-orange-100' : 'hover:bg-gray-50'
+                                                }`}
                                             >
                                                 <div className="flex items-start gap-3">
                                                     {isUnread && <div className="mt-1.5 h-2 w-2 flex-shrink-0 rounded-full bg-orange-500"></div>}
