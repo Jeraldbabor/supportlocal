@@ -1,6 +1,7 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { fetchWithCsrf, postWithCsrf } from '@/lib/csrf';
 import { formatDistanceToNow } from 'date-fns';
 import { Image, Minimize2, Send, X } from 'lucide-react';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
@@ -64,12 +65,7 @@ export default function BuyerChatModal({ conversationId, currentUserId, onClose,
 
     const markAsRead = useCallback(async () => {
         try {
-            await fetch(`/chat/conversation/${conversationId}/read`, {
-                method: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
-                },
-            });
+            await postWithCsrf(`/chat/conversation/${conversationId}/read`);
         } catch (error) {
             console.error('Failed to mark as read:', error);
         }
@@ -77,7 +73,10 @@ export default function BuyerChatModal({ conversationId, currentUserId, onClose,
 
     const loadMessages = useCallback(async () => {
         try {
-            const response = await fetch(`/chat/conversation/${conversationId}/messages`);
+            const response = await fetchWithCsrf(`/chat/conversation/${conversationId}/messages`);
+            if (!response.ok) {
+                throw new Error('Failed to load messages');
+            }
             const data = await response.json();
             setMessages(data.messages);
             setConversation(data.conversation);
@@ -171,17 +170,15 @@ export default function BuyerChatModal({ conversationId, currentUserId, onClose,
                 formData.append('image', selectedImage);
             }
 
-            const response = await fetch(`/chat/conversation/${conversationId}/message`, {
-                method: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
-                },
-                body: formData,
-            });
+            const response = await postWithCsrf(`/chat/conversation/${conversationId}/message`, formData, { maxRetries: 2 });
 
             if (response.ok) {
                 const data = await response.json();
-                setMessages((prev) => [...prev, data.message]);
+                setMessages((prev) => {
+                    // Avoid duplicates if WebSocket already added this message
+                    const exists = prev.some((msg) => msg.id === data.message.id);
+                    return exists ? prev : [...prev, data.message];
+                });
                 setNewMessage('');
                 clearImageSelection();
             }
@@ -193,11 +190,9 @@ export default function BuyerChatModal({ conversationId, currentUserId, onClose,
     };
 
     const handleTyping = () => {
-        fetch(`/chat/conversation/${conversationId}/typing/start`, {
-            method: 'POST',
-            headers: {
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
-            },
+        // Fire and forget - typing indicators are not critical
+        postWithCsrf(`/chat/conversation/${conversationId}/typing/start`).catch(() => {
+            // Silently ignore typing indicator errors
         });
 
         if (typingTimeoutRef.current) {
@@ -205,11 +200,8 @@ export default function BuyerChatModal({ conversationId, currentUserId, onClose,
         }
 
         typingTimeoutRef.current = setTimeout(() => {
-            fetch(`/chat/conversation/${conversationId}/typing/stop`, {
-                method: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
-                },
+            postWithCsrf(`/chat/conversation/${conversationId}/typing/stop`).catch(() => {
+                // Silently ignore typing indicator errors
             });
         }, 2000);
     };

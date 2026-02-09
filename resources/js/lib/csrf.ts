@@ -62,6 +62,10 @@ export async function fetchWithCsrf(url: string, options: FetchWithCsrfOptions =
     const makeRequest = async (retryCount: number): Promise<Response> => {
         const headers = new Headers(fetchOptions.headers || {});
         headers.set('X-CSRF-TOKEN', getCsrfToken());
+        // Ensure Laravel returns JSON errors instead of HTML
+        if (!headers.has('Accept')) {
+            headers.set('Accept', 'application/json');
+        }
 
         const response = await fetch(url, {
             ...fetchOptions,
@@ -103,6 +107,17 @@ export async function postWithCsrf(url: string, body?: FormData | object | null,
             ...(options.headers as Record<string, string>),
         },
         body: requestBody,
+        ...options,
+    });
+}
+
+/**
+ * Simple DELETE request with CSRF token and automatic retry
+ */
+export async function deleteWithCsrf(url: string, options: FetchWithCsrfOptions = {}): Promise<Response> {
+    return fetchWithCsrf(url, {
+        method: 'DELETE',
+        ...(options.headers ? { headers: options.headers as Record<string, string> } : {}),
         ...options,
     });
 }

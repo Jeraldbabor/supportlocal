@@ -1,5 +1,6 @@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { fetchWithCsrf } from '@/lib/csrf';
 import { router } from '@inertiajs/react';
 import { MessageSquare } from 'lucide-react';
 import { useEffect, useState } from 'react';
@@ -27,7 +28,7 @@ export default function UnreadMessagesIndicator({
         // Optional: Poll for unread count updates
         const interval = setInterval(async () => {
             try {
-                const response = await fetch('/api/chat/unread-count');
+                const response = await fetchWithCsrf('/api/chat/unread-count');
                 if (response.ok) {
                     const data = await response.json();
                     setUnreadCount(data.count);

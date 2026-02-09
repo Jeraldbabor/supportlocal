@@ -1,6 +1,7 @@
 import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
+import { fetchWithCsrf } from '@/lib/csrf';
 import Echo from '@/lib/echo';
 import { type NavItem, type SharedData } from '@/types';
 import { router, usePage } from '@inertiajs/react';
@@ -239,7 +240,7 @@ export function AppSidebar() {
 
         const loadUnreadCount = async () => {
             try {
-                const response = await fetch('/api/chat/conversations');
+                const response = await fetchWithCsrf('/api/chat/conversations');
                 if (response.ok) {
                     const conversations = await response.json();
                     const totalUnread = conversations.reduce((sum: number, conv: { unread_count?: number }) => sum + (conv.unread_count || 0), 0);
