@@ -209,8 +209,10 @@ class CustomOrderController extends Controller
             $imagePaths = [];
             if ($request->hasFile('reference_images')) {
                 foreach ($request->file('reference_images') as $image) {
-                    $path = $image->store('custom-orders', 'public');
-                    $imagePaths[] = Storage::url($path);
+                    $path = \App\Helpers\ImageHelper::store($image, 'custom-orders/references');
+                    if ($path) {
+                        $imagePaths[] = $path;
+                    }
                 }
             }
 
