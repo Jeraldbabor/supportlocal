@@ -167,7 +167,6 @@ class MarketplaceController extends Controller
                 ->with('error', 'This is a private custom order request.');
         }
 
-
         $customOrderRequest->load('buyer');
         $buyer = $customOrderRequest->buyer;
 
