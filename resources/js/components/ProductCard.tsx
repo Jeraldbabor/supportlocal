@@ -75,7 +75,7 @@ export default function ProductCard({ product, isInWishlist = false, onAddToCart
     const badgeConfig = getBadgeConfig();
 
     return (
-        <div className="group relative overflow-hidden rounded-2xl bg-white shadow-md transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl">
+        <div className="group relative flex flex-col h-full overflow-hidden rounded-2xl bg-white shadow-md transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl">
             {/* Badge */}
             {badgeConfig && (
                 <div
@@ -89,13 +89,12 @@ export default function ProductCard({ product, isInWishlist = false, onAddToCart
             {/* Rank Badge */}
             {rank && rank <= 3 && (
                 <div
-                    className={`absolute top-2 sm:top-3 ${badgeConfig ? 'left-20 sm:left-28' : 'left-2 sm:left-3'} z-20 flex h-6 w-6 items-center justify-center rounded-full text-xs font-bold shadow-lg sm:h-7 sm:w-7 sm:text-sm ${
-                        rank === 1
+                    className={`absolute top-2 sm:top-3 ${badgeConfig ? 'left-20 sm:left-28' : 'left-2 sm:left-3'} z-20 flex h-6 w-6 items-center justify-center rounded-full text-xs font-bold shadow-lg sm:h-7 sm:w-7 sm:text-sm ${rank === 1
                             ? 'bg-gradient-to-br from-yellow-400 to-amber-500 text-white'
                             : rank === 2
-                              ? 'bg-gradient-to-br from-gray-300 to-gray-400 text-gray-700'
-                              : 'bg-gradient-to-br from-amber-600 to-amber-700 text-white'
-                    }`}
+                                ? 'bg-gradient-to-br from-gray-300 to-gray-400 text-gray-700'
+                                : 'bg-gradient-to-br from-amber-600 to-amber-700 text-white'
+                        }`}
                 >
                     #{rank}
                 </div>
@@ -126,7 +125,7 @@ export default function ProductCard({ product, isInWishlist = false, onAddToCart
             </Link>
 
             {/* Product Info */}
-            <div className="p-3 sm:p-4 lg:p-5">
+            <div className="p-3 sm:p-4 lg:p-5 flex-1 flex flex-col">
                 <Link href={getProductUrl(product.id)}>
                     <h3 className="mb-1.5 line-clamp-2 text-sm leading-snug font-bold text-gray-900 transition-colors hover:text-amber-700 sm:mb-2 sm:text-base">
                         {product.name}
@@ -155,13 +154,12 @@ export default function ProductCard({ product, isInWishlist = false, onAddToCart
                             return (
                                 <Star
                                     key={i}
-                                    className={`h-3.5 w-3.5 sm:h-4 sm:w-4 ${
-                                        i < Math.floor(rating)
+                                    className={`h-3.5 w-3.5 sm:h-4 sm:w-4 ${i < Math.floor(rating)
                                             ? 'fill-current text-amber-400'
                                             : i < rating
-                                              ? 'fill-current text-amber-400 opacity-50'
-                                              : 'text-gray-300'
-                                    }`}
+                                                ? 'fill-current text-amber-400 opacity-50'
+                                                : 'text-gray-300'
+                                        }`}
                                 />
                             );
                         })}
@@ -198,7 +196,7 @@ export default function ProductCard({ product, isInWishlist = false, onAddToCart
                 </div>
 
                 {/* Action Buttons */}
-                <div className="flex flex-row gap-2 sm:gap-2.5">
+                <div className="mt-auto flex flex-row gap-2 sm:gap-2.5">
                     <button
                         onClick={(e) => onAddToCart?.(e, product)}
                         className="group/btn flex items-center justify-center rounded-lg bg-gradient-to-r from-amber-600 to-orange-600 px-3 py-2 text-xs font-semibold text-white shadow-lg transition-all duration-200 hover:scale-105 hover:from-amber-700 hover:to-orange-700 hover:shadow-xl active:scale-95 sm:rounded-xl sm:px-4 sm:py-3 sm:text-sm"
