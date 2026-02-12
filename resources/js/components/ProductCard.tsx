@@ -75,7 +75,7 @@ export default function ProductCard({ product, isInWishlist = false, onAddToCart
     const badgeConfig = getBadgeConfig();
 
     return (
-        <div className="group relative overflow-hidden rounded-2xl bg-white shadow-md transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl">
+        <div className="group relative flex h-full flex-col overflow-hidden rounded-2xl bg-white shadow-md transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl">
             {/* Badge */}
             {badgeConfig && (
                 <div
@@ -126,7 +126,7 @@ export default function ProductCard({ product, isInWishlist = false, onAddToCart
             </Link>
 
             {/* Product Info */}
-            <div className="p-3 sm:p-4 lg:p-5">
+            <div className="flex flex-1 flex-col p-3 sm:p-4 lg:p-5">
                 <Link href={getProductUrl(product.id)}>
                     <h3 className="mb-1.5 line-clamp-2 text-sm leading-snug font-bold text-gray-900 transition-colors hover:text-amber-700 sm:mb-2 sm:text-base">
                         {product.name}
@@ -198,7 +198,7 @@ export default function ProductCard({ product, isInWishlist = false, onAddToCart
                 </div>
 
                 {/* Action Buttons */}
-                <div className="flex flex-row gap-2 sm:gap-2.5">
+                <div className="mt-auto flex flex-row gap-2 sm:gap-2.5">
                     <button
                         onClick={(e) => onAddToCart?.(e, product)}
                         className="group/btn flex items-center justify-center rounded-lg bg-gradient-to-r from-amber-600 to-orange-600 px-3 py-2 text-xs font-semibold text-white shadow-lg transition-all duration-200 hover:scale-105 hover:from-amber-700 hover:to-orange-700 hover:shadow-xl active:scale-95 sm:rounded-xl sm:px-4 sm:py-3 sm:text-sm"
