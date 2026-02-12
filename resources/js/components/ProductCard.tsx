@@ -128,7 +128,7 @@ export default function ProductCard({ product, isInWishlist = false, onAddToCart
             {/* Product Info */}
             <div className="flex flex-1 flex-col p-3 sm:p-4 lg:p-5">
                 <Link href={getProductUrl(product.id)}>
-                    <h3 className="mb-1.5 line-clamp-2 text-sm leading-snug font-bold text-gray-900 transition-colors hover:text-amber-700 sm:mb-2 sm:text-base">
+                    <h3 className="mb-1.5 line-clamp-2 min-h-[2.5rem] text-sm leading-snug font-bold text-gray-900 transition-colors hover:text-amber-700 sm:mb-2 sm:min-h-[3rem] sm:text-base">
                         {product.name}
                     </h3>
                 </Link>
