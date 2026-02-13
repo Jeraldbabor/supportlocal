@@ -222,8 +222,8 @@ export default function ChatWindow({ conversationId, currentUserId }: ChatWindow
     const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
-            if (file.size > 5 * 1024 * 1024) {
-                alert('Image size must be less than 5MB');
+            if (file.size > 25 * 1024 * 1024) {
+                alert('Image size must be less than 25MB');
                 return;
             }
 
@@ -386,9 +386,8 @@ export default function ChatWindow({ conversationId, currentUserId }: ChatWindow
                             </Avatar>
                             {/* Online/Offline indicator based on actual status */}
                             <span
-                                className={`absolute right-0 bottom-0 h-3 w-3 rounded-full border-2 border-white ${
-                                    conversation.other_user.is_online ? 'bg-green-500' : 'bg-gray-400'
-                                }`}
+                                className={`absolute right-0 bottom-0 h-3 w-3 rounded-full border-2 border-white ${conversation.other_user.is_online ? 'bg-green-500' : 'bg-gray-400'
+                                    }`}
                                 title={conversation.other_user.is_online ? 'Online' : 'Offline'}
                             ></span>
                         </div>
@@ -401,8 +400,8 @@ export default function ChatWindow({ conversationId, currentUserId }: ChatWindow
                                     {conversation.other_user.is_online
                                         ? 'Online'
                                         : conversation.other_user.last_seen_at
-                                          ? `Last seen ${formatDistanceToNow(new Date(conversation.other_user.last_seen_at), { addSuffix: true })}`
-                                          : 'Offline'}
+                                            ? `Last seen ${formatDistanceToNow(new Date(conversation.other_user.last_seen_at), { addSuffix: true })}`
+                                            : 'Offline'}
                                 </p>
                             )}
                         </div>
@@ -460,19 +459,18 @@ export default function ChatWindow({ conversationId, currentUserId }: ChatWindow
                                 )}
                                 <div className={`flex max-w-[75%] flex-col sm:max-w-[70%] ${isOwnMessage ? 'items-end' : 'items-start'}`}>
                                     <div
-                                        className={`rounded-2xl px-4 py-2.5 shadow-sm sm:px-5 sm:py-3 ${
-                                            isOwnMessage
+                                        className={`rounded-2xl px-4 py-2.5 shadow-sm sm:px-5 sm:py-3 ${isOwnMessage
                                                 ? 'chat-message-sent rounded-tr-md bg-orange-500 text-white'
                                                 : 'chat-message-received rounded-tl-md border border-gray-300 bg-white text-gray-900'
-                                        }`}
+                                            }`}
                                         style={
                                             isOwnMessage
                                                 ? {
-                                                      background: 'linear-gradient(135deg, #f97316 0%, #ea580c 100%)',
-                                                      backgroundColor: '#f97316',
-                                                      color: '#ffffff',
-                                                      WebkitTextFillColor: '#ffffff',
-                                                  }
+                                                    background: 'linear-gradient(135deg, #f97316 0%, #ea580c 100%)',
+                                                    backgroundColor: '#f97316',
+                                                    color: '#ffffff',
+                                                    WebkitTextFillColor: '#ffffff',
+                                                }
                                                 : {}
                                         }
                                     >
