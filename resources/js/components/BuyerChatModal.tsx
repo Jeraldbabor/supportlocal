@@ -128,8 +128,8 @@ export default function BuyerChatModal({ conversationId, currentUserId, onClose,
     const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
-            if (file.size > 5 * 1024 * 1024) {
-                alert('Image size must be less than 5MB');
+            if (file.size > 25 * 1024 * 1024) {
+                alert('Image size must be less than 25MB');
                 return;
             }
 
