@@ -128,8 +128,8 @@ export default function BuyerChatModal({ conversationId, currentUserId, onClose,
     const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
-            if (file.size > 5 * 1024 * 1024) {
-                alert('Image size must be less than 5MB');
+            if (file.size > 25 * 1024 * 1024) {
+                alert('Image size must be less than 25MB');
                 return;
             }
 
@@ -279,19 +279,18 @@ export default function BuyerChatModal({ conversationId, currentUserId, onClose,
                                     </Avatar>
                                     <div className={`flex flex-col ${isOwnMessage ? 'items-end' : 'items-start'} max-w-[70%]`}>
                                         <div
-                                            className={`rounded-2xl px-4 py-2.5 ${
-                                                isOwnMessage
+                                            className={`rounded-2xl px-4 py-2.5 ${isOwnMessage
                                                     ? 'chat-message-sent rounded-br-sm bg-orange-500 text-white'
                                                     : 'chat-message-received rounded-bl-sm border border-gray-300 bg-white'
-                                            }`}
+                                                }`}
                                             style={
                                                 isOwnMessage
                                                     ? {
-                                                          background: 'linear-gradient(135deg, #f97316 0%, #ea580c 100%)',
-                                                          backgroundColor: '#f97316',
-                                                          color: '#ffffff',
-                                                          WebkitTextFillColor: '#ffffff',
-                                                      }
+                                                        background: 'linear-gradient(135deg, #f97316 0%, #ea580c 100%)',
+                                                        backgroundColor: '#f97316',
+                                                        color: '#ffffff',
+                                                        WebkitTextFillColor: '#ffffff',
+                                                    }
                                                     : {}
                                             }
                                         >
