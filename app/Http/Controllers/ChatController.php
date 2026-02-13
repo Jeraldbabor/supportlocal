@@ -173,7 +173,7 @@ class ChatController extends Controller
             ]);
 
             return response()->json([
-                'error' => 'File upload failed: '.$request->file('image')->getErrorMessage()
+                'error' => 'File upload failed: '.$request->file('image')->getErrorMessage(),
             ], 422);
         }
 
@@ -190,7 +190,7 @@ class ChatController extends Controller
 
             return response()->json([
                 'message' => 'Validation failed',
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], 422);
         }
 
