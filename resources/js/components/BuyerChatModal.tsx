@@ -279,18 +279,19 @@ export default function BuyerChatModal({ conversationId, currentUserId, onClose,
                                     </Avatar>
                                     <div className={`flex flex-col ${isOwnMessage ? 'items-end' : 'items-start'} max-w-[70%]`}>
                                         <div
-                                            className={`rounded-2xl px-4 py-2.5 ${isOwnMessage
+                                            className={`rounded-2xl px-4 py-2.5 ${
+                                                isOwnMessage
                                                     ? 'chat-message-sent rounded-br-sm bg-orange-500 text-white'
                                                     : 'chat-message-received rounded-bl-sm border border-gray-300 bg-white'
-                                                }`}
+                                            }`}
                                             style={
                                                 isOwnMessage
                                                     ? {
-                                                        background: 'linear-gradient(135deg, #f97316 0%, #ea580c 100%)',
-                                                        backgroundColor: '#f97316',
-                                                        color: '#ffffff',
-                                                        WebkitTextFillColor: '#ffffff',
-                                                    }
+                                                          background: 'linear-gradient(135deg, #f97316 0%, #ea580c 100%)',
+                                                          backgroundColor: '#f97316',
+                                                          color: '#ffffff',
+                                                          WebkitTextFillColor: '#ffffff',
+                                                      }
                                                     : {}
                                             }
                                         >
