@@ -158,10 +158,41 @@ class ChatController extends Controller
      */
     public function sendMessage(Request $request, $conversationId)
     {
-        $request->validate([
-            'message' => 'required_without:image|string|max:5000',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120', // 5MB max
+        // Log request data for debugging
+        \Log::info('Chat message request received', [
+            'conversation_id' => $conversationId,
+            'has_image' => $request->hasFile('image'),
+            'content_length' => $request->header('Content-Length'),
         ]);
+
+        // Check for PHP upload errors first (e.g. exceeds post_max_size)
+        if ($request->hasFile('image') && ! $request->file('image')->isValid()) {
+            \Log::error('Chat image upload failed at PHP level', [
+                'error_code' => $request->file('image')->getError(),
+                'error_message' => $request->file('image')->getErrorMessage(),
+            ]);
+
+            return response()->json([
+                'error' => 'File upload failed: '.$request->file('image')->getErrorMessage(),
+            ], 422);
+        }
+
+        // Manual validation to catch specific errors
+        $validator = \Illuminate\Support\Facades\Validator::make($request->all(), [
+            'message' => 'required_without:image|string|max:5000',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:25600', // 25MB max
+        ]);
+
+        if ($validator->fails()) {
+            \Log::error('Chat message validation failed', [
+                'errors' => $validator->errors()->toArray(),
+            ]);
+
+            return response()->json([
+                'message' => 'Validation failed',
+                'errors' => $validator->errors(),
+            ], 422);
+        }
 
         $conversation = Conversation::findOrFail($conversationId);
         $user = auth()->user();
