@@ -103,7 +103,7 @@ export default function MainLayout({ children, title }: MainLayoutProps) {
     return (
         <div className="min-h-screen overflow-x-hidden bg-white" style={{ colorScheme: 'light' }}>
             {/* Navigation Header */}
-            <header className="sticky top-0 z-50 w-full border-b border-gray-200 bg-white shadow-sm">
+            <header className="fixed top-0 z-50 w-full border-b border-gray-200 bg-white shadow-sm">
                 <nav className="mx-auto w-full max-w-7xl px-3 sm:px-4 md:px-6 lg:px-8" role="navigation" aria-label="Main navigation">
                     <div className="flex h-14 items-center justify-between sm:h-16">
                         {/* Logo */}
@@ -139,11 +139,10 @@ export default function MainLayout({ children, title }: MainLayoutProps) {
                                         <Link
                                             key={item.name}
                                             href={item.href}
-                                            className={`group relative flex items-center gap-2 rounded-xl px-2.5 py-1.5 text-xs font-medium whitespace-nowrap transition-all duration-300 focus:ring-2 focus:ring-orange-500/50 focus:ring-offset-2 focus:outline-none sm:px-3 sm:py-2 sm:text-sm ${
-                                                isActive
+                                            className={`group relative flex items-center gap-2 rounded-xl px-2.5 py-1.5 text-xs font-medium whitespace-nowrap transition-all duration-300 focus:ring-2 focus:ring-orange-500/50 focus:ring-offset-2 focus:outline-none sm:px-3 sm:py-2 sm:text-sm ${isActive
                                                     ? 'border border-orange-200 bg-gradient-to-r from-orange-100 to-amber-50 shadow-inner'
                                                     : 'hover:bg-gray-50 hover:shadow-sm'
-                                            }`}
+                                                }`}
                                             style={{ color: isActive ? '#c2410c' : '#374151' }}
                                             aria-current={isActive ? 'page' : undefined}
                                         >
@@ -167,11 +166,10 @@ export default function MainLayout({ children, title }: MainLayoutProps) {
                         <div className="flex flex-shrink-0 items-center space-x-0.5 sm:space-x-1" style={{ colorScheme: 'light' }}>
                             <Link
                                 href="/buyer/notifications"
-                                className={`group relative flex-shrink-0 rounded-xl p-1.5 transition-all duration-300 focus:ring-2 focus:ring-orange-500/50 focus:ring-offset-2 focus:outline-none sm:p-2 ${
-                                    isActiveRoute('/buyer/notifications')
+                                className={`group relative flex-shrink-0 rounded-xl p-1.5 transition-all duration-300 focus:ring-2 focus:ring-orange-500/50 focus:ring-offset-2 focus:outline-none sm:p-2 ${isActiveRoute('/buyer/notifications')
                                         ? 'bg-orange-100 shadow-sm ring-1 ring-orange-200'
                                         : 'hover:bg-orange-50 hover:shadow-sm'
-                                }`}
+                                    }`}
                                 style={{ colorScheme: 'light' }}
                                 aria-label={`Notifications ${unreadCount > 0 ? `(${unreadCount} unread)` : ''}`}
                             >
@@ -189,11 +187,10 @@ export default function MainLayout({ children, title }: MainLayoutProps) {
                             {/* Wishlist Icon */}
                             <Link
                                 href="/wishlist"
-                                className={`group relative flex-shrink-0 rounded-xl p-1.5 transition-all duration-300 focus:ring-2 focus:ring-orange-500/50 focus:ring-offset-2 focus:outline-none sm:p-2 ${
-                                    isActiveRoute('/wishlist')
+                                className={`group relative flex-shrink-0 rounded-xl p-1.5 transition-all duration-300 focus:ring-2 focus:ring-orange-500/50 focus:ring-offset-2 focus:outline-none sm:p-2 ${isActiveRoute('/wishlist')
                                         ? 'bg-orange-100 shadow-sm ring-1 ring-orange-200'
                                         : 'hover:bg-orange-50 hover:shadow-sm'
-                                }`}
+                                    }`}
                                 style={{ colorScheme: 'light' }}
                                 aria-label={`Wishlist ${(wishlistCount ?? 0) > 0 ? `(${wishlistCount} items)` : '(empty)'}`}
                             >
@@ -212,9 +209,8 @@ export default function MainLayout({ children, title }: MainLayoutProps) {
                             <Link
                                 href="/cart"
                                 onClick={handleCartClick}
-                                className={`group relative flex-shrink-0 rounded-xl p-1.5 transition-all duration-300 focus:ring-2 focus:ring-orange-500/50 focus:ring-offset-2 focus:outline-none sm:p-2 ${
-                                    isActiveRoute('/cart') ? 'bg-orange-100 shadow-sm ring-1 ring-orange-200' : 'hover:bg-orange-50 hover:shadow-sm'
-                                }`}
+                                className={`group relative flex-shrink-0 rounded-xl p-1.5 transition-all duration-300 focus:ring-2 focus:ring-orange-500/50 focus:ring-offset-2 focus:outline-none sm:p-2 ${isActiveRoute('/cart') ? 'bg-orange-100 shadow-sm ring-1 ring-orange-200' : 'hover:bg-orange-50 hover:shadow-sm'
+                                    }`}
                                 style={{ colorScheme: 'light' }}
                                 aria-label={`Shopping cart ${totalItems > 0 ? `(${totalItems} items)` : '(empty)'}`}
                             >
@@ -234,11 +230,10 @@ export default function MainLayout({ children, title }: MainLayoutProps) {
                                 <div className="relative hidden flex-shrink-0 md:block" ref={userMenuRef}>
                                     <button
                                         onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                                        className={`flex items-center space-x-1.5 rounded-xl px-2 py-1.5 transition-all duration-300 focus:ring-2 focus:ring-orange-500/50 focus:ring-offset-2 focus:outline-none sm:space-x-2 sm:px-3 sm:py-2 ${
-                                            isUserMenuOpen
+                                        className={`flex items-center space-x-1.5 rounded-xl px-2 py-1.5 transition-all duration-300 focus:ring-2 focus:ring-orange-500/50 focus:ring-offset-2 focus:outline-none sm:space-x-2 sm:px-3 sm:py-2 ${isUserMenuOpen
                                                 ? 'bg-gradient-to-r from-orange-100 to-amber-50 shadow-md ring-2 ring-orange-200'
                                                 : 'hover:bg-gray-50 hover:shadow-sm'
-                                        }`}
+                                            }`}
                                         aria-expanded={isUserMenuOpen}
                                         aria-haspopup="true"
                                         aria-label="User menu"
@@ -248,9 +243,8 @@ export default function MainLayout({ children, title }: MainLayoutProps) {
                                             <p className="text-[10px] font-medium text-gray-500 sm:text-xs">Welcome back</p>
                                         </div>
                                         <ChevronDown
-                                            className={`h-3.5 w-3.5 text-gray-400 transition-all duration-300 sm:h-4 sm:w-4 ${
-                                                isUserMenuOpen ? 'rotate-180 text-orange-600' : 'group-hover:text-orange-600'
-                                            }`}
+                                            className={`h-3.5 w-3.5 text-gray-400 transition-all duration-300 sm:h-4 sm:w-4 ${isUserMenuOpen ? 'rotate-180 text-orange-600' : 'group-hover:text-orange-600'
+                                                }`}
                                         />
                                     </button>
 
@@ -337,9 +331,8 @@ export default function MainLayout({ children, title }: MainLayoutProps) {
 
                     {/* Mobile Navigation Menu */}
                     <div
-                        className={`overflow-hidden transition-all duration-300 ease-in-out lg:hidden ${
-                            isMenuOpen ? 'max-h-screen opacity-100' : 'max-h-0 opacity-0'
-                        }`}
+                        className={`overflow-hidden transition-all duration-300 ease-in-out lg:hidden ${isMenuOpen ? 'max-h-screen opacity-100' : 'max-h-0 opacity-0'
+                            }`}
                         ref={mobileMenuRef}
                     >
                         <div className="border-t border-gray-200 bg-white px-3 py-3 shadow-lg sm:px-4 sm:py-4">
@@ -351,11 +344,10 @@ export default function MainLayout({ children, title }: MainLayoutProps) {
                                         <Link
                                             key={item.name}
                                             href={item.href}
-                                            className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-300 sm:gap-4 sm:px-4 sm:py-3 sm:text-base ${
-                                                isActive
+                                            className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-300 sm:gap-4 sm:px-4 sm:py-3 sm:text-base ${isActive
                                                     ? 'border border-orange-200 bg-gradient-to-r from-orange-100 to-amber-50 text-orange-700'
                                                     : 'text-gray-700 hover:bg-gray-50 hover:text-orange-600'
-                                            }`}
+                                                }`}
                                             onClick={() => {
                                                 setIsMenuOpen(false);
                                                 setIsUserMenuOpen(false);
@@ -427,6 +419,7 @@ export default function MainLayout({ children, title }: MainLayoutProps) {
                     </div>
                 </nav>
             </header>
+            <div className="h-14 sm:h-16"></div>
 
             {/* Page Title */}
             {title && (
