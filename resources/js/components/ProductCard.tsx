@@ -75,7 +75,7 @@ export default function ProductCard({ product, isInWishlist = false, onAddToCart
     const badgeConfig = getBadgeConfig();
 
     return (
-        <div className="group relative flex h-full flex-col overflow-hidden rounded-2xl bg-white shadow-md transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl">
+        <div className="group relative flex h-full w-full flex-col overflow-hidden rounded-2xl bg-white shadow-md transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl">
             {/* Badge */}
             {badgeConfig && (
                 <div
@@ -114,7 +114,7 @@ export default function ProductCard({ product, isInWishlist = false, onAddToCart
             </div>
 
             {/* Product Image */}
-            <Link href={getProductUrl(product.id)} className="relative block overflow-hidden">
+            <Link href={getProductUrl(product.id)} className="relative block flex-shrink-0 overflow-hidden">
                 <div className="relative h-48 w-full overflow-hidden bg-gray-100 sm:h-56">
                     <img
                         src={product.image}
@@ -134,7 +134,7 @@ export default function ProductCard({ product, isInWishlist = false, onAddToCart
                 </Link>
 
                 {/* Artisan Info */}
-                <div className="mb-1.5 flex items-center gap-1.5 sm:mb-2 sm:gap-2">
+                <div className="mb-1.5 flex min-h-[1.25rem] items-center gap-1.5 sm:mb-2 sm:min-h-[1.5rem] sm:gap-2">
                     {product.artisan_image && (
                         <img
                             src={product.artisan_image}
@@ -148,7 +148,7 @@ export default function ProductCard({ product, isInWishlist = false, onAddToCart
                 </div>
 
                 {/* Rating */}
-                <div className="mb-2 flex flex-wrap items-center gap-1 sm:mb-3">
+                <div className="mb-2 flex min-h-[1.25rem] flex-wrap items-center gap-1 sm:mb-3 sm:min-h-[1.5rem]">
                     <div className="flex items-center">
                         {[...Array(5)].map((_, i) => {
                             const rating = Number(product.rating) || 0;
@@ -178,15 +178,17 @@ export default function ProductCard({ product, isInWishlist = false, onAddToCart
                     )}
                 </div>
 
-                {/* Sales Count (if available) */}
-                {product.order_count !== undefined && product.order_count > 0 && (
-                    <div className="mb-1.5 text-[10px] text-gray-500 sm:mb-2 sm:text-xs">
-                        <span className="font-medium text-emerald-600">{product.order_count.toLocaleString()}</span> sold
-                    </div>
-                )}
+                {/* Sales Count - fixed height slot so cards stay aligned whether shown or not */}
+                <div className="mb-1.5 min-h-[1rem] text-[10px] text-gray-500 sm:mb-2 sm:min-h-[1.125rem] sm:text-xs">
+                    {product.order_count !== undefined && product.order_count > 0 && (
+                        <span>
+                            <span className="font-medium text-emerald-600">{product.order_count.toLocaleString()}</span> sold
+                        </span>
+                    )}
+                </div>
 
-                {/* Price */}
-                <div className="mb-3 flex flex-wrap items-baseline gap-1.5 sm:mb-4 sm:gap-2">
+                {/* Price - pushed to bottom */}
+                <div className="mt-auto mb-3 flex flex-wrap items-baseline gap-1.5 sm:mb-4 sm:gap-2">
                     <span className="text-lg font-bold text-gray-900 sm:text-xl lg:text-2xl">
                         ₱{product.price.toLocaleString('en-PH', { minimumFractionDigits: 2 })}
                     </span>
@@ -198,7 +200,7 @@ export default function ProductCard({ product, isInWishlist = false, onAddToCart
                 </div>
 
                 {/* Action Buttons */}
-                <div className="mt-auto flex flex-row gap-2 sm:gap-2.5">
+                <div className="flex flex-row gap-2 sm:gap-2.5">
                     <button
                         onClick={(e) => onAddToCart?.(e, product)}
                         className="group/btn flex items-center justify-center rounded-lg bg-gradient-to-r from-amber-600 to-orange-600 px-3 py-2 text-xs font-semibold text-white shadow-lg transition-all duration-200 hover:scale-105 hover:from-amber-700 hover:to-orange-700 hover:shadow-xl active:scale-95 sm:rounded-xl sm:px-4 sm:py-3 sm:text-sm"

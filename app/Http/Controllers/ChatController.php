@@ -179,7 +179,7 @@ class ChatController extends Controller
 
         // Manual validation to catch specific errors
         $validator = \Illuminate\Support\Facades\Validator::make($request->all(), [
-            'message' => 'required_without:image|string|max:5000',
+            'message' => 'nullable|required_without:image|string|max:5000',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:25600', // 25MB max
         ]);
 
