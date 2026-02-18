@@ -165,7 +165,9 @@ export default function BuyerChatModal({ conversationId, currentUserId, onClose,
         setIsLoading(true);
         try {
             const formData = new FormData();
-            formData.append('message', newMessage);
+            if (newMessage.trim()) {
+                formData.append('message', newMessage);
+            }
             if (selectedImage) {
                 formData.append('image', selectedImage);
             }

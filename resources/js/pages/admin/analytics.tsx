@@ -356,8 +356,8 @@ export default function AdminAnalytics({
                                         <YAxis stroke="#6b7280" fontSize={10} tickFormatter={(value) => `₱${value / 1000}k`} />
                                         <Tooltip
                                             contentStyle={{ backgroundColor: '#fff', border: '1px solid #fcd34d', borderRadius: '8px' }}
-                                            formatter={(value: number, name: string) => [
-                                                formatCurrency(value),
+                                            formatter={(value: unknown, name: unknown) => [
+                                                formatCurrency(value as number),
                                                 name === 'revenue' ? 'Revenue' : 'Commission',
                                             ]}
                                         />
@@ -528,7 +528,7 @@ export default function AdminAnalytics({
                                                     <Cell key={`cell-${index}`} fill={STATUS_COLORS[entry.status] || '#6b7280'} />
                                                 ))}
                                             </Pie>
-                                            <Tooltip formatter={(value: number) => [`${value} orders`, '']} />
+                                            <Tooltip formatter={(value: unknown) => [`${value} orders`, '']} />
                                             <Legend />
                                         </PieChart>
                                     </ResponsiveContainer>
@@ -558,7 +558,7 @@ export default function AdminAnalytics({
                                             <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
                                             <XAxis type="number" stroke="#6b7280" fontSize={10} tickFormatter={(value) => `₱${value / 1000}k`} />
                                             <YAxis type="category" dataKey="category" stroke="#6b7280" fontSize={10} width={100} />
-                                            <Tooltip formatter={(value: number) => [formatCurrency(value), 'Revenue']} />
+                                            <Tooltip formatter={(value: unknown) => [formatCurrency(value as number), 'Revenue']} />
                                             <Bar dataKey="revenue" radius={[0, 4, 4, 0]}>
                                                 {revenueByCategory.map((_, index) => (
                                                     <Cell key={`cell-${index}`} fill={CATEGORY_COLORS[index % CATEGORY_COLORS.length]} />
