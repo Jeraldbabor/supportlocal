@@ -5,6 +5,19 @@
 @source '../views';
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 
+@keyframes fade-in-up {
+    0% {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
 /* Custom utilities for e-commerce */
 .line-clamp-2 {
     overflow: hidden;
@@ -72,12 +85,15 @@
 
 /* Hide scrollbar but keep functionality */
 .scrollbar-hide {
-    -ms-overflow-style: none; /* IE and Edge */
-    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none;
+    /* IE and Edge */
+    scrollbar-width: none;
+    /* Firefox */
 }
 
 .scrollbar-hide::-webkit-scrollbar {
-    display: none; /* Chrome, Safari and Opera */
+    display: none;
+    /* Chrome, Safari and Opera */
 }
 
 @custom-variant dark (&:is(.dark *));
@@ -294,8 +310,8 @@ html.dark {
     }
 
     /* Force light backgrounds for chat containers - be very specific to avoid overriding bubbles */
-    .dark [data-chat-container] > div,
-    .dark [data-chat-container] > form,
+    .dark [data-chat-container]>div,
+    .dark [data-chat-container]>form,
     .dark [data-chat-container] .bg-gray-50,
     .dark [data-chat-container] .bg-gray-100,
     .dark [data-chat-container] .bg-white {
@@ -392,8 +408,8 @@ html.dark {
     }
 
     /* Timestamps below messages should remain gray - but only if they're siblings */
-    .chat-message-sent ~ span.text-gray-400,
-    .chat-message-sent ~ span.text-gray-500,
+    .chat-message-sent~span.text-gray-400,
+    .chat-message-sent~span.text-gray-500,
     span.text-gray-400:not(.chat-message-sent *),
     span.text-gray-500:not(.chat-message-sent *) {
         color: #6b7280 !important;
@@ -528,7 +544,8 @@ html.dark {
 /* Shopee-like mobile responsiveness - Compact scaling for mobile devices */
 @media (max-width: 640px) {
     html {
-        font-size: 14px; /* Slightly smaller base font for mobile */
+        font-size: 14px;
+        /* Slightly smaller base font for mobile */
     }
 
     /* Make containers more compact on mobile */
@@ -539,11 +556,11 @@ html.dark {
     }
 
     /* Tighter spacing for mobile */
-    .space-y-6 > * + * {
+    .space-y-6>*+* {
         margin-top: 1rem;
     }
 
-    .space-y-8 > * + * {
+    .space-y-8>*+* {
         margin-top: 1.25rem;
     }
 
@@ -560,11 +577,11 @@ html.dark {
     }
 
     /* Ultra-compact spacing */
-    .space-y-4 > * + * {
+    .space-y-4>*+* {
         margin-top: 0.75rem;
     }
 
-    .space-y-6 > * + * {
+    .space-y-6>*+* {
         margin-top: 0.875rem;
     }
 }
