@@ -136,7 +136,7 @@ export default function ProductCarousel({
                         }}
                     >
                         {products.map((product, index) => (
-                            <div key={product.id} className="flex h-full min-w-[240px] flex-shrink-0 sm:min-w-[280px] lg:min-w-[300px]">
+                            <div key={product.id} className="flex h-full w-[240px] flex-shrink-0 sm:w-[280px] lg:w-[320px]">
                                 <ProductCard
                                     product={product}
                                     isInWishlist={wishlistProductIds.includes(product.id)}
