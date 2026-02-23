@@ -61,7 +61,7 @@ export default function SearchAutocomplete({ type, placeholder, initialValue = '
     // Debounced fetch suggestions
     const fetchSuggestions = useCallback(
         async (term: string) => {
-            if (term.length < 2) {
+            if (term.length < 1) {
                 setSuggestions({});
                 setShowDropdown(false);
                 return;
@@ -263,7 +263,7 @@ export default function SearchAutocomplete({ type, placeholder, initialValue = '
                         onChange={handleInputChange}
                         onKeyDown={handleKeyDown}
                         onFocus={() => {
-                            if (searchTerm.length >= 2 && hasResults) {
+                            if (searchTerm.length >= 1 && hasResults) {
                                 setShowDropdown(true);
                             }
                         }}
@@ -294,7 +294,7 @@ export default function SearchAutocomplete({ type, placeholder, initialValue = '
             </form>
 
             {/* Dropdown */}
-            {showDropdown && searchTerm.length >= 2 && (
+            {showDropdown && searchTerm.length >= 1 && (
                 <div
                     ref={dropdownRef}
                     className="absolute top-full right-0 left-0 z-50 mt-1 max-h-[400px] overflow-y-auto rounded-lg border border-gray-200 bg-white shadow-lg sm:max-h-[500px]"

@@ -20,7 +20,7 @@ class SearchSuggestionController extends Controller
         $query = $request->get('q', '');
         $type = $request->get('type', 'products');
 
-        if (strlen($query) < 2) {
+        if (strlen($query) < 1) {
             return response()->json([]);
         }
 
@@ -55,7 +55,13 @@ class SearchSuggestionController extends Controller
             })
             ->with(['seller:id,name', 'category:id,name'])
             ->select('id', 'name', 'price', 'featured_image', 'seller_id', 'category_id')
-            ->orderByRaw('CASE WHEN name LIKE ? THEN 0 ELSE 1 END', ["{$query}%"])
+            ->orderByRaw('
+                CASE 
+                    WHEN name = ? THEN 0 
+                    WHEN name LIKE ? THEN 1 
+                    ELSE 2 
+                END
+            ', [$query, "{$query}%"])
             ->orderBy('order_count', 'desc')
             ->limit(5)
             ->get()
@@ -78,7 +84,13 @@ class SearchSuggestionController extends Controller
             ->withCount(['products' => function ($q) {
                 $q->where('status', 'active')->where('quantity', '>', 0);
             }])
-            ->orderByRaw('CASE WHEN name LIKE ? THEN 0 ELSE 1 END', ["{$query}%"])
+            ->orderByRaw('
+                CASE 
+                    WHEN name = ? THEN 0 
+                    WHEN name LIKE ? THEN 1 
+                    ELSE 2 
+                END
+            ', [$query, "{$query}%"])
             ->limit(3)
             ->get()
             ->map(function ($category) {
@@ -106,7 +118,13 @@ class SearchSuggestionController extends Controller
                 $q->where('status', 'active')->where('quantity', '>', 0);
             }])
             ->select('id', 'name', 'profile_picture', 'avatar', 'delivery_city', 'delivery_province')
-            ->orderByRaw('CASE WHEN name LIKE ? THEN 0 ELSE 1 END', ["{$query}%"])
+            ->orderByRaw('
+                CASE 
+                    WHEN name = ? THEN 0 
+                    WHEN name LIKE ? THEN 1 
+                    ELSE 2 
+                END
+            ', [$query, "{$query}%"])
             ->limit(3)
             ->get()
             ->map(function ($seller) {
@@ -156,7 +174,13 @@ class SearchSuggestionController extends Controller
                 $q->where('status', 'active')->where('quantity', '>', 0);
             }])
             ->select('id', 'name', 'profile_picture', 'avatar', 'delivery_city', 'delivery_province', 'average_rating')
-            ->orderByRaw('CASE WHEN name LIKE ? THEN 0 ELSE 1 END', ["{$query}%"])
+            ->orderByRaw('
+                CASE 
+                    WHEN name = ? THEN 0 
+                    WHEN name LIKE ? THEN 1 
+                    ELSE 2 
+                END
+            ', [$query, "{$query}%"])
             ->orderBy('average_rating', 'desc')
             ->limit(6)
             ->get()

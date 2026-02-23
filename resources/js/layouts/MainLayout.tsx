@@ -2,7 +2,7 @@ import CookieConsent from '@/components/CookieConsent';
 import { useCart } from '@/contexts/CartContext';
 import { type SharedData } from '@/types';
 import { Link, router, usePage } from '@inertiajs/react';
-import { Bell, ChevronDown, Contact, Heart, House, LogOut, Menu, Package, Phone, ShoppingCart, User, X } from 'lucide-react';
+import { Bell, ChevronDown, Contact, Heart, House, LogOut, Menu, Phone, ShoppingCart, Store, User, X } from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react';
 
 interface MainLayoutProps {
@@ -94,7 +94,7 @@ export default function MainLayout({ children, title }: MainLayoutProps) {
 
     const navigation = [
         { name: 'Home', href: '/', icon: House },
-        { name: 'Products', href: '/products', icon: Package },
+        { name: 'Marketplace', href: '/products', icon: Store },
         { name: 'Artisans', href: '/artisans', icon: User },
         { name: 'About', href: '/about', icon: Contact },
         { name: 'Contact', href: '/contact', icon: Phone },

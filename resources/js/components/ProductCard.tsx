@@ -50,22 +50,22 @@ export default function ProductCard({ product, isInWishlist = false, onAddToCart
                 return {
                     icon: Trophy,
                     label: 'Top Rated',
-                    bgClass: 'bg-gradient-to-r from-amber-500 to-yellow-500',
-                    textClass: 'text-white',
+                    bgClass: 'bg-white/90 backdrop-blur-md text-gray-800',
+                    iconClass: 'text-amber-500',
                 };
             case 'best-seller':
                 return {
                     icon: TrendingUp,
                     label: 'Best Seller',
-                    bgClass: 'bg-gradient-to-r from-emerald-500 to-teal-500',
-                    textClass: 'text-white',
+                    bgClass: 'bg-white/90 backdrop-blur-md text-gray-800',
+                    iconClass: 'text-emerald-500',
                 };
             case 'trending':
                 return {
                     icon: Flame,
                     label: 'Trending',
-                    bgClass: 'bg-gradient-to-r from-orange-500 to-red-500',
-                    textClass: 'text-white',
+                    bgClass: 'bg-white/90 backdrop-blur-md text-gray-800',
+                    iconClass: 'text-orange-500',
                 };
             default:
                 return null;
@@ -75,144 +75,141 @@ export default function ProductCard({ product, isInWishlist = false, onAddToCart
     const badgeConfig = getBadgeConfig();
 
     return (
-        <div className="group relative flex h-full w-full flex-col overflow-hidden rounded-2xl bg-white shadow-md transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl">
-            {/* Badge */}
-            {badgeConfig && (
-                <div
-                    className={`absolute top-2 left-2 z-20 flex items-center gap-0.5 rounded-full px-2 py-0.5 text-[10px] font-semibold shadow-lg sm:top-3 sm:left-3 sm:gap-1 sm:px-2.5 sm:py-1 sm:text-xs ${badgeConfig.bgClass} ${badgeConfig.textClass}`}
-                >
-                    <badgeConfig.icon className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
-                    <span className="hidden sm:inline">{badgeConfig.label}</span>
+        <div className="group relative flex h-full w-full flex-col overflow-hidden rounded-[20px] bg-white shadow-sm ring-1 ring-gray-200/50 transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] hover:ring-gray-300">
+            {/* Image Container */}
+            <Link href={getProductUrl(product.id)} className="relative block aspect-[4/5] w-full flex-shrink-0 overflow-hidden bg-gray-50">
+                <img
+                    src={product.image}
+                    alt={product.name}
+                    className="h-full w-full object-cover object-center transition-transform duration-700 group-hover:scale-105"
+                />
+
+                {/* Overlay gradient for readability of overlays */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+
+                {/* Badges Overlay */}
+                <div className="absolute top-3 left-3 z-10 flex flex-col gap-2">
+                    {badgeConfig && (
+                        <div
+                            className={`flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-semibold tracking-wide shadow-sm ${badgeConfig.bgClass}`}
+                        >
+                            <badgeConfig.icon className={`h-3 w-3 ${badgeConfig.iconClass}`} />
+                            <span>{badgeConfig.label}</span>
+                        </div>
+                    )}
+                    {rank && rank <= 3 && (
+                        <div className="flex h-7 w-7 items-center justify-center rounded-full bg-white/90 text-xs font-bold text-gray-800 shadow-sm backdrop-blur-md">
+                            #{rank}
+                        </div>
+                    )}
                 </div>
-            )}
 
-            {/* Rank Badge */}
-            {rank && rank <= 3 && (
-                <div
-                    className={`absolute top-2 sm:top-3 ${badgeConfig ? 'left-20 sm:left-28' : 'left-2 sm:left-3'} z-20 flex h-6 w-6 items-center justify-center rounded-full text-xs font-bold shadow-lg sm:h-7 sm:w-7 sm:text-sm ${
-                        rank === 1
-                            ? 'bg-gradient-to-br from-yellow-400 to-amber-500 text-white'
-                            : rank === 2
-                              ? 'bg-gradient-to-br from-gray-300 to-gray-400 text-gray-700'
-                              : 'bg-gradient-to-br from-amber-600 to-amber-700 text-white'
-                    }`}
-                >
-                    #{rank}
+                {/* Wishlist Button */}
+                <div className="absolute top-3 right-3 z-20">
+                    <WishlistButton productId={product.id} initialInWishlist={isInWishlist} variant="icon-filled" size="sm" />
                 </div>
-            )}
 
-            {/* Discount Badge */}
-            {discountPercentage && (
-                <div className="absolute top-2 right-10 z-20 rounded-full bg-red-500 px-1.5 py-0.5 text-[10px] font-bold text-white shadow-lg sm:top-3 sm:right-12 sm:px-2 sm:py-1 sm:text-xs">
-                    -{discountPercentage}%
-                </div>
-            )}
-
-            {/* Wishlist Button */}
-            <div className="absolute top-2 right-2 z-20 sm:top-3 sm:right-3">
-                <WishlistButton productId={product.id} initialInWishlist={isInWishlist} variant="icon-filled" size="md" />
-            </div>
-
-            {/* Product Image */}
-            <Link href={getProductUrl(product.id)} className="relative block flex-shrink-0 overflow-hidden">
-                <div className="relative h-48 w-full overflow-hidden bg-gray-100 sm:h-56">
-                    <img
-                        src={product.image}
-                        alt={product.name}
-                        className="h-full w-full object-cover object-center transition-transform duration-700 group-hover:scale-110"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100"></div>
+                {/* Action Buttons (Fade in on hover - Desktop Only) */}
+                <div className="absolute right-0 bottom-4 left-0 z-20 hidden translate-y-4 justify-center gap-2 px-4 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100 sm:flex">
+                    <button
+                        onClick={(e) => {
+                            e.preventDefault();
+                            onAddToCart?.(e, product);
+                        }}
+                        className="flex flex-1 items-center justify-center gap-1.5 rounded-full bg-orange-500 px-4 py-2.5 text-sm font-semibold text-white shadow-lg transition-all hover:scale-105 hover:bg-orange-600 active:scale-95"
+                    >
+                        <ShoppingCart className="h-4 w-4" />
+                        <span>Add</span>
+                    </button>
+                    <button
+                        onClick={(e) => {
+                            e.preventDefault();
+                            onBuyNow?.(e, product);
+                        }}
+                        className="flex flex-1 items-center justify-center gap-1.5 rounded-full bg-white px-4 py-2.5 text-sm font-semibold text-gray-900 shadow-lg transition-all hover:scale-105 hover:bg-gray-50 active:scale-95"
+                    >
+                        <span>Buy</span>
+                    </button>
                 </div>
             </Link>
 
-            {/* Product Info */}
-            <div className="flex flex-1 flex-col p-3 sm:p-4 lg:p-5">
+            {/* Content Container */}
+            <div className="flex flex-1 flex-col px-3 pt-4 pb-5 sm:px-4">
+                {/* Header info: Category & Rating */}
+                <div className="mb-2 flex items-center justify-between text-xs text-gray-500">
+                    <span className="truncate pr-2 font-medium tracking-wider text-gray-400 uppercase">{product.category || 'Product'}</span>
+                    <div className="flex shrink-0 items-center gap-1">
+                        <Star className="h-3.5 w-3.5 fill-current text-amber-400" />
+                        <span className="font-medium text-gray-700">{Number(product.rating).toFixed(1)}</span>
+                        {product.review_count !== undefined && product.review_count > 0 && (
+                            <span className="text-gray-400">({product.review_count})</span>
+                        )}
+                    </div>
+                </div>
+
+                {/* Title */}
                 <Link href={getProductUrl(product.id)}>
-                    <h3 className="mb-1.5 line-clamp-2 min-h-[2.5rem] text-sm leading-snug font-bold text-gray-900 transition-colors hover:text-amber-700 sm:mb-2 sm:min-h-[3rem] sm:text-base">
+                    <h3 className="mb-1.5 line-clamp-2 text-[15px] leading-relaxed font-medium text-gray-900 transition-colors group-hover:text-amber-700">
                         {product.name}
                     </h3>
                 </Link>
 
-                {/* Artisan Info */}
-                <div className="mb-1.5 flex min-h-[1.25rem] items-center gap-1.5 sm:mb-2 sm:min-h-[1.5rem] sm:gap-2">
-                    {product.artisan_image && (
+                {/* Artisan */}
+                <div className="mt-auto mb-4 flex items-center gap-2">
+                    {product.artisan_image ? (
                         <img
                             src={product.artisan_image}
                             alt={product.artisan}
-                            className="h-4 w-4 flex-shrink-0 rounded-full object-cover ring-1 ring-amber-200 sm:h-5 sm:w-5"
+                            className="h-5 w-5 cursor-pointer rounded-full object-cover ring-1 ring-gray-100"
                         />
-                    )}
-                    <p className="truncate text-xs text-gray-600 sm:text-sm">
-                        by <span className="font-medium text-amber-700">{product.artisan}</span>
-                    </p>
-                </div>
-
-                {/* Rating */}
-                <div className="mb-2 flex min-h-[1.25rem] flex-wrap items-center gap-1 sm:mb-3 sm:min-h-[1.5rem]">
-                    <div className="flex items-center">
-                        {[...Array(5)].map((_, i) => {
-                            const rating = Number(product.rating) || 0;
-                            return (
-                                <Star
-                                    key={i}
-                                    className={`h-3.5 w-3.5 sm:h-4 sm:w-4 ${
-                                        i < Math.floor(rating)
-                                            ? 'fill-current text-amber-400'
-                                            : i < rating
-                                              ? 'fill-current text-amber-400 opacity-50'
-                                              : 'text-gray-300'
-                                    }`}
-                                />
-                            );
-                        })}
-                    </div>
-                    {Number(product.rating) > 0 ? (
-                        <span className="text-xs text-gray-600 sm:text-sm">
-                            ({Number(product.rating).toFixed(1)})
-                            {product.review_count !== undefined && product.review_count > 0 && (
-                                <span className="hidden text-gray-400 sm:inline"> · {product.review_count} reviews</span>
-                            )}
-                        </span>
                     ) : (
-                        <span className="text-xs text-gray-400 sm:text-sm">No ratings yet</span>
+                        <div className="h-5 w-5 rounded-full bg-gray-100 ring-1 ring-gray-200" />
                     )}
+                    <span className="text-sm text-gray-500">{product.artisan}</span>
                 </div>
 
-                {/* Sales Count - fixed height slot so cards stay aligned whether shown or not */}
-                <div className="mb-1.5 min-h-[1rem] text-[10px] text-gray-500 sm:mb-2 sm:min-h-[1.125rem] sm:text-xs">
+                {/* Footer: Price & Sales */}
+                <div className="flex items-end justify-between">
+                    <div className="flex flex-col">
+                        {discountPercentage && (
+                            <div className="mb-0.5 flex items-center gap-2">
+                                <span className="rounded bg-red-100 px-1.5 py-0.5 text-[10px] font-bold tracking-wide text-red-600">
+                                    -{discountPercentage}%
+                                </span>
+                                <span className="text-xs text-gray-400 line-through">
+                                    ₱{product.compare_price?.toLocaleString('en-PH', { minimumFractionDigits: 2 })}
+                                </span>
+                            </div>
+                        )}
+                        <span className="text-lg font-semibold tracking-tight text-gray-900">
+                            ₱{product.price.toLocaleString('en-PH', { minimumFractionDigits: 2 })}
+                        </span>
+                    </div>
                     {product.order_count !== undefined && product.order_count > 0 && (
-                        <span>
-                            <span className="font-medium text-emerald-600">{product.order_count.toLocaleString()}</span> sold
-                        </span>
+                        <span className="mb-1 text-xs text-gray-500">{product.order_count.toLocaleString()} sold</span>
                     )}
                 </div>
 
-                {/* Price - pushed to bottom */}
-                <div className="mt-auto mb-3 flex flex-wrap items-baseline gap-1.5 sm:mb-4 sm:gap-2">
-                    <span className="text-lg font-bold text-gray-900 sm:text-xl lg:text-2xl">
-                        ₱{product.price.toLocaleString('en-PH', { minimumFractionDigits: 2 })}
-                    </span>
-                    {product.compare_price && product.compare_price > product.price && (
-                        <span className="text-xs text-gray-400 line-through sm:text-sm">
-                            ₱{product.compare_price.toLocaleString('en-PH', { minimumFractionDigits: 2 })}
-                        </span>
-                    )}
-                </div>
-
-                {/* Action Buttons */}
-                <div className="flex flex-row gap-2 sm:gap-2.5">
+                {/* Mobile Action Buttons (Visible only on small screens) */}
+                <div className="mt-3 flex gap-2 border-t border-gray-100 pt-3 sm:hidden">
                     <button
-                        onClick={(e) => onAddToCart?.(e, product)}
-                        className="group/btn flex items-center justify-center rounded-lg bg-gradient-to-r from-amber-600 to-orange-600 px-3 py-2 text-xs font-semibold text-white shadow-lg transition-all duration-200 hover:scale-105 hover:from-amber-700 hover:to-orange-700 hover:shadow-xl active:scale-95 sm:rounded-xl sm:px-4 sm:py-3 sm:text-sm"
-                        title="Add to Cart"
+                        onClick={(e) => {
+                            e.preventDefault();
+                            onAddToCart?.(e, product);
+                        }}
+                        className="flex flex-1 items-center justify-center gap-1 rounded border border-orange-500 bg-orange-50 px-2 py-1.5 text-xs font-semibold text-orange-600 transition-colors active:bg-orange-100"
                     >
-                        <ShoppingCart className="h-4 w-4 flex-shrink-0 transition-transform group-hover/btn:scale-110 sm:h-5 sm:w-5" />
+                        <ShoppingCart className="h-3.5 w-3.5" />
+                        <span>Cart</span>
                     </button>
                     <button
-                        onClick={(e) => onBuyNow?.(e, product)}
-                        className="flex-1 rounded-lg border-2 border-amber-500 bg-white px-3 py-2 text-xs font-semibold whitespace-nowrap text-amber-700 shadow-sm transition-all duration-200 hover:scale-105 hover:border-amber-600 hover:bg-amber-50 hover:shadow-md active:scale-95 sm:rounded-xl sm:px-4 sm:py-3 sm:text-sm"
+                        onClick={(e) => {
+                            e.preventDefault();
+                            onBuyNow?.(e, product);
+                        }}
+                        className="flex flex-1 items-center justify-center rounded bg-orange-500 px-2 py-1.5 text-xs font-semibold text-white shadow-sm transition-colors active:bg-orange-600"
                     >
-                        Buy
+                        <span>Buy Now</span>
                     </button>
                 </div>
             </div>

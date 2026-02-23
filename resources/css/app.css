@@ -5,6 +5,18 @@
 @source '../views';
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 
+@keyframes fade-in-up {
+    0% {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 /* Custom utilities for e-commerce */
 .line-clamp-2 {
     overflow: hidden;
@@ -72,12 +84,15 @@
 
 /* Hide scrollbar but keep functionality */
 .scrollbar-hide {
-    -ms-overflow-style: none; /* IE and Edge */
-    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none;
+    /* IE and Edge */
+    scrollbar-width: none;
+    /* Firefox */
 }
 
 .scrollbar-hide::-webkit-scrollbar {
-    display: none; /* Chrome, Safari and Opera */
+    display: none;
+    /* Chrome, Safari and Opera */
 }
 
 @custom-variant dark (&:is(.dark *));
@@ -528,7 +543,8 @@ html.dark {
 /* Shopee-like mobile responsiveness - Compact scaling for mobile devices */
 @media (max-width: 640px) {
     html {
-        font-size: 14px; /* Slightly smaller base font for mobile */
+        font-size: 14px;
+        /* Slightly smaller base font for mobile */
     }
 
     /* Make containers more compact on mobile */

@@ -469,7 +469,7 @@ export default function Analytics({
                                                     padding: '12px',
                                                 }}
                                                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                                                formatter={(value: number, name: string, props: any) => [
+                                                formatter={(value: number, _name: string, props: any) => [
                                                     `${value} orders (${((props.payload.percent || 0) * 100).toFixed(1)}%)`,
                                                     props.payload.status,
                                                 ]}

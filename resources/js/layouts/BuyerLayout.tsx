@@ -6,7 +6,7 @@ import { useCart } from '@/contexts/CartContext';
 import { NotificationsProvider } from '@/contexts/NotificationsContext';
 import { type SharedData } from '@/types';
 import { Link, router, usePage } from '@inertiajs/react';
-import { Briefcase, ChevronDown, Contact, Heart, House, LogOut, Menu, Package, PenTool, Phone, ShoppingCart, User, X } from 'lucide-react';
+import { Briefcase, ChevronDown, Heart, House, LogOut, Menu, Package, PenTool, ShoppingCart, Store, User, X } from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react';
 
 interface BuyerLayoutProps {
@@ -86,12 +86,10 @@ function BuyerLayoutContent({ children, title }: BuyerLayoutProps) {
 
     const buyerNavigation = [
         { name: 'Home', href: '/buyer/dashboard', icon: House },
-        { name: 'Products', href: '/buyer/products', icon: Package },
+        { name: 'Marketplace', href: '/buyer/products', icon: Store },
         { name: 'Artisans', href: '/buyer/sellers', icon: User },
         { name: 'My Orders', href: '/buyer/orders', icon: Package },
         { name: 'Custom Orders', href: '/buyer/custom-orders', icon: PenTool },
-        { name: 'About', href: '/buyer/about', icon: Contact },
-        { name: 'Contact', href: '/buyer/contact', icon: Phone },
     ];
 
     return (

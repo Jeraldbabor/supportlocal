@@ -1,12 +1,12 @@
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Product as GlobalProduct } from '@/types';
 import { Head, Link, router } from '@inertiajs/react';
-import { ArrowDown, ArrowUp, ChevronDown, ChevronLeft, ChevronRight, Filter, ShoppingCart, Star } from 'lucide-react';
+import { ArrowDown, ArrowUp, Check, ChevronDown, ChevronLeft, ChevronRight, Filter, Star } from 'lucide-react';
 import React, { useState } from 'react';
 import AddToCartModal from '../../../components/AddToCartModal';
+import ProductCard from '../../../components/ProductCard';
 import SearchAutocomplete from '../../../components/SearchAutocomplete';
 import Toast from '../../../components/Toast';
-import WishlistButton from '../../../components/WishlistButton';
 import { useCart } from '../../../contexts/CartContext';
 import BuyerLayout from '../../../layouts/BuyerLayout';
 
@@ -88,7 +88,7 @@ export default function Index({
     filters = {},
 }: ProductsIndexProps) {
     const [searchTerm, setSearchTerm] = useState(filters?.search || '');
-    const { addToCart, isLoading } = useCart();
+    const { addToCart } = useCart();
     const [showToast, setShowToast] = useState(false);
     const [toastMessage, setToastMessage] = useState('');
     const [modalProduct, setModalProduct] = useState<Product | null>(null);
@@ -108,8 +108,50 @@ export default function Index({
     const [showMoreRatings, setShowMoreRatings] = useState(false);
     const [isFilterOpen, setIsFilterOpen] = useState(false);
 
-    const productList = products?.data || [];
+    const productList = React.useMemo(() => products?.data || [], [products?.data]);
     const currentSort = filters?.sort || 'popular';
+
+    // Auto-looping banner state
+    const [currentBannerIndex, setCurrentBannerIndex] = React.useState(0);
+    const highlightBanners = React.useMemo(() => {
+        if (!productList || productList.length === 0) return [];
+        const isOutOfStockCheck = (p: Product) => p.stock_status === 'out_of_stock' || p.stock_quantity === 0;
+        return [
+            {
+                title: '🔥 Trending Now',
+                product: [...productList.filter((p) => !isOutOfStockCheck(p))].sort(
+                    (a, b) => (b.view_count || b.average_rating || 0) - (a.view_count || a.average_rating || 0),
+                )[0],
+                bg: 'bg-gradient-to-br from-orange-500 to-red-500',
+                border: 'border-orange-400/30',
+            },
+            {
+                title: '👑 Most Sales',
+                product: [...productList.filter((p) => !isOutOfStockCheck(p))].sort(
+                    (a, b) => (b.monthly_sales || b.order_count || 0) - (a.monthly_sales || a.order_count || 0),
+                )[0],
+                bg: 'bg-gradient-to-br from-blue-500 to-indigo-600',
+                border: 'border-blue-400/30',
+            },
+            {
+                title: '💸 Top Discount',
+                product: [...productList.filter((p) => !isOutOfStockCheck(p))].sort((a, b) => {
+                    const getVal = (p: Product) => (p.compare_price && p.compare_price > p.price ? (p.compare_price - p.price) / p.compare_price : 0);
+                    return getVal(b) - getVal(a);
+                })[0],
+                bg: 'bg-gradient-to-br from-emerald-500 to-teal-600',
+                border: 'border-emerald-400/30',
+            },
+        ].filter((b) => b.product);
+    }, [productList]);
+
+    React.useEffect(() => {
+        if (highlightBanners.length <= 1) return;
+        const interval = setInterval(() => {
+            setCurrentBannerIndex((prev) => (prev + 1) % highlightBanners.length);
+        }, 5000);
+        return () => clearInterval(interval);
+    }, [highlightBanners.length]);
     const [showPriceDropdown, setShowPriceDropdown] = useState(false);
 
     // Determine if price sorting is active and which direction
@@ -203,25 +245,6 @@ export default function Index({
             setToastMessage('❌ Failed to add item to cart. Please try again.');
             setShowToast(true);
         }
-    };
-
-    const isOutOfStock = (product: Product) => {
-        return product.stock_status === 'out_of_stock' || product.stock_quantity === 0;
-    };
-
-    const discountPercentage = (product: Product) => {
-        if (product.compare_price && product.compare_price > product.price) {
-            return Math.round(((product.compare_price - product.price) / product.compare_price) * 100);
-        }
-        return null;
-    };
-
-    const formatSalesCount = (count?: number) => {
-        if (!count || count === 0) return null;
-        if (count >= 1000) {
-            return `${(count / 1000).toFixed(1)}K+`;
-        }
-        return `${count}+`;
     };
 
     const displayedLocations = showMoreLocations ? locations : locations.slice(0, 4);
@@ -602,6 +625,60 @@ export default function Index({
             <Head title="Browse Products" />
 
             <div className="mx-auto max-w-7xl px-2 py-3 sm:px-3 sm:py-4 md:px-4 md:py-6 lg:px-8">
+                {/* Highlight Banners Carousel */}
+                {highlightBanners.length > 0 && (
+                    <div className="relative mb-6 overflow-hidden rounded-2xl shadow-lg ring-1 ring-gray-200">
+                        <div
+                            className="flex w-full transition-transform duration-700 ease-in-out"
+                            style={{ transform: `translateX(-${currentBannerIndex * 100}%)` }}
+                        >
+                            {highlightBanners.map((banner, idx) => (
+                                <div
+                                    key={idx}
+                                    onClick={() => handleProductClick(banner.product.id)}
+                                    className={`relative min-w-full flex-none overflow-hidden ${banner.bg} cursor-pointer p-4 text-white sm:p-8`}
+                                >
+                                    <div className="relative z-10 mx-auto flex h-full max-w-4xl items-center justify-between gap-3 sm:gap-8">
+                                        <div className="flex w-[65%] flex-1 flex-col sm:w-[70%]">
+                                            <span className="mb-1.5 inline-flex w-fit items-center rounded-full bg-white/20 px-2 py-0.5 text-[10px] font-bold tracking-wider text-white uppercase shadow-sm ring-1 ring-white/30 backdrop-blur-md sm:mb-2 sm:px-2.5 sm:py-1 sm:text-xs">
+                                                {banner.title}
+                                            </span>
+                                            <h4 className="mb-2 line-clamp-2 text-lg leading-tight font-extrabold drop-shadow-md sm:mb-3 sm:text-3xl">
+                                                {banner.product.name}
+                                            </h4>
+                                            <div className="mt-auto flex items-center gap-2 sm:gap-3">
+                                                <span className="text-lg font-bold drop-shadow-md sm:text-2xl">
+                                                    ₱{Number(banner.product.price).toLocaleString()}
+                                                </span>
+                                                {banner.product.compare_price && banner.product.compare_price > banner.product.price && (
+                                                    <span className="rounded bg-white/20 px-1.5 py-0.5 text-xs font-bold text-white shadow-sm ring-1 ring-white/30 backdrop-blur-md sm:px-2 sm:py-1 sm:text-sm">
+                                                        -
+                                                        {Math.round(
+                                                            ((banner.product.compare_price - banner.product.price) / banner.product.compare_price) *
+                                                                100,
+                                                        )}
+                                                        %
+                                                    </span>
+                                                )}
+                                            </div>
+                                        </div>
+                                        <div className="relative h-24 w-24 flex-shrink-0 overflow-hidden rounded-xl bg-white/10 shadow-xl ring-2 ring-white/20 sm:h-40 sm:w-40 sm:rounded-2xl sm:shadow-2xl">
+                                            <img
+                                                src={banner.product.primary_image || banner.product.image || '/placeholder.svg'}
+                                                alt={banner.product.name}
+                                                className="h-full w-full object-cover transition-transform duration-700 hover:scale-105"
+                                            />
+                                        </div>
+                                    </div>
+                                    {/* Decorative background effects */}
+                                    <div className="absolute -top-20 -right-20 h-64 w-64 rounded-full bg-white/10 blur-[50px]"></div>
+                                    <div className="absolute -bottom-20 -left-20 h-64 w-64 rounded-full bg-black/10 blur-[50px]"></div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
+
                 {/* Search Bar with Autocomplete */}
                 <div className="mb-3 sm:mb-4 md:mb-6">
                     <SearchAutocomplete
@@ -619,14 +696,7 @@ export default function Index({
                             <button className="flex items-center gap-1.5 rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 shadow-sm transition-colors hover:bg-gray-50 active:bg-gray-100 sm:gap-2 sm:px-4 sm:py-2 sm:text-sm">
                                 <Filter className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                                 Filters
-                                {(selectedLocation ||
-                                    selectedSeller ||
-                                    selectedCategory ||
-                                    minPrice ||
-                                    maxPrice ||
-                                    freeShippingOnly ||
-                                    codOnly ||
-                                    selectedRating) && (
+                                {(selectedLocation || selectedSeller || selectedCategory || minPrice || maxPrice || freeShippingOnly || codOnly) && (
                                     <span className="ml-1 rounded-full bg-orange-500 px-1 py-0.5 text-[10px] font-semibold text-white sm:px-1.5 sm:text-xs">
                                         {
                                             [
@@ -662,101 +732,90 @@ export default function Index({
 
                     {/* Right Content Area */}
                     <div className="min-w-0 flex-1">
+                        {/* Banners Moved to Top Carousel */}
+
                         {/* Sorting Bar */}
-                        <div className="mb-2 flex flex-col gap-1.5 rounded-lg border border-gray-200 bg-white px-2 py-2 sm:mb-3 sm:flex-row sm:items-center sm:justify-between sm:gap-2 sm:px-3 sm:py-2.5 md:mb-4 md:gap-0 md:px-4 md:py-3">
-                            <div className="flex flex-wrap items-center gap-1 sm:gap-1.5 md:gap-2">
-                                <span className="text-[10px] font-medium text-gray-700 sm:text-xs md:text-sm">Sort by:</span>
-                                <button
-                                    onClick={() => handleSort('popular')}
-                                    className={`rounded px-1.5 py-0.5 text-[10px] font-medium transition-colors active:scale-95 sm:px-2 sm:py-1 sm:text-xs md:px-3 md:py-1.5 md:text-sm ${
-                                        currentSort === 'popular'
-                                            ? 'bg-orange-500 text-white'
-                                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200 active:bg-gray-300'
-                                    }`}
-                                >
-                                    Popular
-                                </button>
-                                <button
-                                    onClick={() => handleSort('latest')}
-                                    className={`rounded px-1.5 py-0.5 text-[10px] font-medium transition-colors active:scale-95 sm:px-2 sm:py-1 sm:text-xs md:px-3 md:py-1.5 md:text-sm ${
-                                        currentSort === 'latest'
-                                            ? 'bg-orange-500 text-white'
-                                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200 active:bg-gray-300'
-                                    }`}
-                                >
-                                    Latest
-                                </button>
-                                <button
-                                    onClick={() => handleSort('top_sales')}
-                                    className={`rounded px-1.5 py-0.5 text-[10px] font-medium transition-colors active:scale-95 sm:px-2 sm:py-1 sm:text-xs md:px-3 md:py-1.5 md:text-sm ${
-                                        currentSort === 'top_sales'
-                                            ? 'bg-orange-500 text-white'
-                                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200 active:bg-gray-300'
-                                    }`}
-                                >
-                                    Top Sales
-                                </button>
-                                <div className="relative">
+                        <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                            <div className="flex items-center gap-4">
+                                <span className="text-sm font-medium text-gray-500">Sort by</span>
+                                <div className="flex items-center gap-1 sm:gap-2">
                                     <button
-                                        onClick={() => setShowPriceDropdown(!showPriceDropdown)}
-                                        className={`flex items-center gap-0.5 rounded px-1.5 py-0.5 text-[10px] font-medium transition-colors active:scale-95 sm:gap-1 sm:px-2 sm:py-1 sm:text-xs md:px-3 md:py-1.5 md:text-sm ${
-                                            isPriceSortActive
-                                                ? 'bg-orange-500 text-white'
-                                                : 'bg-gray-100 text-gray-700 hover:bg-gray-200 active:bg-gray-300'
-                                        }`}
+                                        onClick={() => handleSort('popular')}
+                                        className={`rounded-full px-4 py-1.5 text-sm font-medium transition-all ${currentSort === 'popular' ? 'bg-gray-900 text-white shadow-sm' : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'}`}
                                     >
-                                        Price
-                                        {isPriceSortActive && (
-                                            <span className="ml-0.5 sm:ml-1">
-                                                {priceSortDirection === 'low' ? (
-                                                    <ArrowUp className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
-                                                ) : (
-                                                    <ArrowDown className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
-                                                )}
-                                            </span>
-                                        )}
-                                        {!isPriceSortActive && <ChevronDown className="h-2.5 w-2.5 sm:h-3 sm:w-3" />}
+                                        Popular
+                                    </button>
+                                    <button
+                                        onClick={() => handleSort('latest')}
+                                        className={`rounded-full px-4 py-1.5 text-sm font-medium transition-all ${currentSort === 'latest' ? 'bg-gray-900 text-white shadow-sm' : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'}`}
+                                    >
+                                        Latest
+                                    </button>
+                                    <button
+                                        onClick={() => handleSort('top_sales')}
+                                        className={`rounded-full px-4 py-1.5 text-sm font-medium transition-all ${currentSort === 'top_sales' ? 'bg-gray-900 text-white shadow-sm' : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'}`}
+                                    >
+                                        Top Sales
                                     </button>
 
-                                    {/* Price Dropdown */}
-                                    {showPriceDropdown && (
-                                        <>
-                                            <div className="fixed inset-0 z-10" onClick={() => setShowPriceDropdown(false)} />
-                                            <div className="absolute top-full left-0 z-20 mt-1 w-48 rounded-lg border border-gray-200 bg-white shadow-lg">
-                                                <button
-                                                    onClick={() => {
-                                                        handleSort('price-low');
-                                                        setShowPriceDropdown(false);
-                                                    }}
-                                                    className={`flex w-full items-center justify-between px-4 py-2.5 text-left text-sm transition-colors first:rounded-t-lg ${
-                                                        currentSort === 'price-low'
-                                                            ? 'bg-orange-50 font-medium text-orange-600'
-                                                            : 'text-gray-700 hover:bg-gray-50'
-                                                    }`}
-                                                >
-                                                    <span>Price: Low to High</span>
-                                                    {currentSort === 'price-low' && <ArrowUp className="h-4 w-4 text-orange-600" />}
-                                                </button>
-                                                <button
-                                                    onClick={() => {
-                                                        handleSort('price-high');
-                                                        setShowPriceDropdown(false);
-                                                    }}
-                                                    className={`flex w-full items-center justify-between px-4 py-2.5 text-left text-sm transition-colors last:rounded-b-lg ${
-                                                        currentSort === 'price-high'
-                                                            ? 'bg-orange-50 font-medium text-orange-600'
-                                                            : 'text-gray-700 hover:bg-gray-50'
-                                                    }`}
-                                                >
-                                                    <span>Price: High to Low</span>
-                                                    {currentSort === 'price-high' && <ArrowDown className="h-4 w-4 text-orange-600" />}
-                                                </button>
-                                            </div>
-                                        </>
-                                    )}
+                                    <div className="relative">
+                                        <button
+                                            onClick={() => setShowPriceDropdown(!showPriceDropdown)}
+                                            className={`flex items-center gap-1.5 rounded-full px-4 py-1.5 text-sm font-medium transition-all ${isPriceSortActive ? 'bg-gray-900 text-white shadow-sm' : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'}`}
+                                        >
+                                            Price
+                                            {isPriceSortActive && (
+                                                <span className="ml-0.5">
+                                                    {priceSortDirection === 'low' ? (
+                                                        <ArrowUp className="h-3.5 w-3.5" />
+                                                    ) : (
+                                                        <ArrowDown className="h-3.5 w-3.5" />
+                                                    )}
+                                                </span>
+                                            )}
+                                            {!isPriceSortActive && <ChevronDown className="h-3.5 w-3.5 text-gray-400" />}
+                                        </button>
+
+                                        {/* Price Dropdown */}
+                                        {showPriceDropdown && (
+                                            <>
+                                                <div className="fixed inset-0 z-10" onClick={() => setShowPriceDropdown(false)} />
+                                                <div className="absolute top-full left-0 z-20 mt-2 w-48 overflow-hidden rounded-xl border border-gray-100 bg-white shadow-lg ring-1 ring-black/5">
+                                                    <button
+                                                        onClick={() => {
+                                                            handleSort('price-low');
+                                                            setShowPriceDropdown(false);
+                                                        }}
+                                                        className={`flex w-full items-center justify-between px-4 py-3 text-left text-sm transition-colors ${
+                                                            currentSort === 'price-low'
+                                                                ? 'bg-orange-50/50 font-medium text-orange-600'
+                                                                : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                                                        }`}
+                                                    >
+                                                        <span>Low to High</span>
+                                                        {currentSort === 'price-low' && <Check className="h-4 w-4 text-orange-500" />}
+                                                    </button>
+                                                    <div className="h-px w-full bg-gray-50" />
+                                                    <button
+                                                        onClick={() => {
+                                                            handleSort('price-high');
+                                                            setShowPriceDropdown(false);
+                                                        }}
+                                                        className={`flex w-full items-center justify-between px-4 py-3 text-left text-sm transition-colors ${
+                                                            currentSort === 'price-high'
+                                                                ? 'bg-orange-50/50 font-medium text-orange-600'
+                                                                : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                                                        }`}
+                                                    >
+                                                        <span>High to Low</span>
+                                                        {currentSort === 'price-high' && <Check className="h-4 w-4 text-orange-500" />}
+                                                    </button>
+                                                </div>
+                                            </>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
-
                             {/* Pagination Info */}
                             {products && products.last_page > 1 && (
                                 <div className="flex items-center gap-1.5 sm:gap-2">
@@ -793,155 +852,34 @@ export default function Index({
                         {productList.length > 0 ? (
                             <>
                                 <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-                                    {productList.map((product) => {
-                                        const discount = discountPercentage(product);
-                                        const salesCount = formatSalesCount(product.monthly_sales ?? product.order_count);
-                                        const categoryName = typeof product.category === 'object' ? product.category?.name : product.category;
+                                    {productList.map((product, index) => {
+                                        // Format product for ProductCard
+                                        const cardProduct = {
+                                            id: product.id,
+                                            name: product.name,
+                                            price: Number(product.price),
+                                            compare_price: product.compare_price ? Number(product.compare_price) : null,
+                                            image: product.primary_image || product.image || '/placeholder.svg',
+                                            artisan: product.seller?.name || 'Unknown',
+                                            rating: Number(product.average_rating) || 0,
+                                            review_count: product.review_count,
+                                            category: typeof product.category === 'object' ? product.category?.name : product.category,
+                                            order_count: product.monthly_sales ?? product.order_count,
+                                        };
 
                                         return (
                                             <div
                                                 key={product.id}
-                                                className="group relative flex cursor-pointer flex-col overflow-hidden rounded-lg border border-gray-200 bg-white transition-all hover:border-orange-300 hover:shadow-lg"
-                                                onClick={() => handleProductClick(product.id)}
+                                                className="h-full animate-[fade-in-up_0.5s_ease-out_forwards] opacity-0"
+                                                style={{ animationDelay: `${index * 50}ms` }}
                                             >
-                                                {/* Product Image */}
-                                                <div className="relative aspect-square w-full overflow-hidden bg-gray-100">
-                                                    {product.primary_image || product.image ? (
-                                                        <img
-                                                            src={product.primary_image || product.image}
-                                                            alt={product.name}
-                                                            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                                                            onError={(e) => {
-                                                                const target = e.target as HTMLImageElement;
-                                                                target.style.display = 'none';
-                                                            }}
-                                                        />
-                                                    ) : (
-                                                        <div className="flex h-full w-full items-center justify-center bg-gray-100">
-                                                            <span className="text-gray-400">No Image</span>
-                                                        </div>
-                                                    )}
-
-                                                    {/* Product Badges */}
-                                                    <div className="absolute top-1.5 left-1.5 flex flex-col gap-0.5 sm:top-2 sm:left-2 sm:gap-1">
-                                                        {discount && (
-                                                            <div className="rounded bg-red-500 px-1 py-0.5 text-[10px] font-bold text-white shadow-md sm:px-1.5 sm:text-xs">
-                                                                -{discount}%
-                                                            </div>
-                                                        )}
-                                                        {product.free_shipping && (
-                                                            <div className="rounded bg-blue-500 px-1 py-0.5 text-[9px] font-bold text-white shadow-md sm:px-1.5 sm:text-xs">
-                                                                FREE SHIPPING
-                                                            </div>
-                                                        )}
-                                                    </div>
-
-                                                    {/* Wishlist Button */}
-                                                    <div
-                                                        className="absolute top-1.5 right-1.5 z-10 sm:top-2 sm:right-2"
-                                                        onClick={(e) => e.stopPropagation()}
-                                                    >
-                                                        <WishlistButton
-                                                            productId={product.id}
-                                                            initialInWishlist={wishlistProductIds.includes(product.id)}
-                                                            variant="icon-filled"
-                                                        />
-                                                    </div>
-                                                </div>
-
-                                                {/* Product Info */}
-                                                <div className="flex flex-1 flex-col p-1.5 sm:p-2 md:p-3">
-                                                    {/* Store Name */}
-                                                    {product.seller && (
-                                                        <div className="mb-0.5 line-clamp-1 text-[10px] text-gray-500 sm:mb-1 sm:text-xs">
-                                                            {product.seller.name}
-                                                        </div>
-                                                    )}
-
-                                                    {/* Product Title */}
-                                                    <h3 className="mb-1 line-clamp-2 min-h-[2rem] text-[11px] leading-tight font-medium text-gray-900 group-hover:text-orange-600 sm:mb-1.5 sm:min-h-[2.25rem] sm:text-xs md:mb-2 md:min-h-[2.5rem] md:text-sm">
-                                                        {product.name}
-                                                    </h3>
-
-                                                    {/* Price */}
-                                                    <div className="mb-1 sm:mb-1.5 md:mb-2">
-                                                        <div className="flex flex-wrap items-baseline gap-1 sm:gap-1.5 md:gap-2">
-                                                            <span className="text-sm font-bold text-orange-500 sm:text-base md:text-lg">
-                                                                ₱{Number(product.price).toLocaleString()}
-                                                            </span>
-                                                            {product.compare_price && product.compare_price > product.price && (
-                                                                <span className="text-[9px] text-gray-400 line-through sm:text-[10px] md:text-xs">
-                                                                    ₱{Number(product.compare_price).toLocaleString()}
-                                                                </span>
-                                                            )}
-                                                        </div>
-                                                    </div>
-
-                                                    {/* Rating and Sales */}
-                                                    <div className="mb-1 flex flex-wrap items-center gap-1 text-[10px] sm:mb-1.5 sm:gap-1.5 sm:text-xs md:mb-2 md:gap-2">
-                                                        {product.average_rating && Number(product.average_rating) > 0 ? (
-                                                            <>
-                                                                <div className="flex items-center">
-                                                                    <Star className="h-2.5 w-2.5 fill-yellow-400 text-yellow-400 sm:h-3 sm:w-3" />
-                                                                    <span className="ml-0.5 font-medium">
-                                                                        {Number(product.average_rating).toFixed(1)}
-                                                                    </span>
-                                                                </div>
-                                                                {salesCount && (
-                                                                    <span className="hidden text-gray-500 sm:inline">{salesCount} Sold/Month</span>
-                                                                )}
-                                                            </>
-                                                        ) : (
-                                                            <span className="text-gray-400">No ratings yet</span>
-                                                        )}
-                                                    </div>
-
-                                                    {/* Category Badge */}
-                                                    {categoryName && (
-                                                        <div className="mb-1 sm:mb-1.5 md:mb-2">
-                                                            <span className="line-clamp-1 inline-block rounded bg-orange-100 px-1.5 py-0.5 text-[9px] text-orange-700 sm:px-2 sm:text-[10px] md:text-xs">
-                                                                {categoryName}
-                                                            </span>
-                                                        </div>
-                                                    )}
-
-                                                    {/* Location - Hidden on mobile to save space */}
-                                                    {product.location && (
-                                                        <div className="line-clamp-1 hidden text-[9px] text-gray-500 sm:block sm:text-xs">
-                                                            {product.location}
-                                                        </div>
-                                                    )}
-
-                                                    {/* Action Buttons */}
-                                                    <div
-                                                        className="mt-auto flex gap-1 pt-1.5 sm:gap-1.5 sm:pt-2 md:gap-2 md:pt-3"
-                                                        onClick={(e) => e.stopPropagation()}
-                                                    >
-                                                        <button
-                                                            onClick={(e) => handleAddToCart(e, product)}
-                                                            disabled={isOutOfStock(product) || isLoading}
-                                                            className={`flex items-center justify-center rounded bg-orange-500 px-2 py-1 text-[9px] font-medium text-white transition-colors sm:px-2.5 sm:py-1.5 sm:text-[10px] md:px-3 md:text-xs ${
-                                                                isOutOfStock(product) || isLoading
-                                                                    ? 'cursor-not-allowed bg-gray-300'
-                                                                    : 'hover:bg-orange-600 active:bg-orange-700'
-                                                            }`}
-                                                            title="Add to Cart"
-                                                        >
-                                                            <ShoppingCart className="h-3.5 w-3.5 flex-shrink-0 sm:h-4 sm:w-4 md:h-4 md:w-4" />
-                                                        </button>
-                                                        <button
-                                                            onClick={(e) => handleBuyNow(e, product)}
-                                                            disabled={isOutOfStock(product) || isLoading}
-                                                            className={`flex-1 rounded border border-orange-500 px-1.5 py-1 text-[9px] font-medium whitespace-nowrap text-orange-500 transition-colors sm:px-2 sm:py-1.5 sm:text-[10px] md:px-3 md:text-xs ${
-                                                                isOutOfStock(product) || isLoading
-                                                                    ? 'cursor-not-allowed border-gray-300 text-gray-300'
-                                                                    : 'hover:bg-orange-50 active:bg-orange-100'
-                                                            }`}
-                                                        >
-                                                            Buy
-                                                        </button>
-                                                    </div>
-                                                </div>
+                                                <ProductCard
+                                                    product={cardProduct}
+                                                    isInWishlist={wishlistProductIds.includes(product.id)}
+                                                    onAddToCart={(e: React.MouseEvent) => handleAddToCart(e, product)}
+                                                    onBuyNow={(e: React.MouseEvent) => handleBuyNow(e, product)}
+                                                    badge={product.free_shipping ? 'trending' : null}
+                                                />
                                             </div>
                                         );
                                     })}
