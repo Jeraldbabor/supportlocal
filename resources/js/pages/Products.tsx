@@ -1,14 +1,13 @@
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Product as GlobalProduct } from '@/types';
 import { Head, Link, router, usePage } from '@inertiajs/react';
-import { ArrowDown, ArrowUp, ChevronDown, ChevronLeft, ChevronRight, Filter, ShoppingCart, Star, Check } from 'lucide-react';
+import { ArrowDown, ArrowUp, Check, ChevronDown, ChevronLeft, ChevronRight, Filter, Star } from 'lucide-react';
 import React, { useState } from 'react';
 import AddToCartModal from '../components/AddToCartModal';
 import AuthRequiredModal from '../components/AuthRequiredModal';
+import ProductCard from '../components/ProductCard';
 import SearchAutocomplete from '../components/SearchAutocomplete';
 import Toast from '../components/Toast';
-import WishlistButton from '../components/WishlistButton';
-import ProductCard from '../components/ProductCard';
 import { useCart } from '../contexts/CartContext';
 import MainLayout from '../layouts/MainLayout';
 
@@ -24,12 +23,12 @@ interface Product {
         name: string;
     };
     category?:
-    | {
-        id: number;
-        name: string;
-    }
-    | string
-    | null;
+        | {
+              id: number;
+              name: string;
+          }
+        | string
+        | null;
     average_rating?: number | null;
     review_count?: number;
     order_count?: number;
@@ -81,9 +80,9 @@ interface ProductsProps {
     };
 }
 
-export default function Products({ products, categories = [], sellers = [], locations = [], wishlistProductIds = [], filters = {} }: ProductsProps) {
+export default function Products({ products, categories = [], sellers = [], wishlistProductIds = [], filters = {} }: ProductsProps) {
     const [searchTerm, setSearchTerm] = useState(filters?.search || '');
-    const { addToCart, isLoading } = useCart();
+    const { addToCart } = useCart();
     const [showToast, setShowToast] = useState(false);
     const [toastMessage, setToastMessage] = useState('');
     const [modalProduct, setModalProduct] = useState<Product | null>(null);
@@ -96,8 +95,6 @@ export default function Products({ products, categories = [], sellers = [], loca
     const isAuthenticated = !!auth?.user;
 
     // Filter state
-    const [showMoreLocations, setShowMoreLocations] = useState(false);
-    const [showMoreSellers, setShowMoreSellers] = useState(false);
     const [minPrice, setMinPrice] = useState(filters?.min_price?.toString() || '');
     const [maxPrice, setMaxPrice] = useState(filters?.max_price?.toString() || '');
     const [selectedLocation, setSelectedLocation] = useState<string | null>(filters?.location || null);
@@ -107,7 +104,7 @@ export default function Products({ products, categories = [], sellers = [], loca
     const [codOnly, setCodOnly] = useState<boolean>(filters?.cod === 'true');
     const [selectedRating, setSelectedRating] = useState<string | null>(filters?.min_rating || null);
 
-    const productList = products?.data || [];
+    const productList = React.useMemo(() => products?.data || [], [products?.data]);
     const currentSort = filters?.sort || 'popular';
 
     // Auto-looping banner state
@@ -118,32 +115,36 @@ export default function Products({ products, categories = [], sellers = [], loca
         return [
             {
                 title: '🔥 Trending Now',
-                product: [...productList.filter(p => !isOutOfStockCheck(p))].sort((a, b) => (b.view_count || b.average_rating || 0) - (a.view_count || a.average_rating || 0))[0],
+                product: [...productList.filter((p) => !isOutOfStockCheck(p))].sort(
+                    (a, b) => (b.view_count || b.average_rating || 0) - (a.view_count || a.average_rating || 0),
+                )[0],
                 bg: 'bg-gradient-to-br from-orange-500 to-red-500',
-                border: 'border-orange-400/30'
+                border: 'border-orange-400/30',
             },
             {
                 title: '👑 Most Sales',
-                product: [...productList.filter(p => !isOutOfStockCheck(p))].sort((a, b) => (b.monthly_sales || b.order_count || 0) - (a.monthly_sales || a.order_count || 0))[0],
+                product: [...productList.filter((p) => !isOutOfStockCheck(p))].sort(
+                    (a, b) => (b.monthly_sales || b.order_count || 0) - (a.monthly_sales || a.order_count || 0),
+                )[0],
                 bg: 'bg-gradient-to-br from-blue-500 to-indigo-600',
-                border: 'border-blue-400/30'
+                border: 'border-blue-400/30',
             },
             {
                 title: '💸 Top Discount',
-                product: [...productList.filter(p => !isOutOfStockCheck(p))].sort((a, b) => {
-                    const getVal = (p: any) => p.compare_price && p.compare_price > p.price ? (p.compare_price - p.price) / p.compare_price : 0;
+                product: [...productList.filter((p) => !isOutOfStockCheck(p))].sort((a, b) => {
+                    const getVal = (p: Product) => (p.compare_price && p.compare_price > p.price ? (p.compare_price - p.price) / p.compare_price : 0);
                     return getVal(b) - getVal(a);
                 })[0],
                 bg: 'bg-gradient-to-br from-emerald-500 to-teal-600',
-                border: 'border-emerald-400/30'
-            }
-        ].filter(b => b.product);
+                border: 'border-emerald-400/30',
+            },
+        ].filter((b) => b.product);
     }, [productList]);
 
     React.useEffect(() => {
         if (highlightBanners.length <= 1) return;
         const interval = setInterval(() => {
-            setCurrentBannerIndex(prev => (prev + 1) % highlightBanners.length);
+            setCurrentBannerIndex((prev) => (prev + 1) % highlightBanners.length);
         }, 5000);
         return () => clearInterval(interval);
     }, [highlightBanners.length]);
@@ -291,40 +292,7 @@ export default function Products({ products, categories = [], sellers = [], loca
         }
     };
 
-    const getStockStatus = (product: Product) => {
-        if (product.stock_status) {
-            return product.stock_status;
-        }
-        if (product.stock_quantity === 0) {
-            return 'out_of_stock';
-        }
-        if (product.stock_quantity && product.stock_quantity < 10) {
-            return 'low_stock';
-        }
-        return 'in_stock';
-    };
-
-    const isOutOfStock = (product: Product) => {
-        return getStockStatus(product) === 'out_of_stock' || product.stock_quantity === 0;
-    };
-
-    const discountPercentage = (product: Product) => {
-        if (product.compare_price && product.compare_price > product.price) {
-            return Math.round(((product.compare_price - product.price) / product.compare_price) * 100);
-        }
-        return null;
-    };
-
-    const formatSalesCount = (count?: number) => {
-        if (!count || count === 0) return null;
-        if (count >= 1000) {
-            return `${(count / 1000).toFixed(1)}K+`;
-        }
-        return `${count}+`;
-    };
-
-    const displayedLocations = showMoreLocations ? locations : locations.slice(0, 4);
-    const displayedSellers = showMoreSellers ? sellers : sellers.slice(0, 4);
+    const displayedSellers = sellers.slice(0, 4);
 
     // Render filter content (reusable for both mobile drawer and desktop sidebar)
     const renderFilterContent = () => (
@@ -339,10 +307,10 @@ export default function Products({ products, categories = [], sellers = [], loca
                     freeShippingOnly ||
                     codOnly ||
                     selectedRating) && (
-                        <button onClick={clearFilters} className="text-xs font-semibold text-orange-500 transition-colors hover:text-orange-600">
-                            Clear all
-                        </button>
-                    )}
+                    <button onClick={clearFilters} className="text-xs font-semibold text-orange-500 transition-colors hover:text-orange-600">
+                        Clear all
+                    </button>
+                )}
             </div>
 
             {/* Category Filter - Pills */}
@@ -371,9 +339,7 @@ export default function Products({ products, categories = [], sellers = [], loca
                                 className={`rounded-full px-3.5 py-1.5 text-xs font-medium transition-all duration-200 ${isSelected ? 'bg-orange-50 text-orange-700 ring-1 ring-orange-500/30' : 'bg-gray-50 text-gray-600 hover:bg-gray-100 hover:text-gray-900'}`}
                             >
                                 {category.name}
-                                {category.products_count !== undefined && (
-                                    <span className="ml-1.5 opacity-60">{category.products_count}</span>
-                                )}
+                                {category.products_count !== undefined && <span className="ml-1.5 opacity-60">{category.products_count}</span>}
                             </button>
                         );
                     })}
@@ -384,16 +350,18 @@ export default function Products({ products, categories = [], sellers = [], loca
             <div className="mb-7">
                 <h3 className="mb-3 text-sm font-semibold text-gray-900">Shipped From</h3>
                 <div className="space-y-2.5">
-                    {['domestic', 'metro_manila', 'north_luzon'].map(loc => {
+                    {['domestic', 'metro_manila', 'north_luzon'].map((loc) => {
                         const labels = {
                             domestic: 'Domestic',
                             metro_manila: 'Metro Manila',
-                            north_luzon: 'North Luzon'
+                            north_luzon: 'North Luzon',
                         };
                         const isSelected = selectedLocation === loc;
                         return (
                             <label key={loc} className="group flex cursor-pointer items-center gap-3">
-                                <div className={`flex h-4 w-4 items-center justify-center rounded border transition-all duration-200 ${isSelected ? 'border-orange-500 bg-orange-500' : 'border-gray-300 bg-white group-hover:border-orange-400'}`}>
+                                <div
+                                    className={`flex h-4 w-4 items-center justify-center rounded border transition-all duration-200 ${isSelected ? 'border-orange-500 bg-orange-500' : 'border-gray-300 bg-white group-hover:border-orange-400'}`}
+                                >
                                     {isSelected && <Check className="h-3 w-3 text-white" strokeWidth={3} />}
                                 </div>
                                 <input
@@ -406,7 +374,9 @@ export default function Products({ products, categories = [], sellers = [], loca
                                         handleFilter('location', value);
                                     }}
                                 />
-                                <span className="text-sm text-gray-600 transition-colors group-hover:text-gray-900">{labels[loc as keyof typeof labels]}</span>
+                                <span className="text-sm text-gray-600 transition-colors group-hover:text-gray-900">
+                                    {labels[loc as keyof typeof labels]}
+                                </span>
                             </label>
                         );
                     })}
@@ -421,7 +391,9 @@ export default function Products({ products, categories = [], sellers = [], loca
                         const isSelected = selectedSeller === seller.id.toString();
                         return (
                             <label key={seller.id} className="group flex cursor-pointer items-center gap-3">
-                                <div className={`flex h-4 w-4 items-center justify-center rounded border transition-all duration-200 ${isSelected ? 'border-orange-500 bg-orange-500' : 'border-gray-300 bg-white group-hover:border-orange-400'}`}>
+                                <div
+                                    className={`flex h-4 w-4 items-center justify-center rounded border transition-all duration-200 ${isSelected ? 'border-orange-500 bg-orange-500' : 'border-gray-300 bg-white group-hover:border-orange-400'}`}
+                                >
                                     {isSelected && <Check className="h-3 w-3 text-white" strokeWidth={3} />}
                                 </div>
                                 <input
@@ -447,10 +419,12 @@ export default function Products({ products, categories = [], sellers = [], loca
                 <div className="space-y-2.5">
                     {[
                         { id: 'free_shipping', label: 'Free Shipping', state: freeShippingOnly, setter: setFreeShippingOnly },
-                        { id: 'cod', label: 'Cash on Delivery (COD)', state: codOnly, setter: setCodOnly }
-                    ].map(promo => (
+                        { id: 'cod', label: 'Cash on Delivery (COD)', state: codOnly, setter: setCodOnly },
+                    ].map((promo) => (
                         <label key={promo.id} className="group flex cursor-pointer items-center gap-3">
-                            <div className={`flex h-4 w-4 items-center justify-center rounded border transition-all duration-200 ${promo.state ? 'border-orange-500 bg-orange-500' : 'border-gray-300 bg-white group-hover:border-orange-400'}`}>
+                            <div
+                                className={`flex h-4 w-4 items-center justify-center rounded border transition-all duration-200 ${promo.state ? 'border-orange-500 bg-orange-500' : 'border-gray-300 bg-white group-hover:border-orange-400'}`}
+                            >
                                 {promo.state && <Check className="h-3 w-3 text-white" strokeWidth={3} />}
                             </div>
                             <input
@@ -476,12 +450,14 @@ export default function Products({ products, categories = [], sellers = [], loca
                     {[
                         { val: '5', label: '5 Stars' },
                         { val: '4', label: '4 Stars & Up' },
-                        { val: '3', label: '3 Stars & Up' }
-                    ].map(rating => {
+                        { val: '3', label: '3 Stars & Up' },
+                    ].map((rating) => {
                         const isSelected = selectedRating === rating.val;
                         return (
                             <label key={rating.val} className="group flex cursor-pointer items-center gap-3">
-                                <div className={`flex h-4 w-4 items-center justify-center rounded border transition-all duration-200 ${isSelected ? 'border-orange-500 bg-orange-500' : 'border-gray-300 bg-white group-hover:border-orange-400'}`}>
+                                <div
+                                    className={`flex h-4 w-4 items-center justify-center rounded border transition-all duration-200 ${isSelected ? 'border-orange-500 bg-orange-500' : 'border-gray-300 bg-white group-hover:border-orange-400'}`}
+                                >
                                     {isSelected && <Check className="h-3 w-3 text-white" strokeWidth={3} />}
                                 </div>
                                 <input
@@ -496,9 +472,14 @@ export default function Products({ products, categories = [], sellers = [], loca
                                 />
                                 <div className="flex items-center gap-1">
                                     {[...Array(5)].map((_, i) => (
-                                        <Star key={i} className={`h-3.5 w-3.5 ${i < parseInt(rating.val) ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} />
+                                        <Star
+                                            key={i}
+                                            className={`h-3.5 w-3.5 ${i < parseInt(rating.val) ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`}
+                                        />
                                     ))}
-                                    {rating.val !== '5' && <span className="ml-1 text-sm text-gray-600 transition-colors group-hover:text-gray-900">&amp; Up</span>}
+                                    {rating.val !== '5' && (
+                                        <span className="ml-1 text-sm text-gray-600 transition-colors group-hover:text-gray-900">&amp; Up</span>
+                                    )}
                                 </div>
                             </label>
                         );
@@ -512,24 +493,24 @@ export default function Products({ products, categories = [], sellers = [], loca
                 <div className="space-y-3">
                     <div className="flex items-center gap-3">
                         <div className="relative flex-1">
-                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-gray-400">₱</span>
+                            <span className="absolute top-1/2 left-3 -translate-y-1/2 text-sm text-gray-400">₱</span>
                             <input
                                 type="number"
                                 placeholder="Min"
                                 value={minPrice}
                                 onChange={(e) => setMinPrice(e.target.value)}
-                                className="w-full rounded-lg border-gray-300 pl-7 pr-3 py-2 text-sm transition-all focus:border-orange-500 focus:ring-1 focus:ring-orange-500"
+                                className="w-full rounded-lg border-gray-300 py-2 pr-3 pl-7 text-sm transition-all focus:border-orange-500 focus:ring-1 focus:ring-orange-500"
                             />
                         </div>
                         <div className="h-px w-3 bg-gray-300"></div>
                         <div className="relative flex-1">
-                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-gray-400">₱</span>
+                            <span className="absolute top-1/2 left-3 -translate-y-1/2 text-sm text-gray-400">₱</span>
                             <input
                                 type="number"
                                 placeholder="Max"
                                 value={maxPrice}
                                 onChange={(e) => setMaxPrice(e.target.value)}
-                                className="w-full rounded-lg border-gray-300 pl-7 pr-3 py-2 text-sm transition-all focus:border-orange-500 focus:ring-1 focus:ring-orange-500"
+                                className="w-full rounded-lg border-gray-300 py-2 pr-3 pl-7 text-sm transition-all focus:border-orange-500 focus:ring-1 focus:ring-orange-500"
                             />
                         </div>
                     </div>
@@ -553,7 +534,7 @@ export default function Products({ products, categories = [], sellers = [], loca
             <div className="mx-auto max-w-7xl px-3 py-4 sm:px-4 sm:py-6 lg:px-8">
                 {/* Highlight Banners Carousel */}
                 {highlightBanners.length > 0 && (
-                    <div className="mb-6 overflow-hidden rounded-2xl relative shadow-lg ring-1 ring-gray-200">
+                    <div className="relative mb-6 overflow-hidden rounded-2xl shadow-lg ring-1 ring-gray-200">
                         <div
                             className="flex w-full transition-transform duration-700 ease-in-out"
                             style={{ transform: `translateX(-${currentBannerIndex * 100}%)` }}
@@ -562,29 +543,42 @@ export default function Products({ products, categories = [], sellers = [], loca
                                 <div
                                     key={idx}
                                     onClick={() => handleProductClick(banner.product.id)}
-                                    className={`relative min-w-full flex-none overflow-hidden ${banner.bg} p-4 sm:p-8 text-white cursor-pointer`}
+                                    className={`relative min-w-full flex-none overflow-hidden ${banner.bg} cursor-pointer p-4 text-white sm:p-8`}
                                 >
-                                    <div className="flex h-full items-center justify-between gap-3 sm:gap-8 mx-auto max-w-4xl relative z-10">
-                                        <div className="flex flex-1 flex-col w-[65%] sm:w-[70%]">
-                                            <span className="mb-1.5 sm:mb-2 inline-flex w-fit items-center rounded-full bg-white/20 px-2 py-0.5 sm:px-2.5 sm:py-1 text-[10px] sm:text-xs font-bold uppercase tracking-wider text-white shadow-sm backdrop-blur-md ring-1 ring-white/30">
+                                    <div className="relative z-10 mx-auto flex h-full max-w-4xl items-center justify-between gap-3 sm:gap-8">
+                                        <div className="flex w-[65%] flex-1 flex-col sm:w-[70%]">
+                                            <span className="mb-1.5 inline-flex w-fit items-center rounded-full bg-white/20 px-2 py-0.5 text-[10px] font-bold tracking-wider text-white uppercase shadow-sm ring-1 ring-white/30 backdrop-blur-md sm:mb-2 sm:px-2.5 sm:py-1 sm:text-xs">
                                                 {banner.title}
                                             </span>
-                                            <h4 className="mb-2 sm:mb-3 line-clamp-2 text-lg sm:text-3xl font-extrabold leading-tight drop-shadow-md">{banner.product.name}</h4>
+                                            <h4 className="mb-2 line-clamp-2 text-lg leading-tight font-extrabold drop-shadow-md sm:mb-3 sm:text-3xl">
+                                                {banner.product.name}
+                                            </h4>
                                             <div className="mt-auto flex items-center gap-2 sm:gap-3">
-                                                <span className="text-lg sm:text-2xl font-bold drop-shadow-md">₱{Number(banner.product.price).toLocaleString()}</span>
+                                                <span className="text-lg font-bold drop-shadow-md sm:text-2xl">
+                                                    ₱{Number(banner.product.price).toLocaleString()}
+                                                </span>
                                                 {banner.product.compare_price && banner.product.compare_price > banner.product.price && (
-                                                    <span className="rounded backdrop-blur-md bg-white/20 px-1.5 py-0.5 sm:px-2 sm:py-1 text-xs sm:text-sm font-bold text-white shadow-sm ring-1 ring-white/30">
-                                                        -{Math.round(((banner.product.compare_price - banner.product.price) / banner.product.compare_price) * 100)}%
+                                                    <span className="rounded bg-white/20 px-1.5 py-0.5 text-xs font-bold text-white shadow-sm ring-1 ring-white/30 backdrop-blur-md sm:px-2 sm:py-1 sm:text-sm">
+                                                        -
+                                                        {Math.round(
+                                                            ((banner.product.compare_price - banner.product.price) / banner.product.compare_price) *
+                                                                100,
+                                                        )}
+                                                        %
                                                     </span>
                                                 )}
                                             </div>
                                         </div>
-                                        <div className="relative h-24 w-24 sm:h-40 sm:w-40 flex-shrink-0 overflow-hidden rounded-xl sm:rounded-2xl bg-white/10 shadow-xl sm:shadow-2xl ring-2 ring-white/20">
-                                            <img src={banner.product.primary_image || banner.product.image || '/placeholder.svg'} alt={banner.product.name} className="h-full w-full object-cover transition-transform duration-700 hover:scale-105" />
+                                        <div className="relative h-24 w-24 flex-shrink-0 overflow-hidden rounded-xl bg-white/10 shadow-xl ring-2 ring-white/20 sm:h-40 sm:w-40 sm:rounded-2xl sm:shadow-2xl">
+                                            <img
+                                                src={banner.product.primary_image || banner.product.image || '/placeholder.svg'}
+                                                alt={banner.product.name}
+                                                className="h-full w-full object-cover transition-transform duration-700 hover:scale-105"
+                                            />
                                         </div>
                                     </div>
                                     {/* Decorative background effects */}
-                                    <div className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-white/10 blur-[50px]"></div>
+                                    <div className="absolute -top-20 -right-20 h-64 w-64 rounded-full bg-white/10 blur-[50px]"></div>
                                     <div className="absolute -bottom-20 -left-20 h-64 w-64 rounded-full bg-black/10 blur-[50px]"></div>
                                 </div>
                             ))}
@@ -609,28 +603,22 @@ export default function Products({ products, categories = [], sellers = [], loca
                             <button className="flex items-center gap-1.5 rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 shadow-sm transition-colors hover:bg-gray-50 active:bg-gray-100 sm:gap-2 sm:px-4 sm:py-2 sm:text-sm">
                                 <Filter className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                                 Filters
-                                {(selectedLocation ||
-                                    selectedSeller ||
-                                    selectedCategory ||
-                                    minPrice ||
-                                    maxPrice ||
-                                    freeShippingOnly ||
-                                    codOnly) && (
-                                        <span className="ml-1 rounded-full bg-orange-500 px-1 py-0.5 text-[10px] font-semibold text-white sm:px-1.5 sm:text-xs">
-                                            {
-                                                [
-                                                    selectedLocation,
-                                                    selectedSeller,
-                                                    selectedCategory,
-                                                    minPrice,
-                                                    maxPrice,
-                                                    freeShippingOnly,
-                                                    codOnly,
-                                                    selectedRating,
-                                                ].filter(Boolean).length
-                                            }
-                                        </span>
-                                    )}
+                                {(selectedLocation || selectedSeller || selectedCategory || minPrice || maxPrice || freeShippingOnly || codOnly) && (
+                                    <span className="ml-1 rounded-full bg-orange-500 px-1 py-0.5 text-[10px] font-semibold text-white sm:px-1.5 sm:text-xs">
+                                        {
+                                            [
+                                                selectedLocation,
+                                                selectedSeller,
+                                                selectedCategory,
+                                                minPrice,
+                                                maxPrice,
+                                                freeShippingOnly,
+                                                codOnly,
+                                                selectedRating,
+                                            ].filter(Boolean).length
+                                        }
+                                    </span>
+                                )}
                             </button>
                         </SheetTrigger>
                         <SheetContent side="left" className="w-[85vw] overflow-y-auto sm:w-[400px]">
@@ -705,10 +693,11 @@ export default function Products({ products, categories = [], sellers = [], loca
                                                             handleSort('price-low');
                                                             setShowPriceDropdown(false);
                                                         }}
-                                                        className={`flex w-full items-center justify-between px-4 py-3 text-left text-sm transition-colors ${currentSort === 'price-low'
-                                                            ? 'bg-orange-50/50 font-medium text-orange-600'
-                                                            : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                                                            }`}
+                                                        className={`flex w-full items-center justify-between px-4 py-3 text-left text-sm transition-colors ${
+                                                            currentSort === 'price-low'
+                                                                ? 'bg-orange-50/50 font-medium text-orange-600'
+                                                                : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                                                        }`}
                                                     >
                                                         <span>Low to High</span>
                                                         {currentSort === 'price-low' && <Check className="h-4 w-4 text-orange-500" />}
@@ -719,10 +708,11 @@ export default function Products({ products, categories = [], sellers = [], loca
                                                             handleSort('price-high');
                                                             setShowPriceDropdown(false);
                                                         }}
-                                                        className={`flex w-full items-center justify-between px-4 py-3 text-left text-sm transition-colors ${currentSort === 'price-high'
-                                                            ? 'bg-orange-50/50 font-medium text-orange-600'
-                                                            : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                                                            }`}
+                                                        className={`flex w-full items-center justify-between px-4 py-3 text-left text-sm transition-colors ${
+                                                            currentSort === 'price-high'
+                                                                ? 'bg-orange-50/50 font-medium text-orange-600'
+                                                                : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                                                        }`}
                                                     >
                                                         <span>High to Low</span>
                                                         {currentSort === 'price-high' && <Check className="h-4 w-4 text-orange-500" />}
@@ -742,19 +732,21 @@ export default function Products({ products, categories = [], sellers = [], loca
                                     <div className="flex gap-1">
                                         <Link
                                             href={products.links.find((l) => l.label === '&laquo; Previous')?.url || '#'}
-                                            className={`rounded px-2 py-1 text-sm ${products.current_page === 1
-                                                ? 'cursor-not-allowed bg-gray-100 text-gray-400'
-                                                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                                                }`}
+                                            className={`rounded px-2 py-1 text-sm ${
+                                                products.current_page === 1
+                                                    ? 'cursor-not-allowed bg-gray-100 text-gray-400'
+                                                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                            }`}
                                         >
                                             <ChevronLeft className="h-4 w-4" />
                                         </Link>
                                         <Link
                                             href={products.links.find((l) => l.label === 'Next &raquo;')?.url || '#'}
-                                            className={`rounded px-2 py-1 text-sm ${products.current_page === products.last_page
-                                                ? 'cursor-not-allowed bg-gray-100 text-gray-400'
-                                                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                                                }`}
+                                            className={`rounded px-2 py-1 text-sm ${
+                                                products.current_page === products.last_page
+                                                    ? 'cursor-not-allowed bg-gray-100 text-gray-400'
+                                                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                            }`}
                                         >
                                             <ChevronRight className="h-4 w-4" />
                                         </Link>
@@ -785,7 +777,7 @@ export default function Products({ products, categories = [], sellers = [], loca
                                         return (
                                             <div
                                                 key={product.id}
-                                                className="h-full opacity-0 animate-[fade-in-up_0.5s_ease-out_forwards]"
+                                                className="h-full animate-[fade-in-up_0.5s_ease-out_forwards] opacity-0"
                                                 style={{ animationDelay: `${index * 50}ms` }}
                                             >
                                                 <ProductCard
@@ -808,8 +800,9 @@ export default function Products({ products, categories = [], sellers = [], loca
                                                 <Link
                                                     key={index}
                                                     href={link.url || '#'}
-                                                    className={`rounded-md px-3 py-2 text-sm ${link.active ? 'bg-orange-500 text-white' : 'bg-white text-gray-700 hover:bg-gray-100'
-                                                        } ${!link.url ? 'cursor-not-allowed opacity-50' : ''}`}
+                                                    className={`rounded-md px-3 py-2 text-sm ${
+                                                        link.active ? 'bg-orange-500 text-white' : 'bg-white text-gray-700 hover:bg-gray-100'
+                                                    } ${!link.url ? 'cursor-not-allowed opacity-50' : ''}`}
                                                     dangerouslySetInnerHTML={{ __html: link.label }}
                                                 />
                                             ))}

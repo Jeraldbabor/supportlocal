@@ -356,8 +356,8 @@ export default function AdminAnalytics({
                                         <YAxis stroke="#6b7280" fontSize={10} tickFormatter={(value) => `₱${value / 1000}k`} />
                                         <Tooltip
                                             contentStyle={{ backgroundColor: '#fff', border: '1px solid #fcd34d', borderRadius: '8px' }}
-                                            formatter={(value: unknown, name: unknown) => [
-                                                formatCurrency(value as number),
+                                            formatter={(value: number, name: string) => [
+                                                formatCurrency(value),
                                                 name === 'revenue' ? 'Revenue' : 'Commission',
                                             ]}
                                         />

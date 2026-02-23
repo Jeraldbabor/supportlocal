@@ -51,21 +51,21 @@ export default function ProductCard({ product, isInWishlist = false, onAddToCart
                     icon: Trophy,
                     label: 'Top Rated',
                     bgClass: 'bg-white/90 backdrop-blur-md text-gray-800',
-                    iconClass: 'text-amber-500'
+                    iconClass: 'text-amber-500',
                 };
             case 'best-seller':
                 return {
                     icon: TrendingUp,
                     label: 'Best Seller',
                     bgClass: 'bg-white/90 backdrop-blur-md text-gray-800',
-                    iconClass: 'text-emerald-500'
+                    iconClass: 'text-emerald-500',
                 };
             case 'trending':
                 return {
                     icon: Flame,
                     label: 'Trending',
                     bgClass: 'bg-white/90 backdrop-blur-md text-gray-800',
-                    iconClass: 'text-orange-500'
+                    iconClass: 'text-orange-500',
                 };
             default:
                 return null;
@@ -75,7 +75,7 @@ export default function ProductCard({ product, isInWishlist = false, onAddToCart
     const badgeConfig = getBadgeConfig();
 
     return (
-        <div className="group relative flex h-full w-full flex-col overflow-hidden rounded-[20px] bg-white ring-1 ring-gray-200/50 shadow-sm transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] hover:ring-gray-300">
+        <div className="group relative flex h-full w-full flex-col overflow-hidden rounded-[20px] bg-white shadow-sm ring-1 ring-gray-200/50 transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] hover:ring-gray-300">
             {/* Image Container */}
             <Link href={getProductUrl(product.id)} className="relative block aspect-[4/5] w-full flex-shrink-0 overflow-hidden bg-gray-50">
                 <img
@@ -88,9 +88,11 @@ export default function ProductCard({ product, isInWishlist = false, onAddToCart
                 <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
 
                 {/* Badges Overlay */}
-                <div className="absolute top-3 left-3 flex flex-col gap-2 z-10">
+                <div className="absolute top-3 left-3 z-10 flex flex-col gap-2">
                     {badgeConfig && (
-                        <div className={`flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-semibold tracking-wide shadow-sm ${badgeConfig.bgClass}`}>
+                        <div
+                            className={`flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-semibold tracking-wide shadow-sm ${badgeConfig.bgClass}`}
+                        >
                             <badgeConfig.icon className={`h-3 w-3 ${badgeConfig.iconClass}`} />
                             <span>{badgeConfig.label}</span>
                         </div>
@@ -104,26 +106,27 @@ export default function ProductCard({ product, isInWishlist = false, onAddToCart
 
                 {/* Wishlist Button */}
                 <div className="absolute top-3 right-3 z-20">
-                    <WishlistButton
-                        productId={product.id}
-                        initialInWishlist={isInWishlist}
-                        variant="icon-filled"
-                        size="sm"
-                    />
+                    <WishlistButton productId={product.id} initialInWishlist={isInWishlist} variant="icon-filled" size="sm" />
                 </div>
 
                 {/* Action Buttons (Fade in on hover - Desktop Only) */}
-                <div className="absolute bottom-4 left-0 right-0 z-20 hidden sm:flex justify-center gap-2 px-4 translate-y-4 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
+                <div className="absolute right-0 bottom-4 left-0 z-20 hidden translate-y-4 justify-center gap-2 px-4 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100 sm:flex">
                     <button
-                        onClick={(e) => { e.preventDefault(); onAddToCart?.(e, product); }}
-                        className="flex flex-1 items-center justify-center gap-1.5 rounded-full bg-orange-500 px-4 py-2.5 text-sm font-semibold text-white shadow-lg transition-all hover:bg-orange-600 hover:scale-105 active:scale-95"
+                        onClick={(e) => {
+                            e.preventDefault();
+                            onAddToCart?.(e, product);
+                        }}
+                        className="flex flex-1 items-center justify-center gap-1.5 rounded-full bg-orange-500 px-4 py-2.5 text-sm font-semibold text-white shadow-lg transition-all hover:scale-105 hover:bg-orange-600 active:scale-95"
                     >
                         <ShoppingCart className="h-4 w-4" />
                         <span>Add</span>
                     </button>
                     <button
-                        onClick={(e) => { e.preventDefault(); onBuyNow?.(e, product); }}
-                        className="flex flex-1 items-center justify-center gap-1.5 rounded-full bg-white px-4 py-2.5 text-sm font-semibold text-gray-900 shadow-lg transition-all hover:bg-gray-50 hover:scale-105 active:scale-95"
+                        onClick={(e) => {
+                            e.preventDefault();
+                            onBuyNow?.(e, product);
+                        }}
+                        className="flex flex-1 items-center justify-center gap-1.5 rounded-full bg-white px-4 py-2.5 text-sm font-semibold text-gray-900 shadow-lg transition-all hover:scale-105 hover:bg-gray-50 active:scale-95"
                     >
                         <span>Buy</span>
                     </button>
@@ -131,13 +134,11 @@ export default function ProductCard({ product, isInWishlist = false, onAddToCart
             </Link>
 
             {/* Content Container */}
-            <div className="flex flex-1 flex-col pt-4 pb-5 px-3 sm:px-4">
+            <div className="flex flex-1 flex-col px-3 pt-4 pb-5 sm:px-4">
                 {/* Header info: Category & Rating */}
                 <div className="mb-2 flex items-center justify-between text-xs text-gray-500">
-                    <span className="truncate pr-2 font-medium tracking-wider text-gray-400 uppercase">
-                        {product.category || 'Product'}
-                    </span>
-                    <div className="flex items-center gap-1 shrink-0">
+                    <span className="truncate pr-2 font-medium tracking-wider text-gray-400 uppercase">{product.category || 'Product'}</span>
+                    <div className="flex shrink-0 items-center gap-1">
                         <Star className="h-3.5 w-3.5 fill-current text-amber-400" />
                         <span className="font-medium text-gray-700">{Number(product.rating).toFixed(1)}</span>
                         {product.review_count !== undefined && product.review_count > 0 && (
@@ -148,18 +149,18 @@ export default function ProductCard({ product, isInWishlist = false, onAddToCart
 
                 {/* Title */}
                 <Link href={getProductUrl(product.id)}>
-                    <h3 className="mb-1.5 line-clamp-2 text-[15px] font-medium leading-relaxed text-gray-900 transition-colors group-hover:text-amber-700">
+                    <h3 className="mb-1.5 line-clamp-2 text-[15px] leading-relaxed font-medium text-gray-900 transition-colors group-hover:text-amber-700">
                         {product.name}
                     </h3>
                 </Link>
 
                 {/* Artisan */}
-                <div className="mb-4 flex items-center gap-2 mt-auto">
+                <div className="mt-auto mb-4 flex items-center gap-2">
                     {product.artisan_image ? (
                         <img
                             src={product.artisan_image}
                             alt={product.artisan}
-                            className="h-5 w-5 rounded-full object-cover ring-1 ring-gray-100 cursor-pointer"
+                            className="h-5 w-5 cursor-pointer rounded-full object-cover ring-1 ring-gray-100"
                         />
                     ) : (
                         <div className="h-5 w-5 rounded-full bg-gray-100 ring-1 ring-gray-200" />
@@ -171,7 +172,7 @@ export default function ProductCard({ product, isInWishlist = false, onAddToCart
                 <div className="flex items-end justify-between">
                     <div className="flex flex-col">
                         {discountPercentage && (
-                            <div className="flex items-center gap-2 mb-0.5">
+                            <div className="mb-0.5 flex items-center gap-2">
                                 <span className="rounded bg-red-100 px-1.5 py-0.5 text-[10px] font-bold tracking-wide text-red-600">
                                     -{discountPercentage}%
                                 </span>
@@ -185,23 +186,27 @@ export default function ProductCard({ product, isInWishlist = false, onAddToCart
                         </span>
                     </div>
                     {product.order_count !== undefined && product.order_count > 0 && (
-                        <span className="text-xs text-gray-500 mb-1">
-                            {product.order_count.toLocaleString()} sold
-                        </span>
+                        <span className="mb-1 text-xs text-gray-500">{product.order_count.toLocaleString()} sold</span>
                     )}
                 </div>
 
                 {/* Mobile Action Buttons (Visible only on small screens) */}
-                <div className="mt-3 flex gap-2 sm:hidden pt-3 border-t border-gray-100">
+                <div className="mt-3 flex gap-2 border-t border-gray-100 pt-3 sm:hidden">
                     <button
-                        onClick={(e) => { e.preventDefault(); onAddToCart?.(e, product); }}
+                        onClick={(e) => {
+                            e.preventDefault();
+                            onAddToCart?.(e, product);
+                        }}
                         className="flex flex-1 items-center justify-center gap-1 rounded border border-orange-500 bg-orange-50 px-2 py-1.5 text-xs font-semibold text-orange-600 transition-colors active:bg-orange-100"
                     >
                         <ShoppingCart className="h-3.5 w-3.5" />
                         <span>Cart</span>
                     </button>
                     <button
-                        onClick={(e) => { e.preventDefault(); onBuyNow?.(e, product); }}
+                        onClick={(e) => {
+                            e.preventDefault();
+                            onBuyNow?.(e, product);
+                        }}
                         className="flex flex-1 items-center justify-center rounded bg-orange-500 px-2 py-1.5 text-xs font-semibold text-white shadow-sm transition-colors active:bg-orange-600"
                     >
                         <span>Buy Now</span>

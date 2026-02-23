@@ -1,13 +1,12 @@
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Product as GlobalProduct } from '@/types';
 import { Head, Link, router } from '@inertiajs/react';
-import { ArrowDown, ArrowUp, ChevronDown, ChevronLeft, ChevronRight, Filter, ShoppingCart, Star, Check } from 'lucide-react';
+import { ArrowDown, ArrowUp, Check, ChevronDown, ChevronLeft, ChevronRight, Filter, Star } from 'lucide-react';
 import React, { useState } from 'react';
 import AddToCartModal from '../../../components/AddToCartModal';
+import ProductCard from '../../../components/ProductCard';
 import SearchAutocomplete from '../../../components/SearchAutocomplete';
 import Toast from '../../../components/Toast';
-import WishlistButton from '../../../components/WishlistButton';
-import ProductCard from '../../../components/ProductCard';
 import { useCart } from '../../../contexts/CartContext';
 import BuyerLayout from '../../../layouts/BuyerLayout';
 
@@ -23,12 +22,12 @@ interface Product {
         name: string;
     };
     category?:
-    | {
-        id: number;
-        name: string;
-    }
-    | string
-    | null;
+        | {
+              id: number;
+              name: string;
+          }
+        | string
+        | null;
     average_rating?: number | null;
     review_count?: number;
     order_count?: number;
@@ -89,7 +88,7 @@ export default function Index({
     filters = {},
 }: ProductsIndexProps) {
     const [searchTerm, setSearchTerm] = useState(filters?.search || '');
-    const { addToCart, isLoading } = useCart();
+    const { addToCart } = useCart();
     const [showToast, setShowToast] = useState(false);
     const [toastMessage, setToastMessage] = useState('');
     const [modalProduct, setModalProduct] = useState<Product | null>(null);
@@ -109,7 +108,7 @@ export default function Index({
     const [showMoreRatings, setShowMoreRatings] = useState(false);
     const [isFilterOpen, setIsFilterOpen] = useState(false);
 
-    const productList = products?.data || [];
+    const productList = React.useMemo(() => products?.data || [], [products?.data]);
     const currentSort = filters?.sort || 'popular';
 
     // Auto-looping banner state
@@ -120,32 +119,36 @@ export default function Index({
         return [
             {
                 title: '🔥 Trending Now',
-                product: [...productList.filter(p => !isOutOfStockCheck(p))].sort((a, b) => (b.view_count || b.average_rating || 0) - (a.view_count || a.average_rating || 0))[0],
+                product: [...productList.filter((p) => !isOutOfStockCheck(p))].sort(
+                    (a, b) => (b.view_count || b.average_rating || 0) - (a.view_count || a.average_rating || 0),
+                )[0],
                 bg: 'bg-gradient-to-br from-orange-500 to-red-500',
-                border: 'border-orange-400/30'
+                border: 'border-orange-400/30',
             },
             {
                 title: '👑 Most Sales',
-                product: [...productList.filter(p => !isOutOfStockCheck(p))].sort((a, b) => (b.monthly_sales || b.order_count || 0) - (a.monthly_sales || a.order_count || 0))[0],
+                product: [...productList.filter((p) => !isOutOfStockCheck(p))].sort(
+                    (a, b) => (b.monthly_sales || b.order_count || 0) - (a.monthly_sales || a.order_count || 0),
+                )[0],
                 bg: 'bg-gradient-to-br from-blue-500 to-indigo-600',
-                border: 'border-blue-400/30'
+                border: 'border-blue-400/30',
             },
             {
                 title: '💸 Top Discount',
-                product: [...productList.filter(p => !isOutOfStockCheck(p))].sort((a, b) => {
-                    const getVal = (p: any) => p.compare_price && p.compare_price > p.price ? (p.compare_price - p.price) / p.compare_price : 0;
+                product: [...productList.filter((p) => !isOutOfStockCheck(p))].sort((a, b) => {
+                    const getVal = (p: Product) => (p.compare_price && p.compare_price > p.price ? (p.compare_price - p.price) / p.compare_price : 0);
                     return getVal(b) - getVal(a);
                 })[0],
                 bg: 'bg-gradient-to-br from-emerald-500 to-teal-600',
-                border: 'border-emerald-400/30'
-            }
-        ].filter(b => b.product);
+                border: 'border-emerald-400/30',
+            },
+        ].filter((b) => b.product);
     }, [productList]);
 
     React.useEffect(() => {
         if (highlightBanners.length <= 1) return;
         const interval = setInterval(() => {
-            setCurrentBannerIndex(prev => (prev + 1) % highlightBanners.length);
+            setCurrentBannerIndex((prev) => (prev + 1) % highlightBanners.length);
         }, 5000);
         return () => clearInterval(interval);
     }, [highlightBanners.length]);
@@ -244,25 +247,6 @@ export default function Index({
         }
     };
 
-    const isOutOfStock = (product: Product) => {
-        return product.stock_status === 'out_of_stock' || product.stock_quantity === 0;
-    };
-
-    const discountPercentage = (product: Product) => {
-        if (product.compare_price && product.compare_price > product.price) {
-            return Math.round(((product.compare_price - product.price) / product.compare_price) * 100);
-        }
-        return null;
-    };
-
-    const formatSalesCount = (count?: number) => {
-        if (!count || count === 0) return null;
-        if (count >= 1000) {
-            return `${(count / 1000).toFixed(1)}K+`;
-        }
-        return `${count}+`;
-    };
-
     const displayedLocations = showMoreLocations ? locations : locations.slice(0, 4);
     const displayedSellers = showMoreSellers ? sellers : sellers.slice(0, 4);
 
@@ -279,16 +263,16 @@ export default function Index({
                     freeShippingOnly ||
                     codOnly ||
                     selectedRating) && (
-                        <button
-                            onClick={() => {
-                                clearFilters();
-                                setIsFilterOpen(false);
-                            }}
-                            className="text-xs text-orange-500 hover:text-orange-600"
-                        >
-                            Clear
-                        </button>
-                    )}
+                    <button
+                        onClick={() => {
+                            clearFilters();
+                            setIsFilterOpen(false);
+                        }}
+                        className="text-xs text-orange-500 hover:text-orange-600"
+                    >
+                        Clear
+                    </button>
+                )}
             </div>
 
             {/* Category Filter */}
@@ -643,7 +627,7 @@ export default function Index({
             <div className="mx-auto max-w-7xl px-2 py-3 sm:px-3 sm:py-4 md:px-4 md:py-6 lg:px-8">
                 {/* Highlight Banners Carousel */}
                 {highlightBanners.length > 0 && (
-                    <div className="mb-6 overflow-hidden rounded-2xl relative shadow-lg ring-1 ring-gray-200">
+                    <div className="relative mb-6 overflow-hidden rounded-2xl shadow-lg ring-1 ring-gray-200">
                         <div
                             className="flex w-full transition-transform duration-700 ease-in-out"
                             style={{ transform: `translateX(-${currentBannerIndex * 100}%)` }}
@@ -652,29 +636,42 @@ export default function Index({
                                 <div
                                     key={idx}
                                     onClick={() => handleProductClick(banner.product.id)}
-                                    className={`relative min-w-full flex-none overflow-hidden ${banner.bg} p-4 sm:p-8 text-white cursor-pointer`}
+                                    className={`relative min-w-full flex-none overflow-hidden ${banner.bg} cursor-pointer p-4 text-white sm:p-8`}
                                 >
-                                    <div className="flex h-full items-center justify-between gap-3 sm:gap-8 mx-auto max-w-4xl relative z-10">
-                                        <div className="flex flex-1 flex-col w-[65%] sm:w-[70%]">
-                                            <span className="mb-1.5 sm:mb-2 inline-flex w-fit items-center rounded-full bg-white/20 px-2 py-0.5 sm:px-2.5 sm:py-1 text-[10px] sm:text-xs font-bold uppercase tracking-wider text-white shadow-sm backdrop-blur-md ring-1 ring-white/30">
+                                    <div className="relative z-10 mx-auto flex h-full max-w-4xl items-center justify-between gap-3 sm:gap-8">
+                                        <div className="flex w-[65%] flex-1 flex-col sm:w-[70%]">
+                                            <span className="mb-1.5 inline-flex w-fit items-center rounded-full bg-white/20 px-2 py-0.5 text-[10px] font-bold tracking-wider text-white uppercase shadow-sm ring-1 ring-white/30 backdrop-blur-md sm:mb-2 sm:px-2.5 sm:py-1 sm:text-xs">
                                                 {banner.title}
                                             </span>
-                                            <h4 className="mb-2 sm:mb-3 line-clamp-2 text-lg sm:text-3xl font-extrabold leading-tight drop-shadow-md">{banner.product.name}</h4>
+                                            <h4 className="mb-2 line-clamp-2 text-lg leading-tight font-extrabold drop-shadow-md sm:mb-3 sm:text-3xl">
+                                                {banner.product.name}
+                                            </h4>
                                             <div className="mt-auto flex items-center gap-2 sm:gap-3">
-                                                <span className="text-lg sm:text-2xl font-bold drop-shadow-md">₱{Number(banner.product.price).toLocaleString()}</span>
+                                                <span className="text-lg font-bold drop-shadow-md sm:text-2xl">
+                                                    ₱{Number(banner.product.price).toLocaleString()}
+                                                </span>
                                                 {banner.product.compare_price && banner.product.compare_price > banner.product.price && (
-                                                    <span className="rounded backdrop-blur-md bg-white/20 px-1.5 py-0.5 sm:px-2 sm:py-1 text-xs sm:text-sm font-bold text-white shadow-sm ring-1 ring-white/30">
-                                                        -{Math.round(((banner.product.compare_price - banner.product.price) / banner.product.compare_price) * 100)}%
+                                                    <span className="rounded bg-white/20 px-1.5 py-0.5 text-xs font-bold text-white shadow-sm ring-1 ring-white/30 backdrop-blur-md sm:px-2 sm:py-1 sm:text-sm">
+                                                        -
+                                                        {Math.round(
+                                                            ((banner.product.compare_price - banner.product.price) / banner.product.compare_price) *
+                                                                100,
+                                                        )}
+                                                        %
                                                     </span>
                                                 )}
                                             </div>
                                         </div>
-                                        <div className="relative h-24 w-24 sm:h-40 sm:w-40 flex-shrink-0 overflow-hidden rounded-xl sm:rounded-2xl bg-white/10 shadow-xl sm:shadow-2xl ring-2 ring-white/20">
-                                            <img src={banner.product.primary_image || banner.product.image || '/placeholder.svg'} alt={banner.product.name} className="h-full w-full object-cover transition-transform duration-700 hover:scale-105" />
+                                        <div className="relative h-24 w-24 flex-shrink-0 overflow-hidden rounded-xl bg-white/10 shadow-xl ring-2 ring-white/20 sm:h-40 sm:w-40 sm:rounded-2xl sm:shadow-2xl">
+                                            <img
+                                                src={banner.product.primary_image || banner.product.image || '/placeholder.svg'}
+                                                alt={banner.product.name}
+                                                className="h-full w-full object-cover transition-transform duration-700 hover:scale-105"
+                                            />
                                         </div>
                                     </div>
                                     {/* Decorative background effects */}
-                                    <div className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-white/10 blur-[50px]"></div>
+                                    <div className="absolute -top-20 -right-20 h-64 w-64 rounded-full bg-white/10 blur-[50px]"></div>
                                     <div className="absolute -bottom-20 -left-20 h-64 w-64 rounded-full bg-black/10 blur-[50px]"></div>
                                 </div>
                             ))}
@@ -699,28 +696,22 @@ export default function Index({
                             <button className="flex items-center gap-1.5 rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 shadow-sm transition-colors hover:bg-gray-50 active:bg-gray-100 sm:gap-2 sm:px-4 sm:py-2 sm:text-sm">
                                 <Filter className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                                 Filters
-                                {(selectedLocation ||
-                                    selectedSeller ||
-                                    selectedCategory ||
-                                    minPrice ||
-                                    maxPrice ||
-                                    freeShippingOnly ||
-                                    codOnly) && (
-                                        <span className="ml-1 rounded-full bg-orange-500 px-1 py-0.5 text-[10px] font-semibold text-white sm:px-1.5 sm:text-xs">
-                                            {
-                                                [
-                                                    selectedLocation,
-                                                    selectedSeller,
-                                                    selectedCategory,
-                                                    minPrice,
-                                                    maxPrice,
-                                                    freeShippingOnly,
-                                                    codOnly,
-                                                    selectedRating,
-                                                ].filter(Boolean).length
-                                            }
-                                        </span>
-                                    )}
+                                {(selectedLocation || selectedSeller || selectedCategory || minPrice || maxPrice || freeShippingOnly || codOnly) && (
+                                    <span className="ml-1 rounded-full bg-orange-500 px-1 py-0.5 text-[10px] font-semibold text-white sm:px-1.5 sm:text-xs">
+                                        {
+                                            [
+                                                selectedLocation,
+                                                selectedSeller,
+                                                selectedCategory,
+                                                minPrice,
+                                                maxPrice,
+                                                freeShippingOnly,
+                                                codOnly,
+                                                selectedRating,
+                                            ].filter(Boolean).length
+                                        }
+                                    </span>
+                                )}
                             </button>
                         </SheetTrigger>
                         <SheetContent side="left" className="w-[85vw] overflow-y-auto sm:w-[400px]">
@@ -795,10 +786,11 @@ export default function Index({
                                                             handleSort('price-low');
                                                             setShowPriceDropdown(false);
                                                         }}
-                                                        className={`flex w-full items-center justify-between px-4 py-3 text-left text-sm transition-colors ${currentSort === 'price-low'
-                                                            ? 'bg-orange-50/50 font-medium text-orange-600'
-                                                            : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                                                            }`}
+                                                        className={`flex w-full items-center justify-between px-4 py-3 text-left text-sm transition-colors ${
+                                                            currentSort === 'price-low'
+                                                                ? 'bg-orange-50/50 font-medium text-orange-600'
+                                                                : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                                                        }`}
                                                     >
                                                         <span>Low to High</span>
                                                         {currentSort === 'price-low' && <Check className="h-4 w-4 text-orange-500" />}
@@ -809,10 +801,11 @@ export default function Index({
                                                             handleSort('price-high');
                                                             setShowPriceDropdown(false);
                                                         }}
-                                                        className={`flex w-full items-center justify-between px-4 py-3 text-left text-sm transition-colors ${currentSort === 'price-high'
-                                                            ? 'bg-orange-50/50 font-medium text-orange-600'
-                                                            : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                                                            }`}
+                                                        className={`flex w-full items-center justify-between px-4 py-3 text-left text-sm transition-colors ${
+                                                            currentSort === 'price-high'
+                                                                ? 'bg-orange-50/50 font-medium text-orange-600'
+                                                                : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                                                        }`}
                                                     >
                                                         <span>High to Low</span>
                                                         {currentSort === 'price-high' && <Check className="h-4 w-4 text-orange-500" />}
@@ -832,19 +825,21 @@ export default function Index({
                                     <div className="flex gap-0.5 sm:gap-1">
                                         <Link
                                             href={products.links.find((l) => l.label === '&laquo; Previous')?.url || '#'}
-                                            className={`rounded px-1.5 py-1 text-xs sm:px-2 sm:text-sm ${products.current_page === 1
-                                                ? 'cursor-not-allowed bg-gray-100 text-gray-400'
-                                                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                                                }`}
+                                            className={`rounded px-1.5 py-1 text-xs sm:px-2 sm:text-sm ${
+                                                products.current_page === 1
+                                                    ? 'cursor-not-allowed bg-gray-100 text-gray-400'
+                                                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                            }`}
                                         >
                                             <ChevronLeft className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                                         </Link>
                                         <Link
                                             href={products.links.find((l) => l.label === 'Next &raquo;')?.url || '#'}
-                                            className={`rounded px-1.5 py-1 text-xs sm:px-2 sm:text-sm ${products.current_page === products.last_page
-                                                ? 'cursor-not-allowed bg-gray-100 text-gray-400'
-                                                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                                                }`}
+                                            className={`rounded px-1.5 py-1 text-xs sm:px-2 sm:text-sm ${
+                                                products.current_page === products.last_page
+                                                    ? 'cursor-not-allowed bg-gray-100 text-gray-400'
+                                                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                            }`}
                                         >
                                             <ChevronRight className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                                         </Link>
@@ -854,71 +849,70 @@ export default function Index({
                         </div>
 
                         {/* Product Grid */}
-                        {
-                            productList.length > 0 ? (
-                                <>
-                                    <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-                                        {productList.map((product, index) => {
-                                            // Format product for ProductCard
-                                            const cardProduct = {
-                                                id: product.id,
-                                                name: product.name,
-                                                price: Number(product.price),
-                                                compare_price: product.compare_price ? Number(product.compare_price) : null,
-                                                image: product.primary_image || product.image || '/placeholder.svg',
-                                                artisan: product.seller?.name || 'Unknown',
-                                                rating: Number(product.average_rating) || 0,
-                                                review_count: product.review_count,
-                                                category: typeof product.category === 'object' ? product.category?.name : product.category,
-                                                order_count: product.monthly_sales ?? product.order_count,
-                                            };
+                        {productList.length > 0 ? (
+                            <>
+                                <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+                                    {productList.map((product, index) => {
+                                        // Format product for ProductCard
+                                        const cardProduct = {
+                                            id: product.id,
+                                            name: product.name,
+                                            price: Number(product.price),
+                                            compare_price: product.compare_price ? Number(product.compare_price) : null,
+                                            image: product.primary_image || product.image || '/placeholder.svg',
+                                            artisan: product.seller?.name || 'Unknown',
+                                            rating: Number(product.average_rating) || 0,
+                                            review_count: product.review_count,
+                                            category: typeof product.category === 'object' ? product.category?.name : product.category,
+                                            order_count: product.monthly_sales ?? product.order_count,
+                                        };
 
-                                            return (
-                                                <div
-                                                    key={product.id}
-                                                    className="h-full opacity-0 animate-[fade-in-up_0.5s_ease-out_forwards]"
-                                                    style={{ animationDelay: `${index * 50}ms` }}
-                                                >
-                                                    <ProductCard
-                                                        product={cardProduct}
-                                                        isInWishlist={wishlistProductIds.includes(product.id)}
-                                                        onAddToCart={(e: React.MouseEvent) => handleAddToCart(e, product)}
-                                                        onBuyNow={(e: React.MouseEvent) => handleBuyNow(e, product)}
-                                                        badge={product.free_shipping ? 'trending' : null}
-                                                    />
-                                                </div>
-                                            );
-                                        })}
-                                    </div>
-
-                                    {/* Bottom Pagination */}
-                                    {products && products.last_page > 1 && (
-                                        <div className="mt-4 flex justify-center sm:mt-6">
-                                            <div className="flex flex-wrap justify-center gap-1 sm:gap-2">
-                                                {products.links.map((link, index) => (
-                                                    <Link
-                                                        key={index}
-                                                        href={link.url || '#'}
-                                                        className={`rounded-md px-2 py-1.5 text-xs sm:px-3 sm:py-2 sm:text-sm ${link.active ? 'bg-orange-500 text-white' : 'bg-white text-gray-700 hover:bg-gray-100'
-                                                            } ${!link.url ? 'cursor-not-allowed opacity-50' : ''}`}
-                                                        dangerouslySetInnerHTML={{ __html: link.label }}
-                                                    />
-                                                ))}
+                                        return (
+                                            <div
+                                                key={product.id}
+                                                className="h-full animate-[fade-in-up_0.5s_ease-out_forwards] opacity-0"
+                                                style={{ animationDelay: `${index * 50}ms` }}
+                                            >
+                                                <ProductCard
+                                                    product={cardProduct}
+                                                    isInWishlist={wishlistProductIds.includes(product.id)}
+                                                    onAddToCart={(e: React.MouseEvent) => handleAddToCart(e, product)}
+                                                    onBuyNow={(e: React.MouseEvent) => handleBuyNow(e, product)}
+                                                    badge={product.free_shipping ? 'trending' : null}
+                                                />
                                             </div>
-                                        </div>
-                                    )}
-                                </>
-                            ) : (
-                                <div className="py-12 text-center">
-                                    <Filter className="mx-auto mb-4 h-12 w-12 text-gray-400" />
-                                    <h3 className="mb-2 text-lg font-medium text-gray-900">No products found</h3>
-                                    <p className="text-gray-600">Try adjusting your search or filter criteria.</p>
+                                        );
+                                    })}
                                 </div>
-                            )
-                        }
-                    </div >
-                </div >
-            </div >
+
+                                {/* Bottom Pagination */}
+                                {products && products.last_page > 1 && (
+                                    <div className="mt-4 flex justify-center sm:mt-6">
+                                        <div className="flex flex-wrap justify-center gap-1 sm:gap-2">
+                                            {products.links.map((link, index) => (
+                                                <Link
+                                                    key={index}
+                                                    href={link.url || '#'}
+                                                    className={`rounded-md px-2 py-1.5 text-xs sm:px-3 sm:py-2 sm:text-sm ${
+                                                        link.active ? 'bg-orange-500 text-white' : 'bg-white text-gray-700 hover:bg-gray-100'
+                                                    } ${!link.url ? 'cursor-not-allowed opacity-50' : ''}`}
+                                                    dangerouslySetInnerHTML={{ __html: link.label }}
+                                                />
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+                            </>
+                        ) : (
+                            <div className="py-12 text-center">
+                                <Filter className="mx-auto mb-4 h-12 w-12 text-gray-400" />
+                                <h3 className="mb-2 text-lg font-medium text-gray-900">No products found</h3>
+                                <p className="text-gray-600">Try adjusting your search or filter criteria.</p>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            </div>
 
             {/* Toast Notification */}
             {showToast && <Toast message={toastMessage} type="success" onClose={() => setShowToast(false)} />}
@@ -931,6 +925,6 @@ export default function Index({
                 product={modalProduct as any}
                 onAddToCart={handleModalAddToCart}
             />
-        </BuyerLayout >
+        </BuyerLayout>
     );
 }

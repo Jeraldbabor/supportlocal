@@ -316,8 +316,9 @@ export default function SearchAutocomplete({ type, placeholder, initialValue = '
                                     <button
                                         key={keyword}
                                         onClick={() => handleKeywordClick(keyword)}
-                                        className={`flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-xs transition-colors sm:text-sm ${isSelected ? 'bg-orange-50 text-orange-600' : 'text-gray-700 hover:bg-gray-50'
-                                            }`}
+                                        className={`flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-xs transition-colors sm:text-sm ${
+                                            isSelected ? 'bg-orange-50 text-orange-600' : 'text-gray-700 hover:bg-gray-50'
+                                        }`}
                                     >
                                         <Search className="h-3.5 w-3.5 flex-shrink-0 text-gray-400 sm:h-4 sm:w-4" />
                                         <span className="truncate">{keyword}</span>
@@ -338,8 +339,9 @@ export default function SearchAutocomplete({ type, placeholder, initialValue = '
                                     <button
                                         key={category.id}
                                         onClick={() => handleCategoryClick(category)}
-                                        className={`flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-xs transition-colors sm:text-sm ${isSelected ? 'bg-orange-50 text-orange-600' : 'text-gray-700 hover:bg-gray-50'
-                                            }`}
+                                        className={`flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-xs transition-colors sm:text-sm ${
+                                            isSelected ? 'bg-orange-50 text-orange-600' : 'text-gray-700 hover:bg-gray-50'
+                                        }`}
                                     >
                                         <Tag className="h-3.5 w-3.5 flex-shrink-0 text-orange-500 sm:h-4 sm:w-4" />
                                         <span className="truncate">{category.name}</span>
@@ -363,8 +365,9 @@ export default function SearchAutocomplete({ type, placeholder, initialValue = '
                                     <button
                                         key={product.id}
                                         onClick={() => handleProductClick(product)}
-                                        className={`flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left transition-colors sm:gap-3 ${isSelected ? 'bg-orange-50' : 'hover:bg-gray-50'
-                                            }`}
+                                        className={`flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left transition-colors sm:gap-3 ${
+                                            isSelected ? 'bg-orange-50' : 'hover:bg-gray-50'
+                                        }`}
                                     >
                                         <div className="h-10 w-10 flex-shrink-0 overflow-hidden rounded-md bg-gray-100 sm:h-12 sm:w-12">
                                             {product.primary_image ? (
@@ -402,8 +405,9 @@ export default function SearchAutocomplete({ type, placeholder, initialValue = '
                                     <button
                                         key={seller.id}
                                         onClick={() => handleSellerClick(seller)}
-                                        className={`flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left transition-colors sm:gap-3 ${isSelected ? 'bg-orange-50' : 'hover:bg-gray-50'
-                                            }`}
+                                        className={`flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left transition-colors sm:gap-3 ${
+                                            isSelected ? 'bg-orange-50' : 'hover:bg-gray-50'
+                                        }`}
                                     >
                                         <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center overflow-hidden rounded-full bg-orange-100 sm:h-12 sm:w-12">
                                             {seller.profile_image ? (

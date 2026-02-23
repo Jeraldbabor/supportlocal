@@ -17,7 +17,6 @@
     }
 }
 
-
 /* Custom utilities for e-commerce */
 .line-clamp-2 {
     overflow: hidden;
@@ -310,8 +309,8 @@ html.dark {
     }
 
     /* Force light backgrounds for chat containers - be very specific to avoid overriding bubbles */
-    .dark [data-chat-container]>div,
-    .dark [data-chat-container]>form,
+    .dark [data-chat-container] > div,
+    .dark [data-chat-container] > form,
     .dark [data-chat-container] .bg-gray-50,
     .dark [data-chat-container] .bg-gray-100,
     .dark [data-chat-container] .bg-white {
@@ -408,8 +407,8 @@ html.dark {
     }
 
     /* Timestamps below messages should remain gray - but only if they're siblings */
-    .chat-message-sent~span.text-gray-400,
-    .chat-message-sent~span.text-gray-500,
+    .chat-message-sent ~ span.text-gray-400,
+    .chat-message-sent ~ span.text-gray-500,
     span.text-gray-400:not(.chat-message-sent *),
     span.text-gray-500:not(.chat-message-sent *) {
         color: #6b7280 !important;
@@ -556,11 +555,11 @@ html.dark {
     }
 
     /* Tighter spacing for mobile */
-    .space-y-6>*+* {
+    .space-y-6 > * + * {
         margin-top: 1rem;
     }
 
-    .space-y-8>*+* {
+    .space-y-8 > * + * {
         margin-top: 1.25rem;
     }
 
@@ -577,11 +576,11 @@ html.dark {
     }
 
     /* Ultra-compact spacing */
-    .space-y-4>*+* {
+    .space-y-4 > * + * {
         margin-top: 0.75rem;
     }
 
-    .space-y-6>*+* {
+    .space-y-6 > * + * {
         margin-top: 0.875rem;
     }
 }
