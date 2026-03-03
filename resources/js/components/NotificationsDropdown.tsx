@@ -94,7 +94,7 @@ export default function NotificationsDropdown({ userRole = 'buyer', buttonClassN
             `/${baseRoute}/notifications/read-all`,
             {},
             {
-                preserveState: false,
+                preserveState: true,
                 preserveScroll: true,
                 onSuccess: () => {
                     refreshUnreadCount();
