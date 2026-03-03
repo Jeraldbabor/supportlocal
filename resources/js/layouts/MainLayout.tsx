@@ -111,7 +111,7 @@ export default function MainLayout({ children, title }: MainLayoutProps) {
                             <Link
                                 href="/"
                                 className="flex items-center gap-1.5 rounded-xl px-1.5 py-1.5 transition-all duration-300 hover:scale-105 focus:ring-2 focus:ring-orange-500/50 focus:ring-offset-2 focus:outline-none active:scale-95 sm:gap-2 sm:px-2 sm:py-2"
-                                aria-label="Support Local - Go to homepage"
+                                aria-label="Support Local Hinoba-an - Go to homepage"
                             >
                                 <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-amber-500 to-orange-600 shadow-md sm:h-10 sm:w-10">
                                     <svg className="h-5 w-5 text-white sm:h-6 sm:w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -124,7 +124,7 @@ export default function MainLayout({ children, title }: MainLayoutProps) {
                                     </svg>
                                 </div>
                                 <span className="hidden bg-gradient-to-r from-amber-600 to-orange-600 bg-clip-text text-lg font-bold text-transparent sm:inline sm:text-xl">
-                                    Support Local
+                                    Support Local Hinoba-an
                                 </span>
                             </Link>
                         </div>
@@ -459,7 +459,7 @@ export default function MainLayout({ children, title }: MainLayoutProps) {
                                     </svg>
                                 </div>
                                 <h3 className="bg-gradient-to-r from-amber-400 to-orange-400 bg-clip-text text-2xl font-bold text-transparent">
-                                    Support Local
+                                    Support Local Hinoba-an
                                 </h3>
                             </div>
                             <p className="mb-6 leading-relaxed text-gray-300">
@@ -566,8 +566,8 @@ export default function MainLayout({ children, title }: MainLayoutProps) {
                     <div className="mt-8 border-t border-gray-800 pt-6 sm:mt-12 sm:pt-8">
                         <div className="flex flex-col items-center justify-between gap-4 text-center md:flex-row md:text-left">
                             <p className="text-sm text-gray-400">
-                                &copy; {new Date().getFullYear()} Support Local. All rights reserved. Crafted with ❤️ for artisans, Develop and
-                                Maintain by @Jerald B Babor.
+                                &copy; {new Date().getFullYear()} Support Local Hinoba-an. All rights reserved. Crafted with ❤️ for artisans, Develop
+                                and Maintain by @Jerald B Babor.
                             </p>
                             <div className="flex flex-wrap justify-center gap-4 text-sm sm:gap-6 md:justify-start">
                                 <Link href="/privacy-policy" className="text-gray-400 transition-colors hover:text-amber-400">

@@ -16,7 +16,7 @@ export default function Welcome() {
         },
         {
             icon: HandHeart,
-            title: 'Support Local Artisans',
+            title: 'Support Local Hinoba-an Artisans',
             description: 'Every purchase directly supports Filipino craftsmen and small businesses in your community.',
             highlight: false,
         },
@@ -150,7 +150,7 @@ export default function Welcome() {
 
                             <p className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-gray-600 sm:text-xl">
                                 Post what you want, receive bids from talented Filipino artisans, and get unique handcrafted products made just for
-                                you. Support local businesses while getting exactly what you need.
+                                you. Support local Hinoba-an businesses while getting exactly what you need.
                             </p>
 
                             {/* CTA Buttons */}
@@ -381,7 +381,7 @@ export default function Welcome() {
                                 <div className="absolute right-10 bottom-10 h-48 w-48 rounded-full bg-white" />
                             </div>
                             <div className="relative">
-                                <h2 className="text-3xl font-bold text-white sm:text-4xl">Ready to Support Local Artisans?</h2>
+                                <h2 className="text-3xl font-bold text-white sm:text-4xl">Ready to Support Local Hinoba-an Artisans?</h2>
                                 <p className="mx-auto mt-4 max-w-xl text-lg text-amber-100">
                                     Join SupportLocal today and discover unique handcrafted products or start selling your creations to customers who
                                     appreciate local craftsmanship.

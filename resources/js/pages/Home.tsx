@@ -347,7 +347,7 @@ export default function Home({
                             },
                             {
                                 icon: HandHeart,
-                                title: 'Support Local Artisans',
+                                title: 'Support Local Hinoba-an Artisans',
                                 description: 'Every purchase directly supports Filipino craftsmen and small businesses.',
                                 highlight: false,
                             },

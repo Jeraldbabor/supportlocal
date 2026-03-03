@@ -103,7 +103,7 @@ function BuyerLayoutContent({ children, title }: BuyerLayoutProps) {
                             <Link
                                 href="/buyer/dashboard"
                                 className="flex items-center gap-2 rounded-xl px-2 py-2 transition-all duration-300 hover:scale-105 focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 focus:outline-none active:scale-95"
-                                aria-label="Support Local - Go to dashboard"
+                                aria-label="Support Local Hinoba-an - Go to dashboard"
                             >
                                 <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-amber-500 to-orange-600 shadow-md">
                                     <svg className="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -116,7 +116,7 @@ function BuyerLayoutContent({ children, title }: BuyerLayoutProps) {
                                     </svg>
                                 </div>
                                 <span className="hidden bg-gradient-to-r from-amber-600 to-orange-600 bg-clip-text text-xl font-bold text-transparent sm:inline">
-                                    Support Local
+                                    Support Local Hinoba-an
                                 </span>
                             </Link>
                         </div>
@@ -460,7 +460,7 @@ function BuyerLayoutContent({ children, title }: BuyerLayoutProps) {
                                     </svg>
                                 </div>
                                 <h3 className="bg-gradient-to-r from-amber-400 to-orange-400 bg-clip-text text-2xl font-bold text-transparent">
-                                    Support Local
+                                    Support Local Hinoba-an
                                 </h3>
                             </div>
                             <p className="mb-6 leading-relaxed text-gray-300">
@@ -586,8 +586,8 @@ function BuyerLayoutContent({ children, title }: BuyerLayoutProps) {
                     <div className="mt-8 border-t border-gray-800 pt-6 sm:mt-12 sm:pt-8">
                         <div className="flex flex-col items-center justify-between gap-4 text-center md:flex-row md:text-left">
                             <p className="text-sm text-gray-400">
-                                &copy; {new Date().getFullYear()} Support Local. Empowering buyers and artisans. Crafted with ❤️ for artisans, Develop
-                                and Maintain by @Jerald B Babor.
+                                &copy; {new Date().getFullYear()} Support Local Hinoba-an. Empowering buyers and artisans. Crafted with ❤️ for
+                                artisans, Develop and Maintain by @Jerald B Babor.
                             </p>
                             <div className="flex flex-wrap justify-center gap-4 text-sm sm:gap-6 md:justify-start">
                                 <Link href="/privacy-policy" className="text-gray-400 transition-colors hover:text-amber-400">

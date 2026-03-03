@@ -73,7 +73,7 @@ export default function Contact({ flash, pageContents = {} }: ContactProps = {})
     const defaultEmail = { primary: 'hello@supportlocal.com', secondary: 'support@supportlocal.com' };
     const defaultPhone = { primary: '(555) 123-4567', secondary: 'Toll-free: (800) 123-4567' };
     const defaultAddress = {
-        line1: '123 Support Local Street',
+        line1: '123 Support Local Hinoba-an Street',
         line2: 'Creative District',
         line3: 'Metro Manila, Philippines 1000',
     };

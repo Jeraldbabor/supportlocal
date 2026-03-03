@@ -36,7 +36,7 @@ function AppShell({ Component, props }: { Component: React.ComponentType<Record<
     );
 }
 
-const appName = 'Support Local';
+const appName = 'Support Local Hinoba-an';
 
 createInertiaApp({
     title: (title) => (title ? `${title} - ${appName}` : appName),

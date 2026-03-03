@@ -172,19 +172,19 @@ function PageSkeleton() {
           {/* Ripple effect */}
           <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-600 opacity-30 animate-ping" />
         </div>
-        
+
         {/* Brand name */}
         <h1 className="bg-gradient-to-r from-amber-600 to-orange-600 bg-clip-text text-2xl font-bold text-transparent">
-          Support Local
+          Support Local Hinoba-an
         </h1>
-        
+
         {/* Loading dots */}
         <div className="flex items-center gap-2">
           <div className="h-2 w-2 rounded-full bg-amber-500 animate-bounce" style={{ animationDelay: '0ms' }} />
           <div className="h-2 w-2 rounded-full bg-orange-500 animate-bounce" style={{ animationDelay: '150ms' }} />
           <div className="h-2 w-2 rounded-full bg-amber-600 animate-bounce" style={{ animationDelay: '300ms' }} />
         </div>
-        
+
         {/* Loading text */}
         <p className="text-sm text-gray-500 font-medium">Loading your experience...</p>
       </div>
@@ -192,7 +192,7 @@ function PageSkeleton() {
   )
 }
 
-export { 
+export {
   Skeleton,
   ProductCardSkeleton,
   ProductListSkeleton,

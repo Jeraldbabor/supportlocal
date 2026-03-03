@@ -18,7 +18,7 @@ export default function AuthSplitLayout({ children, title, description }: PropsW
                 <Link href={home.url()} className="relative z-20 flex items-center text-lg font-medium">
                     <img
                         src="/logo.svg"
-                        alt="Support Local"
+                        alt="Support Local Hinoba-an"
                         className="mr-2 size-12 drop-shadow-lg"
                         onError={(e) => {
                             (e.target as HTMLImageElement).src = '/favicon.svg';
@@ -40,7 +40,7 @@ export default function AuthSplitLayout({ children, title, description }: PropsW
                     <Link href={home.url()} className="relative z-20 flex items-center justify-center lg:hidden">
                         <img
                             src="/logo.svg"
-                            alt="Support Local"
+                            alt="Support Local Hinoba-an"
                             className="h-16 drop-shadow-lg sm:h-20"
                             onError={(e) => {
                                 (e.target as HTMLImageElement).src = '/favicon.svg';
