@@ -51,7 +51,7 @@ export default function PageContentEdit() {
             secondary: (contactMetadata.phone?.secondary as string) || 'Toll-free: (800) 123-4567',
         },
         address: {
-            line1: (contactMetadata.address?.line1 as string) || '123 Support Local Street',
+            line1: (contactMetadata.address?.line1 as string) || '123 Support Local Hinoba-an Street',
             line2: (contactMetadata.address?.line2 as string) || 'Creative District',
             line3: (contactMetadata.address?.line3 as string) || 'Metro Manila, Philippines 1000',
         },

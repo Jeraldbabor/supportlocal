@@ -73,7 +73,7 @@ export default function Contact({ flash, pageContents = {} }: ContactProps = {})
     const defaultEmail = { primary: 'hello@supportlocal.com', secondary: 'support@supportlocal.com' };
     const defaultPhone = { primary: '(555) 123-4567', secondary: 'Toll-free: (800) 123-4567' };
     const defaultAddress = {
-        line1: '123 Support Local Street',
+        line1: '123 Support Local Hinoba-an Street',
         line2: 'Creative District',
         line3: 'Metro Manila, Philippines 1000',
     };
@@ -207,9 +207,8 @@ export default function Contact({ flash, pageContents = {} }: ContactProps = {})
                                         value={formData.name}
                                         onChange={handleInputChange}
                                         required
-                                        className={`w-full rounded-md border px-4 py-3 focus:ring-2 focus:ring-primary ${
-                                            errors.name ? 'border-red-300 focus:border-red-500' : 'border-gray-300 focus:border-primary'
-                                        }`}
+                                        className={`w-full rounded-md border px-4 py-3 focus:ring-2 focus:ring-primary ${errors.name ? 'border-red-300 focus:border-red-500' : 'border-gray-300 focus:border-primary'
+                                            }`}
                                         placeholder="Enter your full name"
                                     />
                                     {errors.name && <p className="mt-1 text-sm text-red-600">{errors.name}</p>}
@@ -226,9 +225,8 @@ export default function Contact({ flash, pageContents = {} }: ContactProps = {})
                                         value={formData.email}
                                         onChange={handleInputChange}
                                         required
-                                        className={`w-full rounded-md border px-4 py-3 focus:ring-2 focus:ring-primary ${
-                                            errors.email ? 'border-red-300 focus:border-red-500' : 'border-gray-300 focus:border-primary'
-                                        }`}
+                                        className={`w-full rounded-md border px-4 py-3 focus:ring-2 focus:ring-primary ${errors.email ? 'border-red-300 focus:border-red-500' : 'border-gray-300 focus:border-primary'
+                                            }`}
                                         placeholder="Enter your email address"
                                     />
                                     {errors.email && <p className="mt-1 text-sm text-red-600">{errors.email}</p>}

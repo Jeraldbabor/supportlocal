@@ -119,7 +119,7 @@ export default function AuthRequiredModal({ isOpen, onClose, action, productName
                             <span className="mr-2" style={{ color: '#ea580c' }}>
                                 ✓
                             </span>
-                            <span>Support local artisans</span>
+                            <span>Support local Hinoba-an artisans</span>
                         </li>
                     </ul>
                 </div>

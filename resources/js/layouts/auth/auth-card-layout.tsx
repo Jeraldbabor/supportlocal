@@ -19,7 +19,7 @@ export default function AuthCardLayout({
                     <div className="flex items-center justify-center">
                         <img
                             src="/logo.svg"
-                            alt="Support Local"
+                            alt="Support Local Hinoba-an"
                             className="size-16 drop-shadow-lg"
                             onError={(e) => {
                                 (e.target as HTMLImageElement).src = '/favicon.svg';

@@ -347,7 +347,7 @@ export default function Home({
                             },
                             {
                                 icon: HandHeart,
-                                title: 'Support Local Artisans',
+                                title: 'Support Local Hinoba-an Artisans',
                                 description: 'Every purchase directly supports Filipino craftsmen and small businesses.',
                                 highlight: false,
                             },
@@ -366,11 +366,10 @@ export default function Home({
                         ].map((feature, index) => (
                             <div
                                 key={index}
-                                className={`group relative rounded-xl p-5 transition-all hover:-translate-y-1 hover:shadow-lg sm:p-6 ${
-                                    feature.highlight
+                                className={`group relative rounded-xl p-5 transition-all hover:-translate-y-1 hover:shadow-lg sm:p-6 ${feature.highlight
                                         ? 'bg-gradient-to-br from-amber-500 to-orange-500 text-white shadow-lg shadow-amber-500/25'
                                         : 'border border-gray-100 bg-white'
-                                }`}
+                                    }`}
                             >
                                 <div className={`mb-3 inline-flex rounded-lg p-2.5 ${feature.highlight ? 'bg-white/20' : 'bg-amber-100'}`}>
                                     <feature.icon className={`h-5 w-5 ${feature.highlight ? 'text-white' : 'text-amber-600'}`} />

@@ -93,7 +93,7 @@ export default function About({ artisans = [], pageContents = {} }: AboutProps) 
                         <>
                             <h2 className="mb-6 text-3xl font-bold text-gray-900 md:text-4xl">Our Mission</h2>
                             <p className="mb-8 text-xl leading-relaxed text-gray-600">
-                                At Support Local, we believe in the power of handmade craftsmanship and the importance of supporting local artisans.
+                                At Support Local Hinoba-an, we believe in the power of handmade craftsmanship and the importance of supporting local artisans.
                                 Our platform connects skilled craftspeople with customers who appreciate the beauty, quality, and story behind each
                                 handmade piece.
                             </p>
@@ -212,7 +212,7 @@ export default function About({ artisans = [], pageContents = {} }: AboutProps) 
                                 <h2 className="mb-6 text-3xl font-bold md:text-4xl">Our Story</h2>
                                 <div className="space-y-4 text-lg leading-relaxed">
                                     <p>
-                                        Support Local was born from a simple observation: in our increasingly digital world, there's something magical
+                                        Support Local Hinoba-an was born from a simple observation: in our increasingly digital world, there's something magical
                                         about items created by human hands with care, skill, and passion.
                                     </p>
                                     <p>

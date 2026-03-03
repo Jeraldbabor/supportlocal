@@ -63,7 +63,7 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
                                 <SheetHeader className="flex justify-start text-left">
                                     <img
                                         src="/logo.svg"
-                                        alt="Support Local"
+                                        alt="Support Local Hinoba-an"
                                         className="h-6 w-6"
                                         onError={(e) => {
                                             (e.target as HTMLImageElement).src = '/favicon.svg';
