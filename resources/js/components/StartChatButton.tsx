@@ -1,8 +1,10 @@
 import BuyerChatModal from '@/components/BuyerChatModal';
 import { Button } from '@/components/ui/button';
+import { postWithCsrf } from '@/lib/csrf';
 import { router, usePage } from '@inertiajs/react';
 import { MessageSquare } from 'lucide-react';
 import React, { useState } from 'react';
+import Swal from 'sweetalert2';
 
 interface StartChatButtonProps {
     userId: number;
@@ -25,16 +27,9 @@ export default function StartChatButton({ userId, productId, className = '', var
         setIsLoading(true);
 
         try {
-            const response = await fetch('/chat/conversation', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
-                },
-                body: JSON.stringify({
-                    other_user_id: userId,
-                    product_id: productId,
-                }),
+            const response = await postWithCsrf('/chat/conversation', {
+                other_user_id: userId,
+                product_id: productId,
             });
 
             if (response.ok) {
@@ -53,9 +48,20 @@ export default function StartChatButton({ userId, productId, className = '', var
                     setConversationId(data.conversation_id);
                     setShowChatModal(true);
                 }
+            } else {
+                Swal.fire({
+                    title: 'Error',
+                    text: 'Failed to start chat. Please try again.',
+                    icon: 'error',
+                });
             }
         } catch (error) {
             console.error('Failed to start chat:', error);
+            Swal.fire({
+                title: 'Error',
+                text: 'A network error occurred while trying to start the chat.',
+                icon: 'error',
+            });
         } finally {
             setIsLoading(false);
         }

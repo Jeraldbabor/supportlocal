@@ -70,7 +70,7 @@ export default function OrderShow({ order }: OrderShowProps) {
             `/buyer/orders/${order.id}/cancel`,
             { cancellation_reason: cancellationReason },
             {
-                preserveState: false,
+                preserveState: true,
                 onFinish: () => {
                     setIsCancelling(false);
                     setShowCancelModal(false);

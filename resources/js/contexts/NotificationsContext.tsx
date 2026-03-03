@@ -33,7 +33,7 @@ export function NotificationsProvider({
     }, [initialUnreadCount]);
 
     const refreshUnreadCount = useCallback(() => {
-        // Reload the current page to get fresh data
+        // Reload the current page to get fresh data but preserve local UI state
         router.reload({ only: ['unreadNotificationsCount'] });
     }, []);
 
@@ -48,7 +48,7 @@ export function NotificationsProvider({
             `/${baseRoute}/notifications/${notificationId}/read`,
             {},
             {
-                preserveState: false,
+                preserveState: true,
                 preserveScroll: true,
                 onSuccess: () => {
                     // Page will reload automatically, updating the notification state
@@ -67,7 +67,7 @@ export function NotificationsProvider({
             `/${baseRoute}/notifications/read-all`,
             {},
             {
-                preserveState: false,
+                preserveState: true,
                 preserveScroll: true,
                 onSuccess: () => {
                     // Page will reload automatically, updating all notifications

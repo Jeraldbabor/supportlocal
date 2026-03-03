@@ -81,7 +81,7 @@ function NotificationsContent({ notifications }: NotificationsProps) {
             '/buyer/notifications/clear-all',
             {},
             {
-                preserveState: false, // Reload the page to show empty state
+                preserveState: true, // Preserve state to not reset DOM aggressively
                 onFinish: () => {
                     setIsClearing(false);
                     setShowClearAllConfirm(false);
@@ -94,7 +94,7 @@ function NotificationsContent({ notifications }: NotificationsProps) {
     const handleDeleteNotification = (notificationId: string) => {
         setDeletingId(notificationId);
         router.delete(`/buyer/notifications/${notificationId}`, {
-            preserveState: false,
+            preserveState: true,
             onFinish: () => {
                 setDeletingId(null);
                 setShowDeleteConfirm(null);
