@@ -131,10 +131,11 @@ function BuyerLayoutContent({ children, title }: BuyerLayoutProps) {
                                         <Link
                                             key={item.name}
                                             href={item.href}
-                                            className={`group relative flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium whitespace-nowrap transition-all duration-300 focus:ring-2 focus:ring-orange-500/50 focus:ring-offset-2 focus:outline-none ${isActive
+                                            className={`group relative flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium whitespace-nowrap transition-all duration-300 focus:ring-2 focus:ring-orange-500/50 focus:ring-offset-2 focus:outline-none ${
+                                                isActive
                                                     ? 'border border-orange-200 bg-gradient-to-r from-orange-100 to-amber-50 shadow-inner'
                                                     : 'hover:bg-gray-50 hover:shadow-sm'
-                                                }`}
+                                            }`}
                                             style={{ color: isActive ? '#c2410c' : '#374151' }}
                                             aria-current={isActive ? 'page' : undefined}
                                         >
@@ -168,10 +169,11 @@ function BuyerLayoutContent({ children, title }: BuyerLayoutProps) {
                             {/* Wishlist Icon */}
                             <Link
                                 href="/wishlist"
-                                className={`group relative flex-shrink-0 rounded-xl p-2 transition-all duration-300 focus:ring-2 focus:ring-orange-500/50 focus:ring-offset-2 focus:outline-none ${isActiveRoute('/wishlist')
+                                className={`group relative flex-shrink-0 rounded-xl p-2 transition-all duration-300 focus:ring-2 focus:ring-orange-500/50 focus:ring-offset-2 focus:outline-none ${
+                                    isActiveRoute('/wishlist')
                                         ? 'bg-orange-100 shadow-sm ring-1 ring-orange-200'
                                         : 'hover:bg-orange-50 hover:shadow-sm'
-                                    }`}
+                                }`}
                                 style={{ colorScheme: 'light' }}
                                 aria-label={`Wishlist ${(wishlistCount ?? 0) > 0 ? `(${wishlistCount} items)` : '(empty)'}`}
                             >
@@ -189,10 +191,11 @@ function BuyerLayoutContent({ children, title }: BuyerLayoutProps) {
                             {/* Cart Icon */}
                             <Link
                                 href="/buyer/cart"
-                                className={`group relative flex-shrink-0 rounded-xl p-2 transition-all duration-300 focus:ring-2 focus:ring-orange-500/50 focus:ring-offset-2 focus:outline-none ${isActiveRoute('/buyer/cart')
+                                className={`group relative flex-shrink-0 rounded-xl p-2 transition-all duration-300 focus:ring-2 focus:ring-orange-500/50 focus:ring-offset-2 focus:outline-none ${
+                                    isActiveRoute('/buyer/cart')
                                         ? 'bg-orange-100 shadow-sm ring-1 ring-orange-200'
                                         : 'hover:bg-orange-50 hover:shadow-sm'
-                                    }`}
+                                }`}
                                 style={{ colorScheme: 'light' }}
                                 aria-label={`Shopping cart ${totalItems > 0 ? `(${totalItems} items)` : '(empty)'}`}
                             >
@@ -211,10 +214,11 @@ function BuyerLayoutContent({ children, title }: BuyerLayoutProps) {
                             <div className="relative hidden flex-shrink-0 md:block" ref={userMenuRef}>
                                 <button
                                     onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                                    className={`flex items-center space-x-2 rounded-xl p-2 transition-all duration-300 focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 focus:outline-none ${isUserMenuOpen
+                                    className={`flex items-center space-x-2 rounded-xl p-2 transition-all duration-300 focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 focus:outline-none ${
+                                        isUserMenuOpen
                                             ? 'bg-gradient-to-r from-primary/10 to-primary/5 shadow-md ring-2 ring-primary/20'
                                             : 'hover:bg-gray-50 hover:shadow-sm'
-                                        }`}
+                                    }`}
                                     aria-expanded={isUserMenuOpen}
                                     aria-haspopup="true"
                                     aria-label="User menu"
@@ -224,11 +228,11 @@ function BuyerLayoutContent({ children, title }: BuyerLayoutProps) {
                                         <AvatarFallback className="bg-gradient-to-br from-primary/20 to-primary/10 text-sm font-semibold text-primary">
                                             {user?.name
                                                 ? user.name
-                                                    .split(' ')
-                                                    .map((n: string) => n[0])
-                                                    .join('')
-                                                    .toUpperCase()
-                                                    .slice(0, 2)
+                                                      .split(' ')
+                                                      .map((n: string) => n[0])
+                                                      .join('')
+                                                      .toUpperCase()
+                                                      .slice(0, 2)
                                                 : 'U'}
                                         </AvatarFallback>
                                     </Avatar>
@@ -237,8 +241,9 @@ function BuyerLayoutContent({ children, title }: BuyerLayoutProps) {
                                         <p className="text-xs font-medium text-gray-500">Buyer Account</p>
                                     </div>
                                     <ChevronDown
-                                        className={`h-4 w-4 text-gray-400 transition-all duration-300 ${isUserMenuOpen ? 'rotate-180 text-primary' : 'group-hover:text-primary'
-                                            }`}
+                                        className={`h-4 w-4 text-gray-400 transition-all duration-300 ${
+                                            isUserMenuOpen ? 'rotate-180 text-primary' : 'group-hover:text-primary'
+                                        }`}
                                     />
                                 </button>
 
@@ -327,8 +332,9 @@ function BuyerLayoutContent({ children, title }: BuyerLayoutProps) {
 
                     {/* Mobile Navigation Menu */}
                     <div
-                        className={`overflow-hidden transition-all duration-300 ease-in-out lg:hidden ${isMenuOpen ? 'max-h-screen opacity-100' : 'max-h-0 opacity-0'
-                            }`}
+                        className={`overflow-hidden transition-all duration-300 ease-in-out lg:hidden ${
+                            isMenuOpen ? 'max-h-screen opacity-100' : 'max-h-0 opacity-0'
+                        }`}
                         ref={mobileMenuRef}
                     >
                         <div className="border-t border-gray-200 bg-white px-4 py-4 shadow-lg">
@@ -340,10 +346,11 @@ function BuyerLayoutContent({ children, title }: BuyerLayoutProps) {
                                         <Link
                                             key={item.name}
                                             href={item.href}
-                                            className={`flex items-center gap-4 rounded-xl px-4 py-3 text-base font-medium transition-all duration-300 ${isActive
+                                            className={`flex items-center gap-4 rounded-xl px-4 py-3 text-base font-medium transition-all duration-300 ${
+                                                isActive
                                                     ? 'border border-orange-200 bg-gradient-to-r from-orange-100 to-amber-50 text-orange-700'
                                                     : 'text-gray-700 hover:bg-gray-50 hover:text-orange-600'
-                                                }`}
+                                            }`}
                                             onClick={() => {
                                                 setIsMenuOpen(false);
                                                 setIsUserMenuOpen(false);
@@ -365,11 +372,11 @@ function BuyerLayoutContent({ children, title }: BuyerLayoutProps) {
                                         <AvatarFallback className="bg-primary/10 font-semibold text-primary">
                                             {user?.name
                                                 ? user.name
-                                                    .split(' ')
-                                                    .map((n: string) => n[0])
-                                                    .join('')
-                                                    .toUpperCase()
-                                                    .slice(0, 2)
+                                                      .split(' ')
+                                                      .map((n: string) => n[0])
+                                                      .join('')
+                                                      .toUpperCase()
+                                                      .slice(0, 2)
                                                 : 'U'}
                                         </AvatarFallback>
                                     </Avatar>
@@ -579,8 +586,8 @@ function BuyerLayoutContent({ children, title }: BuyerLayoutProps) {
                     <div className="mt-8 border-t border-gray-800 pt-6 sm:mt-12 sm:pt-8">
                         <div className="flex flex-col items-center justify-between gap-4 text-center md:flex-row md:text-left">
                             <p className="text-sm text-gray-400">
-                                &copy; {new Date().getFullYear()} Support Local Hinoba-an. Empowering buyers and artisans. Crafted with ❤️ for artisans, Develop
-                                and Maintain by @Jerald B Babor.
+                                &copy; {new Date().getFullYear()} Support Local Hinoba-an. Empowering buyers and artisans. Crafted with ❤️ for
+                                artisans, Develop and Maintain by @Jerald B Babor.
                             </p>
                             <div className="flex flex-wrap justify-center gap-4 text-sm sm:gap-6 md:justify-start">
                                 <Link href="/privacy-policy" className="text-gray-400 transition-colors hover:text-amber-400">

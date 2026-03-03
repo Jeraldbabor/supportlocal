@@ -93,9 +93,9 @@ export default function About({ artisans = [], pageContents = {} }: AboutProps) 
                         <>
                             <h2 className="mb-6 text-3xl font-bold text-gray-900 md:text-4xl">Our Mission</h2>
                             <p className="mb-8 text-xl leading-relaxed text-gray-600">
-                                At Support Local Hinoba-an, we believe in the power of handmade craftsmanship and the importance of supporting local artisans.
-                                Our platform connects skilled craftspeople with customers who appreciate the beauty, quality, and story behind each
-                                handmade piece.
+                                At Support Local Hinoba-an, we believe in the power of handmade craftsmanship and the importance of supporting local
+                                artisans. Our platform connects skilled craftspeople with customers who appreciate the beauty, quality, and story
+                                behind each handmade piece.
                             </p>
                             <p className="text-lg leading-relaxed text-gray-600">
                                 Every purchase you make helps preserve traditional crafting techniques, supports local economies, and brings unique,
@@ -212,8 +212,8 @@ export default function About({ artisans = [], pageContents = {} }: AboutProps) 
                                 <h2 className="mb-6 text-3xl font-bold md:text-4xl">Our Story</h2>
                                 <div className="space-y-4 text-lg leading-relaxed">
                                     <p>
-                                        Support Local Hinoba-an was born from a simple observation: in our increasingly digital world, there's something magical
-                                        about items created by human hands with care, skill, and passion.
+                                        Support Local Hinoba-an was born from a simple observation: in our increasingly digital world, there's
+                                        something magical about items created by human hands with care, skill, and passion.
                                     </p>
                                     <p>
                                         Founded in 2026, we started as a small team passionate about supporting local artisans and preserving

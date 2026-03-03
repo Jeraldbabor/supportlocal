@@ -290,10 +290,11 @@ export default function Welcome() {
                             {features.map((feature, index) => (
                                 <div
                                     key={index}
-                                    className={`group relative rounded-2xl p-6 transition-all hover:-translate-y-1 hover:shadow-xl ${feature.highlight
+                                    className={`group relative rounded-2xl p-6 transition-all hover:-translate-y-1 hover:shadow-xl ${
+                                        feature.highlight
                                             ? 'bg-gradient-to-br from-amber-500 to-orange-500 text-white shadow-lg shadow-amber-500/25'
                                             : 'border border-gray-100 bg-white'
-                                        }`}
+                                    }`}
                                 >
                                     <div className={`mb-4 inline-flex rounded-xl p-3 ${feature.highlight ? 'bg-white/20' : 'bg-amber-100'}`}>
                                         <feature.icon className={`h-6 w-6 ${feature.highlight ? 'text-white' : 'text-amber-600'}`} />
