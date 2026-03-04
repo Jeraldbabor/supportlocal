@@ -23,12 +23,12 @@ interface Product {
         avatar_url?: string;
     };
     category?:
-    | {
-        id: number;
-        name: string;
-    }
-    | string
-    | null;
+        | {
+              id: number;
+              name: string;
+          }
+        | string
+        | null;
     average_rating?: number | null;
     review_count?: number;
     order_count?: number;
@@ -264,16 +264,16 @@ export default function Index({
                     freeShippingOnly ||
                     codOnly ||
                     selectedRating) && (
-                        <button
-                            onClick={() => {
-                                clearFilters();
-                                setIsFilterOpen(false);
-                            }}
-                            className="text-xs text-orange-500 hover:text-orange-600"
-                        >
-                            Clear
-                        </button>
-                    )}
+                    <button
+                        onClick={() => {
+                            clearFilters();
+                            setIsFilterOpen(false);
+                        }}
+                        className="text-xs text-orange-500 hover:text-orange-600"
+                    >
+                        Clear
+                    </button>
+                )}
             </div>
 
             {/* Category Filter */}
@@ -640,7 +640,7 @@ export default function Index({
                                     className={`relative min-w-full flex-none overflow-hidden ${banner.bg} cursor-pointer p-4 text-white sm:p-8`}
                                 >
                                     <div className="relative z-10 mx-auto flex h-full max-w-4xl items-center justify-between gap-3 sm:gap-8">
-                                        <div className="flex flex-1 flex-col pr-1 truncate sm:pr-0">
+                                        <div className="flex flex-1 flex-col truncate pr-1 sm:pr-0">
                                             <span className="mb-1 inline-flex w-fit items-center rounded-full bg-white/20 px-2 py-0.5 text-[9px] font-bold tracking-wider text-white uppercase shadow-sm ring-1 ring-white/30 backdrop-blur-md sm:mb-2 sm:px-2.5 sm:py-1 sm:text-xs">
                                                 {banner.title}
                                             </span>
@@ -656,7 +656,7 @@ export default function Index({
                                                         -
                                                         {Math.round(
                                                             ((banner.product.compare_price - banner.product.price) / banner.product.compare_price) *
-                                                            100,
+                                                                100,
                                                         )}
                                                         %
                                                     </span>
@@ -787,10 +787,11 @@ export default function Index({
                                                             handleSort('price-low');
                                                             setShowPriceDropdown(false);
                                                         }}
-                                                        className={`flex w-full items-center justify-between px-4 py-3 text-left text-sm transition-colors ${currentSort === 'price-low'
-                                                            ? 'bg-orange-50/50 font-medium text-orange-600'
-                                                            : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                                                            }`}
+                                                        className={`flex w-full items-center justify-between px-4 py-3 text-left text-sm transition-colors ${
+                                                            currentSort === 'price-low'
+                                                                ? 'bg-orange-50/50 font-medium text-orange-600'
+                                                                : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                                                        }`}
                                                     >
                                                         <span>Low to High</span>
                                                         {currentSort === 'price-low' && <Check className="h-4 w-4 text-orange-500" />}
@@ -801,10 +802,11 @@ export default function Index({
                                                             handleSort('price-high');
                                                             setShowPriceDropdown(false);
                                                         }}
-                                                        className={`flex w-full items-center justify-between px-4 py-3 text-left text-sm transition-colors ${currentSort === 'price-high'
-                                                            ? 'bg-orange-50/50 font-medium text-orange-600'
-                                                            : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                                                            }`}
+                                                        className={`flex w-full items-center justify-between px-4 py-3 text-left text-sm transition-colors ${
+                                                            currentSort === 'price-high'
+                                                                ? 'bg-orange-50/50 font-medium text-orange-600'
+                                                                : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                                                        }`}
                                                     >
                                                         <span>High to Low</span>
                                                         {currentSort === 'price-high' && <Check className="h-4 w-4 text-orange-500" />}
@@ -824,19 +826,21 @@ export default function Index({
                                     <div className="flex gap-0.5 sm:gap-1">
                                         <Link
                                             href={products.links.find((l) => l.label === '&laquo; Previous')?.url || '#'}
-                                            className={`rounded px-1.5 py-1 text-xs sm:px-2 sm:text-sm ${products.current_page === 1
-                                                ? 'cursor-not-allowed bg-gray-100 text-gray-400'
-                                                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                                                }`}
+                                            className={`rounded px-1.5 py-1 text-xs sm:px-2 sm:text-sm ${
+                                                products.current_page === 1
+                                                    ? 'cursor-not-allowed bg-gray-100 text-gray-400'
+                                                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                            }`}
                                         >
                                             <ChevronLeft className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                                         </Link>
                                         <Link
                                             href={products.links.find((l) => l.label === 'Next &raquo;')?.url || '#'}
-                                            className={`rounded px-1.5 py-1 text-xs sm:px-2 sm:text-sm ${products.current_page === products.last_page
-                                                ? 'cursor-not-allowed bg-gray-100 text-gray-400'
-                                                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                                                }`}
+                                            className={`rounded px-1.5 py-1 text-xs sm:px-2 sm:text-sm ${
+                                                products.current_page === products.last_page
+                                                    ? 'cursor-not-allowed bg-gray-100 text-gray-400'
+                                                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                            }`}
                                         >
                                             <ChevronRight className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                                         </Link>
@@ -891,8 +895,9 @@ export default function Index({
                                                 <Link
                                                     key={index}
                                                     href={link.url || '#'}
-                                                    className={`rounded-md px-2 py-1.5 text-xs sm:px-3 sm:py-2 sm:text-sm ${link.active ? 'bg-orange-500 text-white' : 'bg-white text-gray-700 hover:bg-gray-100'
-                                                        } ${!link.url ? 'cursor-not-allowed opacity-50' : ''}`}
+                                                    className={`rounded-md px-2 py-1.5 text-xs sm:px-3 sm:py-2 sm:text-sm ${
+                                                        link.active ? 'bg-orange-500 text-white' : 'bg-white text-gray-700 hover:bg-gray-100'
+                                                    } ${!link.url ? 'cursor-not-allowed opacity-50' : ''}`}
                                                     dangerouslySetInnerHTML={{ __html: link.label }}
                                                 />
                                             ))}
