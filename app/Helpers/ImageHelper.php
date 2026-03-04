@@ -180,6 +180,7 @@ class ImageHelper
                 return $file->store($folder, self::getDisk());
             } catch (\Throwable $fallbackErr) {
                 Log::error('Fallback file store also failed', ['error' => $fallbackErr->getMessage()]);
+
                 return false;
             }
         }
