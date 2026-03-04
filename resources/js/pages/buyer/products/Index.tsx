@@ -20,14 +20,15 @@ interface Product {
     seller?: {
         id: number;
         name: string;
+        avatar_url?: string;
     };
     category?:
-        | {
-              id: number;
-              name: string;
-          }
-        | string
-        | null;
+    | {
+        id: number;
+        name: string;
+    }
+    | string
+    | null;
     average_rating?: number | null;
     review_count?: number;
     order_count?: number;
@@ -263,16 +264,16 @@ export default function Index({
                     freeShippingOnly ||
                     codOnly ||
                     selectedRating) && (
-                    <button
-                        onClick={() => {
-                            clearFilters();
-                            setIsFilterOpen(false);
-                        }}
-                        className="text-xs text-orange-500 hover:text-orange-600"
-                    >
-                        Clear
-                    </button>
-                )}
+                        <button
+                            onClick={() => {
+                                clearFilters();
+                                setIsFilterOpen(false);
+                            }}
+                            className="text-xs text-orange-500 hover:text-orange-600"
+                        >
+                            Clear
+                        </button>
+                    )}
             </div>
 
             {/* Category Filter */}
@@ -639,30 +640,30 @@ export default function Index({
                                     className={`relative min-w-full flex-none overflow-hidden ${banner.bg} cursor-pointer p-4 text-white sm:p-8`}
                                 >
                                     <div className="relative z-10 mx-auto flex h-full max-w-4xl items-center justify-between gap-3 sm:gap-8">
-                                        <div className="flex w-[65%] flex-1 flex-col sm:w-[70%]">
-                                            <span className="mb-1.5 inline-flex w-fit items-center rounded-full bg-white/20 px-2 py-0.5 text-[10px] font-bold tracking-wider text-white uppercase shadow-sm ring-1 ring-white/30 backdrop-blur-md sm:mb-2 sm:px-2.5 sm:py-1 sm:text-xs">
+                                        <div className="flex flex-1 flex-col pr-1 truncate sm:pr-0">
+                                            <span className="mb-1 inline-flex w-fit items-center rounded-full bg-white/20 px-2 py-0.5 text-[9px] font-bold tracking-wider text-white uppercase shadow-sm ring-1 ring-white/30 backdrop-blur-md sm:mb-2 sm:px-2.5 sm:py-1 sm:text-xs">
                                                 {banner.title}
                                             </span>
-                                            <h4 className="mb-2 line-clamp-2 text-lg leading-tight font-extrabold drop-shadow-md sm:mb-3 sm:text-3xl">
+                                            <h4 className="mb-1.5 line-clamp-2 text-base leading-tight font-extrabold drop-shadow-md sm:mb-3 sm:text-3xl">
                                                 {banner.product.name}
                                             </h4>
                                             <div className="mt-auto flex items-center gap-2 sm:gap-3">
-                                                <span className="text-lg font-bold drop-shadow-md sm:text-2xl">
+                                                <span className="text-base font-bold drop-shadow-md sm:text-2xl">
                                                     ₱{Number(banner.product.price).toLocaleString()}
                                                 </span>
                                                 {banner.product.compare_price && banner.product.compare_price > banner.product.price && (
-                                                    <span className="rounded bg-white/20 px-1.5 py-0.5 text-xs font-bold text-white shadow-sm ring-1 ring-white/30 backdrop-blur-md sm:px-2 sm:py-1 sm:text-sm">
+                                                    <span className="rounded bg-white/20 px-1.5 py-0.5 text-[10px] font-bold text-white shadow-sm ring-1 ring-white/30 backdrop-blur-md sm:px-2 sm:py-1 sm:text-sm">
                                                         -
                                                         {Math.round(
                                                             ((banner.product.compare_price - banner.product.price) / banner.product.compare_price) *
-                                                                100,
+                                                            100,
                                                         )}
                                                         %
                                                     </span>
                                                 )}
                                             </div>
                                         </div>
-                                        <div className="relative h-24 w-24 flex-shrink-0 overflow-hidden rounded-xl bg-white/10 shadow-xl ring-2 ring-white/20 sm:h-40 sm:w-40 sm:rounded-2xl sm:shadow-2xl">
+                                        <div className="relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-xl bg-white/10 shadow-xl ring-2 ring-white/20 sm:h-40 sm:w-40 sm:rounded-2xl sm:shadow-2xl">
                                             <img
                                                 src={banner.product.primary_image || banner.product.image || '/placeholder.svg'}
                                                 alt={banner.product.name}
@@ -786,11 +787,10 @@ export default function Index({
                                                             handleSort('price-low');
                                                             setShowPriceDropdown(false);
                                                         }}
-                                                        className={`flex w-full items-center justify-between px-4 py-3 text-left text-sm transition-colors ${
-                                                            currentSort === 'price-low'
-                                                                ? 'bg-orange-50/50 font-medium text-orange-600'
-                                                                : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                                                        }`}
+                                                        className={`flex w-full items-center justify-between px-4 py-3 text-left text-sm transition-colors ${currentSort === 'price-low'
+                                                            ? 'bg-orange-50/50 font-medium text-orange-600'
+                                                            : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                                                            }`}
                                                     >
                                                         <span>Low to High</span>
                                                         {currentSort === 'price-low' && <Check className="h-4 w-4 text-orange-500" />}
@@ -801,11 +801,10 @@ export default function Index({
                                                             handleSort('price-high');
                                                             setShowPriceDropdown(false);
                                                         }}
-                                                        className={`flex w-full items-center justify-between px-4 py-3 text-left text-sm transition-colors ${
-                                                            currentSort === 'price-high'
-                                                                ? 'bg-orange-50/50 font-medium text-orange-600'
-                                                                : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                                                        }`}
+                                                        className={`flex w-full items-center justify-between px-4 py-3 text-left text-sm transition-colors ${currentSort === 'price-high'
+                                                            ? 'bg-orange-50/50 font-medium text-orange-600'
+                                                            : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                                                            }`}
                                                     >
                                                         <span>High to Low</span>
                                                         {currentSort === 'price-high' && <Check className="h-4 w-4 text-orange-500" />}
@@ -825,21 +824,19 @@ export default function Index({
                                     <div className="flex gap-0.5 sm:gap-1">
                                         <Link
                                             href={products.links.find((l) => l.label === '&laquo; Previous')?.url || '#'}
-                                            className={`rounded px-1.5 py-1 text-xs sm:px-2 sm:text-sm ${
-                                                products.current_page === 1
-                                                    ? 'cursor-not-allowed bg-gray-100 text-gray-400'
-                                                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                                            }`}
+                                            className={`rounded px-1.5 py-1 text-xs sm:px-2 sm:text-sm ${products.current_page === 1
+                                                ? 'cursor-not-allowed bg-gray-100 text-gray-400'
+                                                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                                }`}
                                         >
                                             <ChevronLeft className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                                         </Link>
                                         <Link
                                             href={products.links.find((l) => l.label === 'Next &raquo;')?.url || '#'}
-                                            className={`rounded px-1.5 py-1 text-xs sm:px-2 sm:text-sm ${
-                                                products.current_page === products.last_page
-                                                    ? 'cursor-not-allowed bg-gray-100 text-gray-400'
-                                                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                                            }`}
+                                            className={`rounded px-1.5 py-1 text-xs sm:px-2 sm:text-sm ${products.current_page === products.last_page
+                                                ? 'cursor-not-allowed bg-gray-100 text-gray-400'
+                                                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                                }`}
                                         >
                                             <ChevronRight className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                                         </Link>
@@ -861,6 +858,7 @@ export default function Index({
                                             compare_price: product.compare_price ? Number(product.compare_price) : null,
                                             image: product.primary_image || product.image || '/placeholder.svg',
                                             artisan: product.seller?.name || 'Unknown',
+                                            artisan_image: product.seller?.avatar_url || null,
                                             rating: Number(product.average_rating) || 0,
                                             review_count: product.review_count,
                                             category: typeof product.category === 'object' ? product.category?.name : product.category,
@@ -893,9 +891,8 @@ export default function Index({
                                                 <Link
                                                     key={index}
                                                     href={link.url || '#'}
-                                                    className={`rounded-md px-2 py-1.5 text-xs sm:px-3 sm:py-2 sm:text-sm ${
-                                                        link.active ? 'bg-orange-500 text-white' : 'bg-white text-gray-700 hover:bg-gray-100'
-                                                    } ${!link.url ? 'cursor-not-allowed opacity-50' : ''}`}
+                                                    className={`rounded-md px-2 py-1.5 text-xs sm:px-3 sm:py-2 sm:text-sm ${link.active ? 'bg-orange-500 text-white' : 'bg-white text-gray-700 hover:bg-gray-100'
+                                                        } ${!link.url ? 'cursor-not-allowed opacity-50' : ''}`}
                                                     dangerouslySetInnerHTML={{ __html: link.label }}
                                                 />
                                             ))}

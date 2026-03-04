@@ -33,11 +33,11 @@ class UpdateProductRequest extends FormRequest
             'description' => 'required|string|min:10',
             'short_description' => 'nullable|string|max:500',
             'price' => 'required|numeric|min:0.01|max:999999.99',
-            'compare_price' => 'nullable|numeric|min:0|gte:price',
-            'cost_price' => 'nullable|numeric|min:0|lte:price',
+            'compare_price' => 'nullable|numeric|min:0',
+            'cost_price' => 'nullable|numeric|min:0',
             'category_id' => 'nullable|integer|exists:product_categories,id',
             'quantity' => 'required|integer|min:0|max:999999',
-            'low_stock_threshold' => 'required|integer|min:0|lte:quantity',
+            'low_stock_threshold' => 'required|integer|min:0',
             'track_quantity' => 'boolean',
             'allow_backorders' => 'boolean',
             'weight' => 'nullable|numeric|min:0|max:999999',
@@ -57,8 +57,8 @@ class UpdateProductRequest extends FormRequest
             'meta_description' => 'nullable|string|max:500',
             'tags' => 'nullable|array|max:10',
             'tags.*' => 'string|max:50',
-            'new_images' => 'nullable|array|max:10',
-            'new_images.*' => 'file|image|mimes:jpeg,png,jpg,webp|max:2048',
+            'new_images' => 'nullable|array',
+            'new_images.*' => 'file',
             'existing_images' => 'nullable|array',
             'remove_images' => 'nullable|array',
         ];
@@ -75,12 +75,7 @@ class UpdateProductRequest extends FormRequest
             'description.min' => 'Product description must be at least 10 characters.',
             'price.required' => 'Product price is required.',
             'price.min' => 'Product price must be greater than 0.',
-            'compare_price.gte' => 'Compare price must be greater than or equal to the selling price.',
-            'cost_price.lte' => 'Cost price must be less than or equal to the selling price.',
             'quantity.required' => 'Product quantity is required.',
-            'low_stock_threshold.lte' => 'Low stock threshold cannot be greater than available quantity.',
-            'new_images.*.image' => 'All uploaded files must be images.',
-            'new_images.*.max' => 'Each image must not exceed 2MB.',
         ];
     }
 

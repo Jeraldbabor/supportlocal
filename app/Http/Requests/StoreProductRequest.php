@@ -27,11 +27,11 @@ class StoreProductRequest extends FormRequest
             'description' => 'required|string|min:10',
             'short_description' => 'nullable|string|max:500',
             'price' => 'required|numeric|min:0.01|max:999999.99',
-            'compare_price' => 'nullable|numeric|min:0|gte:price',
-            'cost_price' => 'nullable|numeric|min:0|lte:price',
+            'compare_price' => 'nullable|numeric|min:0',
+            'cost_price' => 'nullable|numeric|min:0',
             'category_id' => 'nullable|integer|exists:product_categories,id',
             'quantity' => 'required|integer|min:0|max:999999',
-            'low_stock_threshold' => 'required|integer|min:0|lte:quantity',
+            'low_stock_threshold' => 'required|integer|min:0',
             'track_quantity' => 'boolean',
             'allow_backorders' => 'boolean',
             'weight' => 'nullable|numeric|min:0|max:999999',
@@ -51,8 +51,8 @@ class StoreProductRequest extends FormRequest
             'meta_description' => 'nullable|string|max:500',
             'tags' => 'nullable|array|max:10',
             'tags.*' => 'string|max:50',
-            'images' => 'nullable|array|max:10',
-            'images.*' => 'file|image|mimes:jpeg,png,jpg,webp|max:2048',
+            'images' => 'nullable|array',
+            'images.*' => 'file',
         ];
     }
 
@@ -67,12 +67,7 @@ class StoreProductRequest extends FormRequest
             'description.min' => 'Product description must be at least 10 characters.',
             'price.required' => 'Product price is required.',
             'price.min' => 'Product price must be greater than 0.',
-            'compare_price.gte' => 'Compare price must be greater than or equal to the selling price.',
-            'cost_price.lte' => 'Cost price must be less than or equal to the selling price.',
             'quantity.required' => 'Product quantity is required.',
-            'low_stock_threshold.lte' => 'Low stock threshold cannot be greater than available quantity.',
-            'images.*.image' => 'All uploaded files must be images.',
-            'images.*.max' => 'Each image must not exceed 2MB.',
         ];
     }
 

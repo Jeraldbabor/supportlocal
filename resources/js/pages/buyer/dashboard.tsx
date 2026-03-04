@@ -653,11 +653,10 @@ export default function BuyerDashboard() {
                                             className="flex items-start gap-3 rounded-lg border border-gray-100 bg-gray-50 p-3 transition-all duration-200 hover:border-amber-200 hover:bg-amber-50 sm:gap-4 sm:p-4"
                                         >
                                             <div
-                                                className={`mt-0.5 flex-shrink-0 rounded-full p-1.5 sm:mt-1 sm:p-2 ${
-                                                    activity.type === 'order'
-                                                        ? 'bg-gradient-to-r from-amber-600 to-orange-600'
-                                                        : 'bg-gradient-to-r from-yellow-600 to-amber-600'
-                                                }`}
+                                                className={`mt-0.5 flex-shrink-0 rounded-full p-1.5 sm:mt-1 sm:p-2 ${activity.type === 'order'
+                                                    ? 'bg-gradient-to-r from-amber-600 to-orange-600'
+                                                    : 'bg-gradient-to-r from-yellow-600 to-amber-600'
+                                                    }`}
                                             >
                                                 {activity.type === 'order' ? (
                                                     <Package className="h-3.5 w-3.5 text-white sm:h-4 sm:w-4" />
@@ -675,13 +674,12 @@ export default function BuyerDashboard() {
                                                             <p className="mt-1 text-sm text-gray-600">
                                                                 Status:{' '}
                                                                 <span
-                                                                    className={`font-medium ${
-                                                                        activity.status === 'completed'
-                                                                            ? 'text-green-600'
-                                                                            : activity.status === 'pending'
-                                                                              ? 'text-yellow-600'
-                                                                              : 'text-amber-600'
-                                                                    }`}
+                                                                    className={`font-medium ${activity.status === 'completed'
+                                                                        ? 'text-green-600'
+                                                                        : activity.status === 'pending'
+                                                                            ? 'text-yellow-600'
+                                                                            : 'text-amber-600'
+                                                                        }`}
                                                                 >
                                                                     {activity.status}
                                                                 </span>
@@ -692,9 +690,8 @@ export default function BuyerDashboard() {
                                                                 {[...Array(5)].map((_, i) => (
                                                                     <Star
                                                                         key={i}
-                                                                        className={`h-3 w-3 ${
-                                                                            i < activity.rating! ? 'fill-yellow-500 text-yellow-500' : 'text-gray-300'
-                                                                        }`}
+                                                                        className={`h-3 w-3 ${i < activity.rating! ? 'fill-yellow-500 text-yellow-500' : 'text-gray-300'
+                                                                            }`}
                                                                     />
                                                                 ))}
                                                             </div>
@@ -765,17 +762,16 @@ export default function BuyerDashboard() {
                                                         </div>
                                                         <div className="flex-shrink-0 text-left sm:text-right">
                                                             <span
-                                                                className={`inline-block rounded-full px-2.5 py-1 text-[10px] font-semibold sm:px-3 sm:text-xs ${
-                                                                    order.status === 'completed'
-                                                                        ? 'bg-green-100 text-green-700'
-                                                                        : order.status === 'pending'
-                                                                          ? 'bg-yellow-100 text-yellow-700'
-                                                                          : order.status === 'processing'
+                                                                className={`inline-block rounded-full px-2.5 py-1 text-[10px] font-semibold sm:px-3 sm:text-xs ${order.status === 'completed'
+                                                                    ? 'bg-green-100 text-green-700'
+                                                                    : order.status === 'pending'
+                                                                        ? 'bg-yellow-100 text-yellow-700'
+                                                                        : order.status === 'processing'
                                                                             ? 'bg-blue-100 text-blue-700'
                                                                             : order.status === 'shipped'
-                                                                              ? 'bg-purple-100 text-purple-700'
-                                                                              : 'bg-gray-100 text-gray-700'
-                                                                }`}
+                                                                                ? 'bg-purple-100 text-purple-700'
+                                                                                : 'bg-gray-100 text-gray-700'
+                                                                    }`}
                                                             >
                                                                 {order.status}
                                                             </span>
