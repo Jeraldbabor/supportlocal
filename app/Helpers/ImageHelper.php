@@ -172,11 +172,17 @@ class ImageHelper
 
                 return $path;
             }
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             Log::error('Failed to store optimized file', ['error' => $e->getMessage(), 'file' => $file->getClientOriginalName()]);
 
             // Fallback to normal store if intervention fails
-            return $file->store($folder, self::getDisk());
+            try {
+                return $file->store($folder, self::getDisk());
+            } catch (\Throwable $fallbackErr) {
+                Log::error('Fallback file store also failed', ['error' => $fallbackErr->getMessage()]);
+
+                return false;
+            }
         }
     }
 

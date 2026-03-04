@@ -19,4 +19,4 @@ php artisan storage:link || true
 # Use PHP built-in server with router to serve static assets
 PORT_NUM=${PORT:-8080}
 echo "Starting PHP server on port $PORT_NUM..."
-exec php -S 0.0.0.0:$PORT_NUM -t /app/public /app/public/router.php
+exec php -d upload_max_filesize=20M -d post_max_size=25M -d memory_limit=256M -S 0.0.0.0:$PORT_NUM -t /app/public /app/public/router.php
