@@ -125,9 +125,10 @@ class ProductController extends Controller
                     if ($path) {
                         $images[] = $path;
                     }
-                } catch (\Exception $e) {
+                } catch (\Throwable $e) {
                     \Log::error('Product image upload failed', [
                         'error' => $e->getMessage(),
+                        'trace' => $e->getTraceAsString(),
                     ]);
                     // Continue with other images
                 }
@@ -143,7 +144,17 @@ class ProductController extends Controller
             $validated['published_at'] = now();
         }
 
-        $product = Product::create($validated);
+        try {
+            $product = Product::create($validated);
+        } catch (\Throwable $e) {
+            \Log::error('Product creation failed', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+                'validated_keys' => array_keys($validated),
+            ]);
+
+            return back()->withErrors(['error' => 'Failed to create product. Please try again.']);
+        }
 
         return redirect()
             ->route('seller.products.show', $product)
@@ -220,9 +231,15 @@ class ProductController extends Controller
         // Add new images
         if ($request->hasFile('new_images')) {
             foreach ($request->file('new_images') as $image) {
-                $path = \App\Helpers\ImageHelper::store($image, 'products');
-                if ($path) {
-                    $currentImages[] = $path;
+                try {
+                    $path = \App\Helpers\ImageHelper::store($image, 'products');
+                    if ($path) {
+                        $currentImages[] = $path;
+                    }
+                } catch (\Throwable $e) {
+                    \Log::error('Product image update upload failed', [
+                        'error' => $e->getMessage(),
+                    ]);
                 }
             }
         }

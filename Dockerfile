@@ -1,16 +1,20 @@
 FROM php:8.3-cli
 
-# Install system dependencies
+# Install system dependencies (including image format libraries for GD)
 RUN apt-get update && apt-get install -y \
     git \
     curl \
     libpng-dev \
+    libjpeg62-turbo-dev \
+    libwebp-dev \
+    libfreetype6-dev \
     libonig-dev \
     libxml2-dev \
     libpq-dev \
     libzip-dev \
     zip \
     unzip \
+    && docker-php-ext-configure gd --with-jpeg --with-webp --with-freetype \
     && docker-php-ext-install pdo pdo_pgsql pdo_mysql mbstring exif pcntl bcmath gd zip \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
@@ -36,6 +40,9 @@ RUN npm ci
 
 # Copy all files
 COPY . .
+
+# Copy custom PHP config for upload limits and memory
+COPY docker-php.ini /usr/local/etc/php/conf.d/99-custom.ini
 
 # Build assets
 RUN composer dump-autoload --optimize

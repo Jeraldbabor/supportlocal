@@ -10,7 +10,7 @@ cmds = [
 ]
 
 [start]
-cmd = "php artisan config:cache && php artisan route:cache && php artisan migrate --force && php artisan storage:link && php artisan serve --host=0.0.0.0 --port=${PORT:-8080}"
+cmd = "php artisan config:cache && php artisan route:cache && php artisan migrate --force && php artisan storage:link && php -d upload_max_filesize=20M -d post_max_size=25M -d memory_limit=256M artisan serve --host=0.0.0.0 --port=${PORT:-8080}"
 
 [variables]
 PHP_OPCACHE_ENABLE = "1"
