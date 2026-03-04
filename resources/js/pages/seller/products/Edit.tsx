@@ -222,7 +222,8 @@ export default function Edit({ product, categories, conditions }: EditProps) {
         const imagesToRemove = originalImages.filter((img) => !currentExistingImages.includes(img));
 
         // Submit directly using the useForm state, mapping the special fields
-        const submitData: any = {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const submitData: Record<string, any> = {
             ...data,
             new_images: selectedImages,
             remove_images: imagesToRemove,
@@ -251,7 +252,7 @@ export default function Edit({ product, categories, conditions }: EditProps) {
                     }
                 });
             },
-            onError: (errors: any) => {
+            onError: (errors: Record<string, string | string[]>) => {
                 console.error('Product update failed:', errors);
                 const errorMessages = typeof errors === 'object' ? Object.values(errors).flat() : ['An error occurred'];
                 const detailedMessage =
@@ -308,13 +309,12 @@ export default function Edit({ product, categories, conditions }: EditProps) {
                     </div>
                     {/* Status badge */}
                     <span
-                        className={`inline-flex w-fit items-center rounded-full px-3 py-1 text-xs font-medium ${
-                            data.status === 'active'
-                                ? 'bg-green-100 text-green-700'
-                                : data.status === 'draft'
-                                  ? 'bg-yellow-100 text-yellow-700'
-                                  : 'bg-gray-100 text-gray-700'
-                        }`}
+                        className={`inline-flex w-fit items-center rounded-full px-3 py-1 text-xs font-medium ${data.status === 'active'
+                            ? 'bg-green-100 text-green-700'
+                            : data.status === 'draft'
+                                ? 'bg-yellow-100 text-yellow-700'
+                                : 'bg-gray-100 text-gray-700'
+                            }`}
                     >
                         {getStatusLabel(data.status)}
                     </span>
@@ -333,18 +333,16 @@ export default function Edit({ product, categories, conditions }: EditProps) {
                                     <button
                                         type="button"
                                         onClick={() => goToStep(index)}
-                                        className={`group flex flex-col items-center gap-1 transition-all sm:gap-1.5 ${
-                                            isCompleted || isCurrent ? 'cursor-pointer' : 'cursor-default'
-                                        }`}
+                                        className={`group flex flex-col items-center gap-1 transition-all sm:gap-1.5 ${isCompleted || isCurrent ? 'cursor-pointer' : 'cursor-default'
+                                            }`}
                                     >
                                         <div
-                                            className={`flex h-8 w-8 items-center justify-center rounded-full border-2 transition-all sm:h-12 sm:w-12 ${
-                                                isCompleted
-                                                    ? 'border-green-500 bg-green-500 text-white'
-                                                    : isCurrent
-                                                      ? 'border-orange-500 bg-orange-50 text-orange-600 shadow-md shadow-orange-100'
-                                                      : 'border-gray-200 bg-gray-50 text-gray-400'
-                                            }`}
+                                            className={`flex h-8 w-8 items-center justify-center rounded-full border-2 transition-all sm:h-12 sm:w-12 ${isCompleted
+                                                ? 'border-green-500 bg-green-500 text-white'
+                                                : isCurrent
+                                                    ? 'border-orange-500 bg-orange-50 text-orange-600 shadow-md shadow-orange-100'
+                                                    : 'border-gray-200 bg-gray-50 text-gray-400'
+                                                }`}
                                         >
                                             {isCompleted ? (
                                                 <Check className="h-3.5 w-3.5 sm:h-5 sm:w-5" />
@@ -353,9 +351,8 @@ export default function Edit({ product, categories, conditions }: EditProps) {
                                             )}
                                         </div>
                                         <span
-                                            className={`hidden text-center text-xs font-medium sm:block sm:text-sm ${
-                                                isCompleted ? 'text-green-600' : isCurrent ? 'text-orange-600' : 'text-gray-400'
-                                            }`}
+                                            className={`hidden text-center text-xs font-medium sm:block sm:text-sm ${isCompleted ? 'text-green-600' : isCurrent ? 'text-orange-600' : 'text-gray-400'
+                                                }`}
                                         >
                                             {step.label}
                                         </span>
@@ -368,9 +365,8 @@ export default function Edit({ product, categories, conditions }: EditProps) {
                                     {index < steps.length - 1 && (
                                         <div className="mx-1 mb-2 h-0.5 flex-1 sm:mx-3 sm:mb-8">
                                             <div
-                                                className={`h-full rounded-full transition-all ${
-                                                    index < currentStep ? 'bg-green-400' : 'bg-gray-200'
-                                                }`}
+                                                className={`h-full rounded-full transition-all ${index < currentStep ? 'bg-green-400' : 'bg-gray-200'
+                                                    }`}
                                             />
                                         </div>
                                     )}
@@ -412,9 +408,8 @@ export default function Edit({ product, categories, conditions }: EditProps) {
                                         type="text"
                                         value={data.name}
                                         onChange={(e) => setData('name', e.target.value)}
-                                        className={`block w-full rounded-lg border bg-white px-4 py-3 text-sm text-gray-900 placeholder:text-gray-400 focus:border-orange-500 focus:ring-1 focus:ring-orange-500 focus:outline-none ${
-                                            stepErrors.name || errors.name ? 'border-red-300 bg-red-50' : 'border-gray-300'
-                                        }`}
+                                        className={`block w-full rounded-lg border bg-white px-4 py-3 text-sm text-gray-900 placeholder:text-gray-400 focus:border-orange-500 focus:ring-1 focus:ring-orange-500 focus:outline-none ${stepErrors.name || errors.name ? 'border-red-300 bg-red-50' : 'border-gray-300'
+                                            }`}
                                         placeholder="Enter product name"
                                     />
                                     {(stepErrors.name || errors.name) && (
@@ -442,9 +437,8 @@ export default function Edit({ product, categories, conditions }: EditProps) {
                                         value={data.description}
                                         onChange={(e) => setData('description', e.target.value)}
                                         rows={5}
-                                        className={`block w-full rounded-lg border bg-white px-4 py-3 text-sm text-gray-900 placeholder:text-gray-400 focus:border-orange-500 focus:ring-1 focus:ring-orange-500 focus:outline-none ${
-                                            stepErrors.description || errors.description ? 'border-red-300 bg-red-50' : 'border-gray-300'
-                                        }`}
+                                        className={`block w-full rounded-lg border bg-white px-4 py-3 text-sm text-gray-900 placeholder:text-gray-400 focus:border-orange-500 focus:ring-1 focus:ring-orange-500 focus:outline-none ${stepErrors.description || errors.description ? 'border-red-300 bg-red-50' : 'border-gray-300'
+                                            }`}
                                         placeholder="Detailed description of your handcrafted product..."
                                     />
                                     {(stepErrors.description || errors.description) && (
@@ -585,9 +579,8 @@ export default function Edit({ product, categories, conditions }: EditProps) {
                                         min="0"
                                         value={data.price}
                                         onChange={(e) => setData('price', e.target.value)}
-                                        className={`block w-full rounded-lg border bg-white px-4 py-3 text-sm text-gray-900 placeholder:text-gray-400 focus:border-orange-500 focus:ring-1 focus:ring-orange-500 focus:outline-none ${
-                                            stepErrors.price || errors.price ? 'border-red-300 bg-red-50' : 'border-gray-300'
-                                        }`}
+                                        className={`block w-full rounded-lg border bg-white px-4 py-3 text-sm text-gray-900 placeholder:text-gray-400 focus:border-orange-500 focus:ring-1 focus:ring-orange-500 focus:outline-none ${stepErrors.price || errors.price ? 'border-red-300 bg-red-50' : 'border-gray-300'
+                                            }`}
                                         placeholder="0.00"
                                     />
                                     {(stepErrors.price || errors.price) && (
