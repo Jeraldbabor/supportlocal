@@ -127,6 +127,7 @@ export default function CreateProduct({ categories, conditions }: CreateProductP
         setShowSuccess(false);
 
         post('/seller/products', {
+            forceFormData: true,
             onSuccess: () => {
                 Swal.fire({
                     title: 'Success!',
