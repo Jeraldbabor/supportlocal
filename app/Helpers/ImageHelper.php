@@ -103,14 +103,15 @@ class ImageHelper
             $disk = self::getDisk();
 
             if ($isImage) {
-                if (!class_exists('\Intervention\Image\Drivers\Gd\Driver')) {
+                if (! class_exists('\Intervention\Image\Drivers\Gd\Driver')) {
                     Log::warning('Intervention GD Driver not found, falling back to vanilla upload');
+
                     return $file->store($folder, $disk);
                 }
 
                 // Initialize Intervention Image
                 $manager = new \Intervention\Image\ImageManager(
-                    new \Intervention\Image\Drivers\Gd\Driver()
+                    new \Intervention\Image\Drivers\Gd\Driver
                 );
 
                 // Read the uploaded image
@@ -148,10 +149,9 @@ class ImageHelper
                         // Check if S3 driver supports getClient
                         $diskInstance = Storage::disk('r2');
                         if (method_exists($diskInstance, 'getClient')) {
-                            // @phpstan-ignore-next-line
                             $s3Client = $diskInstance->getClient();
                             $bucket = config('filesystems.disks.r2.bucket');
-                            
+
                             if ($bucket && $s3Client) {
                                 $s3Client->copyObject([
                                     'Bucket' => $bucket,
@@ -169,7 +169,7 @@ class ImageHelper
                         Log::warning('Failed to set Cache-Control metadata', ['error' => $e->getMessage()]);
                     }
                 }
-                
+
                 return $path;
             }
         } catch (\Exception $e) {
