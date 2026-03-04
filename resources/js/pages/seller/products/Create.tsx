@@ -127,6 +127,7 @@ export default function CreateProduct({ categories, conditions }: CreateProductP
         setShowSuccess(false);
 
         post('/seller/products', {
+            forceFormData: true,
             onSuccess: () => {
                 Swal.fire({
                     title: 'Success!',
@@ -226,9 +227,8 @@ export default function CreateProduct({ categories, conditions }: CreateProductP
                                             key={tab.id}
                                             type="button"
                                             onClick={() => setActiveTab(tab.id)}
-                                            className={`flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-sm font-medium transition-colors ${
-                                                activeTab === tab.id ? 'bg-orange-50 text-orange-700' : 'text-gray-600 hover:bg-gray-50'
-                                            }`}
+                                            className={`flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-sm font-medium transition-colors ${activeTab === tab.id ? 'bg-orange-50 text-orange-700' : 'text-gray-600 hover:bg-gray-50'
+                                                }`}
                                         >
                                             <Icon className="h-4 w-4" style={{ color: activeTab === tab.id ? '#ea580c' : '#6b7280' }} />
                                             {tab.label}
