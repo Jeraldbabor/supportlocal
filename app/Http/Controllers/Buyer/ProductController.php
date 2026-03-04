@@ -197,6 +197,7 @@ class ProductController extends Controller
                 'seller' => [
                     'id' => $product->seller->id ?? 0,
                     'name' => $product->seller->name ?? 'Unknown Artisan',
+                    'avatar_url' => $product->seller->avatar_url ?? null,
                 ],
                 'location' => $product->seller ?
                     trim(($product->seller->delivery_city ?? '').', '.($product->seller->delivery_province ?? ''), ', ')

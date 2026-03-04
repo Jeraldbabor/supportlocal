@@ -77,7 +77,7 @@ class ImageHelper
      */
     public static function urls(?array $paths): ?array
     {
-        if (empty($paths) || ! is_array($paths)) {
+        if (empty($paths)) {
             return null;
         }
 
@@ -87,7 +87,7 @@ class ImageHelper
     }
 
     /**
-     * Store an uploaded file
+     * Store an uploaded file and optimize it for web delivery
      *
      * @param  \Illuminate\Http\UploadedFile  $file
      * @param  string  $folder  Folder name (e.g., 'products', 'avatars')
@@ -95,7 +95,77 @@ class ImageHelper
      */
     public static function store($file, string $folder): string|false
     {
-        return $file->store($folder, self::getDisk());
+        try {
+            // Check if the file is an image by mime type
+            $mime = $file->getMimeType();
+            $isImage = str_starts_with($mime, 'image/') && $mime !== 'image/svg+xml';
+
+            $disk = self::getDisk();
+
+            if ($isImage) {
+                // Initialize Intervention Image
+                $manager = new \Intervention\Image\ImageManager(
+                    new \Intervention\Image\Drivers\Gd\Driver
+                );
+
+                // Read the uploaded image
+                $image = $manager->read($file->getRealPath());
+
+                // Resize if larger than 1200px (scaling down proportionally)
+                if ($image->width() > 1200 || $image->height() > 1200) {
+                    $image->scaleDown(width: 1200, height: 1200);
+                }
+
+                // Convert to WebP format with 80% quality to dramatically reduce size
+                $encodedImage = $image->toWebp(quality: 80);
+
+                // Generate a unique filename with .webp extension
+                $filename = \Illuminate\Support\Str::uuid().'.webp';
+                $path = $folder.'/'.$filename;
+
+                // Store the optimized image with proper Content-Type and Cache-Control headers
+                $options = [
+                    'visibility' => 'public',
+                    'ContentType' => 'image/webp',
+                    'CacheControl' => 'max-age=31536000, public', // Cache for 1 year
+                ];
+
+                Storage::disk($disk)->put($path, $encodedImage->toString(), $options);
+
+                return $path;
+            } else {
+                // For non-images (or SVGs), just use default storage but still add Cache-Control
+                $path = $file->store($folder, $disk);
+
+                // If storing to R2, try to update metadata directly using S3 client
+                if ($disk === 'r2' && $path) {
+                    try {
+                        // @phpstan-ignore-next-line
+                        $s3Client = Storage::disk('r2')->getClient();
+                        $bucket = config('filesystems.disks.r2.bucket');
+
+                        $s3Client->copyObject([
+                            'Bucket' => $bucket,
+                            'Key' => $path,
+                            'CopySource' => "{$bucket}/{$path}",
+                            'MetadataDirective' => 'REPLACE',
+                            'CacheControl' => 'max-age=31536000, public',
+                            'ContentType' => $mime,
+                            'ACL' => 'public-read',
+                        ]);
+                    } catch (\Exception $e) {
+                        Log::warning('Failed to set Cache-Control metadata for vanilla upload', ['error' => $e->getMessage()]);
+                    }
+                }
+
+                return $path;
+            }
+        } catch (\Exception $e) {
+            Log::error('Failed to store optimized file', ['error' => $e->getMessage(), 'file' => $file->getClientOriginalName()]);
+
+            // Fallback to normal store if intervention fails
+            return $file->store($folder, self::getDisk());
+        }
     }
 
     /**
