@@ -60,9 +60,9 @@ return new class extends Migration
 
         foreach ($this->prefixesToStrip as $prefix) {
             $affected = DB::table($table)
-                ->where($column, 'like', $prefix . '%')
+                ->where($column, 'like', $prefix.'%')
                 ->update([
-                    $column => DB::raw("REPLACE(\"{$column}\", " . DB::getPdo()->quote($prefix) . ", '')"),
+                    $column => DB::raw("REPLACE(\"{$column}\", ".DB::getPdo()->quote($prefix).", '')"),
                 ]);
 
             if ($affected > 0) {
@@ -85,7 +85,7 @@ return new class extends Migration
             ->whereNotNull($column)
             ->where(function ($q) use ($column) {
                 foreach ($this->prefixesToStrip as $prefix) {
-                    $q->orWhere($column, 'like', '%' . $prefix . '%');
+                    $q->orWhere($column, 'like', '%'.$prefix.'%');
                 }
             })
             ->get(['id', $column]);
@@ -113,6 +113,7 @@ return new class extends Migration
                 if ($path !== $original) {
                     $changed = true;
                 }
+
                 return $path;
             }, $paths);
 
