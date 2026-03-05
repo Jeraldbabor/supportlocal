@@ -547,7 +547,7 @@ export default function Products({ products, categories = [], sellers = [], wish
                                     className={`relative min-w-full flex-none overflow-hidden ${banner.bg} cursor-pointer p-4 text-white sm:p-8`}
                                 >
                                     <div className="relative z-10 mx-auto flex h-full max-w-4xl items-center justify-between gap-3 sm:gap-8">
-                                        <div className="flex flex-1 flex-col truncate pr-1 sm:pr-0">
+                                        <div className="flex min-w-0 flex-1 flex-col pr-1 sm:pr-0">
                                             <span className="mb-1 inline-flex w-fit items-center rounded-full bg-white/20 px-2 py-0.5 text-[9px] font-bold tracking-wider text-white uppercase shadow-sm ring-1 ring-white/30 backdrop-blur-md sm:mb-2 sm:px-2.5 sm:py-1 sm:text-xs">
                                                 {banner.title}
                                             </span>

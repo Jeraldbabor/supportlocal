@@ -150,7 +150,6 @@ export default function SellerDashboard() {
     const {
         auth,
         profileSummary = {},
-        settingsSummary = {},
         dashboardStats = {},
         productStats = {},
         orderStats = {},
@@ -171,14 +170,6 @@ export default function SellerDashboard() {
         email_verified: false,
         business_setup: false,
         ...profileSummary,
-    };
-
-    const settings = {
-        notifications_enabled: false,
-        two_factor_enabled: false,
-        privacy_settings_configured: false,
-        marketing_preferences_set: false,
-        ...settingsSummary,
     };
 
     const stats = {
@@ -411,6 +402,14 @@ export default function SellerDashboard() {
                         </div>
 
                         <div className="flex flex-shrink-0 flex-col items-start gap-3 sm:flex-row sm:items-center sm:gap-4">
+                            <Link
+                                href="/seller/products"
+                                className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-3 py-2 text-sm font-medium whitespace-nowrap text-white shadow-sm hover:bg-blue-700"
+                            >
+                                <Package className="h-4 w-4" />
+                                Add Product
+                            </Link>
+
                             {/* Last Updated & Refresh */}
                             <div className="flex items-center gap-2 sm:gap-3">
                                 <div className="text-left text-xs text-gray-500 sm:text-right">
@@ -461,109 +460,52 @@ export default function SellerDashboard() {
                     </div>
                 </div>
 
-                {/* Profile & Settings Overview */}
-                <div className="grid gap-4 md:grid-cols-2">
-                    {/* Profile Completeness Widget */}
-                    <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm sm:p-6">
-                        <div className="mb-4 flex items-center justify-between gap-2">
-                            <h3 className="flex items-center gap-2 text-base font-semibold text-gray-900 sm:text-lg">
-                                <User className="h-4 w-4 sm:h-5 sm:w-5" style={{ color: '#374151' }} />
-                                Profile Completeness
-                            </h3>
-                            <span className="flex-shrink-0 text-xl font-bold text-blue-600 sm:text-2xl">{profile.profile_completeness}%</span>
-                        </div>
-
-                        <div className="mb-4 h-2 w-full rounded-full bg-gray-200">
-                            <div
-                                className="h-2 rounded-full bg-blue-500 transition-all duration-500"
-                                style={{ width: `${profile.profile_completeness}%` }}
-                            ></div>
-                        </div>
-
-                        <div className="space-y-2">
-                            <div className="flex items-center gap-2 text-xs sm:text-sm">
-                                {profile.has_avatar ? (
-                                    <CheckCircle className="h-3.5 w-3.5 flex-shrink-0 sm:h-4 sm:w-4" style={{ color: '#22c55e' }} />
-                                ) : (
-                                    <div className="h-3.5 w-3.5 flex-shrink-0 rounded-full border-2 border-gray-300 sm:h-4 sm:w-4"></div>
-                                )}
-                                <span className="text-gray-600">Profile Picture</span>
-                            </div>
-                            <div className="flex items-center gap-2 text-xs sm:text-sm">
-                                {profile.email_verified ? (
-                                    <CheckCircle className="h-3.5 w-3.5 flex-shrink-0 sm:h-4 sm:w-4" style={{ color: '#22c55e' }} />
-                                ) : (
-                                    <div className="h-3.5 w-3.5 flex-shrink-0 rounded-full border-2 border-gray-300 sm:h-4 sm:w-4"></div>
-                                )}
-                                <span className="text-gray-600">Email Verified</span>
-                            </div>
-                            <div className="flex items-center gap-2 text-xs sm:text-sm">
-                                {profile.business_setup ? (
-                                    <CheckCircle className="h-3.5 w-3.5 flex-shrink-0 sm:h-4 sm:w-4" style={{ color: '#22c55e' }} />
-                                ) : (
-                                    <div className="h-3.5 w-3.5 flex-shrink-0 rounded-full border-2 border-gray-300 sm:h-4 sm:w-4"></div>
-                                )}
-                                <span className="text-gray-600">Business Setup</span>
-                            </div>
-                        </div>
-
-                        {profile.missing_fields && profile.missing_fields.length > 0 && (
-                            <div className="mt-4 rounded-lg bg-amber-50 p-3">
-                                <p className="text-sm font-medium text-amber-700">Missing: {profile.missing_fields.join(', ')}</p>
-                            </div>
-                        )}
-                    </div>
-
-                    {/* Account Settings Widget */}
+                {/* Quick Actions Overview */}
+                <div className="grid gap-4">
                     <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm sm:p-6">
                         <div className="mb-4 flex items-center justify-between">
                             <h3 className="flex items-center gap-2 text-base font-semibold text-gray-900 sm:text-lg">
                                 <Settings className="h-4 w-4 sm:h-5 sm:w-5" style={{ color: '#374151' }} />
-                                Account Settings
+                                Quick Actions
                             </h3>
                         </div>
-
-                        <div className="space-y-2.5 sm:space-y-3">
-                            <div className="flex items-center justify-between gap-2 pr-1">
-                                <span className="min-w-0 flex-1 text-xs text-gray-600 sm:text-sm">Notifications</span>
-                                <div className="flex-shrink-0">
-                                    {settings.notifications_enabled ? (
-                                        <CheckCircle className="h-4 w-4" style={{ color: '#22c55e' }} />
-                                    ) : (
-                                        <AlertTriangle className="h-4 w-4" style={{ color: '#ef4444' }} />
-                                    )}
+                        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                            <Link
+                                href="/seller/products"
+                                className="block rounded-lg border border-blue-200 bg-blue-50 px-4 py-3 text-left text-blue-700 hover:bg-blue-100"
+                            >
+                                <div className="flex items-center gap-3">
+                                    <Package className="h-5 w-5" />
+                                    <span className="font-medium">Products</span>
                                 </div>
-                            </div>
-                            <div className="flex items-center justify-between gap-2 pr-1">
-                                <span className="min-w-0 flex-1 text-xs text-gray-600 sm:text-sm">Two-Factor Auth</span>
-                                <div className="flex-shrink-0">
-                                    {settings.two_factor_enabled ? (
-                                        <CheckCircle className="h-4 w-4" style={{ color: '#22c55e' }} />
-                                    ) : (
-                                        <AlertTriangle className="h-4 w-4" style={{ color: '#eab308' }} />
-                                    )}
+                            </Link>
+                            <Link
+                                href="/seller/products/create"
+                                className="block rounded-lg border border-indigo-200 bg-indigo-50 px-4 py-3 text-left text-indigo-700 hover:bg-indigo-100"
+                            >
+                                <div className="flex items-center gap-3">
+                                    <Package className="h-5 w-5" />
+                                    <span className="font-medium">Add New Product</span>
                                 </div>
-                            </div>
-                            <div className="flex items-center justify-between gap-2 pr-1">
-                                <span className="min-w-0 flex-1 text-xs text-gray-600 sm:text-sm">Privacy Settings</span>
-                                <div className="flex-shrink-0">
-                                    {settings.privacy_settings_configured ? (
-                                        <CheckCircle className="h-4 w-4" style={{ color: '#22c55e' }} />
-                                    ) : (
-                                        <AlertTriangle className="h-4 w-4" style={{ color: '#eab308' }} />
-                                    )}
+                            </Link>
+                            <Link
+                                href="/seller/profile/edit"
+                                className="block rounded-lg border border-purple-200 bg-purple-50 px-4 py-3 text-left text-purple-700 hover:bg-purple-100"
+                            >
+                                <div className="flex items-center gap-3">
+                                    <User className="h-5 w-5" />
+                                    <span className="font-medium">Edit Profile</span>
                                 </div>
-                            </div>
-                            <div className="flex items-center justify-between gap-2 pr-1">
-                                <span className="min-w-0 flex-1 text-xs text-gray-600 sm:text-sm">Marketing Preferences</span>
-                                <div className="flex-shrink-0">
-                                    {settings.marketing_preferences_set ? (
-                                        <CheckCircle className="h-4 w-4" style={{ color: '#22c55e' }} />
-                                    ) : (
-                                        <AlertTriangle className="h-4 w-4" style={{ color: '#eab308' }} />
-                                    )}
+                            </Link>
+                            <Link
+                                href="/seller/settings"
+                                className="block rounded-lg border border-orange-200 bg-orange-50 px-4 py-3 text-left text-orange-700 hover:bg-orange-100"
+                            >
+                                <div className="flex items-center gap-3">
+                                    <Settings className="h-5 w-5" />
+                                    <span className="font-medium">Account Settings</span>
                                 </div>
-                            </div>
+                            </Link>
                         </div>
                     </div>
                 </div>
@@ -689,6 +631,8 @@ export default function SellerDashboard() {
                     </div>
                 </div>
 
+                
+
                 {/* Performance Overview */}
                 <div className="grid gap-4 md:grid-cols-3">
                     {/* Product Performance */}
@@ -787,6 +731,57 @@ export default function SellerDashboard() {
                             </div>
                         </div>
                     </div>
+                </div>
+
+                {/* Profile Completeness Widget */}
+                <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm sm:p-6">
+                    <div className="mb-4 flex items-center justify-between gap-2">
+                        <h3 className="flex items-center gap-2 text-base font-semibold text-gray-900 sm:text-lg">
+                            <User className="h-4 w-4 sm:h-5 sm:w-5" style={{ color: '#374151' }} />
+                            Profile Completeness
+                        </h3>
+                        <span className="flex-shrink-0 text-xl font-bold text-blue-600 sm:text-2xl">{profile.profile_completeness}%</span>
+                    </div>
+
+                    <div className="mb-4 h-2 w-full rounded-full bg-gray-200">
+                        <div
+                            className="h-2 rounded-full bg-blue-500 transition-all duration-500"
+                            style={{ width: `${profile.profile_completeness}%` }}
+                        ></div>
+                    </div>
+
+                    <div className="space-y-2">
+                        <div className="flex items-center gap-2 text-xs sm:text-sm">
+                            {profile.has_avatar ? (
+                                <CheckCircle className="h-3.5 w-3.5 flex-shrink-0 sm:h-4 sm:w-4" style={{ color: '#22c55e' }} />
+                            ) : (
+                                <div className="h-3.5 w-3.5 flex-shrink-0 rounded-full border-2 border-gray-300 sm:h-4 sm:w-4"></div>
+                            )}
+                            <span className="text-gray-600">Profile Picture</span>
+                        </div>
+                        <div className="flex items-center gap-2 text-xs sm:text-sm">
+                            {profile.email_verified ? (
+                                <CheckCircle className="h-3.5 w-3.5 flex-shrink-0 sm:h-4 sm:w-4" style={{ color: '#22c55e' }} />
+                            ) : (
+                                <div className="h-3.5 w-3.5 flex-shrink-0 rounded-full border-2 border-gray-300 sm:h-4 sm:w-4"></div>
+                            )}
+                            <span className="text-gray-600">Email Verified</span>
+                        </div>
+                        <div className="flex items-center gap-2 text-xs sm:text-sm">
+                            {profile.business_setup ? (
+                                <CheckCircle className="h-3.5 w-3.5 flex-shrink-0 sm:h-4 sm:w-4" style={{ color: '#22c55e' }} />
+                            ) : (
+                                <div className="h-3.5 w-3.5 flex-shrink-0 rounded-full border-2 border-gray-300 sm:h-4 sm:w-4"></div>
+                            )}
+                            <span className="text-gray-600">Business Setup</span>
+                        </div>
+                    </div>
+
+                    {profile.missing_fields && profile.missing_fields.length > 0 && (
+                        <div className="mt-4 rounded-lg bg-amber-50 p-3">
+                            <p className="text-sm font-medium text-amber-700">Missing: {profile.missing_fields.join(', ')}</p>
+                        </div>
+                    )}
                 </div>
 
                 {/* Charts Section */}
