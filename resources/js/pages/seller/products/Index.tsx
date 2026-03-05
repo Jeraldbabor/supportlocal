@@ -132,6 +132,10 @@ export default function ProductsIndex() {
                 showConfirmButton: true,
             });
         }
+
+        return () => {
+            Swal.close();
+        };
     }, [flash?.success]);
 
     // Defensive check for products structure
@@ -218,6 +222,7 @@ export default function ProductsIndex() {
             if (result.isConfirmed) {
                 router.delete(`/seller/products/${product.id}`, {
                     preserveScroll: true,
+                    preserveState: true,
                 });
             }
         });
@@ -584,6 +589,13 @@ export default function ProductsIndex() {
                                                 ) : (
                                                     <TrendingUp className="h-4 w-4" style={{ color: '#15803d' }} />
                                                 )}
+                                            </button>
+                                            <button
+                                                onClick={() => deleteProduct(product)}
+                                                className="flex flex-1 items-center justify-center rounded-lg bg-red-100 px-2 py-2 text-xs font-medium transition-colors hover:bg-red-200"
+                                                title="Delete"
+                                            >
+                                                <Trash2 className="h-4 w-4" style={{ color: '#dc2626' }} />
                                             </button>
                                         </div>
                                     </div>
