@@ -13,31 +13,34 @@ class UserRolesSeeder extends Seeder
      */
     public function run(): void
     {
-        // Create Administrator user
-        User::create([
-            'name' => 'Administrator',
-            'email' => 'admin@gmail.com',
-            'password' => Hash::make('Rald@11'),
-            'role' => User::ROLE_ADMINISTRATOR,
-            'email_verified_at' => now(),
-        ]);
+        User::firstOrCreate(
+            ['email' => 'admin@gmail.com'],
+            [
+                'name' => 'Administrator',
+                'password' => Hash::make('Rald@11'),
+                'role' => User::ROLE_ADMINISTRATOR,
+                'email_verified_at' => now(),
+            ]
+        );
 
-        // Create Seller/Artisan user
-        User::create([
-            'name' => 'Jerald Babor',
-            'email' => 'jeraldbabor60@gmail.com',
-            'password' => Hash::make('password'),
-            'role' => User::ROLE_SELLER,
-            'email_verified_at' => now(),
-        ]);
+        User::firstOrCreate(
+            ['email' => 'jeraldbabor60@gmail.com'],
+            [
+                'name' => 'Jerald Babor',
+                'password' => Hash::make('password'),
+                'role' => User::ROLE_SELLER,
+                'email_verified_at' => now(),
+            ]
+        );
 
-        // Create Buyer user
-        User::create([
-            'name' => 'Decery Alihid',
-            'email' => 'decsang23@gmail.com',
-            'password' => Hash::make('password'),
-            'role' => User::ROLE_BUYER,
-            'email_verified_at' => now(),
-        ]);
+        User::firstOrCreate(
+            ['email' => 'decsang23@gmail.com'],
+            [
+                'name' => 'Decery Alihid',
+                'password' => Hash::make('password'),
+                'role' => User::ROLE_BUYER,
+                'email_verified_at' => now(),
+            ]
+        );
     }
 }

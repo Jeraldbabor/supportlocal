@@ -143,6 +143,7 @@ class Product extends Model
         'image_urls',
         'formatted_price',
         'formatted_compare_price',
+        'discount_percentage',
     ];
 
     /**

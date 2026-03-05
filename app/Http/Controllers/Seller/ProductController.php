@@ -157,7 +157,7 @@ class ProductController extends Controller
         }
 
         return redirect()
-            ->route('seller.products.show', $product)
+            ->route('seller.products.index')
             ->with('success', 'Product created successfully!');
     }
 
@@ -259,7 +259,7 @@ class ProductController extends Controller
         $product->update($validated);
 
         return redirect()
-            ->route('seller.products.show', $product)
+            ->route('seller.products.index')
             ->with('success', 'Product updated successfully!');
     }
 

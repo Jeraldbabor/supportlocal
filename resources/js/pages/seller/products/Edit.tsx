@@ -12,13 +12,13 @@ interface Product {
     description: string;
     short_description: string;
     price: number;
-    compare_at_price?: number;
-    cost_per_item?: number;
+    compare_price?: number;
+    cost_price?: number;
     sku?: string;
     barcode?: string;
     quantity: number;
     track_quantity: boolean;
-    continue_selling_when_out_of_stock: boolean;
+    allow_backorders: boolean;
     low_stock_threshold?: number;
     weight?: number;
     weight_unit?: string;
@@ -75,7 +75,7 @@ export default function Edit({ product, categories, conditions }: EditProps) {
     const [showError, setShowError] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
     const [stepErrors, setStepErrors] = useState<Record<string, string>>({});
-    const [isOnSale, setIsOnSale] = useState(!!(product.compare_at_price && parseFloat(product.compare_at_price.toString()) > 0));
+    const [isOnSale, setIsOnSale] = useState(!!(product.compare_price && parseFloat(product.compare_price.toString()) > 0));
 
     const breadcrumbs: BreadcrumbItem[] = [
         { title: 'Seller Dashboard', href: '/seller/dashboard' },
@@ -88,13 +88,13 @@ export default function Edit({ product, categories, conditions }: EditProps) {
         description: product.description,
         short_description: product.short_description || '',
         price: product.price.toString(),
-        compare_at_price: product.compare_at_price?.toString() || '',
-        cost_per_item: product.cost_per_item?.toString() || '',
+        compare_price: product.compare_price?.toString() || '',
+        cost_price: product.cost_price?.toString() || '',
         sku: product.sku || '',
         barcode: product.barcode || '',
         quantity: product.quantity.toString(),
         track_quantity: product.track_quantity,
-        continue_selling_when_out_of_stock: product.continue_selling_when_out_of_stock,
+        allow_backorders: product.allow_backorders ?? false,
         low_stock_threshold: product.low_stock_threshold?.toString() || '5',
         weight: product.weight?.toString() || '',
         weight_unit: product.weight_unit || 'kg',
@@ -219,21 +219,27 @@ export default function Edit({ product, categories, conditions }: EditProps) {
         const currentExistingImages = data.existing_images || [];
         const imagesToRemove = originalImages.filter((img) => !currentExistingImages.includes(img));
 
-        // Submit directly using the useForm state, mapping the special fields
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const submitData: Record<string, any> = {
             ...data,
+            dimensions: {
+                length: data.length || '',
+                width: data.width || '',
+                height: data.height || '',
+            },
             new_images: selectedImages,
             remove_images: imagesToRemove,
-            _method: 'PUT', // Method spoofing for file uploads
+            _method: 'PUT',
         };
 
         if (submitStatus) {
             submitData.status = submitStatus;
         }
 
-        // The 'images' field from useForm data is mapped to 'new_images' on backend
         delete submitData.images;
+        delete submitData.length;
+        delete submitData.width;
+        delete submitData.height;
 
         const options = {
             forceFormData: true,
@@ -243,11 +249,9 @@ export default function Edit({ product, categories, conditions }: EditProps) {
                     text: 'Product updated successfully!',
                     icon: 'success',
                     confirmButtonColor: '#16a34a',
-                    confirmButtonText: 'View Product',
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        router.visit(`/seller/products/${product.id}`);
-                    }
+                    confirmButtonText: 'OK',
+                    timer: 2000,
+                    showConfirmButton: true,
                 });
             },
             onError: (errors: Record<string, string | string[]>) => {
@@ -583,8 +587,8 @@ export default function Edit({ product, categories, conditions }: EditProps) {
                                         type="number"
                                         step="0.01"
                                         min="0"
-                                        value={isOnSale ? data.compare_at_price : data.price}
-                                        onChange={(e) => setData(isOnSale ? 'compare_at_price' : 'price', e.target.value)}
+                                        value={isOnSale ? data.compare_price : data.price}
+                                        onChange={(e) => setData(isOnSale ? 'compare_price' : 'price', e.target.value)}
                                         className={`block w-full rounded-lg border bg-white px-4 py-3 text-sm text-gray-900 placeholder:text-gray-400 focus:border-orange-500 focus:ring-1 focus:ring-orange-500 focus:outline-none ${
                                             !isOnSale && (stepErrors.price || errors.price) ? 'border-red-300 bg-red-50' : 'border-gray-300'
                                         }`}
@@ -606,9 +610,9 @@ export default function Edit({ product, categories, conditions }: EditProps) {
                                                 const checked = e.target.checked;
                                                 setIsOnSale(checked);
                                                 if (checked) {
-                                                    setData({ ...data, compare_at_price: data.price, price: '' });
+                                                    setData({ ...data, compare_price: data.price, price: '' });
                                                 } else {
-                                                    setData({ ...data, price: data.compare_at_price || data.price, compare_at_price: '' });
+                                                    setData({ ...data, price: data.compare_price || data.price, compare_price: '' });
                                                 }
                                             }}
                                             className="h-4 w-4 rounded border-gray-300 text-orange-500 focus:ring-orange-500"
@@ -638,21 +642,20 @@ export default function Edit({ product, categories, conditions }: EditProps) {
                                             {(stepErrors.price || errors.price) && (
                                                 <p className="mt-1.5 text-sm text-red-600">{stepErrors.price || errors.price}</p>
                                             )}
-                                            {data.compare_at_price && data.price && parseFloat(data.compare_at_price) > parseFloat(data.price) && (
+                                            {data.compare_price && data.price && parseFloat(data.compare_price) > parseFloat(data.price) && (
                                                 <p className="mt-1.5 flex items-center gap-1 text-xs font-medium text-green-600">
                                                     🏷️{' '}
                                                     {Math.round(
-                                                        ((parseFloat(data.compare_at_price) - parseFloat(data.price)) /
-                                                            parseFloat(data.compare_at_price)) *
+                                                        ((parseFloat(data.compare_price) - parseFloat(data.price)) / parseFloat(data.compare_price)) *
                                                             100,
                                                     )}
                                                     % off — customers will see the savings!
                                                 </p>
                                             )}
-                                            {data.compare_at_price &&
+                                            {data.compare_price &&
                                                 data.price &&
                                                 parseFloat(data.price) > 0 &&
-                                                parseFloat(data.price) >= parseFloat(data.compare_at_price) && (
+                                                parseFloat(data.price) >= parseFloat(data.compare_price) && (
                                                     <p className="mt-1.5 text-xs text-amber-600">
                                                         Sale price should be lower than the original price
                                                     </p>
@@ -766,8 +769,8 @@ export default function Edit({ product, categories, conditions }: EditProps) {
                                         <input
                                             type="checkbox"
                                             id="continue_selling"
-                                            checked={data.continue_selling_when_out_of_stock}
-                                            onChange={(e) => setData('continue_selling_when_out_of_stock', e.target.checked)}
+                                            checked={data.allow_backorders}
+                                            onChange={(e) => setData('allow_backorders', e.target.checked)}
                                             className="h-4 w-4 rounded border-gray-300 text-orange-600 focus:ring-orange-500"
                                         />
                                         <label htmlFor="continue_selling" className="ml-3 text-sm text-gray-700">
@@ -942,8 +945,8 @@ export default function Edit({ product, categories, conditions }: EditProps) {
                                             <div>
                                                 <span className="text-gray-500">Original Price:</span>
                                                 <span className="ml-1 font-medium text-gray-900">
-                                                    {(isOnSale ? data.compare_at_price : data.price)
-                                                        ? `₱${parseFloat(isOnSale ? data.compare_at_price : data.price).toFixed(2)}`
+                                                    {(isOnSale ? data.compare_price : data.price)
+                                                        ? `₱${parseFloat(isOnSale ? data.compare_price : data.price).toFixed(2)}`
                                                         : '—'}
                                                 </span>
                                             </div>
