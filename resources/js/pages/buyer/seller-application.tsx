@@ -198,6 +198,22 @@ export default function SellerApplicationForm({
                                         </AlertDescription>
                                     </Alert>
                                 )}
+
+                                {existingApplication?.status === 'rejected' && (
+                                    <div className="pt-2">
+                                        <Button
+                                            onClick={() => {
+                                                window.location.href = '/seller/apply/form?reapply=1';
+                                            }}
+                                            className="w-full bg-amber-600 hover:bg-amber-700"
+                                        >
+                                            Apply Again
+                                        </Button>
+                                        <p className="mt-2 text-center text-xs text-gray-500">
+                                            You can submit a new application with updated information.
+                                        </p>
+                                    </div>
+                                )}
                             </div>
                         </CardContent>
                     </Card>

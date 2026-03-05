@@ -447,22 +447,32 @@ export default function SellerApplicationShow({ application }: SellerApplication
 
                     {/* Sidebar Actions */}
                     <div className="space-y-6">
-                        {application.status === 'pending' && (
+                        {(application.status === 'pending' || application.status === 'rejected') && (
                             <Card>
                                 <CardHeader>
                                     <CardTitle>Review Actions</CardTitle>
                                 </CardHeader>
                                 <CardContent className="space-y-4">
+                                    {application.status === 'rejected' && (
+                                        <Alert>
+                                            <AlertCircle className="h-4 w-4" />
+                                            <AlertDescription>
+                                                This application was previously rejected. You can still approve it to grant seller privileges.
+                                            </AlertDescription>
+                                        </Alert>
+                                    )}
                                     {!showApprovalForm && !showRejectionForm && (
                                         <>
                                             <Button onClick={() => setShowApprovalForm(true)} className="w-full bg-green-600 hover:bg-green-700">
                                                 <CheckCircle className="mr-2 h-4 w-4" />
-                                                Approve Application
+                                                {application.status === 'rejected' ? 'Approve Rejected Application' : 'Approve Application'}
                                             </Button>
-                                            <Button onClick={() => setShowRejectionForm(true)} variant="destructive" className="w-full">
-                                                <XCircle className="mr-2 h-4 w-4" />
-                                                Reject Application
-                                            </Button>
+                                            {application.status === 'pending' && (
+                                                <Button onClick={() => setShowRejectionForm(true)} variant="destructive" className="w-full">
+                                                    <XCircle className="mr-2 h-4 w-4" />
+                                                    Reject Application
+                                                </Button>
+                                            )}
                                         </>
                                     )}
 

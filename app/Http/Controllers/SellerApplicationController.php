@@ -23,10 +23,12 @@ class SellerApplicationController extends Controller
     {
         $user = Auth::user();
 
-        // Check if user already has an application
-        $existingApplication = SellerApplication::where('user_id', $user->id)->first();
+        // Check if user already has a non-rejected application
+        $existingApplication = SellerApplication::where('user_id', $user->id)
+            ->whereIn('status', [SellerApplication::STATUS_PENDING, SellerApplication::STATUS_APPROVED])
+            ->first();
 
-        // If they already have an application, redirect to the main application page
+        // If they already have an active application, redirect to the main application page
         if ($existingApplication) {
             return redirect()->route('seller.application.create');
         }
@@ -42,12 +44,25 @@ class SellerApplicationController extends Controller
     /**
      * Show the seller application form.
      */
-    public function create(): Response
+    public function create(Request $request): Response
     {
         $user = Auth::user();
 
-        // Check if user already has an application
-        $existingApplication = SellerApplication::where('user_id', $user->id)->first();
+        // If user is reapplying after rejection, show a fresh form
+        $isReapplying = $request->query('reapply') === '1';
+
+        // Check if user already has an active (non-rejected) application
+        $existingApplication = SellerApplication::where('user_id', $user->id)
+            ->whereIn('status', [SellerApplication::STATUS_PENDING, SellerApplication::STATUS_APPROVED])
+            ->first();
+
+        // Also check for a rejected application to show status (unless reapplying)
+        if (! $existingApplication && ! $isReapplying) {
+            $existingApplication = SellerApplication::where('user_id', $user->id)
+                ->where('status', SellerApplication::STATUS_REJECTED)
+                ->latest()
+                ->first();
+        }
 
         return Inertia::render('buyer/seller-application', [
             'idTypes' => SellerApplication::ID_TYPES,
@@ -80,12 +95,21 @@ class SellerApplicationController extends Controller
     {
         $user = Auth::user();
 
-        // Check if user already has an application
-        if (SellerApplication::where('user_id', $user->id)->exists()) {
+        // Check if user already has a pending or approved application
+        $existingApplication = SellerApplication::where('user_id', $user->id)
+            ->whereIn('status', [SellerApplication::STATUS_PENDING, SellerApplication::STATUS_APPROVED])
+            ->first();
+
+        if ($existingApplication) {
             return redirect()->back()->withErrors([
                 'application' => 'You have already submitted a seller application.',
             ]);
         }
+
+        // Delete any previous rejected applications so the user can reapply
+        SellerApplication::where('user_id', $user->id)
+            ->where('status', SellerApplication::STATUS_REJECTED)
+            ->delete();
 
         // Check if user is already a seller
         if ($user->isSeller()) {
@@ -237,14 +261,12 @@ class SellerApplicationController extends Controller
             'admin_notes' => 'nullable|string|max:1000',
         ]);
 
-        // Store the buyer's profile information before approval for logging
-        $buyerProfile = [
-            'name' => $application->user->name,
-            'email' => $application->user->email,
-            'profile_picture' => $application->user->profile_picture,
-            'phone_number' => $application->user->phone_number,
-            'address' => $application->user->address,
-        ];
+        // Allow approving both pending and rejected applications
+        if (! in_array($application->status, [SellerApplication::STATUS_PENDING, SellerApplication::STATUS_REJECTED])) {
+            return redirect()->back()->withErrors([
+                'approval' => 'This application cannot be approved in its current state.',
+            ]);
+        }
 
         try {
             $application->approve(Auth::user(), $request->admin_notes);
