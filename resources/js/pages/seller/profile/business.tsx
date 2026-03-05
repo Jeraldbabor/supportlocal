@@ -184,9 +184,7 @@ export default function SellerBusinessProfile() {
                                             placeholder="Describe your business, products, and services in detail..."
                                             required
                                         />
-                                        <p className="mt-1.5 text-xs text-gray-500 sm:mt-2">
-                                            {data.business_description.length}/2000 characters
-                                        </p>
+                                        <p className="mt-1.5 text-xs text-gray-500 sm:mt-2">{data.business_description.length}/2000 characters</p>
                                         {errors.business_description && (
                                             <p className="mt-1 text-xs text-red-600 sm:text-sm">{errors.business_description}</p>
                                         )}

@@ -15,6 +15,7 @@ import {
     MapPin,
     Package,
     Phone,
+    Store,
     Truck,
     User,
     X,
@@ -46,6 +47,7 @@ interface Order {
     delivery_address: string;
     delivery_phone: string;
     delivery_notes: string;
+    delivery_method?: string;
     shipping_provider?: string | null;
     tracking_number?: string | null;
     waybill_number?: string | null;
@@ -528,12 +530,33 @@ export default function OrderShow({ order }: OrderShowProps) {
                         {/* Delivery Information */}
                         <div className="overflow-hidden rounded-xl bg-white shadow-lg ring-1 shadow-gray-100 ring-gray-100 sm:rounded-2xl">
                             <div className="border-b border-gray-100 bg-gradient-to-r from-emerald-50 to-green-50 px-4 py-3 sm:px-6 sm:py-4">
-                                <h2 className="flex items-center gap-2 text-base font-bold text-gray-900 sm:gap-3 sm:text-lg">
-                                    <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-green-600 shadow-md sm:h-10 sm:w-10">
-                                        <Truck className="h-4 w-4 text-white sm:h-5 sm:w-5" />
-                                    </div>
-                                    Delivery Information
-                                </h2>
+                                <div className="flex items-center justify-between">
+                                    <h2 className="flex items-center gap-2 text-base font-bold text-gray-900 sm:gap-3 sm:text-lg">
+                                        <div
+                                            className={`flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-xl shadow-md sm:h-10 sm:w-10 ${order.delivery_method === 'pickup' ? 'bg-gradient-to-br from-blue-500 to-indigo-600' : 'bg-gradient-to-br from-emerald-500 to-green-600'}`}
+                                        >
+                                            {order.delivery_method === 'pickup' ? (
+                                                <Store className="h-4 w-4 text-white sm:h-5 sm:w-5" />
+                                            ) : (
+                                                <Truck className="h-4 w-4 text-white sm:h-5 sm:w-5" />
+                                            )}
+                                        </div>
+                                        {order.delivery_method === 'pickup' ? 'Pickup Information' : 'Delivery Information'}
+                                    </h2>
+                                    <span
+                                        className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold ${order.delivery_method === 'pickup' ? 'bg-blue-100 text-blue-800' : 'bg-orange-100 text-orange-800'}`}
+                                    >
+                                        {order.delivery_method === 'pickup' ? (
+                                            <>
+                                                <Store className="h-3 w-3" /> Pickup
+                                            </>
+                                        ) : (
+                                            <>
+                                                <Truck className="h-3 w-3" /> Delivery
+                                            </>
+                                        )}
+                                    </span>
+                                </div>
                             </div>
                             <div className="space-y-3 p-4 sm:space-y-4 sm:p-6">
                                 <div className="flex items-start gap-3 rounded-xl bg-gray-50 p-3 sm:gap-4 sm:p-4">

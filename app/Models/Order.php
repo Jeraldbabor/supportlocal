@@ -45,6 +45,13 @@ class Order extends Model
     const PAYMENT_GCASH = 'gcash';
 
     /**
+     * Delivery methods
+     */
+    const DELIVERY_METHOD_DELIVERY = 'delivery';
+
+    const DELIVERY_METHOD_PICKUP = 'pickup';
+
+    /**
      * Shipping providers
      */
     const SHIPPING_JT_EXPRESS = 'jt_express';
@@ -65,6 +72,7 @@ class Order extends Model
         'delivery_address',
         'delivery_phone',
         'delivery_notes',
+        'delivery_method',
         'payment_method',
         'payment_status',
         'payment_proof',

@@ -9,22 +9,22 @@ if ($path !== '/' && is_file($file)) {
     $ext = strtolower(pathinfo($file, PATHINFO_EXTENSION));
     $mimeTypes = [
         'json' => 'application/json',
-        'js'   => 'application/javascript',
-        'svg'  => 'image/svg+xml',
-        'png'  => 'image/png',
-        'ico'  => 'image/x-icon',
-        'css'  => 'text/css',
-        'woff2'=> 'font/woff2',
+        'js' => 'application/javascript',
+        'svg' => 'image/svg+xml',
+        'png' => 'image/png',
+        'ico' => 'image/x-icon',
+        'css' => 'text/css',
+        'woff2' => 'font/woff2',
         'woff' => 'font/woff',
-        'ttf'  => 'font/ttf',
+        'ttf' => 'font/ttf',
         'webp' => 'image/webp',
-        'jpg'  => 'image/jpeg',
+        'jpg' => 'image/jpeg',
         'jpeg' => 'image/jpeg',
-        'gif'  => 'image/gif',
+        'gif' => 'image/gif',
     ];
 
     if (isset($mimeTypes[$ext])) {
-        header('Content-Type: ' . $mimeTypes[$ext]);
+        header('Content-Type: '.$mimeTypes[$ext]);
 
         // Service worker needs special scope header
         if (basename($file) === 'sw.js') {
@@ -32,6 +32,7 @@ if ($path !== '/' && is_file($file)) {
         }
 
         readfile($file);
+
         return true;
     }
 

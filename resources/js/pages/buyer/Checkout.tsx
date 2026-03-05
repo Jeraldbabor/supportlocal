@@ -1,5 +1,5 @@
 import { Head, router, useForm } from '@inertiajs/react';
-import { ArrowLeft, CheckCircle, CreditCard, Phone, ShoppingBag, Truck, User } from 'lucide-react';
+import { ArrowLeft, CheckCircle, CreditCard, MapPin, Phone, ShoppingBag, Store, Truck, User } from 'lucide-react';
 import React, { useState } from 'react';
 import LocationPicker from '../../components/LocationPicker';
 import Toast from '../../components/Toast';
@@ -55,17 +55,8 @@ export default function Checkout({ user, buyNowItem }: CheckoutProps) {
     const checkoutItems = buyNowItem ? [buyNowItem] : cart;
     const checkoutTotal = buyNowItem ? buyNowItem.price * buyNowItem.quantity : getCartTotal();
 
-    // Calculate shipping fee from product's shipping_cost (once per unique product)
-    const shippingFee = buyNowItem
-        ? buyNowItem.shipping_cost || 50
-        : cart.reduce((total, item, index, array) => {
-              // Only add shipping cost for the first occurrence of each unique product
-              const isFirstOccurrence = array.findIndex((i) => i.product_id === item.product_id) === index;
-              return isFirstOccurrence ? total + (item.shipping_cost || 50) : total;
-          }, 0);
-    const totalWithShipping = checkoutTotal + shippingFee;
-
     const { data, setData, processing, errors } = useForm({
+        delivery_method: 'delivery' as 'delivery' | 'pickup',
         delivery_address: user.delivery_address || user.address || '',
         delivery_phone: user.delivery_phone || user.phone_number || '',
         delivery_notes: user.delivery_notes || '',
@@ -81,6 +72,20 @@ export default function Checkout({ user, buyNowItem }: CheckoutProps) {
         items: [] as Array<{ product_id: number; quantity: number }>,
     });
 
+    // Calculate shipping fee from product's shipping_cost (once per unique product)
+    // Shipping fee is 0 for pickup orders
+    const isPickup = data.delivery_method === 'pickup';
+    const shippingFee = isPickup
+        ? 0
+        : buyNowItem
+          ? buyNowItem.shipping_cost || 50
+          : cart.reduce((total, item, index, array) => {
+                // Only add shipping cost for the first occurrence of each unique product
+                const isFirstOccurrence = array.findIndex((i) => i.product_id === item.product_id) === index;
+                return isFirstOccurrence ? total + (item.shipping_cost || 50) : total;
+            }, 0);
+    const totalWithShipping = checkoutTotal + shippingFee;
+
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
@@ -92,8 +97,8 @@ export default function Checkout({ user, buyNowItem }: CheckoutProps) {
         }
 
         // Validate required fields
-        if (!data.delivery_province || !data.delivery_city || !data.delivery_barangay) {
-            setToastMessage('Please fill in Province, City, and Barangay fields.');
+        if (data.delivery_method === 'delivery' && (!data.delivery_province || !data.delivery_city || !data.delivery_barangay)) {
+            setToastMessage('Please fill in Province, City, and Barangay fields for delivery.');
             setToastType('error');
             setShowToast(true);
             return;
@@ -107,17 +112,17 @@ export default function Checkout({ user, buyNowItem }: CheckoutProps) {
         }
 
         // Build the full delivery address from components
-        const addressParts = [
-            data.delivery_street,
-            data.delivery_building_details,
-            data.delivery_barangay,
-            data.delivery_city,
-            data.delivery_province,
-        ].filter(Boolean);
+        const addressParts =
+            data.delivery_method === 'pickup'
+                ? ['Pickup from store']
+                : [data.delivery_street, data.delivery_building_details, data.delivery_barangay, data.delivery_city, data.delivery_province].filter(
+                      Boolean,
+                  );
         const fullDeliveryAddress = addressParts.join(', ');
 
         // Prepare the order data with items and delivery location
         const orderData = {
+            delivery_method: data.delivery_method,
             delivery_address: fullDeliveryAddress,
             delivery_phone: data.delivery_phone,
             delivery_notes: data.delivery_notes,
@@ -220,178 +225,322 @@ export default function Checkout({ user, buyNowItem }: CheckoutProps) {
                     <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
                         {/* Checkout Form */}
                         <div className="space-y-8 lg:col-span-2">
-                            {/* Shipping Information */}
+                            {/* Delivery Method Selection */}
                             <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
-                                <div className="mb-6 flex items-center justify-between">
-                                    <div className="flex items-center">
-                                        <Truck className="mr-3 h-6 w-6" style={{ color: '#ea580c' }} />
-                                        <h2 className="text-xl font-semibold text-gray-900">Shipping Information</h2>
-                                    </div>
-                                    {user.delivery_province && user.delivery_city && user.delivery_barangay && (
-                                        <div className="inline-flex items-center rounded-full bg-green-100 px-3 py-1 text-xs font-medium text-green-800">
-                                            <CheckCircle className="mr-1 h-3 w-3" />
-                                            Profile Saved
-                                        </div>
-                                    )}
+                                <div className="mb-4 flex items-center">
+                                    <Truck className="mr-3 h-6 w-6" style={{ color: '#ea580c' }} />
+                                    <h2 className="text-xl font-semibold text-gray-900">How would you like to receive your order?</h2>
                                 </div>
-
-                                {/* Editable Delivery Location */}
-                                <div className="space-y-6">
-                                    {/* Province, City, Barangay */}
-                                    <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-                                        <div>
-                                            <label htmlFor="delivery_province" className="mb-2 block text-sm font-medium text-gray-700">
-                                                Province *
-                                            </label>
-                                            <input
-                                                type="text"
-                                                id="delivery_province"
-                                                value={data.delivery_province}
-                                                onChange={(e) => setData('delivery_province', e.target.value)}
-                                                className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-orange-500 focus:ring-orange-500"
-                                                placeholder="Enter province"
-                                                required
-                                            />
-                                            {errors.delivery_province && <p className="mt-1 text-sm text-red-600">{errors.delivery_province}</p>}
-                                        </div>
-
-                                        <div>
-                                            <label htmlFor="delivery_city" className="mb-2 block text-sm font-medium text-gray-700">
-                                                City / Municipality *
-                                            </label>
-                                            <input
-                                                type="text"
-                                                id="delivery_city"
-                                                value={data.delivery_city}
-                                                onChange={(e) => setData('delivery_city', e.target.value)}
-                                                className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-orange-500 focus:ring-orange-500"
-                                                placeholder="Enter city"
-                                                required
-                                            />
-                                            {errors.delivery_city && <p className="mt-1 text-sm text-red-600">{errors.delivery_city}</p>}
-                                        </div>
-
-                                        <div>
-                                            <label htmlFor="delivery_barangay" className="mb-2 block text-sm font-medium text-gray-700">
-                                                Barangay *
-                                            </label>
-                                            <input
-                                                type="text"
-                                                id="delivery_barangay"
-                                                value={data.delivery_barangay}
-                                                onChange={(e) => setData('delivery_barangay', e.target.value)}
-                                                className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-orange-500 focus:ring-orange-500"
-                                                placeholder="Enter barangay"
-                                                required
-                                            />
-                                            {errors.delivery_barangay && <p className="mt-1 text-sm text-red-600">{errors.delivery_barangay}</p>}
-                                        </div>
-                                    </div>
-
-                                    {/* Street and Building Details */}
-                                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                                        <div>
-                                            <label htmlFor="delivery_street" className="mb-2 block text-sm font-medium text-gray-700">
-                                                Street Address
-                                            </label>
-                                            <input
-                                                type="text"
-                                                id="delivery_street"
-                                                value={data.delivery_street}
-                                                onChange={(e) => setData('delivery_street', e.target.value)}
-                                                className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-orange-500 focus:ring-orange-500"
-                                                placeholder="e.g., 123 Main Street"
-                                            />
-                                            {errors.delivery_street && <p className="mt-1 text-sm text-red-600">{errors.delivery_street}</p>}
-                                        </div>
-
-                                        <div>
-                                            <label htmlFor="delivery_building_details" className="mb-2 block text-sm font-medium text-gray-700">
-                                                Building / Unit Details
-                                            </label>
-                                            <input
-                                                type="text"
-                                                id="delivery_building_details"
-                                                value={data.delivery_building_details}
-                                                onChange={(e) => setData('delivery_building_details', e.target.value)}
-                                                className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-orange-500 focus:ring-orange-500"
-                                                placeholder="e.g., Bldg 5, Unit 201"
-                                            />
-                                            {errors.delivery_building_details && (
-                                                <p className="mt-1 text-sm text-red-600">{errors.delivery_building_details}</p>
-                                            )}
-                                        </div>
-                                    </div>
-
-                                    {/* Interactive Map - Editable */}
-                                    <div>
-                                        <label className="mb-2 block text-sm font-medium text-gray-700">Pin Your Exact Location on Map</label>
-                                        <LocationPicker
-                                            latitude={data.delivery_latitude || undefined}
-                                            longitude={data.delivery_longitude || undefined}
-                                            address={
-                                                data.delivery_barangay && data.delivery_city && data.delivery_province
-                                                    ? `${data.delivery_barangay}, ${data.delivery_city}, ${data.delivery_province}, Philippines`
-                                                    : ''
-                                            }
-                                            onLocationChange={(lat, lng) => {
-                                                setData('delivery_latitude', lat);
-                                                setData('delivery_longitude', lng);
-                                            }}
-                                            centerOnAddress={true}
+                                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                                    <label
+                                        className={`flex cursor-pointer items-center rounded-xl border-2 p-4 transition-all ${
+                                            data.delivery_method === 'delivery'
+                                                ? 'border-orange-500 bg-orange-50 ring-2 ring-orange-200'
+                                                : 'border-gray-200 bg-white hover:border-gray-300 hover:bg-gray-50'
+                                        }`}
+                                    >
+                                        <input
+                                            type="radio"
+                                            name="delivery_method"
+                                            value="delivery"
+                                            checked={data.delivery_method === 'delivery'}
+                                            onChange={() => setData('delivery_method', 'delivery')}
+                                            className="sr-only"
                                         />
-                                        <p className="mt-2 text-xs text-gray-500">
-                                            💡 Click on the map or drag the marker to set your exact delivery location. This helps ensure accurate
-                                            delivery!
-                                        </p>
+                                        <div
+                                            className={`mr-4 flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl ${data.delivery_method === 'delivery' ? 'bg-orange-500 shadow-md' : 'bg-gray-100'}`}
+                                        >
+                                            <Truck className={`h-6 w-6 ${data.delivery_method === 'delivery' ? 'text-white' : 'text-gray-500'}`} />
+                                        </div>
+                                        <div>
+                                            <p
+                                                className={`font-semibold ${data.delivery_method === 'delivery' ? 'text-orange-900' : 'text-gray-900'}`}
+                                            >
+                                                Delivery
+                                            </p>
+                                            <p className={`text-sm ${data.delivery_method === 'delivery' ? 'text-orange-700' : 'text-gray-500'}`}>
+                                                We&apos;ll deliver to your address
+                                            </p>
+                                        </div>
+                                        {data.delivery_method === 'delivery' && <CheckCircle className="ml-auto h-5 w-5 text-orange-500" />}
+                                    </label>
+
+                                    <label
+                                        className={`flex cursor-pointer items-center rounded-xl border-2 p-4 transition-all ${
+                                            data.delivery_method === 'pickup'
+                                                ? 'border-orange-500 bg-orange-50 ring-2 ring-orange-200'
+                                                : 'border-gray-200 bg-white hover:border-gray-300 hover:bg-gray-50'
+                                        }`}
+                                    >
+                                        <input
+                                            type="radio"
+                                            name="delivery_method"
+                                            value="pickup"
+                                            checked={data.delivery_method === 'pickup'}
+                                            onChange={() => setData('delivery_method', 'pickup')}
+                                            className="sr-only"
+                                        />
+                                        <div
+                                            className={`mr-4 flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl ${data.delivery_method === 'pickup' ? 'bg-orange-500 shadow-md' : 'bg-gray-100'}`}
+                                        >
+                                            <Store className={`h-6 w-6 ${data.delivery_method === 'pickup' ? 'text-white' : 'text-gray-500'}`} />
+                                        </div>
+                                        <div>
+                                            <p className={`font-semibold ${data.delivery_method === 'pickup' ? 'text-orange-900' : 'text-gray-900'}`}>
+                                                Pickup
+                                            </p>
+                                            <p className={`text-sm ${data.delivery_method === 'pickup' ? 'text-orange-700' : 'text-gray-500'}`}>
+                                                Pick up from the seller&apos;s store
+                                            </p>
+                                        </div>
+                                        {data.delivery_method === 'pickup' && <CheckCircle className="ml-auto h-5 w-5 text-orange-500" />}
+                                    </label>
+                                </div>
+
+                                {data.delivery_method === 'pickup' && (
+                                    <div className="mt-4 rounded-lg border border-green-200 bg-green-50 p-4">
+                                        <div className="flex items-start gap-3">
+                                            <Store className="mt-0.5 h-5 w-5 flex-shrink-0 text-green-600" />
+                                            <div>
+                                                <p className="text-sm font-medium text-green-800">Pickup selected — No shipping fee!</p>
+                                                <p className="mt-1 text-xs text-green-700">
+                                                    The seller will confirm your order and notify you when it&apos;s ready for pickup. Please
+                                                    coordinate with the seller for the pickup location and time.
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Shipping Information - Only shown for delivery */}
+                            {data.delivery_method === 'delivery' && (
+                                <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+                                    <div className="mb-6 flex items-center justify-between">
+                                        <div className="flex items-center">
+                                            <MapPin className="mr-3 h-6 w-6" style={{ color: '#ea580c' }} />
+                                            <h2 className="text-xl font-semibold text-gray-900">Delivery Address</h2>
+                                        </div>
+                                        {user.delivery_province && user.delivery_city && user.delivery_barangay && (
+                                            <div className="inline-flex items-center rounded-full bg-green-100 px-3 py-1 text-xs font-medium text-green-800">
+                                                <CheckCircle className="mr-1 h-3 w-3" />
+                                                Profile Saved
+                                            </div>
+                                        )}
                                     </div>
 
-                                    {/* Contact Information */}
-                                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                                        <div>
-                                            <label htmlFor="shipping_name" className="mb-2 block text-sm font-medium text-gray-700">
-                                                Full Name
-                                            </label>
-                                            <input
-                                                type="text"
-                                                id="shipping_name"
-                                                value={user.name || ''}
-                                                readOnly
-                                                className="w-full rounded-lg border border-gray-300 bg-gray-50 px-3 py-2"
-                                            />
+                                    {/* Editable Delivery Location */}
+                                    <div className="space-y-6">
+                                        {/* Province, City, Barangay */}
+                                        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+                                            <div>
+                                                <label htmlFor="delivery_province" className="mb-2 block text-sm font-medium text-gray-700">
+                                                    Province *
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    id="delivery_province"
+                                                    value={data.delivery_province}
+                                                    onChange={(e) => setData('delivery_province', e.target.value)}
+                                                    className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-orange-500 focus:ring-orange-500"
+                                                    placeholder="Enter province"
+                                                    required
+                                                />
+                                                {errors.delivery_province && <p className="mt-1 text-sm text-red-600">{errors.delivery_province}</p>}
+                                            </div>
+
+                                            <div>
+                                                <label htmlFor="delivery_city" className="mb-2 block text-sm font-medium text-gray-700">
+                                                    City / Municipality *
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    id="delivery_city"
+                                                    value={data.delivery_city}
+                                                    onChange={(e) => setData('delivery_city', e.target.value)}
+                                                    className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-orange-500 focus:ring-orange-500"
+                                                    placeholder="Enter city"
+                                                    required
+                                                />
+                                                {errors.delivery_city && <p className="mt-1 text-sm text-red-600">{errors.delivery_city}</p>}
+                                            </div>
+
+                                            <div>
+                                                <label htmlFor="delivery_barangay" className="mb-2 block text-sm font-medium text-gray-700">
+                                                    Barangay *
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    id="delivery_barangay"
+                                                    value={data.delivery_barangay}
+                                                    onChange={(e) => setData('delivery_barangay', e.target.value)}
+                                                    className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-orange-500 focus:ring-orange-500"
+                                                    placeholder="Enter barangay"
+                                                    required
+                                                />
+                                                {errors.delivery_barangay && <p className="mt-1 text-sm text-red-600">{errors.delivery_barangay}</p>}
+                                            </div>
                                         </div>
 
-                                        <div>
-                                            <label htmlFor="shipping_email" className="mb-2 block text-sm font-medium text-gray-700">
-                                                Email Address
-                                            </label>
-                                            <input
-                                                type="email"
-                                                id="shipping_email"
-                                                value={user.email}
-                                                readOnly
-                                                className="w-full rounded-lg border border-gray-300 bg-gray-50 px-3 py-2"
-                                            />
+                                        {/* Street and Building Details */}
+                                        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                                            <div>
+                                                <label htmlFor="delivery_street" className="mb-2 block text-sm font-medium text-gray-700">
+                                                    Street Address
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    id="delivery_street"
+                                                    value={data.delivery_street}
+                                                    onChange={(e) => setData('delivery_street', e.target.value)}
+                                                    className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-orange-500 focus:ring-orange-500"
+                                                    placeholder="e.g., 123 Main Street"
+                                                />
+                                                {errors.delivery_street && <p className="mt-1 text-sm text-red-600">{errors.delivery_street}</p>}
+                                            </div>
+
+                                            <div>
+                                                <label htmlFor="delivery_building_details" className="mb-2 block text-sm font-medium text-gray-700">
+                                                    Building / Unit Details
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    id="delivery_building_details"
+                                                    value={data.delivery_building_details}
+                                                    onChange={(e) => setData('delivery_building_details', e.target.value)}
+                                                    className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-orange-500 focus:ring-orange-500"
+                                                    placeholder="e.g., Bldg 5, Unit 201"
+                                                />
+                                                {errors.delivery_building_details && (
+                                                    <p className="mt-1 text-sm text-red-600">{errors.delivery_building_details}</p>
+                                                )}
+                                            </div>
                                         </div>
 
-                                        <div className="md:col-span-2">
-                                            <label htmlFor="shipping_phone" className="mb-2 block text-sm font-medium text-gray-700">
-                                                Contact Phone Number *
-                                            </label>
-                                            <input
-                                                type="tel"
-                                                id="shipping_phone"
-                                                value={data.delivery_phone}
-                                                onChange={(e) => setData('delivery_phone', e.target.value)}
-                                                className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-orange-500 focus:ring-orange-500"
-                                                placeholder="e.g., 09123456789"
-                                                required
+                                        {/* Interactive Map - Editable */}
+                                        <div>
+                                            <label className="mb-2 block text-sm font-medium text-gray-700">Pin Your Exact Location on Map</label>
+                                            <LocationPicker
+                                                latitude={data.delivery_latitude || undefined}
+                                                longitude={data.delivery_longitude || undefined}
+                                                address={
+                                                    data.delivery_barangay && data.delivery_city && data.delivery_province
+                                                        ? `${data.delivery_barangay}, ${data.delivery_city}, ${data.delivery_province}, Philippines`
+                                                        : ''
+                                                }
+                                                onLocationChange={(lat, lng) => {
+                                                    setData('delivery_latitude', lat);
+                                                    setData('delivery_longitude', lng);
+                                                }}
+                                                centerOnAddress={true}
                                             />
-                                            {errors.delivery_phone && <p className="mt-1 text-sm text-red-600">{errors.delivery_phone}</p>}
+                                            <p className="mt-2 text-xs text-gray-500">
+                                                💡 Click on the map or drag the marker to set your exact delivery location. This helps ensure accurate
+                                                delivery!
+                                            </p>
+                                        </div>
+
+                                        {/* Contact Information */}
+                                        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                                            <div>
+                                                <label htmlFor="shipping_name" className="mb-2 block text-sm font-medium text-gray-700">
+                                                    Full Name
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    id="shipping_name"
+                                                    value={user.name || ''}
+                                                    readOnly
+                                                    className="w-full rounded-lg border border-gray-300 bg-gray-50 px-3 py-2"
+                                                />
+                                            </div>
+
+                                            <div>
+                                                <label htmlFor="shipping_email" className="mb-2 block text-sm font-medium text-gray-700">
+                                                    Email Address
+                                                </label>
+                                                <input
+                                                    type="email"
+                                                    id="shipping_email"
+                                                    value={user.email}
+                                                    readOnly
+                                                    className="w-full rounded-lg border border-gray-300 bg-gray-50 px-3 py-2"
+                                                />
+                                            </div>
+
+                                            <div className="md:col-span-2">
+                                                <label htmlFor="shipping_phone" className="mb-2 block text-sm font-medium text-gray-700">
+                                                    Contact Phone Number *
+                                                </label>
+                                                <input
+                                                    type="tel"
+                                                    id="shipping_phone"
+                                                    value={data.delivery_phone}
+                                                    onChange={(e) => setData('delivery_phone', e.target.value)}
+                                                    className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-orange-500 focus:ring-orange-500"
+                                                    placeholder="e.g., 09123456789"
+                                                    required
+                                                />
+                                                {errors.delivery_phone && <p className="mt-1 text-sm text-red-600">{errors.delivery_phone}</p>}
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            )}
+
+                            {/* Contact Info for Pickup */}
+                            {data.delivery_method === 'pickup' && (
+                                <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+                                    <div className="mb-4 flex items-center">
+                                        <Phone className="mr-3 h-6 w-6" style={{ color: '#ea580c' }} />
+                                        <h2 className="text-xl font-semibold text-gray-900">Contact Information</h2>
+                                    </div>
+                                    <div className="space-y-4">
+                                        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                                            <div>
+                                                <label htmlFor="pickup_name" className="mb-2 block text-sm font-medium text-gray-700">
+                                                    Full Name
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    id="pickup_name"
+                                                    value={user.name || ''}
+                                                    readOnly
+                                                    className="w-full rounded-lg border border-gray-300 bg-gray-50 px-3 py-2"
+                                                />
+                                            </div>
+                                            <div>
+                                                <label htmlFor="pickup_phone" className="mb-2 block text-sm font-medium text-gray-700">
+                                                    Contact Phone Number *
+                                                </label>
+                                                <input
+                                                    type="tel"
+                                                    id="pickup_phone"
+                                                    value={data.delivery_phone}
+                                                    onChange={(e) => setData('delivery_phone', e.target.value)}
+                                                    className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-orange-500 focus:ring-orange-500"
+                                                    placeholder="e.g., 09123456789"
+                                                    required
+                                                />
+                                                {errors.delivery_phone && <p className="mt-1 text-sm text-red-600">{errors.delivery_phone}</p>}
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <label htmlFor="pickup_notes" className="mb-2 block text-sm font-medium text-gray-700">
+                                                Pickup Notes (Optional)
+                                            </label>
+                                            <textarea
+                                                id="pickup_notes"
+                                                value={data.delivery_notes}
+                                                onChange={(e) => setData('delivery_notes', e.target.value)}
+                                                rows={2}
+                                                className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-orange-500 focus:ring-orange-500"
+                                                placeholder="e.g., Preferred pickup time, person who will pick up..."
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
 
                             {/* Payment Information */}
                             <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
@@ -581,12 +730,32 @@ export default function Checkout({ user, buyNowItem }: CheckoutProps) {
 
                                 <div className="space-y-2 border-t border-gray-200 pt-4">
                                     <div className="flex justify-between text-sm">
+                                        <span className="text-gray-600">Order Type</span>
+                                        <span
+                                            className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium ${data.delivery_method === 'pickup' ? 'bg-blue-100 text-blue-800' : 'bg-orange-100 text-orange-800'}`}
+                                        >
+                                            {data.delivery_method === 'pickup' ? (
+                                                <>
+                                                    <Store className="h-3 w-3" /> Pickup
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <Truck className="h-3 w-3" /> Delivery
+                                                </>
+                                            )}
+                                        </span>
+                                    </div>
+                                    <div className="flex justify-between text-sm">
                                         <span className="text-gray-600">Subtotal</span>
                                         <span className="font-medium text-gray-900">{formatPeso(checkoutTotal)}</span>
                                     </div>
                                     <div className="flex justify-between text-sm">
                                         <span className="text-gray-600">Shipping Fee</span>
-                                        <span className="font-medium text-gray-900">{formatPeso(shippingFee)}</span>
+                                        {isPickup ? (
+                                            <span className="font-medium text-green-600">Free (Pickup)</span>
+                                        ) : (
+                                            <span className="font-medium text-gray-900">{formatPeso(shippingFee)}</span>
+                                        )}
                                     </div>
                                     <div className="flex justify-between text-sm">
                                         <span className="text-gray-600">Payment Processing</span>
