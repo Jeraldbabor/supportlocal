@@ -21,7 +21,6 @@ interface SellerApplication {
     user: User;
     business_description: string;
     business_type: string | null;
-    business_location: string | null;
     id_document_type: string;
     id_document_path: string;
     business_permit_type: string | null;
@@ -210,13 +209,6 @@ export default function SellerApplicationShow({ application }: SellerApplication
                                             <Briefcase className="h-4 w-4 text-gray-400" />
                                             <p className="font-medium">{application.business_type || 'Not specified'}</p>
                                         </div>
-                                    </div>
-                                </div>
-
-                                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                                    <div>
-                                        <Label className="text-sm font-medium text-gray-600">Business Location</Label>
-                                        <p className="font-medium">{application.business_location || 'Not specified'}</p>
                                     </div>
                                 </div>
                             </CardContent>
@@ -584,12 +576,6 @@ export default function SellerApplicationShow({ application }: SellerApplication
                                     <span className="text-gray-600">ID Type:</span>
                                     <span className="font-medium">{getIdTypeDisplay(application.id_document_type)}</span>
                                 </div>
-                                {application.business_location && (
-                                    <div className="flex justify-between">
-                                        <span className="text-gray-600">Location:</span>
-                                        <span className="font-medium">{application.business_location}</span>
-                                    </div>
-                                )}
                             </CardContent>
                         </Card>
                     </div>

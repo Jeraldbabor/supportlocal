@@ -44,7 +44,6 @@ export default function SellerApplicationForm({
     const { data, setData, post, processing, errors, reset } = useForm({
         business_description: '',
         business_type: '',
-        business_location: '',
         id_document_type: '',
         id_document: null as File | null,
         business_permit_type: '',
@@ -57,7 +56,6 @@ export default function SellerApplicationForm({
 
         if (step === 0) {
             if (!data.business_description.trim()) newErrors.business_description = 'Business description is required.';
-            if (!data.business_location.trim()) newErrors.business_location = 'Business location is required.';
         }
 
         if (step === 1) {
@@ -322,25 +320,6 @@ export default function SellerApplicationForm({
                                     />
                                     <InputError message={errors.business_type} />
                                 </div>
-
-                                <div className="space-y-2">
-                                    <Label htmlFor="business_location">
-                                        Business Location <span className="text-red-500">*</span>
-                                    </Label>
-                                    <Input
-                                        id="business_location"
-                                        type="text"
-                                        placeholder="e.g., Hinoba-an, Negros Occidental"
-                                        value={data.business_location}
-                                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setData('business_location', e.target.value)}
-                                        className={stepErrors.business_location || errors.business_location ? 'border-red-300' : ''}
-                                    />
-                                    <p className="text-xs text-gray-500">
-                                        Enter the municipality/city where your business is located. Businesses in Hinoba-an may qualify for instant
-                                        approval.
-                                    </p>
-                                    <InputError message={stepErrors.business_location || errors.business_location} />
-                                </div>
                             </CardContent>
                         </Card>
                     )}
@@ -570,9 +549,6 @@ export default function SellerApplicationForm({
                                             </p>
                                             <p className="text-gray-600">
                                                 <span className="text-gray-500">Business Type:</span> {data.business_type || 'Not specified'}
-                                            </p>
-                                            <p className="text-gray-600">
-                                                <span className="text-gray-500">Location:</span> {data.business_location || '—'}
                                             </p>
                                         </div>
                                     </button>

@@ -121,7 +121,6 @@ class SellerApplicationController extends Controller
         $request->validate([
             'business_description' => 'required|string|max:2000',
             'business_type' => 'nullable|string|max:255',
-            'business_location' => 'required|string|max:500',
             'id_document_type' => 'required|string|in:'.implode(',', array_keys(SellerApplication::ID_TYPES)),
             'id_document' => [
                 'required',
@@ -163,7 +162,6 @@ class SellerApplicationController extends Controller
             'user_id' => $user->id,
             'business_description' => $request->business_description,
             'business_type' => $request->business_type,
-            'business_location' => $request->business_location,
             'id_document_type' => $request->id_document_type,
             'id_document_path' => $idDocumentPath,
             'business_permit_type' => $request->business_permit_type,
@@ -172,32 +170,6 @@ class SellerApplicationController extends Controller
             'status' => SellerApplication::STATUS_PENDING,
         ]);
 
-        // --- Auto-approval algorithm ---
-        // If both valid ID and business permit are uploaded:
-        //   - From Hinoba-an → auto-approve (instantly becomes a seller)
-        //   - NOT from Hinoba-an → auto-reject
-        // If no business permit → stays pending for admin review
-
-        $hasIdDocument = ! empty($idDocumentPath);
-        $hasBusinessPermit = ! empty($businessPermitPath);
-
-        if ($hasIdDocument && $hasBusinessPermit) {
-            if ($application->isFromHinoban()) {
-                // Auto-approve: valid ID + business permit + from Hinoba-an
-                $application->autoApprove();
-
-                return redirect()->route('seller.application.create')->with('success',
-                    'Congratulations! Your application has been automatically approved! You are now a seller. Welcome to SupportLocal!');
-            } else {
-                // Auto-reject: not from Hinoba-an
-                $application->autoReject('Auto-rejected: Business location is not in Hinoba-an, Negros Occidental. Only businesses located in Hinoba-an are eligible for automatic approval.');
-
-                return redirect()->route('seller.application.create')->with('success',
-                    'Your application has been reviewed. Unfortunately, only businesses located in Hinoba-an are eligible at this time. Please check your email for details.');
-            }
-        }
-
-        // No business permit → pending for admin manual review
         // Notify all administrators about the new application
         $admins = User::where('role', User::ROLE_ADMINISTRATOR)->get();
         Notification::send($admins, new NewSellerApplicationSubmitted($application));
