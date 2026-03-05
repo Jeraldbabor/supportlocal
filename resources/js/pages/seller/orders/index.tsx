@@ -41,6 +41,7 @@ interface Order {
     delivery_address: string;
     delivery_phone: string;
     delivery_notes: string;
+    delivery_method?: string;
     created_at: string;
     order_items: OrderItem[];
     buyer: {
@@ -302,6 +303,11 @@ export default function Orders({ orders }: OrdersProps) {
                                                     <p className="text-xs text-gray-400">
                                                         {formatPeso(order.subtotal)} + {formatPeso(order.shipping_fee || 0)} shipping
                                                     </p>
+                                                    <span
+                                                        className={`mt-1 inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold ${order.delivery_method === 'pickup' ? 'bg-blue-100 text-blue-800' : 'bg-orange-100 text-orange-800'}`}
+                                                    >
+                                                        {order.delivery_method === 'pickup' ? 'Pickup' : 'Delivery'}
+                                                    </span>
                                                 </div>
                                             </div>
                                         </div>

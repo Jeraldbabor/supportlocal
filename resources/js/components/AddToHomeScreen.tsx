@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
 import { Download, Share, X } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
 interface BeforeInstallPromptEvent extends Event {
     prompt: () => Promise<void>;
@@ -22,8 +22,7 @@ export default function AddToHomeScreen() {
     useEffect(() => {
         // Check if already installed / running in standalone mode
         const standalone =
-            window.matchMedia('(display-mode: standalone)').matches ||
-            (window.navigator as { standalone?: boolean }).standalone === true;
+            window.matchMedia('(display-mode: standalone)').matches || (window.navigator as { standalone?: boolean }).standalone === true;
 
         setIsStandalone(standalone);
 
@@ -99,37 +98,38 @@ export default function AddToHomeScreen() {
         return (
             <>
                 {/* Overlay */}
-                <div
-                    className="fixed inset-0 z-[9998] bg-black/50"
-                    onClick={handleDismiss}
-                />
+                <div className="fixed inset-0 z-[9998] bg-black/50" onClick={handleDismiss} />
                 {/* Instructions Dialog */}
                 <div className="fixed inset-x-4 bottom-4 z-[9999] rounded-2xl bg-white p-5 shadow-2xl sm:inset-x-auto sm:bottom-6 sm:left-1/2 sm:max-w-sm sm:-translate-x-1/2">
                     <button
                         onClick={handleDismiss}
-                        className="absolute right-3 top-3 rounded-full p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+                        className="absolute top-3 right-3 rounded-full p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
                         aria-label="Close"
                     >
                         <X className="h-5 w-5" />
                     </button>
-                    <h3 className="mb-3 text-lg font-semibold text-gray-900">
-                        Install Support Local
-                    </h3>
+                    <h3 className="mb-3 text-lg font-semibold text-gray-900">Install Support Local</h3>
                     <div className="space-y-3 text-sm text-gray-600">
                         <div className="flex items-start gap-3">
-                            <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-orange-100 text-xs font-bold text-orange-600">1</span>
+                            <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-orange-100 text-xs font-bold text-orange-600">
+                                1
+                            </span>
                             <p>
                                 Tap the <Share className="inline h-4 w-4 text-blue-500" /> <strong>Share</strong> button in your browser toolbar
                             </p>
                         </div>
                         <div className="flex items-start gap-3">
-                            <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-orange-100 text-xs font-bold text-orange-600">2</span>
+                            <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-orange-100 text-xs font-bold text-orange-600">
+                                2
+                            </span>
                             <p>
                                 Scroll down and tap <strong>"Add to Home Screen"</strong>
                             </p>
                         </div>
                         <div className="flex items-start gap-3">
-                            <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-orange-100 text-xs font-bold text-orange-600">3</span>
+                            <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-orange-100 text-xs font-bold text-orange-600">
+                                3
+                            </span>
                             <p>
                                 Tap <strong>"Add"</strong> to confirm
                             </p>
@@ -149,7 +149,7 @@ export default function AddToHomeScreen() {
     return (
         <>
             {/* Bottom banner prompt */}
-            <div className="fixed inset-x-0 bottom-0 z-[9999] animate-slide-up safe-bottom">
+            <div className="animate-slide-up safe-bottom fixed inset-x-0 bottom-0 z-[9999]">
                 <div className="mx-3 mb-3 rounded-2xl bg-white p-4 shadow-2xl ring-1 ring-gray-200 sm:mx-auto sm:max-w-md">
                     <div className="flex items-start gap-3">
                         {/* App icon */}
@@ -160,16 +160,12 @@ export default function AddToHomeScreen() {
                         <div className="min-w-0 flex-1">
                             <div className="flex items-start justify-between">
                                 <div>
-                                    <h3 className="text-sm font-semibold text-gray-900">
-                                        Install Support Local
-                                    </h3>
-                                    <p className="mt-0.5 text-xs text-gray-500">
-                                        Add to your home screen for quick access
-                                    </p>
+                                    <h3 className="text-sm font-semibold text-gray-900">Install Support Local</h3>
+                                    <p className="mt-0.5 text-xs text-gray-500">Add to your home screen for quick access</p>
                                 </div>
                                 <button
                                     onClick={handleDismiss}
-                                    className="-mr-1 -mt-1 rounded-full p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+                                    className="-mt-1 -mr-1 rounded-full p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
                                     aria-label="Dismiss"
                                 >
                                     <X className="h-4 w-4" />

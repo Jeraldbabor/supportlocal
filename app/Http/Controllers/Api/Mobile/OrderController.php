@@ -87,6 +87,7 @@ class OrderController extends Controller
             'delivery_city' => ['sometimes', 'nullable', 'string', 'max:100'],
             'delivery_barangay' => ['sometimes', 'nullable', 'string', 'max:100'],
             'special_instructions' => ['sometimes', 'nullable', 'string', 'max:500'],
+            'delivery_method' => ['sometimes', 'nullable', 'in:delivery,pickup'],
             'gcash_number' => ['required_if:payment_method,gcash', 'nullable', 'string', 'max:20'],
             // For Buy Now
             'buy_now' => ['sometimes', 'boolean'],
@@ -101,6 +102,8 @@ class OrderController extends Controller
             $totalAmount = 0;
             $shippingFee = 0;
             $sellerId = null;
+            $deliveryMethod = $validated['delivery_method'] ?? 'delivery';
+            $isPickup = $deliveryMethod === 'pickup';
 
             // Handle Buy Now vs Cart checkout
             if ($request->get('buy_now')) {
@@ -115,7 +118,7 @@ class OrderController extends Controller
                 }
 
                 $itemTotal = $product->price * $validated['quantity'];
-                $shippingFee = $product->free_shipping ? 0 : ($product->shipping_cost ?? 50);
+                $shippingFee = $isPickup ? 0 : ($product->free_shipping ? 0 : ($product->shipping_cost ?? 50));
                 $totalAmount = $itemTotal + $shippingFee;
                 $sellerId = $product->seller_id;
 
@@ -158,7 +161,7 @@ class OrderController extends Controller
                     }
 
                     $itemTotal = $item->price * $item->quantity;
-                    $itemShipping = $product->free_shipping ? 0 : ($product->shipping_cost ?? 50);
+                    $itemShipping = $isPickup ? 0 : ($product->free_shipping ? 0 : ($product->shipping_cost ?? 50));
 
                     $items[] = [
                         'product' => $product,
@@ -191,6 +194,7 @@ class OrderController extends Controller
                 'delivery_address' => $validated['shipping_address'],
                 'delivery_phone' => $validated['shipping_phone'],
                 'delivery_notes' => $validated['special_instructions'] ?? null,
+                'delivery_method' => $validated['delivery_method'] ?? 'delivery',
                 'payment_method' => $validated['payment_method'],
                 'payment_status' => $validated['payment_method'] === 'cod' ? Order::PAYMENT_PENDING : Order::PAYMENT_PENDING,
                 'gcash_number' => $validated['gcash_number'] ?? null,

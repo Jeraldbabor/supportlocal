@@ -23,6 +23,7 @@ interface Order {
     total_amount: number;
     shipping_address: string;
     payment_method: string;
+    delivery_method?: string;
     created_at: string;
     updated_at: string;
     order_items: OrderItem[];
@@ -340,6 +341,11 @@ export default function Orders({ orders }: OrdersIndexProps) {
                                     <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
                                         <div className="text-xs text-gray-600 sm:text-sm">
                                             <span className="font-medium">Payment:</span> <span className="capitalize">{order.payment_method}</span>
+                                        </div>
+                                        <div
+                                            className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${order.delivery_method === 'pickup' ? 'bg-blue-100 text-blue-800' : 'bg-orange-100 text-orange-800'}`}
+                                        >
+                                            {order.delivery_method === 'pickup' ? 'Pickup' : 'Delivery'}
                                         </div>
                                         {order.seller_confirmed_at && (
                                             <div className="text-xs text-green-600 sm:text-sm">

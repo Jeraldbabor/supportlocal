@@ -51,6 +51,7 @@ class OrderController extends Controller
             'delivery_address' => 'required|string|max:500',
             'delivery_phone' => 'required|string|max:20',
             'delivery_notes' => 'nullable|string|max:255',
+            'delivery_method' => 'nullable|in:delivery,pickup',
             'delivery_province' => 'nullable|string|max:100',
             'delivery_city' => 'nullable|string|max:100',
             'delivery_barangay' => 'nullable|string|max:100',
@@ -129,16 +130,20 @@ class OrderController extends Controller
                 $sellerTotal = array_sum(array_column($sellerItems, 'total_price'));
 
                 // Calculate shipping fee from products (sum each unique product's shipping cost once)
-                // Use already loaded products instead of querying again
+                // Skip shipping fee if delivery method is pickup
+                $deliveryMethod = $request->input('delivery_method', 'delivery');
                 $shippingFee = 0;
-                $processedProducts = [];
-                foreach ($sellerItems as $item) {
-                    $productId = $item['product_id'];
-                    // Only add shipping cost once per unique product
-                    if (! in_array($productId, $processedProducts)) {
-                        $product = $item['product'] ?? $products->get($productId);
-                        $shippingFee += $product->shipping_cost ?? 50;
-                        $processedProducts[] = $productId;
+                if ($deliveryMethod === 'delivery') {
+                    // Use already loaded products instead of querying again
+                    $processedProducts = [];
+                    foreach ($sellerItems as $item) {
+                        $productId = $item['product_id'];
+                        // Only add shipping cost once per unique product
+                        if (! in_array($productId, $processedProducts)) {
+                            $product = $item['product'] ?? $products->get($productId);
+                            $shippingFee += $product->shipping_cost ?? 50;
+                            $processedProducts[] = $productId;
+                        }
                     }
                 }
                 $totalWithShipping = $sellerTotal + $shippingFee;
@@ -159,6 +164,7 @@ class OrderController extends Controller
                     'delivery_address' => $request->input('delivery_address'),
                     'delivery_phone' => $request->input('delivery_phone'),
                     'delivery_notes' => $request->input('delivery_notes'),
+                    'delivery_method' => $deliveryMethod,
                     'payment_method' => $paymentMethod,
                     'payment_status' => $paymentStatus,
                     'gcash_reference' => $request->input('gcash_reference'),

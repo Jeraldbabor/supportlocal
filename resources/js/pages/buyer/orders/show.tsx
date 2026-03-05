@@ -1,7 +1,7 @@
 import BuyerLayout from '@/layouts/BuyerLayout';
 import { formatPeso } from '@/utils/currency';
 import { Head, router, usePage } from '@inertiajs/react';
-import { ArrowLeft, Ban, CheckCircle, Clock, CreditCard, MapPin, MessageSquare, Package, Truck, Upload, User, X, XCircle } from 'lucide-react';
+import { ArrowLeft, Ban, CheckCircle, Clock, CreditCard, MapPin, MessageSquare, Package, Store, Truck, Upload, User, X, XCircle } from 'lucide-react';
 import { useState } from 'react';
 import StartChatButton from '../../../components/StartChatButton';
 
@@ -28,6 +28,7 @@ interface Order {
     delivery_address: string;
     delivery_phone: string;
     delivery_notes: string;
+    delivery_method?: string;
     shipping_provider?: string | null;
     tracking_number?: string | null;
     waybill_number?: string | null;
@@ -321,8 +322,19 @@ export default function OrderShow({ order }: OrderShowProps) {
                     {/* Delivery Information */}
                     <div className="rounded-lg border border-gray-200 bg-white p-3 shadow-sm sm:p-5">
                         <h2 className="mb-3 flex items-center text-sm font-semibold text-gray-900 sm:text-base md:text-lg">
-                            <MapPin className="mr-1.5 h-4 w-4 sm:mr-2 sm:h-5 sm:w-5" />
-                            Delivery Information
+                            {order.delivery_method === 'pickup' ? (
+                                <Store className="mr-1.5 h-4 w-4 sm:mr-2 sm:h-5 sm:w-5" />
+                            ) : (
+                                <MapPin className="mr-1.5 h-4 w-4 sm:mr-2 sm:h-5 sm:w-5" />
+                            )}
+                            {order.delivery_method === 'pickup' ? 'Pickup Information' : 'Delivery Information'}
+                            <span
+                                className={`ml-2 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium ${
+                                    order.delivery_method === 'pickup' ? 'bg-blue-100 text-blue-800' : 'bg-orange-100 text-orange-800'
+                                }`}
+                            >
+                                {order.delivery_method === 'pickup' ? 'Pickup' : 'Delivery'}
+                            </span>
                         </h2>
                         <div className="space-y-2.5 sm:space-y-3">
                             <div>
