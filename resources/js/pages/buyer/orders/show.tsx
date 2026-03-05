@@ -583,14 +583,14 @@ export default function OrderShow({ order }: OrderShowProps) {
                                     Cancel Order
                                 </button>
                             )}
-                            {order.seller?.email && (
-                                <a
-                                    href={`mailto:${order.seller.email}?subject=Order ${order.order_number} Inquiry`}
+                            {order.seller && auth?.user && auth.user.id !== order.seller.id && (
+                                <StartChatButton
+                                    userId={order.seller.id}
                                     className="inline-flex items-center rounded-lg bg-primary px-3 py-1.5 text-xs font-medium text-white hover:bg-primary/90 sm:px-4 sm:py-2 sm:text-sm"
                                 >
                                     <MessageSquare className="mr-1.5 h-3.5 w-3.5 sm:mr-2 sm:h-4 sm:w-4" />
                                     Contact Seller
-                                </a>
+                                </StartChatButton>
                             )}
                         </div>
                     </div>
