@@ -226,172 +226,6 @@ export default function Home({
                 </div>
             </section>
 
-            {/* Unique Feature: Custom Order Bidding */}
-            <section className="border-b border-gray-100 bg-gradient-to-br from-amber-500 via-orange-500 to-amber-600 py-10 sm:py-14">
-                <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                    <div className="grid items-center gap-8 lg:grid-cols-2 lg:gap-12">
-                        {/* Left Content */}
-                        <div className="text-white">
-                            <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-white/20 px-4 py-2 text-sm font-medium backdrop-blur-sm">
-                                <Sparkles className="h-4 w-4" />
-                                <span>Only on SupportLocal</span>
-                            </div>
-                            <h2 className="text-2xl font-bold sm:text-3xl lg:text-4xl">Custom Order Bidding System</h2>
-                            <p className="mt-3 text-base text-amber-100 sm:text-lg">
-                                Can't find what you're looking for? Post your custom order request and let local artisans compete to craft it for you!
-                            </p>
-                            <ul className="mt-6 space-y-3">
-                                {[
-                                    { icon: Gavel, text: 'Post your request & receive multiple bids' },
-                                    { icon: Users, text: 'Compare prices from verified artisans' },
-                                    { icon: Star, text: 'Choose based on ratings & portfolios' },
-                                    { icon: MessageSquare, text: 'Direct chat with your chosen artisan' },
-                                ].map((item, index) => (
-                                    <li key={index} className="flex items-center gap-3">
-                                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-white/20">
-                                            <item.icon className="h-4 w-4" />
-                                        </div>
-                                        <span className="text-sm sm:text-base">{item.text}</span>
-                                    </li>
-                                ))}
-                            </ul>
-                            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-                                <Link
-                                    href="/register"
-                                    className="inline-flex items-center justify-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-semibold text-amber-600 shadow-lg transition-all hover:bg-amber-50 hover:shadow-xl sm:text-base"
-                                >
-                                    Start Your Custom Order
-                                    <ArrowRight className="h-4 w-4" />
-                                </Link>
-                                <Link
-                                    href="/artisans"
-                                    className="inline-flex items-center justify-center gap-2 rounded-full border-2 border-white/50 px-6 py-3 text-sm font-semibold text-white transition-all hover:border-white hover:bg-white/10 sm:text-base"
-                                >
-                                    Browse Artisans
-                                </Link>
-                            </div>
-                        </div>
-
-                        {/* Right Content - Demo Card */}
-                        <div className="relative">
-                            <div className="rounded-2xl bg-white p-5 shadow-2xl sm:p-6">
-                                <div className="mb-4 flex items-center justify-between">
-                                    <span className="rounded-full bg-blue-100 px-3 py-1 text-xs font-semibold text-blue-800 sm:text-sm">
-                                        Open for Bids
-                                    </span>
-                                    <span className="text-xs text-gray-500 sm:text-sm">3 bids received</span>
-                                </div>
-                                <h3 className="text-base font-semibold text-gray-900 sm:text-lg">Custom Leather Messenger Bag</h3>
-                                <p className="mt-2 line-clamp-2 text-xs text-gray-600 sm:text-sm">
-                                    Looking for a handcrafted leather messenger bag with custom engraving for my initials...
-                                </p>
-                                <div className="mt-3 flex flex-wrap items-center gap-2 text-xs text-gray-500 sm:gap-4 sm:text-sm">
-                                    <span>Budget: ₱2,000 - ₱3,500</span>
-                                    <span className="hidden sm:inline">•</span>
-                                    <span>Deadline: 2 weeks</span>
-                                </div>
-                                <div className="mt-5 space-y-2 sm:space-y-3">
-                                    {[
-                                        { name: 'Jerald B.', price: '₱2,800', rating: 4.9, days: 10 },
-                                        { name: 'Decery B.', price: '₱2,500', rating: 4.7, days: 12 },
-                                        { name: 'Ana R.', price: '₱3,200', rating: 5.0, days: 8 },
-                                    ].map((bid, index) => (
-                                        <div
-                                            key={index}
-                                            className="flex items-center justify-between rounded-lg border border-gray-100 bg-gray-50 p-2.5 sm:p-3"
-                                        >
-                                            <div className="flex items-center gap-2 sm:gap-3">
-                                                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-amber-100 text-xs font-semibold text-amber-700 sm:text-sm">
-                                                    {bid.name.charAt(0)}
-                                                </div>
-                                                <div>
-                                                    <p className="text-xs font-medium text-gray-900 sm:text-sm">{bid.name}</p>
-                                                    <div className="flex items-center gap-1 text-[10px] text-gray-500 sm:text-xs">
-                                                        <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
-                                                        {bid.rating}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div className="text-right">
-                                                <p className="text-sm font-semibold text-amber-600 sm:text-base">{bid.price}</p>
-                                                <p className="text-[10px] text-gray-500 sm:text-xs">{bid.days} days</p>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                            {/* Decorative elements */}
-                            <div className="absolute -top-4 -right-4 h-20 w-20 rounded-full bg-white/10 blur-xl" />
-                            <div className="absolute -bottom-4 -left-4 h-16 w-16 rounded-full bg-white/10 blur-xl" />
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            {/* Why Choose Us - Features */}
-            <section className="border-b border-gray-100 bg-white py-10 sm:py-12">
-                <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                    <div className="mb-8 text-center">
-                        <h2 className="text-xl font-bold text-gray-900 sm:text-2xl lg:text-3xl">Why Choose SupportLocal?</h2>
-                        <p className="mx-auto mt-2 max-w-2xl text-sm text-gray-600 sm:text-base">
-                            We connect you directly with talented Filipino artisans for unique, handcrafted products.
-                        </p>
-                    </div>
-                    <div className="grid gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-4">
-                        {[
-                            {
-                                icon: Gavel,
-                                title: 'Custom Order Bidding',
-                                description: 'Post requests and let artisans compete to craft your perfect item.',
-                                highlight: true,
-                            },
-                            {
-                                icon: HandHeart,
-                                title: 'Support Local Hinoba-an Artisans',
-                                description: 'Every purchase directly supports Filipino craftsmen and small businesses.',
-                                highlight: false,
-                            },
-                            {
-                                icon: MessageSquare,
-                                title: 'Direct Communication',
-                                description: 'Chat directly with artisans to customize your orders.',
-                                highlight: false,
-                            },
-                            {
-                                icon: Shield,
-                                title: 'Secure Transactions',
-                                description: 'Safe payments with GCash and Cash on Delivery options.',
-                                highlight: false,
-                            },
-                        ].map((feature, index) => (
-                            <div
-                                key={index}
-                                className={`group relative rounded-xl p-5 transition-all hover:-translate-y-1 hover:shadow-lg sm:p-6 ${
-                                    feature.highlight
-                                        ? 'bg-gradient-to-br from-amber-500 to-orange-500 text-white shadow-lg shadow-amber-500/25'
-                                        : 'border border-gray-100 bg-white'
-                                }`}
-                            >
-                                <div className={`mb-3 inline-flex rounded-lg p-2.5 ${feature.highlight ? 'bg-white/20' : 'bg-amber-100'}`}>
-                                    <feature.icon className={`h-5 w-5 ${feature.highlight ? 'text-white' : 'text-amber-600'}`} />
-                                </div>
-                                <h3 className={`text-sm font-semibold sm:text-base ${feature.highlight ? 'text-white' : 'text-gray-900'}`}>
-                                    {feature.title}
-                                </h3>
-                                <p className={`mt-1.5 text-xs sm:text-sm ${feature.highlight ? 'text-amber-100' : 'text-gray-600'}`}>
-                                    {feature.description}
-                                </p>
-                                {feature.highlight && (
-                                    <div className="absolute -top-2 -right-2 rounded-full bg-white px-2 py-0.5 text-[10px] font-bold text-amber-600 shadow sm:text-xs">
-                                        UNIQUE
-                                    </div>
-                                )}
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </section>
-
             {/* Category Quick Links */}
             {categories.length > 0 && (
                 <section className="border-b border-gray-100 bg-gray-50 py-6 sm:py-8">
@@ -779,6 +613,172 @@ export default function Home({
                             View All Products
                             <ArrowRight className="h-4 w-4" />
                         </Link>
+                    </div>
+                </div>
+            </section>
+
+            {/* Unique Feature: Custom Order Bidding */}
+            <section className="border-b border-gray-100 bg-gradient-to-br from-amber-500 via-orange-500 to-amber-600 py-10 sm:py-14">
+                <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                    <div className="grid items-center gap-8 lg:grid-cols-2 lg:gap-12">
+                        {/* Left Content */}
+                        <div className="text-white">
+                            <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-white/20 px-4 py-2 text-sm font-medium backdrop-blur-sm">
+                                <Sparkles className="h-4 w-4" />
+                                <span>Only on SupportLocal</span>
+                            </div>
+                            <h2 className="text-2xl font-bold sm:text-3xl lg:text-4xl">Custom Order Bidding System</h2>
+                            <p className="mt-3 text-base text-amber-100 sm:text-lg">
+                                Can't find what you're looking for? Post your custom order request and let local artisans compete to craft it for you!
+                            </p>
+                            <ul className="mt-6 space-y-3">
+                                {[
+                                    { icon: Gavel, text: 'Post your request & receive multiple bids' },
+                                    { icon: Users, text: 'Compare prices from verified artisans' },
+                                    { icon: Star, text: 'Choose based on ratings & portfolios' },
+                                    { icon: MessageSquare, text: 'Direct chat with your chosen artisan' },
+                                ].map((item, index) => (
+                                    <li key={index} className="flex items-center gap-3">
+                                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-white/20">
+                                            <item.icon className="h-4 w-4" />
+                                        </div>
+                                        <span className="text-sm sm:text-base">{item.text}</span>
+                                    </li>
+                                ))}
+                            </ul>
+                            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+                                <Link
+                                    href="/register"
+                                    className="inline-flex items-center justify-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-semibold text-amber-600 shadow-lg transition-all hover:bg-amber-50 hover:shadow-xl sm:text-base"
+                                >
+                                    Start Your Custom Order
+                                    <ArrowRight className="h-4 w-4" />
+                                </Link>
+                                <Link
+                                    href="/artisans"
+                                    className="inline-flex items-center justify-center gap-2 rounded-full border-2 border-white/50 px-6 py-3 text-sm font-semibold text-white transition-all hover:border-white hover:bg-white/10 sm:text-base"
+                                >
+                                    Browse Artisans
+                                </Link>
+                            </div>
+                        </div>
+
+                        {/* Right Content - Demo Card */}
+                        <div className="relative">
+                            <div className="rounded-2xl bg-white p-5 shadow-2xl sm:p-6">
+                                <div className="mb-4 flex items-center justify-between">
+                                    <span className="rounded-full bg-blue-100 px-3 py-1 text-xs font-semibold text-blue-800 sm:text-sm">
+                                        Open for Bids
+                                    </span>
+                                    <span className="text-xs text-gray-500 sm:text-sm">3 bids received</span>
+                                </div>
+                                <h3 className="text-base font-semibold text-gray-900 sm:text-lg">Custom Leather Messenger Bag</h3>
+                                <p className="mt-2 line-clamp-2 text-xs text-gray-600 sm:text-sm">
+                                    Looking for a handcrafted leather messenger bag with custom engraving for my initials...
+                                </p>
+                                <div className="mt-3 flex flex-wrap items-center gap-2 text-xs text-gray-500 sm:gap-4 sm:text-sm">
+                                    <span>Budget: ₱2,000 - ₱3,500</span>
+                                    <span className="hidden sm:inline">•</span>
+                                    <span>Deadline: 2 weeks</span>
+                                </div>
+                                <div className="mt-5 space-y-2 sm:space-y-3">
+                                    {[
+                                        { name: 'Jerald B.', price: '₱2,800', rating: 4.9, days: 10 },
+                                        { name: 'Decery B.', price: '₱2,500', rating: 4.7, days: 12 },
+                                        { name: 'Ana R.', price: '₱3,200', rating: 5.0, days: 8 },
+                                    ].map((bid, index) => (
+                                        <div
+                                            key={index}
+                                            className="flex items-center justify-between rounded-lg border border-gray-100 bg-gray-50 p-2.5 sm:p-3"
+                                        >
+                                            <div className="flex items-center gap-2 sm:gap-3">
+                                                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-amber-100 text-xs font-semibold text-amber-700 sm:text-sm">
+                                                    {bid.name.charAt(0)}
+                                                </div>
+                                                <div>
+                                                    <p className="text-xs font-medium text-gray-900 sm:text-sm">{bid.name}</p>
+                                                    <div className="flex items-center gap-1 text-[10px] text-gray-500 sm:text-xs">
+                                                        <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
+                                                        {bid.rating}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className="text-right">
+                                                <p className="text-sm font-semibold text-amber-600 sm:text-base">{bid.price}</p>
+                                                <p className="text-[10px] text-gray-500 sm:text-xs">{bid.days} days</p>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                            {/* Decorative elements */}
+                            <div className="absolute -top-4 -right-4 h-20 w-20 rounded-full bg-white/10 blur-xl" />
+                            <div className="absolute -bottom-4 -left-4 h-16 w-16 rounded-full bg-white/10 blur-xl" />
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* Why Choose Us - Features */}
+            <section className="border-b border-gray-100 bg-white py-10 sm:py-12">
+                <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                    <div className="mb-8 text-center">
+                        <h2 className="text-xl font-bold text-gray-900 sm:text-2xl lg:text-3xl">Why Choose SupportLocal?</h2>
+                        <p className="mx-auto mt-2 max-w-2xl text-sm text-gray-600 sm:text-base">
+                            We connect you directly with talented Filipino artisans for unique, handcrafted products.
+                        </p>
+                    </div>
+                    <div className="grid gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-4">
+                        {[
+                            {
+                                icon: Gavel,
+                                title: 'Custom Order Bidding',
+                                description: 'Post requests and let artisans compete to craft your perfect item.',
+                                highlight: true,
+                            },
+                            {
+                                icon: HandHeart,
+                                title: 'Support Local Hinoba-an Artisans',
+                                description: 'Every purchase directly supports Filipino craftsmen and small businesses.',
+                                highlight: false,
+                            },
+                            {
+                                icon: MessageSquare,
+                                title: 'Direct Communication',
+                                description: 'Chat directly with artisans to customize your orders.',
+                                highlight: false,
+                            },
+                            {
+                                icon: Shield,
+                                title: 'Secure Transactions',
+                                description: 'Safe payments with GCash and Cash on Delivery options.',
+                                highlight: false,
+                            },
+                        ].map((feature, index) => (
+                            <div
+                                key={index}
+                                className={`group relative rounded-xl p-5 transition-all hover:-translate-y-1 hover:shadow-lg sm:p-6 ${
+                                    feature.highlight
+                                        ? 'bg-gradient-to-br from-amber-500 to-orange-500 text-white shadow-lg shadow-amber-500/25'
+                                        : 'border border-gray-100 bg-white'
+                                }`}
+                            >
+                                <div className={`mb-3 inline-flex rounded-lg p-2.5 ${feature.highlight ? 'bg-white/20' : 'bg-amber-100'}`}>
+                                    <feature.icon className={`h-5 w-5 ${feature.highlight ? 'text-white' : 'text-amber-600'}`} />
+                                </div>
+                                <h3 className={`text-sm font-semibold sm:text-base ${feature.highlight ? 'text-white' : 'text-gray-900'}`}>
+                                    {feature.title}
+                                </h3>
+                                <p className={`mt-1.5 text-xs sm:text-sm ${feature.highlight ? 'text-amber-100' : 'text-gray-600'}`}>
+                                    {feature.description}
+                                </p>
+                                {feature.highlight && (
+                                    <div className="absolute -top-2 -right-2 rounded-full bg-white px-2 py-0.5 text-[10px] font-bold text-amber-600 shadow sm:text-xs">
+                                        UNIQUE
+                                    </div>
+                                )}
+                            </div>
+                        ))}
                     </div>
                 </div>
             </section>

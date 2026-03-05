@@ -17,6 +17,27 @@
     }
 }
 
+/* Add to Home Screen slide-up animation */
+@keyframes slide-up {
+    0% {
+        opacity: 0;
+        transform: translateY(100%);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-slide-up {
+    animation: slide-up 0.4s ease-out forwards;
+}
+
+/* Safe area padding for notch devices */
+.safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
 /* Custom utilities for e-commerce */
 .line-clamp-2 {
     overflow: hidden;
