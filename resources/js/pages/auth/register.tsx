@@ -1,4 +1,3 @@
-import RegisteredUserController from '@/actions/App/Http/Controllers/Auth/RegisteredUserController';
 import InputError from '@/components/input-error';
 import TextLink from '@/components/text-link';
 import { Button } from '@/components/ui/button';
@@ -28,9 +27,8 @@ export default function Register({ sellerCount, featuredArtisans, registrationEn
     // Get guest cart from localStorage
     const guestCart = typeof window !== 'undefined' ? localStorage.getItem('guest_cart') : null;
 
-    // Get form props from the controller action
-    const route = RegisteredUserController.store();
-    const formProps = { action: route.url, method: route.method };
+    // Route for form submission
+    const formProps = { action: '/register', method: 'post' as const };
 
     // If registration is disabled, show a notice
     if (!registrationEnabled) {

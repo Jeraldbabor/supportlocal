@@ -1,4 +1,3 @@
-import EmailVerificationNotificationController from '@/actions/App/Http/Controllers/Auth/EmailVerificationNotificationController';
 import { Form, Head, Link } from '@inertiajs/react';
 import { LoaderCircle, Mail } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
@@ -105,11 +104,7 @@ export default function VerifyEmail({ status, sellerCount, featuredArtisans, coo
                     </div>
                 </div>
 
-                <Form
-                    action={EmailVerificationNotificationController.store().url}
-                    method={EmailVerificationNotificationController.store().method}
-                    className="space-y-3"
-                >
+                <Form action="/email/verification-notification" method="post" className="space-y-3">
                     {({ processing }) => (
                         <>
                             <Button

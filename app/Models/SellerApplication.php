@@ -137,7 +137,14 @@ class SellerApplication extends Model
         ]);
 
         // Send notification to the user
-        $this->user->notify(new SellerApplicationApproved($this));
+        try {
+            $this->user->notify(new SellerApplicationApproved($this));
+        } catch (\Exception $e) {
+            \Log::warning('Failed to send approval notification', [
+                'application_id' => $this->id,
+                'error' => $e->getMessage(),
+            ]);
+        }
 
         // Log the role change for audit purposes with complete profile preservation
         \Log::info('User role changed from buyer to seller with complete data preservation', [
@@ -184,7 +191,14 @@ class SellerApplication extends Model
         ]);
 
         // Send notification to the user
-        $this->user->notify(new SellerApplicationRejected($this));
+        try {
+            $this->user->notify(new SellerApplicationRejected($this));
+        } catch (\Exception $e) {
+            \Log::warning('Failed to send rejection notification', [
+                'application_id' => $this->id,
+                'error' => $e->getMessage(),
+            ]);
+        }
     }
 
     /**

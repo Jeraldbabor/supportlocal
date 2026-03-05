@@ -1,4 +1,3 @@
-import AuthenticatedSessionController from '@/actions/App/Http/Controllers/Auth/AuthenticatedSessionController';
 import InputError from '@/components/input-error';
 import TextLink from '@/components/text-link';
 import { Button } from '@/components/ui/button';
@@ -42,12 +41,7 @@ export default function Login({ status, canResetPassword, sellerCount, featuredA
                 </div>
             )}
 
-            <Form
-                action={AuthenticatedSessionController.store().url}
-                method={AuthenticatedSessionController.store().method}
-                resetOnSuccess={['password']}
-                className="space-y-4"
-            >
+            <Form action="/login" method="post" resetOnSuccess={['password']} className="space-y-4">
                 {({ processing, errors }) => (
                     <>
                         <div className="space-y-3">
