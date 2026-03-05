@@ -52,6 +52,7 @@ export default function CreateProduct({ categories, conditions }: CreateProductP
     const [showError, setShowError] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
     const [stepErrors, setStepErrors] = useState<Record<string, string>>({});
+    const [isOnSale, setIsOnSale] = useState(false);
 
     const { data, setData, processing, errors } = useForm({
         name: '',
@@ -136,9 +137,6 @@ export default function CreateProduct({ categories, conditions }: CreateProductP
         if (step === 0) {
             if (!data.name.trim()) newErrors.name = 'Product name is required.';
             if (!data.description.trim()) newErrors.description = 'Product description is required.';
-            if (data.description.trim() && data.description.trim().length < 10) {
-                newErrors.description = 'Description must be at least 10 characters.';
-            }
         }
 
         if (step === 1) {
@@ -513,68 +511,90 @@ export default function CreateProduct({ categories, conditions }: CreateProductP
                             </div>
 
                             <div className="space-y-5">
+                                {/* Original Price */}
                                 <div>
                                     <label className="mb-1.5 block text-sm font-medium text-gray-700">
-                                        Price (₱) <span className="text-red-500">*</span>
+                                        Original Price (₱) <span className="text-red-500">*</span>
                                     </label>
                                     <input
                                         type="number"
                                         step="0.01"
                                         min="0"
-                                        value={data.price}
-                                        onChange={(e) => setData('price', e.target.value)}
+                                        value={isOnSale ? data.compare_price : data.price}
+                                        onChange={(e) => setData(isOnSale ? 'compare_price' : 'price', e.target.value)}
                                         className={`block w-full rounded-lg border bg-white px-4 py-3 text-sm text-gray-900 placeholder:text-gray-400 focus:border-orange-500 focus:ring-1 focus:ring-orange-500 focus:outline-none ${
-                                            stepErrors.price || errors.price ? 'border-red-300 bg-red-50' : 'border-gray-300'
+                                            !isOnSale && (stepErrors.price || errors.price) ? 'border-red-300 bg-red-50' : 'border-gray-300'
                                         }`}
                                         placeholder="0.00"
                                     />
-                                    {(stepErrors.price || errors.price) && (
+                                    <p className="mt-1.5 text-xs text-gray-500">Your product's regular price</p>
+                                    {!isOnSale && (stepErrors.price || errors.price) && (
                                         <p className="mt-1.5 text-sm text-red-600">{stepErrors.price || errors.price}</p>
                                     )}
                                 </div>
 
-                                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                                    <div>
-                                        <label className="mb-1.5 block text-sm font-medium text-gray-700">Compare Price (₱)</label>
+                                {/* Sale Toggle */}
+                                <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
+                                    <label className="flex cursor-pointer items-center gap-3">
                                         <input
-                                            type="number"
-                                            step="0.01"
-                                            min="0"
-                                            value={data.compare_price}
-                                            onChange={(e) => setData('compare_price', e.target.value)}
-                                            className="block w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm text-gray-900 placeholder:text-gray-400 focus:border-orange-500 focus:ring-1 focus:ring-orange-500 focus:outline-none"
-                                            placeholder="0.00"
+                                            type="checkbox"
+                                            checked={isOnSale}
+                                            onChange={(e) => {
+                                                const checked = e.target.checked;
+                                                setIsOnSale(checked);
+                                                if (checked) {
+                                                    setData({ ...data, compare_price: data.price, price: '' });
+                                                } else {
+                                                    setData({ ...data, price: data.compare_price || data.price, compare_price: '' });
+                                                }
+                                            }}
+                                            className="h-4 w-4 rounded border-gray-300 text-orange-500 focus:ring-orange-500"
                                         />
-                                        <p className="mt-1.5 text-xs text-gray-500">Original price to show discount</p>
-                                        {errors.compare_price && <p className="mt-1 text-sm text-red-600">{errors.compare_price}</p>}
-                                    </div>
+                                        <div>
+                                            <span className="text-sm font-medium text-gray-700">This product is on sale</span>
+                                            <p className="text-xs text-gray-500">Show a discounted price alongside the original</p>
+                                        </div>
+                                    </label>
 
-                                    <div>
-                                        <label className="mb-1.5 block text-sm font-medium text-gray-700">Cost Price (₱)</label>
-                                        <input
-                                            type="number"
-                                            step="0.01"
-                                            min="0"
-                                            value={data.cost_price}
-                                            onChange={(e) => setData('cost_price', e.target.value)}
-                                            className="block w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm text-gray-900 placeholder:text-gray-400 focus:border-orange-500 focus:ring-1 focus:ring-orange-500 focus:outline-none"
-                                            placeholder="0.00"
-                                        />
-                                        <p className="mt-1.5 text-xs text-gray-500">Your cost for profit tracking</p>
-                                        {errors.cost_price && <p className="mt-1 text-sm text-red-600">{errors.cost_price}</p>}
-                                    </div>
-                                </div>
-
-                                {/* Price info tip */}
-                                <div className="flex items-start gap-3 rounded-lg border border-blue-100 bg-blue-50 p-4">
-                                    <Info className="mt-0.5 h-5 w-5 flex-shrink-0 text-blue-500" />
-                                    <div className="text-sm text-blue-700">
-                                        <p className="font-medium">Pricing tip</p>
-                                        <p className="mt-0.5">
-                                            Set a &quot;Compare Price&quot; higher than your selling price to show customers they&apos;re getting a
-                                            deal. The &quot;Cost Price&quot; helps you track your profit margins.
-                                        </p>
-                                    </div>
+                                    {isOnSale && (
+                                        <div className="mt-3">
+                                            <label className="mb-1.5 block text-sm font-medium text-gray-700">
+                                                Sale Price (₱) <span className="text-red-500">*</span>
+                                            </label>
+                                            <input
+                                                type="number"
+                                                step="0.01"
+                                                min="0"
+                                                value={data.price}
+                                                onChange={(e) => setData('price', e.target.value)}
+                                                className={`block w-full rounded-lg border bg-white px-4 py-3 text-sm text-gray-900 placeholder:text-gray-400 focus:border-orange-500 focus:ring-1 focus:ring-orange-500 focus:outline-none ${
+                                                    stepErrors.price || errors.price ? 'border-red-300 bg-red-50' : 'border-gray-300'
+                                                }`}
+                                                placeholder="Enter the discounted price"
+                                            />
+                                            {(stepErrors.price || errors.price) && (
+                                                <p className="mt-1.5 text-sm text-red-600">{stepErrors.price || errors.price}</p>
+                                            )}
+                                            {data.compare_price && data.price && parseFloat(data.compare_price) > parseFloat(data.price) && (
+                                                <p className="mt-1.5 flex items-center gap-1 text-xs font-medium text-green-600">
+                                                    🏷️{' '}
+                                                    {Math.round(
+                                                        ((parseFloat(data.compare_price) - parseFloat(data.price)) / parseFloat(data.compare_price)) *
+                                                            100,
+                                                    )}
+                                                    % off — customers will see the savings!
+                                                </p>
+                                            )}
+                                            {data.compare_price &&
+                                                data.price &&
+                                                parseFloat(data.price) > 0 &&
+                                                parseFloat(data.price) >= parseFloat(data.compare_price) && (
+                                                    <p className="mt-1.5 text-xs text-amber-600">
+                                                        Sale price should be lower than the original price
+                                                    </p>
+                                                )}
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         </div>
@@ -852,23 +872,19 @@ export default function CreateProduct({ categories, conditions }: CreateProductP
                                             </h3>
                                             <span className="text-xs text-orange-500">Edit →</span>
                                         </div>
-                                        <div className="grid grid-cols-3 gap-3 text-sm">
+                                        <div className="grid grid-cols-2 gap-3 text-sm">
                                             <div>
-                                                <span className="text-gray-500">Price:</span>
+                                                <span className="text-gray-500">Original Price:</span>
                                                 <span className="ml-1 font-medium text-gray-900">
-                                                    {data.price ? `₱${parseFloat(data.price).toFixed(2)}` : '—'}
+                                                    {(isOnSale ? data.compare_price : data.price)
+                                                        ? `₱${parseFloat(isOnSale ? data.compare_price : data.price).toFixed(2)}`
+                                                        : '—'}
                                                 </span>
                                             </div>
                                             <div>
-                                                <span className="text-gray-500">Compare:</span>
+                                                <span className="text-gray-500">Sale Price:</span>
                                                 <span className="ml-1 font-medium text-gray-900">
-                                                    {data.compare_price ? `₱${parseFloat(data.compare_price).toFixed(2)}` : '—'}
-                                                </span>
-                                            </div>
-                                            <div>
-                                                <span className="text-gray-500">Cost:</span>
-                                                <span className="ml-1 font-medium text-gray-900">
-                                                    {data.cost_price ? `₱${parseFloat(data.cost_price).toFixed(2)}` : '—'}
+                                                    {isOnSale && data.price ? `₱${parseFloat(data.price).toFixed(2)}` : '—'}
                                                 </span>
                                             </div>
                                         </div>

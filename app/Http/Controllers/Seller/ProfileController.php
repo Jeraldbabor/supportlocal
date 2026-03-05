@@ -239,7 +239,7 @@ class ProfileController extends Controller
         }
 
         $validated = $request->validate([
-            'business_description' => 'required|string|min:50|max:2000',
+            'business_description' => 'required|string|max:2000',
             'business_type' => 'required|string|max:255',
         ]);
 

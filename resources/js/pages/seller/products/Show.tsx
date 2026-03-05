@@ -331,27 +331,11 @@ export default function ShowProduct({ product }: ShowProductProps) {
                                         </div>
                                     )}
 
-                                    {product.cost_price && (
-                                        <div className="flex items-center justify-between">
-                                            <span className="text-sm text-gray-500">Cost Price</span>
-                                            <span className="text-sm text-gray-900">₱{product.cost_price}</span>
-                                        </div>
-                                    )}
-
                                     {product.discount_percentage && (
                                         <div className="flex items-center justify-between">
                                             <span className="text-sm text-gray-500">Discount</span>
                                             <span className="rounded bg-red-100 px-2 py-1 text-xs font-medium text-red-600">
                                                 -{product.discount_percentage}%
-                                            </span>
-                                        </div>
-                                    )}
-
-                                    {product.profit_margin && (
-                                        <div className="flex items-center justify-between">
-                                            <span className="text-sm text-gray-500">Profit Margin</span>
-                                            <span className="rounded bg-green-100 px-2 py-1 text-xs font-medium text-green-600">
-                                                {product.profit_margin}%
                                             </span>
                                         </div>
                                     )}

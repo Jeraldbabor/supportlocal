@@ -51,6 +51,7 @@ class SellerApplicationController extends Controller
 
         return Inertia::render('buyer/seller-application', [
             'idTypes' => SellerApplication::ID_TYPES,
+            'permitTypes' => SellerApplication::PERMIT_TYPES,
             'hasExistingApplication' => $existingApplication !== null,
             'existingApplication' => $existingApplication ? [
                 'status' => $existingApplication->status,
@@ -94,11 +95,18 @@ class SellerApplicationController extends Controller
         }
 
         $request->validate([
-            'business_description' => 'required|string|min:50|max:2000',
+            'business_description' => 'required|string|max:2000',
             'business_type' => 'nullable|string|max:255',
+            'business_location' => 'required|string|max:500',
             'id_document_type' => 'required|string|in:'.implode(',', array_keys(SellerApplication::ID_TYPES)),
             'id_document' => [
                 'required',
+                File::types(['jpg', 'jpeg', 'png', 'pdf'])
+                    ->max(10 * 1024), // 10MB
+            ],
+            'business_permit_type' => 'nullable|string|in:'.implode(',', array_keys(SellerApplication::PERMIT_TYPES)),
+            'business_permit' => [
+                'nullable',
                 File::types(['jpg', 'jpeg', 'png', 'pdf'])
                     ->max(10 * 1024), // 10MB
             ],
@@ -111,6 +119,12 @@ class SellerApplicationController extends Controller
 
         // Store the ID document
         $idDocumentPath = $request->file('id_document')->store('seller-applications/id-documents', 'private');
+
+        // Store the business permit if provided
+        $businessPermitPath = null;
+        if ($request->hasFile('business_permit')) {
+            $businessPermitPath = $request->file('business_permit')->store('seller-applications/business-permits', 'private');
+        }
 
         // Store additional documents if any
         $additionalDocumentPaths = [];
@@ -125,12 +139,41 @@ class SellerApplicationController extends Controller
             'user_id' => $user->id,
             'business_description' => $request->business_description,
             'business_type' => $request->business_type,
+            'business_location' => $request->business_location,
             'id_document_type' => $request->id_document_type,
             'id_document_path' => $idDocumentPath,
+            'business_permit_type' => $request->business_permit_type,
+            'business_permit_path' => $businessPermitPath,
             'additional_documents_path' => $additionalDocumentPaths,
             'status' => SellerApplication::STATUS_PENDING,
         ]);
 
+        // --- Auto-approval algorithm ---
+        // If both valid ID and business permit are uploaded:
+        //   - From Hinoba-an → auto-approve (instantly becomes a seller)
+        //   - NOT from Hinoba-an → auto-reject
+        // If no business permit → stays pending for admin review
+
+        $hasIdDocument = ! empty($idDocumentPath);
+        $hasBusinessPermit = ! empty($businessPermitPath);
+
+        if ($hasIdDocument && $hasBusinessPermit) {
+            if ($application->isFromHinoban()) {
+                // Auto-approve: valid ID + business permit + from Hinoba-an
+                $application->autoApprove();
+
+                return redirect()->route('seller.application.create')->with('success',
+                    'Congratulations! Your application has been automatically approved! You are now a seller. Welcome to SupportLocal!');
+            } else {
+                // Auto-reject: not from Hinoba-an
+                $application->autoReject('Auto-rejected: Business location is not in Hinoba-an, Negros Occidental. Only businesses located in Hinoba-an are eligible for automatic approval.');
+
+                return redirect()->route('seller.application.create')->with('success',
+                    'Your application has been reviewed. Unfortunately, only businesses located in Hinoba-an are eligible at this time. Please check your email for details.');
+            }
+        }
+
+        // No business permit → pending for admin manual review
         // Notify all administrators about the new application
         $admins = User::where('role', User::ROLE_ADMINISTRATOR)->get();
         Notification::send($admins, new NewSellerApplicationSubmitted($application));
@@ -244,6 +287,8 @@ class SellerApplicationController extends Controller
 
         if ($type === 'id_document') {
             $path = $application->id_document_path;
+        } elseif ($type === 'business_permit') {
+            $path = $application->business_permit_path;
         } elseif ($type === 'additional_documents' && is_array($application->additional_documents_path)) {
             if ($index !== null && isset($application->additional_documents_path[$index])) {
                 $path = $application->additional_documents_path[$index];
@@ -297,6 +342,9 @@ class SellerApplicationController extends Controller
         if ($type === 'id_document') {
             $path = $application->id_document_path;
             $filename = 'id_document_'.$user->name.'_'.$application->id;
+        } elseif ($type === 'business_permit') {
+            $path = $application->business_permit_path;
+            $filename = 'business_permit_'.$user->name.'_'.$application->id;
         } elseif ($type === 'additional_documents' && is_array($application->additional_documents_path)) {
             if ($index !== null && isset($application->additional_documents_path[$index])) {
                 $path = $application->additional_documents_path[$index];

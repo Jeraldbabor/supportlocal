@@ -30,7 +30,7 @@ class UpdateProductRequest extends FormRequest
 
         return [
             'name' => 'required|string|max:255',
-            'description' => 'required|string|min:10',
+            'description' => 'required|string',
             'short_description' => 'nullable|string|max:500',
             'price' => 'required|numeric|min:0.01|max:999999.99',
             'compare_price' => 'nullable|numeric|min:0',
@@ -72,7 +72,7 @@ class UpdateProductRequest extends FormRequest
         return [
             'name.required' => 'Product name is required.',
             'description.required' => 'Product description is required.',
-            'description.min' => 'Product description must be at least 10 characters.',
+
             'price.required' => 'Product price is required.',
             'price.min' => 'Product price must be greater than 0.',
             'quantity.required' => 'Product quantity is required.',
