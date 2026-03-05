@@ -646,8 +646,7 @@ export default function Edit({ product, categories, conditions }: EditProps) {
                                                 <p className="mt-1.5 flex items-center gap-1 text-xs font-medium text-green-600">
                                                     🏷️{' '}
                                                     {Math.round(
-                                                        ((parseFloat(data.compare_price) - parseFloat(data.price)) /
-                                                            parseFloat(data.compare_price)) *
+                                                        ((parseFloat(data.compare_price) - parseFloat(data.price)) / parseFloat(data.compare_price)) *
                                                             100,
                                                     )}
                                                     % off — customers will see the savings!
