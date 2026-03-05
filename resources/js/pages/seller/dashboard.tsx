@@ -631,8 +631,6 @@ export default function SellerDashboard() {
                     </div>
                 </div>
 
-                
-
                 {/* Performance Overview */}
                 <div className="grid gap-4 md:grid-cols-3">
                     {/* Product Performance */}
