@@ -33,17 +33,23 @@ class ImageHelper
             return $fallback ?? '/placeholder.jpg';
         }
 
-        // If it's already a full URL, return as-is
+        // Normalize: strip known old R2 dev domains or current CDN domain to get a clean relative path
         if (str_starts_with($path, 'http')) {
-            return $path;
+            $path = self::stripKnownDomains($path);
+
+            // If still a full URL after stripping (unknown external domain), return as-is
+            if (str_starts_with($path, 'http')) {
+                return $path;
+            }
         }
 
-        // If it starts with /, convert /storage/ to /images/
-        if (str_starts_with($path, '/')) {
-            if (str_starts_with($path, '/storage/')) {
-                return str_replace('/storage/', '/images/', $path);
-            }
+        // Normalize: strip /storage/ prefix (saved by legacy mobile upload code)
+        if (str_starts_with($path, '/storage/')) {
+            $path = substr($path, strlen('/storage/'));
+        }
 
+        // If it starts with / (but not /storage/), it's a local route — return as-is
+        if (str_starts_with($path, '/')) {
             return $path;
         }
 
@@ -68,6 +74,57 @@ class ImageHelper
 
         // Use /images/ route for local storage
         return '/images/'.$path;
+    }
+
+    /**
+     * Strip known CDN / R2 domains from a full URL, returning just the relative path.
+     * This ensures old r2.dev URLs and current CDN URLs are normalised to paths.
+     */
+    private static function stripKnownDomains(string $url): string
+    {
+        $knownDomains = [
+            'https://pub-4c16c2cc517348e296766714852055f4.r2.dev',
+        ];
+
+        // Also include the currently-configured R2 public URL
+        $r2PublicUrl = config('filesystems.disks.r2.url');
+        if ($r2PublicUrl) {
+            $knownDomains[] = rtrim($r2PublicUrl, '/');
+        }
+
+        foreach ($knownDomains as $domain) {
+            if (str_starts_with($url, $domain)) {
+                return ltrim(substr($url, strlen($domain)), '/');
+            }
+        }
+
+        return $url;
+    }
+
+    /**
+     * Normalise a stored path so it can be used with Storage::disk().
+     * Strips full URLs down to a relative path and removes /storage/ prefixes.
+     */
+    public static function normalizePath(?string $path): ?string
+    {
+        if (empty($path)) {
+            return null;
+        }
+
+        // Strip full URL domains
+        if (str_starts_with($path, 'http')) {
+            $path = self::stripKnownDomains($path);
+            if (str_starts_with($path, 'http')) {
+                return $path; // unknown domain, can't normalise
+            }
+        }
+
+        // Strip /storage/ prefix
+        if (str_starts_with($path, '/storage/')) {
+            $path = substr($path, strlen('/storage/'));
+        }
+
+        return $path;
     }
 
     /**
@@ -196,6 +253,9 @@ class ImageHelper
         if (empty($path)) {
             return false;
         }
+
+        // Normalise full URLs and /storage/ prefixes to a relative path
+        $path = self::normalizePath($path) ?? $path;
 
         try {
             return Storage::disk(self::getDisk())->delete($path);

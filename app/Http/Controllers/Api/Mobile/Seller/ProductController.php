@@ -155,12 +155,14 @@ class ProductController extends Controller
             // Generate SKU if not provided
             $sku = $validated['sku'] ?? strtoupper(Str::random(8));
 
-            // Handle image uploads
+            // Handle image uploads via ImageHelper (stores to R2 when configured)
             $imagePaths = [];
             if ($request->hasFile('images')) {
                 foreach ($request->file('images') as $image) {
-                    $path = $image->store('products', 'public');
-                    $imagePaths[] = Storage::url($path);
+                    $path = \App\Helpers\ImageHelper::store($image, 'products');
+                    if ($path) {
+                        $imagePaths[] = $path;
+                    }
                 }
             }
 
@@ -177,6 +179,7 @@ class ProductController extends Controller
                 'sku' => $sku,
                 'status' => $validated['status'] ?? 'draft',
                 'images' => $imagePaths,
+                'featured_image' => $imagePaths[0] ?? null,
                 'shipping_weight' => $validated['shipping_weight'] ?? null,
                 'shipping_length' => $validated['shipping_length'] ?? null,
                 'shipping_width' => $validated['shipping_width'] ?? null,
@@ -242,22 +245,27 @@ class ProductController extends Controller
             $currentImages = $product->images ?? [];
             if (! empty($validated['remove_images'])) {
                 foreach ($validated['remove_images'] as $imageToRemove) {
-                    $key = array_search($imageToRemove, $currentImages);
-                    if ($key !== false) {
-                        unset($currentImages[$key]);
-                        // Delete from storage
-                        $path = str_replace('/storage/', '', $imageToRemove);
-                        Storage::disk('public')->delete($path);
+                    // Normalise path for comparison (handles full URLs and /storage/ prefixes)
+                    $normRemove = \App\Helpers\ImageHelper::normalizePath($imageToRemove);
+                    foreach ($currentImages as $idx => $img) {
+                        $normImg = \App\Helpers\ImageHelper::normalizePath($img);
+                        if ($normRemove && $normImg && $normRemove === $normImg) {
+                            unset($currentImages[$idx]);
+                            \App\Helpers\ImageHelper::delete($img);
+                            break;
+                        }
                     }
                 }
                 $currentImages = array_values($currentImages);
             }
 
-            // Handle new image uploads
+            // Handle new image uploads via ImageHelper (stores to R2 when configured)
             if ($request->hasFile('new_images')) {
                 foreach ($request->file('new_images') as $image) {
-                    $path = $image->store('products', 'public');
-                    $currentImages[] = Storage::url($path);
+                    $path = \App\Helpers\ImageHelper::store($image, 'products');
+                    if ($path) {
+                        $currentImages[] = $path;
+                    }
                 }
             }
 
@@ -277,7 +285,10 @@ class ProductController extends Controller
                 $validated['published_at'] = now();
             }
 
+            // Ensure only valid string paths remain
+            $currentImages = array_values(array_filter($currentImages, fn ($img) => is_string($img) && ! empty($img)));
             $validated['images'] = $currentImages;
+            $validated['featured_image'] = $currentImages[0] ?? null;
             unset($validated['new_images'], $validated['remove_images']);
 
             $product->update($validated);
@@ -323,10 +334,9 @@ class ProductController extends Controller
             ], 422);
         }
 
-        // Delete images
+        // Delete images from storage (R2 or local)
         foreach ($product->images ?? [] as $image) {
-            $path = str_replace('/storage/', '', $image);
-            Storage::disk('public')->delete($path);
+            \App\Helpers\ImageHelper::delete($image);
         }
 
         $product->delete();
