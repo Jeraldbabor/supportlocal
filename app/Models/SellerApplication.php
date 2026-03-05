@@ -51,7 +51,6 @@ class SellerApplication extends Model
         'business_name',
         'business_description',
         'business_type',
-        'business_location',
         'id_document_path',
         'id_document_type',
         'business_permit_type',
@@ -169,71 +168,6 @@ class SellerApplication extends Model
                 'approved_date' => now(),
             ],
             'data_preservation_complete' => true,
-        ]);
-    }
-
-    /**
-     * Check if the business location is in Hinoba-an.
-     */
-    public function isFromHinoban(): bool
-    {
-        if (! $this->business_location) {
-            return false;
-        }
-
-        $location = strtolower(trim($this->business_location));
-
-        return str_contains($location, 'hinoba-an')
-            || str_contains($location, 'hinoban')
-            || str_contains($location, 'hinobaan');
-    }
-
-    /**
-     * Auto-approve the application (system action, no admin reviewer).
-     */
-    public function autoApprove(): void
-    {
-        $this->update([
-            'status' => self::STATUS_APPROVED,
-            'reviewed_at' => now(),
-            'admin_notes' => 'Auto-approved: Valid ID and business permit from Hinoba-an verified.',
-        ]);
-
-        // Update user role to seller
-        $this->user->update([
-            'role' => User::ROLE_SELLER,
-            'is_active' => true,
-        ]);
-
-        // Send congratulatory notification
-        $this->user->notify(new SellerApplicationApproved($this));
-
-        \Log::info('Seller application auto-approved', [
-            'user_id' => $this->user->id,
-            'application_id' => $this->id,
-            'business_location' => $this->business_location,
-        ]);
-    }
-
-    /**
-     * Auto-reject the application (system action, no admin reviewer).
-     */
-    public function autoReject(string $reason): void
-    {
-        $this->update([
-            'status' => self::STATUS_REJECTED,
-            'reviewed_at' => now(),
-            'admin_notes' => $reason,
-        ]);
-
-        // Send rejection notification
-        $this->user->notify(new SellerApplicationRejected($this));
-
-        \Log::info('Seller application auto-rejected', [
-            'user_id' => $this->user->id,
-            'application_id' => $this->id,
-            'business_location' => $this->business_location,
-            'reason' => $reason,
         ]);
     }
 

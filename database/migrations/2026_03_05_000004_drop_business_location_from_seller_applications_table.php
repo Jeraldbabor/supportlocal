@@ -12,7 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('seller_applications', function (Blueprint $table) {
-            $table->string('business_location')->nullable()->after('business_type');
+            if (Schema::hasColumn('seller_applications', 'business_location')) {
+                $table->dropColumn('business_location');
+            }
         });
     }
 
@@ -22,7 +24,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('seller_applications', function (Blueprint $table) {
-            $table->dropColumn('business_location');
+            $table->string('business_location')->nullable()->after('business_type');
         });
     }
 };
