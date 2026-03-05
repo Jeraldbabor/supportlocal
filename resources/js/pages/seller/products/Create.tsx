@@ -192,11 +192,9 @@ export default function CreateProduct({ categories, conditions }: CreateProductP
                     text: 'Product created successfully!',
                     icon: 'success',
                     confirmButtonColor: '#16a34a',
-                    confirmButtonText: 'View Products',
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        router.visit('/seller/products');
-                    }
+                    confirmButtonText: 'OK',
+                    timer: 2000,
+                    showConfirmButton: true,
                 });
             },
             onError: (errors: Record<string, string | string[]>) => {
