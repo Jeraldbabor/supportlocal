@@ -21,8 +21,11 @@ interface SellerApplication {
     user: User;
     business_description: string;
     business_type: string | null;
+    business_location: string | null;
     id_document_type: string;
     id_document_path: string;
+    business_permit_type: string | null;
+    business_permit_path: string | null;
     additional_documents_path: string[] | null;
     status: 'pending' | 'approved' | 'rejected';
     admin_notes: string | null;
@@ -101,6 +104,19 @@ export default function SellerApplicationShow({ application }: SellerApplication
             national_id: 'National ID',
             passport: 'Passport',
             drivers_license: "Driver's License",
+        };
+        return types[type] || type;
+    };
+
+    const getPermitTypeDisplay = (type: string) => {
+        const types: Record<string, string> = {
+            dti_certificate: 'DTI Certificate (Sole Proprietorship)',
+            sec_registration: 'SEC Registration (Corporation/Partnership)',
+            cda_registration: 'CDA Registration (Cooperative)',
+            barangay_clearance: 'Barangay Business Clearance',
+            mayors_permit: "Mayor's / Business Permit",
+            bir_registration: 'BIR Certificate of Registration (Form 2303)',
+            other: 'Other Business Document',
         };
         return types[type] || type;
     };
@@ -196,6 +212,13 @@ export default function SellerApplicationShow({ application }: SellerApplication
                                         </div>
                                     </div>
                                 </div>
+
+                                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                                    <div>
+                                        <Label className="text-sm font-medium text-gray-600">Business Location</Label>
+                                        <p className="font-medium">{application.business_location || 'Not specified'}</p>
+                                    </div>
+                                </div>
                             </CardContent>
                         </Card>
 
@@ -264,6 +287,66 @@ export default function SellerApplicationShow({ application }: SellerApplication
                                         </div>
                                     </div>
                                 </div>
+
+                                {/* Business Permit Document */}
+                                {application.business_permit_path && (
+                                    <div className="rounded-lg border p-4">
+                                        <div className="flex items-start justify-between gap-4">
+                                            <div className="flex-1">
+                                                <h4 className="font-medium">Business Permit / Registration</h4>
+                                                <p className="text-sm text-gray-600">
+                                                    Type:{' '}
+                                                    {application.business_permit_type
+                                                        ? getPermitTypeDisplay(application.business_permit_type)
+                                                        : 'Not specified'}
+                                                </p>
+
+                                                {/* Image Preview */}
+                                                {isImageFile(application.business_permit_path) && (
+                                                    <div className="mt-3">
+                                                        <div className="relative inline-block">
+                                                            <img
+                                                                src={getPreviewUrl('business_permit')}
+                                                                alt="Business Permit Preview"
+                                                                className="h-32 w-auto cursor-pointer rounded-lg border border-gray-200 object-contain transition-transform hover:scale-105"
+                                                                onClick={() =>
+                                                                    setPreviewImage({
+                                                                        url: getPreviewUrl('business_permit'),
+                                                                        title: 'Business Permit / Registration',
+                                                                    })
+                                                                }
+                                                            />
+                                                            <div className="absolute inset-0 flex items-center justify-center rounded-lg bg-black/0 transition-colors hover:bg-black/10">
+                                                                <ZoomIn className="h-6 w-6 text-white opacity-0 transition-opacity hover:opacity-100" />
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                )}
+                                            </div>
+                                            <div className="flex flex-col gap-2">
+                                                {isImageFile(application.business_permit_path) && (
+                                                    <Button
+                                                        variant="outline"
+                                                        size="sm"
+                                                        onClick={() =>
+                                                            setPreviewImage({
+                                                                url: getPreviewUrl('business_permit'),
+                                                                title: 'Business Permit / Registration',
+                                                            })
+                                                        }
+                                                    >
+                                                        <ZoomIn className="mr-2 h-4 w-4" />
+                                                        Preview
+                                                    </Button>
+                                                )}
+                                                <Button variant="outline" size="sm" onClick={() => window.open(getDownloadUrl('business_permit'))}>
+                                                    <Download className="mr-2 h-4 w-4" />
+                                                    Download
+                                                </Button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
 
                                 {/* Additional Documents */}
                                 {application.additional_documents_path && application.additional_documents_path.length > 0 && (
@@ -491,6 +574,12 @@ export default function SellerApplicationShow({ application }: SellerApplication
                                     <span className="text-gray-600">ID Type:</span>
                                     <span className="font-medium">{getIdTypeDisplay(application.id_document_type)}</span>
                                 </div>
+                                {application.business_location && (
+                                    <div className="flex justify-between">
+                                        <span className="text-gray-600">Location:</span>
+                                        <span className="font-medium">{application.business_location}</span>
+                                    </div>
+                                )}
                             </CardContent>
                         </Card>
                     </div>
