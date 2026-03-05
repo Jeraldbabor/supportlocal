@@ -25,9 +25,32 @@ class SellerApplication extends Model
      * Available ID document types
      */
     const ID_TYPES = [
-        'national_id' => 'National ID',
-        'passport' => 'Passport',
-        'drivers_license' => 'Driver\'s License',
+        'national_id' => 'Philippine National ID (PhilSys)',
+        'passport' => 'Philippine Passport',
+        'drivers_license' => 'Driver\'s License (LTO)',
+        'umid' => 'UMID (Unified Multi-Purpose ID)',
+        'sss_id' => 'SSS ID',
+        'gsis_id' => 'GSIS ID',
+        'philhealth_id' => 'PhilHealth ID',
+        'tin_id' => 'TIN ID (BIR)',
+        'postal_id' => 'Postal ID',
+        'voters_id' => 'Voter\'s ID / Voter\'s Certification',
+        'prc_id' => 'PRC ID (Professional Regulation Commission)',
+        'owwa_id' => 'OWWA ID',
+        'ofw_id' => 'OFW ID',
+        'senior_citizen_id' => 'Senior Citizen ID',
+        'pwd_id' => 'PWD ID (Persons with Disability)',
+        'solo_parent_id' => 'Solo Parent ID',
+        'barangay_id' => 'Barangay ID / Barangay Certification',
+        'nbi_clearance' => 'NBI Clearance',
+        'police_clearance' => 'Police Clearance',
+        'integrated_bar_id' => 'Integrated Bar of the Philippines ID',
+        'school_id' => 'School ID (with current registration)',
+        'company_id' => 'Company ID (with current validity)',
+        'seaman_book' => 'Seaman\'s Book',
+        'firearms_license' => 'License to Own/Possess Firearms (LTOPF)',
+        'alien_cert' => 'Alien Certificate of Registration (ACR)',
+        'other' => 'Other Valid Government-Issued ID',
     ];
 
     /**

@@ -86,6 +86,14 @@
         <link rel="alternate icon" href="/favicon.svg" type="image/svg+xml">
         <link rel="apple-touch-icon" href="/favicon.svg">
 
+        <!-- PWA Manifest -->
+        <link rel="manifest" href="/manifest.json">
+        <meta name="theme-color" content="#EA580C">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="default">
+        <meta name="apple-mobile-web-app-title" content="Support Local">
+        <meta name="mobile-web-app-capable" content="yes">
+
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" />
 
@@ -95,5 +103,18 @@
     </head>
     <body class="font-sans antialiased">
         @inertia
+
+        {{-- Service Worker Registration --}}
+        <script>
+            if ('serviceWorker' in navigator) {
+                window.addEventListener('load', function() {
+                    navigator.serviceWorker.register('/sw.js').then(function(registration) {
+                        console.log('SW registered: ', registration.scope);
+                    }).catch(function(error) {
+                        console.log('SW registration failed: ', error);
+                    });
+                });
+            }
+        </script>
     </body>
 </html>

@@ -4,6 +4,7 @@ import { createInertiaApp, router } from '@inertiajs/react';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import React from 'react';
 import { createRoot } from 'react-dom/client';
+import AddToHomeScreen from './components/AddToHomeScreen';
 import PageLoader from './components/PageLoader';
 import { CartProvider } from './contexts/CartContext';
 import { initializeTheme } from './hooks/use-appearance';
@@ -32,6 +33,7 @@ function AppShell({ Component, props }: { Component: React.ComponentType<Record<
             <PageLoader>
                 <Component {...props} />
             </PageLoader>
+            <AddToHomeScreen />
         </CartProvider>
     );
 }
