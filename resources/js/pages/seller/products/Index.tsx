@@ -19,7 +19,7 @@ import {
     TrendingDown,
     TrendingUp,
 } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Swal from 'sweetalert2';
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -115,10 +115,24 @@ interface ProductsPageProps extends SharedData {
 }
 
 export default function ProductsIndex() {
-    const { products, categories, stats, filters, statuses, stockStatuses } = usePage<ProductsPageProps>().props;
+    const { products, categories, stats, filters, statuses, stockStatuses, flash } = usePage<ProductsPageProps>().props;
     const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
     const [searchTerm, setSearchTerm] = useState(filters.search || '');
     const [showFilters, setShowFilters] = useState(false);
+
+    useEffect(() => {
+        if (flash?.success) {
+            Swal.fire({
+                title: 'Success!',
+                text: flash.success,
+                icon: 'success',
+                confirmButtonColor: '#16a34a',
+                confirmButtonText: 'OK',
+                timer: 2000,
+                showConfirmButton: true,
+            });
+        }
+    }, [flash?.success]);
 
     // Defensive check for products structure
     if (!products || !products.data) {
@@ -203,15 +217,7 @@ export default function ProductsIndex() {
         }).then((result) => {
             if (result.isConfirmed) {
                 router.delete(`/seller/products/${product.id}`, {
-                    onSuccess: () => {
-                        Swal.fire({
-                            title: 'Deleted!',
-                            text: 'Product has been deleted successfully.',
-                            icon: 'success',
-                            timer: 2000,
-                            showConfirmButton: false,
-                        });
-                    },
+                    preserveScroll: true,
                 });
             }
         });
