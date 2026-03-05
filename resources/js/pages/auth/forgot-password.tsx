@@ -1,5 +1,4 @@
 // Components
-import PasswordResetLinkController from '@/actions/App/Http/Controllers/Auth/PasswordResetLinkController';
 import { Form, Head } from '@inertiajs/react';
 import { LoaderCircle, Mail } from 'lucide-react';
 
@@ -36,7 +35,7 @@ export default function ForgotPassword({ status, sellerCount, featuredArtisans }
                 </div>
             )}
 
-            <Form action={PasswordResetLinkController.store().url} method={PasswordResetLinkController.store().method} className="space-y-4">
+            <Form action="/forgot-password" method="post" className="space-y-4">
                 {({ processing, errors }) => (
                     <>
                         <div className="group space-y-2">

@@ -171,8 +171,15 @@ class SellerApplicationController extends Controller
         ]);
 
         // Notify all administrators about the new application
-        $admins = User::where('role', User::ROLE_ADMINISTRATOR)->get();
-        Notification::send($admins, new NewSellerApplicationSubmitted($application));
+        try {
+            $admins = User::where('role', User::ROLE_ADMINISTRATOR)->get();
+            Notification::send($admins, new NewSellerApplicationSubmitted($application));
+        } catch (\Exception $e) {
+            \Log::warning('Failed to send admin notification for seller application', [
+                'application_id' => $application->id,
+                'error' => $e->getMessage(),
+            ]);
+        }
 
         return redirect()->route('seller.application.create')->with('success',
             'Your seller application has been submitted successfully! We will review it within 3-5 business days.');
