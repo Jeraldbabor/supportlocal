@@ -392,7 +392,9 @@ export default function ProductDetail({ product, relatedProducts = [], reviews =
                                                     <Star
                                                         key={i}
                                                         className={`h-4 w-4 ${
-                                                            i < Math.floor(relatedProduct.average_rating ?? 0) ? 'fill-current text-yellow-400' : 'text-gray-300'
+                                                            i < Math.floor(relatedProduct.average_rating ?? 0)
+                                                                ? 'fill-current text-yellow-400'
+                                                                : 'text-gray-300'
                                                         }`}
                                                     />
                                                 ))}

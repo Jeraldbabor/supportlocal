@@ -4,21 +4,6 @@ import { useCart } from '../../contexts/CartContext';
 import BuyerLayout from '../../layouts/BuyerLayout';
 import { formatPeso } from '../../utils/currency';
 
-interface CartItem {
-    id: number;
-    product_id: number;
-    name: string;
-    price: number;
-    quantity: number;
-    primary_image: string;
-    seller: {
-        id: number;
-        name: string;
-    };
-    max_quantity: number;
-    stock_quantity: number;
-}
-
 export default function Cart() {
     const { items: cartItems, totalAmount: cartTotal, updateQuantity, removeFromCart, clearCart, isLoading } = useCart();
 

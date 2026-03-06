@@ -149,7 +149,7 @@ export default function ProductCard({ product, isInWishlist = false, onAddToCart
 
                 {/* Title */}
                 <Link href={getProductUrl(product.id)}>
-                    <h3 className="mb-1.5 min-h-[3rem] line-clamp-2 text-[15px] leading-relaxed font-medium text-gray-900 transition-colors group-hover:text-amber-700">
+                    <h3 className="mb-1.5 line-clamp-2 min-h-[3rem] text-[15px] leading-relaxed font-medium text-gray-900 transition-colors group-hover:text-amber-700">
                         {product.name}
                     </h3>
                 </Link>
@@ -174,12 +174,12 @@ export default function ProductCard({ product, isInWishlist = false, onAddToCart
                         <div className="mb-0.5 min-h-[1rem]">
                             {discountPercentage && (
                                 <div className="flex items-center gap-2">
-                                <span className="rounded bg-red-100 px-1.5 py-0.5 text-[10px] font-bold tracking-wide text-red-600">
-                                    -{discountPercentage}%
-                                </span>
-                                <span className="text-xs text-gray-400 line-through">
-                                    ₱{product.compare_price?.toLocaleString('en-PH', { minimumFractionDigits: 2 })}
-                                </span>
+                                    <span className="rounded bg-red-100 px-1.5 py-0.5 text-[10px] font-bold tracking-wide text-red-600">
+                                        -{discountPercentage}%
+                                    </span>
+                                    <span className="text-xs text-gray-400 line-through">
+                                        ₱{product.compare_price?.toLocaleString('en-PH', { minimumFractionDigits: 2 })}
+                                    </span>
                                 </div>
                             )}
                         </div>

@@ -475,7 +475,6 @@ export default function Home({
                         </div>
                         <ProductCarousel
                             title=""
-                            
                             subtitle=""
                             products={trendingProducts}
                             badge="trending"
