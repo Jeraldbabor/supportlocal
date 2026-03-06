@@ -1,6 +1,6 @@
-import { Head, Link, router, usePage } from '@inertiajs/react';
+import { Head, Link, router } from '@inertiajs/react';
 import { ArrowLeft, Minus, Plus, ShoppingBag, ShoppingCart, Trash2 } from 'lucide-react';
-import { useEffect } from 'react';
+import { useCart } from '../../contexts/CartContext';
 import BuyerLayout from '../../layouts/BuyerLayout';
 import { formatPeso } from '../../utils/currency';
 
@@ -19,49 +19,24 @@ interface CartItem {
     stock_quantity: number;
 }
 
-interface CartProps {
-    cartItems: CartItem[];
-    cartTotal: number;
-    [key: string]: unknown;
-}
-
 export default function Cart() {
-    const { cartItems, cartTotal } = usePage<CartProps>().props;
+    const { items: cartItems, totalAmount: cartTotal, updateQuantity, removeFromCart, clearCart, isLoading } = useCart();
 
-    const updateCartBadge = (items: CartItem[]) => {
-        const count = items.reduce((sum: number, item: CartItem) => sum + item.quantity, 0);
-        localStorage.setItem('cart_item_count', count.toString());
-        window.dispatchEvent(new CustomEvent('cart-updated', { detail: { count } }));
-    };
-
-    useEffect(() => {
-        updateCartBadge(cartItems);
-    }, [cartItems]);
-
-    const handleQuantityChange = (itemId: number, newQuantity: number) => {
+    const handleQuantityChange = async (productId: number, newQuantity: number) => {
         if (newQuantity <= 0) {
-            handleRemove(itemId);
+            await handleRemove(productId);
         } else {
-            router.put(
-                '/buyer/cart/update',
-                { item_id: itemId, quantity: newQuantity },
-                {
-                    preserveScroll: true,
-                },
-            );
+            await updateQuantity(productId, newQuantity);
         }
     };
 
-    const handleRemove = (itemId: number) => {
-        router.delete('/buyer/cart/remove', {
-            data: { item_id: itemId },
-            preserveScroll: true,
-        });
+    const handleRemove = async (productId: number) => {
+        await removeFromCart(productId);
     };
 
-    const handleClearCart = () => {
+    const handleClearCart = async () => {
         if (confirm('Are you sure you want to clear your cart?')) {
-            router.delete('/buyer/cart/clear');
+            await clearCart();
         }
     };
 
@@ -155,8 +130,9 @@ export default function Cart() {
 
                                                 {/* Remove Button */}
                                                 <button
-                                                    onClick={() => handleRemove(item.id)}
-                                                    className="rounded-full p-2 transition-colors hover:bg-red-50"
+                                                    onClick={() => void handleRemove(item.product_id)}
+                                                    disabled={isLoading}
+                                                    className="rounded-full p-2 transition-colors hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50"
                                                     title="Remove from cart"
                                                 >
                                                     <Trash2 className="h-5 w-5" style={{ color: '#9ca3af' }} />
@@ -167,9 +143,9 @@ export default function Cart() {
                                             <div className="mt-4 flex items-center justify-between">
                                                 <div className="flex items-center rounded-lg border border-gray-300 bg-white">
                                                     <button
-                                                        onClick={() => handleQuantityChange(item.id, item.quantity - 1)}
+                                                        onClick={() => void handleQuantityChange(item.product_id, item.quantity - 1)}
                                                         className="p-2 transition-colors hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50"
-                                                        disabled={item.quantity <= 1}
+                                                        disabled={item.quantity <= 1 || isLoading}
                                                     >
                                                         <Minus className="h-4 w-4" style={{ color: '#374151' }} />
                                                     </button>
@@ -177,9 +153,9 @@ export default function Cart() {
                                                         {item.quantity}
                                                     </span>
                                                     <button
-                                                        onClick={() => handleQuantityChange(item.id, item.quantity + 1)}
+                                                        onClick={() => void handleQuantityChange(item.product_id, item.quantity + 1)}
                                                         className="p-2 transition-colors hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50"
-                                                        disabled={item.quantity >= item.stock_quantity}
+                                                        disabled={item.quantity >= item.stock_quantity || isLoading}
                                                     >
                                                         <Plus className="h-4 w-4" style={{ color: '#374151' }} />
                                                     </button>
@@ -202,7 +178,11 @@ export default function Cart() {
 
                         {/* Clear Cart Button */}
                         <div className="mt-6 border-t border-gray-200 pt-6">
-                            <button onClick={handleClearCart} className="text-sm font-medium text-red-600 hover:text-red-700">
+                            <button
+                                onClick={() => void handleClearCart()}
+                                disabled={isLoading}
+                                className="text-sm font-medium text-red-600 hover:text-red-700 disabled:cursor-not-allowed disabled:opacity-50"
+                            >
                                 Clear Cart
                             </button>
                         </div>

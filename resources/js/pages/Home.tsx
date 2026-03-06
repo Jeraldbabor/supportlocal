@@ -95,7 +95,7 @@ export default function Home({
         setIsModalOpen(true);
     };
 
-    const handleModalAddToCart = (quantity: number) => {
+    const handleModalAddToCart = async (quantity: number) => {
         if (!modalProduct) return;
 
         const cartProduct: GlobalProduct = {
@@ -111,25 +111,19 @@ export default function Home({
         };
 
         try {
-            addToCart(cartProduct, quantity);
-            // Close modal first
+            await addToCart(cartProduct, quantity);
             setIsModalOpen(false);
-            // Then show success message
-            setTimeout(() => {
-                setToastMessage(`✅ ${quantity} × ${modalProduct.name} added to cart successfully!`);
-                setShowToast(true);
-            }, 100);
+            setToastMessage(`✅ ${quantity} × ${modalProduct.name} added to cart successfully!`);
+            setShowToast(true);
         } catch (error) {
             console.error('Error adding to cart:', error);
             setIsModalOpen(false);
-            setTimeout(() => {
-                setToastMessage('❌ Failed to add item to cart. Please try again.');
-                setShowToast(true);
-            }, 100);
+            setToastMessage('❌ Failed to add item to cart. Please try again.');
+            setShowToast(true);
         }
     };
 
-    const handleModalBuyNow = (quantity: number) => {
+    const handleModalBuyNow = async (quantity: number) => {
         if (!modalProduct) return;
 
         const cartProduct: GlobalProduct = {
@@ -145,18 +139,13 @@ export default function Home({
         };
 
         try {
-            addToCart(cartProduct, quantity);
-            // Small delay before redirect to ensure cart is updated
-            setTimeout(() => {
-                router.visit('/cart');
-            }, 200);
+            await addToCart(cartProduct, quantity);
+            router.visit('/cart');
         } catch (error) {
             console.error('Error adding to cart:', error);
             setIsModalOpen(false);
-            setTimeout(() => {
-                setToastMessage('❌ Failed to add item to cart. Please try again.');
-                setShowToast(true);
-            }, 100);
+            setToastMessage('❌ Failed to add item to cart. Please try again.');
+            setShowToast(true);
         }
     };
 
@@ -486,6 +475,7 @@ export default function Home({
                         </div>
                         <ProductCarousel
                             title=""
+                            
                             subtitle=""
                             products={trendingProducts}
                             badge="trending"

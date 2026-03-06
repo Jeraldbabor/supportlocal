@@ -282,9 +282,14 @@ class PublicController extends Controller
             'name' => $product->name,
             'price' => (float) $product->price,
             'images' => $product->image_urls ?: ['/placeholder.jpg'],
+            'primary_image' => $product->image_urls[0] ?? \App\Helpers\ImageHelper::url($product->featured_image ?? $product->primary_image),
             'artisan' => $product->seller->name ?? 'Unknown Artisan',
             'artisan_id' => $product->seller_id,
             'artisan_image' => $product->seller->avatar_url,
+            'seller' => [
+                'id' => $product->seller_id,
+                'name' => $product->seller->name ?? 'Unknown Artisan',
+            ],
             'average_rating' => $product->average_rating ? (float) $product->average_rating : null,
             'review_count' => $product->review_count ?? 0,
             'category' => $product->category->name ?? 'Miscellaneous',
@@ -294,6 +299,7 @@ class PublicController extends Controller
             'care' => 'Handle with care. Clean as needed.',
             'inStock' => $product->quantity > 0,
             'stockCount' => $product->quantity,
+            'quantity' => $product->quantity,
             'weight' => $product->weight,
             'sku' => $product->sku,
             'tags' => $product->tags ?? [],
@@ -308,15 +314,24 @@ class PublicController extends Controller
             ->take(4)
             ->get()
             ->map(function ($relatedProduct) {
+                $imageUrl = \App\Helpers\ImageHelper::url($relatedProduct->featured_image ?? $relatedProduct->primary_image);
+
                 return [
                     'id' => $relatedProduct->id,
                     'name' => $relatedProduct->name,
                     'price' => (float) $relatedProduct->price,
-                    'image' => $relatedProduct->primary_image ?: '/placeholder.jpg',
+                    'image' => $imageUrl,
+                    'primary_image' => $imageUrl,
                     'artisan' => $relatedProduct->seller->name ?? 'Unknown Artisan',
                     'artisan_image' => $relatedProduct->seller->avatar_url,
+                    'seller' => [
+                        'id' => $relatedProduct->seller_id,
+                        'name' => $relatedProduct->seller->name ?? 'Unknown Artisan',
+                    ],
                     'average_rating' => $relatedProduct->average_rating ? (float) $relatedProduct->average_rating : null,
                     'review_count' => $relatedProduct->review_count ?? 0,
+                    'quantity' => $relatedProduct->quantity,
+                    'stock_quantity' => $relatedProduct->quantity,
                 ];
             });
 

@@ -237,7 +237,7 @@ export default function Products({ products, categories = [], sellers = [], wish
         }, 1500);
     };
 
-    const handleModalAddToCart = (quantity: number) => {
+    const handleModalAddToCart = async (quantity: number) => {
         if (!modalProduct) return;
 
         const cartProduct: GlobalProduct = {
@@ -253,12 +253,10 @@ export default function Products({ products, categories = [], sellers = [], wish
         };
 
         try {
-            addToCart(cartProduct, quantity);
+            await addToCart(cartProduct, quantity);
             setIsModalOpen(false);
-            setTimeout(() => {
-                setToastMessage(`✅ ${quantity} × ${modalProduct.name} added to cart successfully!`);
-                setShowToast(true);
-            }, 100);
+            setToastMessage(`✅ ${quantity} × ${modalProduct.name} added to cart successfully!`);
+            setShowToast(true);
         } catch (error) {
             console.error('Error adding to cart:', error);
             setToastMessage('❌ Failed to add item to cart. Please try again.');
@@ -266,7 +264,7 @@ export default function Products({ products, categories = [], sellers = [], wish
         }
     };
 
-    const handleModalBuyNow = (quantity: number) => {
+    const handleModalBuyNow = async (quantity: number) => {
         if (!modalProduct) return;
 
         const cartProduct: GlobalProduct = {
@@ -282,10 +280,8 @@ export default function Products({ products, categories = [], sellers = [], wish
         };
 
         try {
-            addToCart(cartProduct, quantity);
-            setTimeout(() => {
-                router.visit('/cart');
-            }, 200);
+            await addToCart(cartProduct, quantity);
+            router.visit('/cart');
         } catch (error) {
             console.error('Error adding to cart:', error);
             setToastMessage('❌ Failed to add item to cart. Please try again.');

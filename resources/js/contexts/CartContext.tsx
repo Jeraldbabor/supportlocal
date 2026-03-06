@@ -45,6 +45,40 @@ export function CartProvider({ children, isAuthenticated: authProp }: CartProvid
     const [isAuthenticated, setIsAuthenticated] = useState(authProp || false);
     const [hasTransferredCart, setHasTransferredCart] = useState(false);
 
+    const buildCartItem = useCallback((product: Product, quantity: number): CartItem => {
+        const maxQuantity = product.quantity || 999;
+
+        return {
+            id: Date.now(),
+            product_id: product.id,
+            name: product.name,
+            price: typeof product.price === 'string' ? parseFloat(product.price) : product.price || 0,
+            quantity: Math.min(quantity, maxQuantity),
+            primary_image: product.primary_image || '',
+            seller: product.seller || {
+                id: 0,
+                name: 'Unknown Seller',
+            },
+            max_quantity: maxQuantity,
+            stock_quantity: maxQuantity,
+        };
+    }, []);
+
+    const mergeCartItems = useCallback(
+        (cartItems: CartItem[], product: Product, quantity: number) => {
+            const existingItem = cartItems.find((item) => item.product_id === product.id);
+
+            if (existingItem) {
+                const newQuantity = Math.min(existingItem.quantity + quantity, product.quantity || 999);
+
+                return cartItems.map((item) => (item.product_id === product.id ? { ...item, quantity: newQuantity } : item));
+            }
+
+            return [...cartItems, buildCartItem(product, quantity)];
+        },
+        [buildCartItem],
+    );
+
     // Load cart from backend (authenticated users)
     const loadAuthenticatedCart = useCallback(async () => {
         try {
@@ -180,11 +214,21 @@ export function CartProvider({ children, isAuthenticated: authProp }: CartProvid
 
         try {
             if (isAuthenticated) {
+                const previousItems = items;
+                const optimisticItems = mergeCartItems(previousItems, product, quantity);
+
+                setItems(optimisticItems);
+                updateCartBadge(optimisticItems);
+
                 await addToCartAuthenticated(product, quantity);
             } else {
                 addToCartGuest(product, quantity);
             }
         } catch (error) {
+            if (isAuthenticated) {
+                setItems(items);
+                updateCartBadge(items);
+            }
             console.error('[CartContext] Error adding to cart:', error);
             throw error;
         } finally {
@@ -209,7 +253,9 @@ export function CartProvider({ children, isAuthenticated: authProp }: CartProvid
         if (response.ok) {
             const result = await response.json();
             console.log('[CartContext] Added to cart (authenticated):', result);
-            await loadAuthenticatedCart();
+
+            // Re-sync in the background so the UI stays snappy.
+            void loadAuthenticatedCart();
         } else {
             const error = await response.json();
             throw new Error(error.message || 'Failed to add to cart');
@@ -218,27 +264,7 @@ export function CartProvider({ children, isAuthenticated: authProp }: CartProvid
 
     // Add to cart for guest users (localStorage)
     const addToCartGuest = (product: Product, quantity: number) => {
-        const existingItem = items.find((item) => item.product_id === product.id);
-
-        let updatedCart: CartItem[];
-
-        if (existingItem) {
-            const newQuantity = Math.min(existingItem.quantity + quantity, product.quantity || 999);
-            updatedCart = items.map((item) => (item.product_id === product.id ? { ...item, quantity: newQuantity } : item));
-        } else {
-            const newItem: CartItem = {
-                id: Date.now(),
-                product_id: product.id,
-                name: product.name,
-                price: typeof product.price === 'string' ? parseFloat(product.price) : product.price || 0,
-                quantity: Math.min(quantity, product.quantity || 999),
-                primary_image: product.primary_image || '',
-                seller: product.seller,
-                max_quantity: product.quantity || 999,
-                stock_quantity: product.quantity || 999,
-            };
-            updatedCart = [...items, newItem];
-        }
+        const updatedCart = mergeCartItems(items, product, quantity);
 
         setItems(updatedCart);
         saveGuestCart(updatedCart);
