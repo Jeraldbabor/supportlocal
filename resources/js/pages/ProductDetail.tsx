@@ -1,8 +1,11 @@
+import { Product as CartProduct } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
 import { ArrowLeft, Minus, Plus, Shield, ShoppingCart, Star, Truck } from 'lucide-react';
 import { useState } from 'react';
 import StartChatButton from '../components/StartChatButton';
+import Toast from '../components/Toast';
 import WishlistButton from '../components/WishlistButton';
+import { useCart } from '../contexts/CartContext';
 import MainLayout from '../layouts/MainLayout';
 
 interface Product {
@@ -10,9 +13,14 @@ interface Product {
     name: string;
     price: number;
     images: string[];
+    primary_image?: string;
     artisan: string;
     artisan_id: number;
     artisan_image?: string;
+    seller?: {
+        id: number;
+        name: string;
+    };
     average_rating?: number | null;
     review_count: number;
     category: string;
@@ -22,6 +30,7 @@ interface Product {
     care: string;
     inStock: boolean;
     stockCount: number;
+    quantity?: number;
     weight?: number;
     sku?: string;
     tags?: string[];
@@ -32,9 +41,17 @@ interface RelatedProduct {
     name: string;
     price: number;
     image: string;
+    primary_image?: string;
     artisan: string;
     artisan_image?: string;
-    rating: number;
+    seller?: {
+        id: number;
+        name: string;
+    };
+    average_rating?: number | null;
+    review_count?: number;
+    quantity?: number;
+    stock_quantity?: number;
 }
 
 interface Review {
@@ -58,7 +75,11 @@ interface ProductDetailProps {
 export default function ProductDetail({ product, relatedProducts = [], reviews = [], inWishlist = false }: ProductDetailProps) {
     const [selectedImage, setSelectedImage] = useState(0);
     const [quantity, setQuantity] = useState(1);
-    const { auth } = usePage<{ auth: { user?: { id: number; role: string } } }>().props;
+    const [showToast, setShowToast] = useState(false);
+    const [toastMessage, setToastMessage] = useState('');
+    const [toastType, setToastType] = useState<'success' | 'error'>('success');
+    const { auth } = usePage<{ auth?: { user?: { id: number; role?: string } } }>().props;
+    const { addToCart, isLoading } = useCart();
 
     if (!product) {
         return (
@@ -76,37 +97,49 @@ export default function ProductDetail({ product, relatedProducts = [], reviews =
         );
     }
 
-    const addToCart = async (productId?: number, qty?: number) => {
-        const targetProductId = productId || product.id;
-        const targetQuantity = qty || quantity;
+    type CartableProduct = {
+        id: number;
+        name: string;
+        price: number;
+        primary_image?: string;
+        images?: string[];
+        seller?: {
+            id: number;
+            name: string;
+        };
+        artisan?: string;
+        artisan_id?: number;
+        quantity?: number;
+        stockCount?: number;
+    };
+
+    const buildCartProduct = (targetProduct: CartableProduct): CartProduct => ({
+        id: targetProduct.id,
+        name: targetProduct.name,
+        price: targetProduct.price,
+        quantity: targetProduct.quantity ?? targetProduct.stockCount ?? 0,
+        primary_image: targetProduct.primary_image || targetProduct.images?.[0] || '',
+        seller: targetProduct.seller || {
+            id: targetProduct.artisan_id || 0,
+            name: targetProduct.artisan || 'Unknown Artisan',
+        },
+    });
+
+    const handleAddToCart = async (targetProduct: CartableProduct, targetQuantity: number) => {
+        if (targetQuantity < 1) {
+            return;
+        }
 
         try {
-            const response = await fetch('/cart/add', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
-                },
-                body: JSON.stringify({
-                    product_id: targetProductId,
-                    quantity: targetQuantity,
-                }),
-            });
-
-            if (response.ok) {
-                await response.json();
-                if (productId) {
-                    alert('Product added to cart!');
-                } else {
-                    alert(`Added ${targetQuantity} ${product.name} to cart!`);
-                }
-            } else {
-                const error = await response.json();
-                alert(error.error || 'Failed to add product to cart');
-            }
+            await addToCart(buildCartProduct(targetProduct), targetQuantity);
+            setToastMessage(`Added ${targetQuantity} x ${targetProduct.name} to cart.`);
+            setToastType('success');
+            setShowToast(true);
         } catch (error) {
             console.error('Error adding to cart:', error);
-            alert('Failed to add product to cart');
+            setToastMessage(error instanceof Error ? error.message : 'Failed to add product to cart');
+            setToastType('error');
+            setShowToast(true);
         }
     };
 
@@ -210,12 +243,12 @@ export default function ProductDetail({ product, relatedProducts = [], reviews =
                             <div className="flex flex-col space-y-3">
                                 <div className="flex space-x-4">
                                     <button
-                                        onClick={() => addToCart()}
-                                        disabled={!product.inStock}
+                                        onClick={() => void handleAddToCart(product, quantity)}
+                                        disabled={!product.inStock || isLoading}
                                         className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-amber-600 to-orange-600 px-6 py-3 font-semibold text-white shadow-md transition-all duration-200 hover:scale-105 hover:from-amber-700 hover:to-orange-700 hover:shadow-lg active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:scale-100"
                                     >
                                         <ShoppingCart className="h-5 w-5" />
-                                        {product.inStock ? 'Add to Cart' : 'Out of Stock'}
+                                        {product.inStock ? (isLoading ? 'Adding...' : 'Add to Cart') : 'Out of Stock'}
                                     </button>
                                     <WishlistButton productId={product.id} initialInWishlist={inWishlist} variant="button" size="lg" />
                                 </div>
@@ -359,18 +392,23 @@ export default function ProductDetail({ product, relatedProducts = [], reviews =
                                                     <Star
                                                         key={i}
                                                         className={`h-4 w-4 ${
-                                                            i < Math.floor(relatedProduct.rating) ? 'fill-current text-yellow-400' : 'text-gray-300'
+                                                            i < Math.floor(relatedProduct.average_rating ?? 0)
+                                                                ? 'fill-current text-yellow-400'
+                                                                : 'text-gray-300'
                                                         }`}
                                                     />
                                                 ))}
                                             </div>
-                                            <span className="ml-1 text-sm text-gray-600">({relatedProduct.rating})</span>
+                                            <span className="ml-1 text-sm text-gray-600">
+                                                {relatedProduct.average_rating ? `(${relatedProduct.average_rating.toFixed(1)})` : '(New)'}
+                                            </span>
                                         </div>
                                         <div className="flex items-center justify-between">
                                             <span className="text-lg font-semibold text-primary">₱{relatedProduct.price.toFixed(2)}</span>
                                             <button
-                                                onClick={() => addToCart(relatedProduct.id, 1)}
-                                                className="flex items-center gap-1 rounded-md bg-primary px-4 py-2 text-sm font-medium text-white transition-colors duration-200 hover:bg-primary/90"
+                                                onClick={() => void handleAddToCart(relatedProduct, 1)}
+                                                disabled={isLoading || (relatedProduct.stock_quantity ?? relatedProduct.quantity ?? 0) <= 0}
+                                                className="flex items-center gap-1 rounded-md bg-primary px-4 py-2 text-sm font-medium text-white transition-colors duration-200 hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
                                             >
                                                 <ShoppingCart className="h-4 w-4" />
                                                 Add
@@ -383,6 +421,7 @@ export default function ProductDetail({ product, relatedProducts = [], reviews =
                     </section>
                 )}
             </div>
+            {showToast && <Toast message={toastMessage} type={toastType} onClose={() => setShowToast(false)} />}
         </MainLayout>
     );
 }

@@ -237,10 +237,8 @@ export default function Index({
         try {
             await addToCart(cartProduct, quantity);
             setIsModalOpen(false);
-            setTimeout(() => {
-                setToastMessage(`✅ ${quantity} × ${modalProduct.name} added to cart successfully!`);
-                setShowToast(true);
-            }, 100);
+            setToastMessage(`✅ ${quantity} × ${modalProduct.name} added to cart successfully!`);
+            setShowToast(true);
         } catch (error) {
             console.error('Error adding to cart:', error);
             setToastMessage('❌ Failed to add item to cart. Please try again.');

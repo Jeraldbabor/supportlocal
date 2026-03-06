@@ -137,21 +137,15 @@ export default function ArtisanProfile({ artisan, products, ratings, filters }: 
         try {
             await addToCart(productWithSeller, quantity);
             console.log('[ArtisanProfile] Successfully added to cart');
-            // Close modal first
             setIsModalOpen(false);
-            // Then show success message
-            setTimeout(() => {
-                setToastMessage(`✅ ${quantity} × ${modalProduct.name} added to cart successfully!`);
-                setShowToast(true);
-                console.log('[ArtisanProfile] Toast notification shown');
-            }, 100);
+            setToastMessage(`✅ ${quantity} × ${modalProduct.name} added to cart successfully!`);
+            setShowToast(true);
+            console.log('[ArtisanProfile] Toast notification shown');
         } catch (error) {
             console.error('[ArtisanProfile] Error adding to cart:', error);
             setIsModalOpen(false);
-            setTimeout(() => {
-                setToastMessage('❌ Failed to add item to cart. Please try again.');
-                setShowToast(true);
-            }, 100);
+            setToastMessage('❌ Failed to add item to cart. Please try again.');
+            setShowToast(true);
         }
     };
 
@@ -175,15 +169,12 @@ export default function ArtisanProfile({ artisan, products, ratings, filters }: 
         try {
             await addToCart(productWithSeller, quantity);
             setIsModalOpen(false);
-            // Redirect to checkout
             router.visit('/checkout');
         } catch (error) {
             console.error('[ArtisanProfile] Error with Buy Now:', error);
             setIsModalOpen(false);
-            setTimeout(() => {
-                setToastMessage('❌ Failed to process order. Please try again.');
-                setShowToast(true);
-            }, 100);
+            setToastMessage('❌ Failed to process order. Please try again.');
+            setShowToast(true);
         }
     };
 

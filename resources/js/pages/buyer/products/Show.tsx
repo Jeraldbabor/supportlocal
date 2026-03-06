@@ -90,17 +90,34 @@ export default function Show({ product, relatedProducts, ratings: initialRatings
     const [reviewText, setReviewText] = useState(initialUserRating?.review || '');
     const [isSubmittingRating, setIsSubmittingRating] = useState(false);
 
-    const handleAddToCart = () => {
+    const handleAddToCart = async () => {
         if (product.stock_status === 'out_of_stock') return;
-        addToCart(product, quantity);
-        setToastMessage(`${product.name} added to cart!`);
-        setShowToast(true);
+
+        try {
+            await addToCart(product, quantity);
+            setToastMessage(`${product.name} added to cart!`);
+            setToastType('success');
+            setShowToast(true);
+        } catch (error) {
+            console.error('Error adding to cart:', error);
+            setToastMessage(error instanceof Error ? error.message : 'Failed to add item to cart');
+            setToastType('error');
+            setShowToast(true);
+        }
     };
 
-    const handleBuyNow = () => {
+    const handleBuyNow = async () => {
         if (product.stock_status === 'out_of_stock') return;
-        addToCart(product, quantity);
-        router.visit('/buyer/checkout');
+
+        try {
+            await addToCart(product, quantity);
+            router.visit('/buyer/checkout');
+        } catch (error) {
+            console.error('Error starting checkout:', error);
+            setToastMessage(error instanceof Error ? error.message : 'Failed to start checkout');
+            setToastType('error');
+            setShowToast(true);
+        }
     };
 
     const handleSellerClick = () => {
@@ -456,7 +473,7 @@ export default function Show({ product, relatedProducts, ratings: initialRatings
                             <div className="space-y-4">
                                 <div className="flex gap-4">
                                     <button
-                                        onClick={handleAddToCart}
+                                        onClick={() => void handleAddToCart()}
                                         disabled={product.stock_status === 'out_of_stock' || isLoading}
                                         className={`flex flex-1 transform items-center justify-center gap-2 rounded-lg px-6 py-4 text-lg font-semibold transition-all duration-200 ${
                                             product.stock_status === 'out_of_stock' || isLoading
@@ -465,11 +482,11 @@ export default function Show({ product, relatedProducts, ratings: initialRatings
                                         }`}
                                     >
                                         <ShoppingCart className="h-5 w-5" />
-                                        {product.stock_status === 'out_of_stock' ? 'Out of Stock' : 'Add to Cart'}
+                                        {product.stock_status === 'out_of_stock' ? 'Out of Stock' : isLoading ? 'Adding...' : 'Add to Cart'}
                                     </button>
 
                                     <button
-                                        onClick={handleBuyNow}
+                                        onClick={() => void handleBuyNow()}
                                         disabled={product.stock_status === 'out_of_stock' || isLoading}
                                         className={`flex flex-1 transform items-center justify-center gap-2 rounded-lg px-6 py-4 text-lg font-semibold transition-all duration-200 ${
                                             product.stock_status === 'out_of_stock' || isLoading
@@ -478,7 +495,7 @@ export default function Show({ product, relatedProducts, ratings: initialRatings
                                         }`}
                                     >
                                         <ShoppingCart className="h-5 w-5" />
-                                        Buy Now
+                                        {isLoading ? 'Processing...' : 'Buy Now'}
                                     </button>
                                 </div>
 

@@ -26,8 +26,8 @@ interface AddToCartModalProps {
     isOpen: boolean;
     onClose: () => void;
     product: Product | null;
-    onAddToCart: (quantity: number) => void;
-    onBuyNow?: (quantity: number) => void;
+    onAddToCart: (quantity: number) => void | Promise<void>;
+    onBuyNow?: (quantity: number) => void | Promise<void>;
 }
 
 export default function AddToCartModal({ isOpen, onClose, product, onAddToCart, onBuyNow }: AddToCartModalProps) {
@@ -64,11 +64,9 @@ export default function AddToCartModal({ isOpen, onClose, product, onAddToCart, 
     const handleAddToCart = async () => {
         setIsLoading(true);
         try {
-            onAddToCart(quantity);
-            setTimeout(() => {
-                setIsLoading(false);
-                onClose();
-            }, 300); // Reduced delay, let parent handle the toast
+            await Promise.resolve(onAddToCart(quantity));
+            setIsLoading(false);
+            onClose();
         } catch (error) {
             console.error('Error adding to cart:', error);
             setIsLoading(false);
@@ -79,11 +77,8 @@ export default function AddToCartModal({ isOpen, onClose, product, onAddToCart, 
         if (!onBuyNow) return;
         setIsLoading(true);
         try {
-            onBuyNow(quantity);
-            setTimeout(() => {
-                setIsLoading(false);
-                // Don't close modal here, let the redirect handle it
-            }, 300);
+            await Promise.resolve(onBuyNow(quantity));
+            setIsLoading(false);
         } catch (error) {
             console.error('Error buying now:', error);
             setIsLoading(false);

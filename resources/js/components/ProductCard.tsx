@@ -149,13 +149,13 @@ export default function ProductCard({ product, isInWishlist = false, onAddToCart
 
                 {/* Title */}
                 <Link href={getProductUrl(product.id)}>
-                    <h3 className="mb-1.5 line-clamp-2 text-[15px] leading-relaxed font-medium text-gray-900 transition-colors group-hover:text-amber-700">
+                    <h3 className="mb-1.5 line-clamp-2 min-h-[3rem] text-[15px] leading-relaxed font-medium text-gray-900 transition-colors group-hover:text-amber-700">
                         {product.name}
                     </h3>
                 </Link>
 
                 {/* Artisan */}
-                <div className="mt-auto mb-4 flex items-center gap-2">
+                <div className="mt-auto mb-4 flex min-h-[1.5rem] items-center gap-2">
                     {product.artisan_image ? (
                         <img
                             src={product.artisan_image}
@@ -165,22 +165,24 @@ export default function ProductCard({ product, isInWishlist = false, onAddToCart
                     ) : (
                         <div className="h-5 w-5 rounded-full bg-gray-100 ring-1 ring-gray-200" />
                     )}
-                    <span className="text-sm text-gray-500">{product.artisan}</span>
+                    <span className="min-w-0 truncate text-sm text-gray-500">{product.artisan}</span>
                 </div>
 
                 {/* Footer: Price & Sales */}
                 <div className="flex items-end justify-between">
-                    <div className="flex flex-col">
-                        {discountPercentage && (
-                            <div className="mb-0.5 flex items-center gap-2">
-                                <span className="rounded bg-red-100 px-1.5 py-0.5 text-[10px] font-bold tracking-wide text-red-600">
-                                    -{discountPercentage}%
-                                </span>
-                                <span className="text-xs text-gray-400 line-through">
-                                    ₱{product.compare_price?.toLocaleString('en-PH', { minimumFractionDigits: 2 })}
-                                </span>
-                            </div>
-                        )}
+                    <div className="flex min-h-[3rem] flex-col justify-end">
+                        <div className="mb-0.5 min-h-[1rem]">
+                            {discountPercentage && (
+                                <div className="flex items-center gap-2">
+                                    <span className="rounded bg-red-100 px-1.5 py-0.5 text-[10px] font-bold tracking-wide text-red-600">
+                                        -{discountPercentage}%
+                                    </span>
+                                    <span className="text-xs text-gray-400 line-through">
+                                        ₱{product.compare_price?.toLocaleString('en-PH', { minimumFractionDigits: 2 })}
+                                    </span>
+                                </div>
+                            )}
+                        </div>
                         <span className="text-lg font-semibold tracking-tight text-gray-900">
                             ₱{product.price.toLocaleString('en-PH', { minimumFractionDigits: 2 })}
                         </span>
