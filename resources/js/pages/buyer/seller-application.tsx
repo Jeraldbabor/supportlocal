@@ -193,12 +193,13 @@ export default function SellerApplicationForm({
                                 <div>
                                     <Label className="text-sm font-medium">Application Status</Label>
                                     <div
-                                        className={`mt-1 inline-flex items-center rounded-full px-3 py-1 text-sm font-medium ${existingApplication?.status === 'pending'
+                                        className={`mt-1 inline-flex items-center rounded-full px-3 py-1 text-sm font-medium ${
+                                            existingApplication?.status === 'pending'
                                                 ? 'bg-yellow-100 text-yellow-800'
                                                 : existingApplication?.status === 'approved'
-                                                    ? 'bg-green-100 text-green-800'
-                                                    : 'bg-red-100 text-red-800'
-                                            }`}
+                                                  ? 'bg-green-100 text-green-800'
+                                                  : 'bg-red-100 text-red-800'
+                                        }`}
                                     >
                                         {existingApplication?.status === 'pending' && 'Under Review'}
                                         {existingApplication?.status === 'approved' && 'Approved'}
@@ -290,12 +291,13 @@ export default function SellerApplicationForm({
                                         className={`flex flex-col items-center gap-1.5 ${index <= currentStep ? 'cursor-pointer' : 'cursor-not-allowed'}`}
                                     >
                                         <div
-                                            className={`flex h-10 w-10 items-center justify-center rounded-full border-2 transition-all sm:h-12 sm:w-12 ${isCompleted
+                                            className={`flex h-10 w-10 items-center justify-center rounded-full border-2 transition-all sm:h-12 sm:w-12 ${
+                                                isCompleted
                                                     ? 'border-green-500 bg-green-500 text-white'
                                                     : isActive
-                                                        ? 'border-amber-500 bg-amber-50 text-amber-600'
-                                                        : 'border-gray-300 bg-white text-gray-400'
-                                                }`}
+                                                      ? 'border-amber-500 bg-amber-50 text-amber-600'
+                                                      : 'border-gray-300 bg-white text-gray-400'
+                                            }`}
                                         >
                                             {isCompleted ? (
                                                 <CheckCircle className="h-5 w-5 sm:h-6 sm:w-6" />
@@ -304,8 +306,9 @@ export default function SellerApplicationForm({
                                             )}
                                         </div>
                                         <span
-                                            className={`hidden text-xs font-medium sm:block ${isActive ? 'text-amber-600' : isCompleted ? 'text-green-600' : 'text-gray-400'
-                                                }`}
+                                            className={`hidden text-xs font-medium sm:block ${
+                                                isActive ? 'text-amber-600' : isCompleted ? 'text-green-600' : 'text-gray-400'
+                                            }`}
                                         >
                                             {step.title}
                                         </span>
@@ -400,12 +403,13 @@ export default function SellerApplicationForm({
                                         Upload Valid ID <span className="text-red-500">*</span>
                                     </Label>
                                     <div
-                                        className={`rounded-lg border-2 border-dashed p-6 text-center transition-colors ${stepErrors.id_document || errors.id_document
+                                        className={`rounded-lg border-2 border-dashed p-6 text-center transition-colors ${
+                                            stepErrors.id_document || errors.id_document
                                                 ? 'border-red-300 bg-red-50/50'
                                                 : selectedIdFile
-                                                    ? 'border-green-300 bg-green-50/50'
-                                                    : 'border-gray-300 hover:border-amber-300'
-                                            }`}
+                                                  ? 'border-green-300 bg-green-50/50'
+                                                  : 'border-gray-300 hover:border-amber-300'
+                                        }`}
                                     >
                                         <input id="id_document" type="file" accept="image/*,.pdf" onChange={handleIdFileChange} className="hidden" />
                                         <label htmlFor="id_document" className="flex cursor-pointer flex-col items-center gap-2">
@@ -467,8 +471,9 @@ export default function SellerApplicationForm({
                                     <div className="space-y-2">
                                         <Label htmlFor="business_permit">Upload Business Permit / Registration</Label>
                                         <div
-                                            className={`rounded-lg border-2 border-dashed p-6 text-center transition-colors ${selectedPermitFile ? 'border-green-300 bg-green-50/50' : 'border-gray-300 hover:border-amber-300'
-                                                }`}
+                                            className={`rounded-lg border-2 border-dashed p-6 text-center transition-colors ${
+                                                selectedPermitFile ? 'border-green-300 bg-green-50/50' : 'border-gray-300 hover:border-amber-300'
+                                            }`}
                                         >
                                             <input
                                                 id="business_permit"
@@ -501,10 +506,11 @@ export default function SellerApplicationForm({
                                     <div className="space-y-2">
                                         <Label htmlFor="additional_documents">Additional Supporting Documents</Label>
                                         <div
-                                            className={`rounded-lg border-2 border-dashed p-6 text-center transition-colors ${selectedAdditionalFiles.length > 0
+                                            className={`rounded-lg border-2 border-dashed p-6 text-center transition-colors ${
+                                                selectedAdditionalFiles.length > 0
                                                     ? 'border-green-300 bg-green-50/50'
                                                     : 'border-gray-300 hover:border-amber-300'
-                                                }`}
+                                            }`}
                                         >
                                             <input
                                                 id="additional_documents"
