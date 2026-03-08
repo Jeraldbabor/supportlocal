@@ -1,4 +1,5 @@
 import InputError from '@/components/input-error';
+import Toast from '@/components/Toast';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -7,9 +8,9 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import BuyerLayout from '@/layouts/BuyerLayout';
-import { Head, useForm } from '@inertiajs/react';
+import { Head, useForm, usePage } from '@inertiajs/react';
 import { AlertCircle, ArrowLeft, ArrowRight, Briefcase, CheckCircle, FileText, Shield, Upload } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 interface SellerApplicationFormProps {
     idTypes: Record<string, string>;
@@ -19,7 +20,13 @@ interface SellerApplicationFormProps {
         status: string;
         created_at: string;
         admin_notes?: string;
+        reviewed_at?: string;
     };
+    flash?: {
+        success?: string;
+        error?: string;
+    };
+    [key: string]: unknown;
 }
 
 export default function SellerApplicationForm({
@@ -33,6 +40,24 @@ export default function SellerApplicationForm({
     const [selectedAdditionalFiles, setSelectedAdditionalFiles] = useState<File[]>([]);
     const [currentStep, setCurrentStep] = useState(0);
     const [stepErrors, setStepErrors] = useState<Record<string, string>>({});
+    const [showToast, setShowToast] = useState(false);
+    const [toastMessage, setToastMessage] = useState('');
+    const [toastType, setToastType] = useState<'success' | 'error'>('success');
+
+    const { flash } = usePage<SellerApplicationFormProps>().props;
+
+    // Handle flash messages (e.g., success after submission)
+    useEffect(() => {
+        if (flash?.success) {
+            setToastMessage(flash.success);
+            setToastType('success');
+            setShowToast(true);
+        } else if (flash?.error) {
+            setToastMessage(flash.error);
+            setToastType('error');
+            setShowToast(true);
+        }
+    }, [flash]);
 
     const steps = [
         { title: 'Business Info', icon: Briefcase, description: 'Tell us about your business' },
@@ -107,11 +132,28 @@ export default function SellerApplicationForm({
         e.preventDefault();
         post('/seller/apply', {
             forceFormData: true,
+            preserveScroll: true,
             onSuccess: () => {
                 reset();
                 setSelectedIdFile(null);
                 setSelectedPermitFile(null);
                 setSelectedAdditionalFiles([]);
+                setToastMessage('Your seller application has been submitted successfully!');
+                setToastType('success');
+                setShowToast(true);
+            },
+            onError: (formErrors) => {
+                // Navigate user back to the step that has errors
+                if (formErrors.business_description || formErrors.business_type) {
+                    setCurrentStep(0);
+                } else if (formErrors.id_document_type || formErrors.id_document) {
+                    setCurrentStep(1);
+                } else if (formErrors.business_permit_type || formErrors.business_permit || formErrors.additional_documents) {
+                    setCurrentStep(2);
+                }
+                setToastMessage('Please fix the errors below before submitting.');
+                setToastType('error');
+                setShowToast(true);
             },
         });
     };
@@ -119,6 +161,7 @@ export default function SellerApplicationForm({
     if (hasExistingApplication) {
         return (
             <BuyerLayout title="Seller Application">
+                {showToast && <Toast message={toastMessage} type={toastType} onClose={() => setShowToast(false)} />}
                 <Head title="Apply to Become a Seller" />
                 <div className="mx-auto max-w-4xl p-6">
                     <Card>
@@ -150,13 +193,12 @@ export default function SellerApplicationForm({
                                 <div>
                                     <Label className="text-sm font-medium">Application Status</Label>
                                     <div
-                                        className={`mt-1 inline-flex items-center rounded-full px-3 py-1 text-sm font-medium ${
-                                            existingApplication?.status === 'pending'
+                                        className={`mt-1 inline-flex items-center rounded-full px-3 py-1 text-sm font-medium ${existingApplication?.status === 'pending'
                                                 ? 'bg-yellow-100 text-yellow-800'
                                                 : existingApplication?.status === 'approved'
-                                                  ? 'bg-green-100 text-green-800'
-                                                  : 'bg-red-100 text-red-800'
-                                        }`}
+                                                    ? 'bg-green-100 text-green-800'
+                                                    : 'bg-red-100 text-red-800'
+                                            }`}
                                     >
                                         {existingApplication?.status === 'pending' && 'Under Review'}
                                         {existingApplication?.status === 'approved' && 'Approved'}
@@ -223,6 +265,7 @@ export default function SellerApplicationForm({
     return (
         <BuyerLayout title="Apply to Become a Seller">
             <Head title="Apply to Become a Seller" />
+            {showToast && <Toast message={toastMessage} type={toastType} onClose={() => setShowToast(false)} />}
             <div className="mx-auto max-w-3xl px-4 py-6 sm:px-6">
                 {/* Header */}
                 <div className="mb-6 text-center">
@@ -247,13 +290,12 @@ export default function SellerApplicationForm({
                                         className={`flex flex-col items-center gap-1.5 ${index <= currentStep ? 'cursor-pointer' : 'cursor-not-allowed'}`}
                                     >
                                         <div
-                                            className={`flex h-10 w-10 items-center justify-center rounded-full border-2 transition-all sm:h-12 sm:w-12 ${
-                                                isCompleted
+                                            className={`flex h-10 w-10 items-center justify-center rounded-full border-2 transition-all sm:h-12 sm:w-12 ${isCompleted
                                                     ? 'border-green-500 bg-green-500 text-white'
                                                     : isActive
-                                                      ? 'border-amber-500 bg-amber-50 text-amber-600'
-                                                      : 'border-gray-300 bg-white text-gray-400'
-                                            }`}
+                                                        ? 'border-amber-500 bg-amber-50 text-amber-600'
+                                                        : 'border-gray-300 bg-white text-gray-400'
+                                                }`}
                                         >
                                             {isCompleted ? (
                                                 <CheckCircle className="h-5 w-5 sm:h-6 sm:w-6" />
@@ -262,9 +304,8 @@ export default function SellerApplicationForm({
                                             )}
                                         </div>
                                         <span
-                                            className={`hidden text-xs font-medium sm:block ${
-                                                isActive ? 'text-amber-600' : isCompleted ? 'text-green-600' : 'text-gray-400'
-                                            }`}
+                                            className={`hidden text-xs font-medium sm:block ${isActive ? 'text-amber-600' : isCompleted ? 'text-green-600' : 'text-gray-400'
+                                                }`}
                                         >
                                             {step.title}
                                         </span>
@@ -359,13 +400,12 @@ export default function SellerApplicationForm({
                                         Upload Valid ID <span className="text-red-500">*</span>
                                     </Label>
                                     <div
-                                        className={`rounded-lg border-2 border-dashed p-6 text-center transition-colors ${
-                                            stepErrors.id_document || errors.id_document
+                                        className={`rounded-lg border-2 border-dashed p-6 text-center transition-colors ${stepErrors.id_document || errors.id_document
                                                 ? 'border-red-300 bg-red-50/50'
                                                 : selectedIdFile
-                                                  ? 'border-green-300 bg-green-50/50'
-                                                  : 'border-gray-300 hover:border-amber-300'
-                                        }`}
+                                                    ? 'border-green-300 bg-green-50/50'
+                                                    : 'border-gray-300 hover:border-amber-300'
+                                            }`}
                                     >
                                         <input id="id_document" type="file" accept="image/*,.pdf" onChange={handleIdFileChange} className="hidden" />
                                         <label htmlFor="id_document" className="flex cursor-pointer flex-col items-center gap-2">
@@ -427,9 +467,8 @@ export default function SellerApplicationForm({
                                     <div className="space-y-2">
                                         <Label htmlFor="business_permit">Upload Business Permit / Registration</Label>
                                         <div
-                                            className={`rounded-lg border-2 border-dashed p-6 text-center transition-colors ${
-                                                selectedPermitFile ? 'border-green-300 bg-green-50/50' : 'border-gray-300 hover:border-amber-300'
-                                            }`}
+                                            className={`rounded-lg border-2 border-dashed p-6 text-center transition-colors ${selectedPermitFile ? 'border-green-300 bg-green-50/50' : 'border-gray-300 hover:border-amber-300'
+                                                }`}
                                         >
                                             <input
                                                 id="business_permit"
@@ -462,11 +501,10 @@ export default function SellerApplicationForm({
                                     <div className="space-y-2">
                                         <Label htmlFor="additional_documents">Additional Supporting Documents</Label>
                                         <div
-                                            className={`rounded-lg border-2 border-dashed p-6 text-center transition-colors ${
-                                                selectedAdditionalFiles.length > 0
+                                            className={`rounded-lg border-2 border-dashed p-6 text-center transition-colors ${selectedAdditionalFiles.length > 0
                                                     ? 'border-green-300 bg-green-50/50'
                                                     : 'border-gray-300 hover:border-amber-300'
-                                            }`}
+                                                }`}
                                         >
                                             <input
                                                 id="additional_documents"
@@ -612,6 +650,21 @@ export default function SellerApplicationForm({
                                     </button>
                                 </CardContent>
                             </Card>
+
+                            {/* Server-side validation error banner */}
+                            {Object.keys(errors).length > 0 && (
+                                <Alert className="border-red-200 bg-red-50">
+                                    <AlertCircle className="h-4 w-4 text-red-500" />
+                                    <AlertDescription className="text-red-700">
+                                        <p className="mb-2 font-medium">Please fix the following errors:</p>
+                                        <ul className="list-inside list-disc space-y-1 text-sm">
+                                            {Object.entries(errors).map(([field, message]) => (
+                                                <li key={field}>{message}</li>
+                                            ))}
+                                        </ul>
+                                    </AlertDescription>
+                                </Alert>
+                            )}
 
                             <Alert>
                                 <AlertCircle className="h-4 w-4" />
