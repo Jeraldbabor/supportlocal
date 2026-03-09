@@ -203,7 +203,7 @@ export default function SellerApplicationsIndex({ applications }: SellerApplicat
                                                         <User className="h-4 w-4 text-gray-400" />
                                                         <span className="font-medium text-gray-900">{application.user.name}</span>
                                                     </div>
-                                                    <span className="break-all text-sm text-gray-500">{application.user.email}</span>
+                                                    <span className="text-sm break-all text-gray-500">{application.user.email}</span>
                                                     {getStatusBadge(application.status)}
                                                 </div>
 

@@ -1,0 +1,5 @@
+
+> format:check
+> prettier --check resources/ --ignore-path .prettierignore
+
+Checking formatting...

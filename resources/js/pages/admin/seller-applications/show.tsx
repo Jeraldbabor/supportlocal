@@ -204,8 +204,8 @@ export default function SellerApplicationShow({ application }: SellerApplication
                                     <div>
                                         <Label className="text-sm font-medium text-gray-600">Email Address</Label>
                                         <div className="flex items-center gap-2">
-                                            <Mail className="flex-shrink-0 h-4 w-4 text-gray-400" />
-                                            <p className="break-all font-medium text-sm sm:text-base">{application.user.email}</p>
+                                            <Mail className="h-4 w-4 flex-shrink-0 text-gray-400" />
+                                            <p className="text-sm font-medium break-all sm:text-base">{application.user.email}</p>
                                         </div>
                                     </div>
                                 </div>
@@ -296,7 +296,12 @@ export default function SellerApplicationShow({ application }: SellerApplication
                                                     Preview
                                                 </Button>
                                             )}
-                                            <Button variant="outline" size="sm" className="w-full sm:w-auto" onClick={() => window.open(getDownloadUrl('id_document'))}>
+                                            <Button
+                                                variant="outline"
+                                                size="sm"
+                                                className="w-full sm:w-auto"
+                                                onClick={() => window.open(getDownloadUrl('id_document'))}
+                                            >
                                                 <Download className="mr-2 h-4 w-4" />
                                                 Download
                                             </Button>
@@ -356,7 +361,12 @@ export default function SellerApplicationShow({ application }: SellerApplication
                                                         Preview
                                                     </Button>
                                                 )}
-                                                <Button variant="outline" size="sm" className="w-full sm:w-auto" onClick={() => window.open(getDownloadUrl('business_permit'))}>
+                                                <Button
+                                                    variant="outline"
+                                                    size="sm"
+                                                    className="w-full sm:w-auto"
+                                                    onClick={() => window.open(getDownloadUrl('business_permit'))}
+                                                >
                                                     <Download className="mr-2 h-4 w-4" />
                                                     Download
                                                 </Button>
@@ -384,7 +394,7 @@ export default function SellerApplicationShow({ application }: SellerApplication
                                                     <div className="flex flex-col items-start gap-4 sm:flex-row sm:justify-between">
                                                         <div className="w-full sm:flex-1">
                                                             <h5 className="text-sm font-medium">Document {index + 1}</h5>
-                                                            <p className="break-all text-xs text-gray-500">{docPath.split('/').pop()}</p>
+                                                            <p className="text-xs break-all text-gray-500">{docPath.split('/').pop()}</p>
 
                                                             {/* Image Preview */}
                                                             {isImageFile(docPath) && (
