@@ -100,7 +100,7 @@ export default function SellerApplicationsIndex({ applications }: SellerApplicat
         <AppLayout>
             <Head title="Seller Applications" />
 
-            <div className="space-y-6 p-6">
+            <div className="space-y-6 p-4 sm:p-6">
                 {/* Header */}
                 <div className="flex items-center justify-between">
                     <div>
@@ -196,14 +196,14 @@ export default function SellerApplicationsIndex({ applications }: SellerApplicat
                             <div className="space-y-4">
                                 {filteredApplications.map((application) => (
                                     <div key={application.id} className="rounded-lg border p-4 transition-colors hover:bg-gray-50">
-                                        <div className="flex items-center justify-between">
+                                        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                                             <div className="flex-1">
-                                                <div className="mb-2 flex items-center gap-3">
+                                                <div className="mb-2 flex flex-wrap items-center gap-2 sm:gap-3">
                                                     <div className="flex items-center gap-2">
                                                         <User className="h-4 w-4 text-gray-400" />
                                                         <span className="font-medium text-gray-900">{application.user.name}</span>
                                                     </div>
-                                                    <span className="text-sm text-gray-500">{application.user.email}</span>
+                                                    <span className="text-sm break-all text-gray-500">{application.user.email}</span>
                                                     {getStatusBadge(application.status)}
                                                 </div>
 
@@ -234,9 +234,9 @@ export default function SellerApplicationsIndex({ applications }: SellerApplicat
                                                 )}
                                             </div>
 
-                                            <div className="ml-4">
-                                                <Link href={`/admin/seller-applications/${application.id}`}>
-                                                    <Button variant="outline" size="sm">
+                                            <div className="mt-2 w-full sm:mt-0 sm:ml-4 sm:w-auto">
+                                                <Link href={`/admin/seller-applications/${application.id}`} className="block w-full">
+                                                    <Button variant="outline" size="sm" className="w-full sm:w-auto">
                                                         <Eye className="mr-2 h-4 w-4" />
                                                         Review
                                                     </Button>

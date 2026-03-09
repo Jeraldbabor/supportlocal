@@ -166,10 +166,10 @@ export default function SellerApplicationShow({ application }: SellerApplication
         <AppLayout>
             <Head title={`Seller Application - ${application.user.name}`} />
 
-            <div className="mx-auto max-w-6xl space-y-6 p-6">
+            <div className="mx-auto max-w-6xl space-y-6 p-4 sm:p-6">
                 {/* Header */}
-                <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4">
+                <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:justify-between">
+                    <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center">
                         <Link href="/admin/seller-applications">
                             <Button variant="outline" size="sm">
                                 <ArrowLeft className="mr-2 h-4 w-4" />
@@ -177,7 +177,7 @@ export default function SellerApplicationShow({ application }: SellerApplication
                             </Button>
                         </Link>
                         <div>
-                            <h1 className="text-3xl font-bold text-gray-900">Seller Application #{application.id}</h1>
+                            <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl">Seller Application #{application.id}</h1>
                             <p className="mt-1 text-gray-600">Review and take action on this application</p>
                         </div>
                     </div>
@@ -204,8 +204,8 @@ export default function SellerApplicationShow({ application }: SellerApplication
                                     <div>
                                         <Label className="text-sm font-medium text-gray-600">Email Address</Label>
                                         <div className="flex items-center gap-2">
-                                            <Mail className="h-4 w-4 text-gray-400" />
-                                            <p className="font-medium">{application.user.email}</p>
+                                            <Mail className="h-4 w-4 flex-shrink-0 text-gray-400" />
+                                            <p className="text-sm font-medium break-all sm:text-base">{application.user.email}</p>
                                         </div>
                                     </div>
                                 </div>
@@ -260,8 +260,8 @@ export default function SellerApplicationShow({ application }: SellerApplication
                             <CardContent className="space-y-4">
                                 {/* ID Document */}
                                 <div className="rounded-lg border p-4">
-                                    <div className="flex items-start justify-between gap-4">
-                                        <div className="flex-1">
+                                    <div className="flex flex-col items-start gap-4 sm:flex-row sm:justify-between">
+                                        <div className="w-full sm:flex-1">
                                             <h4 className="font-medium">Valid ID Document</h4>
                                             <p className="text-sm text-gray-600">Type: {getIdTypeDisplay(application.id_document_type)}</p>
 
@@ -284,18 +284,24 @@ export default function SellerApplicationShow({ application }: SellerApplication
                                                 </div>
                                             )}
                                         </div>
-                                        <div className="flex flex-col gap-2">
+                                        <div className="flex w-full flex-col gap-2 sm:w-auto">
                                             {isImageFile(application.id_document_path) && (
                                                 <Button
                                                     variant="outline"
                                                     size="sm"
+                                                    className="w-full sm:w-auto"
                                                     onClick={() => setPreviewImage({ url: getPreviewUrl('id_document'), title: 'Valid ID Document' })}
                                                 >
                                                     <ZoomIn className="mr-2 h-4 w-4" />
                                                     Preview
                                                 </Button>
                                             )}
-                                            <Button variant="outline" size="sm" onClick={() => window.open(getDownloadUrl('id_document'))}>
+                                            <Button
+                                                variant="outline"
+                                                size="sm"
+                                                className="w-full sm:w-auto"
+                                                onClick={() => window.open(getDownloadUrl('id_document'))}
+                                            >
                                                 <Download className="mr-2 h-4 w-4" />
                                                 Download
                                             </Button>
@@ -306,8 +312,8 @@ export default function SellerApplicationShow({ application }: SellerApplication
                                 {/* Business Permit Document */}
                                 {application.business_permit_path && (
                                     <div className="rounded-lg border p-4">
-                                        <div className="flex items-start justify-between gap-4">
-                                            <div className="flex-1">
+                                        <div className="flex flex-col items-start gap-4 sm:flex-row sm:justify-between">
+                                            <div className="w-full sm:flex-1">
                                                 <h4 className="font-medium">Business Permit / Registration</h4>
                                                 <p className="text-sm text-gray-600">
                                                     Type:{' '}
@@ -338,11 +344,12 @@ export default function SellerApplicationShow({ application }: SellerApplication
                                                     </div>
                                                 )}
                                             </div>
-                                            <div className="flex flex-col gap-2">
+                                            <div className="flex w-full flex-col gap-2 sm:w-auto">
                                                 {isImageFile(application.business_permit_path) && (
                                                     <Button
                                                         variant="outline"
                                                         size="sm"
+                                                        className="w-full sm:w-auto"
                                                         onClick={() =>
                                                             setPreviewImage({
                                                                 url: getPreviewUrl('business_permit'),
@@ -354,7 +361,12 @@ export default function SellerApplicationShow({ application }: SellerApplication
                                                         Preview
                                                     </Button>
                                                 )}
-                                                <Button variant="outline" size="sm" onClick={() => window.open(getDownloadUrl('business_permit'))}>
+                                                <Button
+                                                    variant="outline"
+                                                    size="sm"
+                                                    className="w-full sm:w-auto"
+                                                    onClick={() => window.open(getDownloadUrl('business_permit'))}
+                                                >
                                                     <Download className="mr-2 h-4 w-4" />
                                                     Download
                                                 </Button>
@@ -379,10 +391,10 @@ export default function SellerApplicationShow({ application }: SellerApplication
                                         <div className="space-y-3">
                                             {application.additional_documents_path.map((docPath, index) => (
                                                 <div key={index} className="rounded-lg border p-4">
-                                                    <div className="flex items-start justify-between gap-4">
-                                                        <div className="flex-1">
+                                                    <div className="flex flex-col items-start gap-4 sm:flex-row sm:justify-between">
+                                                        <div className="w-full sm:flex-1">
                                                             <h5 className="text-sm font-medium">Document {index + 1}</h5>
-                                                            <p className="text-xs text-gray-500">{docPath.split('/').pop()}</p>
+                                                            <p className="text-xs break-all text-gray-500">{docPath.split('/').pop()}</p>
 
                                                             {/* Image Preview */}
                                                             {isImageFile(docPath) && (
@@ -406,11 +418,12 @@ export default function SellerApplicationShow({ application }: SellerApplication
                                                                 </div>
                                                             )}
                                                         </div>
-                                                        <div className="flex flex-col gap-2">
+                                                        <div className="flex w-full flex-col gap-2 sm:w-auto">
                                                             {isImageFile(docPath) && (
                                                                 <Button
                                                                     variant="outline"
                                                                     size="sm"
+                                                                    className="w-full sm:w-auto"
                                                                     onClick={() =>
                                                                         setPreviewImage({
                                                                             url: getPreviewUrl('additional_documents', index),
@@ -425,6 +438,7 @@ export default function SellerApplicationShow({ application }: SellerApplication
                                                             <Button
                                                                 variant="outline"
                                                                 size="sm"
+                                                                className="w-full sm:w-auto"
                                                                 onClick={() => window.open(getDownloadUrl('additional_documents', index))}
                                                             >
                                                                 <Download className="mr-2 h-4 w-4" />
