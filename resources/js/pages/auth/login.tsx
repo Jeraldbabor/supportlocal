@@ -51,13 +51,7 @@ export default function Login({ status, canResetPassword, sellerCount, featuredA
                 </div>
             )}
 
-            <Form
-                action="/login"
-                method="post"
-                resetOnSuccess={['password']}
-                options={{ replace: true }}
-                className="space-y-4"
-            >
+            <Form action="/login" method="post" resetOnSuccess={['password']} options={{ replace: true }} className="space-y-4">
                 {({ processing, errors }) => (
                     <>
                         <div className="space-y-3">
