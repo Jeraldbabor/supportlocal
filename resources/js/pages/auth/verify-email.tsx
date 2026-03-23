@@ -141,6 +141,7 @@ export default function VerifyEmail({ status, sellerCount, featuredArtisans, coo
                                     href="/logout"
                                     method="post"
                                     as="button"
+                                    replace
                                     className="text-sm font-medium text-gray-600 transition-colors hover:text-gray-900 hover:underline dark:text-gray-400 dark:hover:text-gray-200"
                                 >
                                     Cancel and return to home

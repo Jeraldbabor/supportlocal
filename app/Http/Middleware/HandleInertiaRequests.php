@@ -4,9 +4,11 @@ namespace App\Http\Middleware;
 
 use App\Helpers\WishlistHelper;
 use App\Models\Setting;
+use Closure;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
+use Symfony\Component\HttpFoundation\Response;
 
 class HandleInertiaRequests extends Middleware
 {
@@ -18,6 +20,20 @@ class HandleInertiaRequests extends Middleware
      * @var string
      */
     protected $rootView = 'app';
+
+    /**
+     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
+     */
+    public function handle(Request $request, Closure $next): Response
+    {
+        $response = parent::handle($request, $next);
+
+        if ($request->user()) {
+            $response->headers->set('Cache-Control', 'no-store, private, must-revalidate');
+        }
+
+        return $response;
+    }
 
     /**
      * Determines the current asset version.

@@ -84,6 +84,7 @@ export default function GuestCheckout() {
                                     {/* Sign In Button */}
                                     <Link
                                         href="/login"
+                                        replace
                                         className="flex w-full items-center justify-center gap-3 rounded-lg bg-gradient-to-r from-amber-600 via-amber-700 to-orange-600 px-6 py-4 font-semibold text-white shadow-lg transition-all hover:scale-[1.02] hover:from-amber-700 hover:via-amber-800 hover:to-orange-700 hover:shadow-xl active:scale-[0.98]"
                                     >
                                         <LogIn className="h-5 w-5" />

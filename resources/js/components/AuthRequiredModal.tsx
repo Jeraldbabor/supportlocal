@@ -12,7 +12,7 @@ export default function AuthRequiredModal({ isOpen, onClose, action, productName
     if (!isOpen) return null;
 
     const handleLogin = () => {
-        router.visit('/login');
+        router.visit('/login', { replace: true });
     };
 
     const handleRegister = () => {

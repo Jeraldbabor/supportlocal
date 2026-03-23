@@ -50,7 +50,7 @@ export default function MainLayout({ children, title }: MainLayoutProps) {
     }, [totalItems, currentPath]);
 
     const handleLogout = () => {
-        router.post('/logout');
+        router.post('/logout', {}, { replace: true });
     };
 
     const handleCartClick = () => {
@@ -300,6 +300,7 @@ export default function MainLayout({ children, title }: MainLayoutProps) {
                                 <div className="hidden items-center gap-1.5 sm:gap-2 md:flex">
                                     <Link
                                         href="/login"
+                                        replace
                                         className="rounded-xl px-2 py-1.5 text-xs font-medium text-gray-700 transition-all duration-300 hover:bg-gray-50 hover:text-orange-600 focus:ring-2 focus:ring-orange-500/50 focus:ring-offset-2 focus:outline-none sm:px-3 sm:py-2 sm:text-sm lg:px-4"
                                     >
                                         Log in
@@ -408,6 +409,7 @@ export default function MainLayout({ children, title }: MainLayoutProps) {
                                     <div className="space-y-3">
                                         <Link
                                             href="/login"
+                                            replace
                                             className="flex items-center justify-center rounded-xl px-4 py-3 text-gray-700 transition-all duration-300 hover:bg-gray-50 hover:text-orange-600"
                                             onClick={() => setIsMenuOpen(false)}
                                         >
