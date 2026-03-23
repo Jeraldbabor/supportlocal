@@ -108,6 +108,7 @@ export default function Welcome() {
                                 <>
                                     <Link
                                         href={login.url()}
+                                        replace
                                         className="rounded-full px-5 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100"
                                     >
                                         Log in
@@ -396,6 +397,7 @@ export default function Welcome() {
                                     </Link>
                                     <Link
                                         href={login.url()}
+                                        replace
                                         className="inline-flex items-center gap-2 rounded-full border-2 border-white/50 px-8 py-4 text-lg font-semibold text-white transition-all hover:border-white hover:bg-white/10"
                                     >
                                         Sign In

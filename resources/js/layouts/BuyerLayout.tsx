@@ -49,7 +49,7 @@ function BuyerLayoutContent({ children, title }: BuyerLayoutProps) {
     const currentPath = usePage().url;
 
     const handleLogout = () => {
-        router.post('/logout');
+        router.post('/logout', {}, { replace: true });
     };
 
     useEffect(() => {

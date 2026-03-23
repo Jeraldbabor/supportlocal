@@ -28,7 +28,7 @@ export default function Register({ sellerCount, featuredArtisans, registrationEn
     const guestCart = typeof window !== 'undefined' ? localStorage.getItem('guest_cart') : null;
 
     // Route for form submission
-    const formProps = { action: '/register', method: 'post' as const };
+    const formProps = { action: '/register', method: 'post' as const, options: { replace: true } };
 
     // If registration is disabled, show a notice
     if (!registrationEnabled) {
@@ -54,6 +54,7 @@ export default function Register({ sellerCount, featuredArtisans, registrationEn
                         <div className="flex flex-col gap-2">
                             <TextLink
                                 href={login.url()}
+                                replace
                                 className="inline-flex h-10 w-full items-center justify-center rounded-lg bg-gradient-to-r from-amber-600 to-orange-600 px-4 py-2 text-sm font-semibold text-white shadow-lg transition-all duration-300 hover:scale-[1.02] hover:from-amber-700 hover:to-orange-700 hover:shadow-xl"
                             >
                                 Sign in to existing account
@@ -300,6 +301,7 @@ export default function Register({ sellerCount, featuredArtisans, registrationEn
                             <div className="text-center">
                                 <TextLink
                                     href={login.url()}
+                                    replace
                                     tabIndex={6}
                                     className="inline-flex h-9 w-full items-center justify-center rounded-lg border-2 border-amber-200 bg-gradient-to-r from-amber-50 to-orange-50 px-4 py-2 text-sm font-semibold text-amber-700 shadow-sm transition-all duration-300 hover:scale-[1.02] hover:border-amber-300 hover:from-amber-100 hover:to-orange-100 hover:shadow-md active:scale-[0.98] dark:border-amber-700 dark:from-amber-900/20 dark:to-orange-900/20 dark:text-amber-400 dark:hover:from-amber-900/30 dark:hover:to-orange-900/30"
                                 >

@@ -83,6 +83,7 @@ export function UserMenuContent({ user }: UserMenuContentProps) {
                     href="/logout"
                     as="button"
                     method="post"
+                    replace
                     onClick={handleLogout}
                     data-test="logout-button"
                 >

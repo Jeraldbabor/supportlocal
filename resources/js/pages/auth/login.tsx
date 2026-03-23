@@ -5,9 +5,9 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import AuthLayout from '@/layouts/auth-layout';
-import { Form, Head } from '@inertiajs/react';
+import { Form, Head, router } from '@inertiajs/react';
 import { Eye, EyeOff, LoaderCircle, Lock, Mail } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 // Simple password reset route helper
 const passwordRequestRoute = () => '/forgot-password';
@@ -26,6 +26,16 @@ interface LoginProps {
 export default function Login({ status, canResetPassword, sellerCount, featuredArtisans }: LoginProps) {
     const [showPassword, setShowPassword] = useState(false);
 
+    useEffect(() => {
+        const onPageShow = (e: PageTransitionEvent) => {
+            if (e.persisted) {
+                router.reload({ replace: true });
+            }
+        };
+        window.addEventListener('pageshow', onPageShow);
+        return () => window.removeEventListener('pageshow', onPageShow);
+    }, []);
+
     return (
         <AuthLayout
             title="Welcome back"
@@ -41,7 +51,13 @@ export default function Login({ status, canResetPassword, sellerCount, featuredA
                 </div>
             )}
 
-            <Form action="/login" method="post" resetOnSuccess={['password']} className="space-y-4">
+            <Form
+                action="/login"
+                method="post"
+                resetOnSuccess={['password']}
+                options={{ replace: true }}
+                className="space-y-4"
+            >
                 {({ processing, errors }) => (
                     <>
                         <div className="space-y-3">

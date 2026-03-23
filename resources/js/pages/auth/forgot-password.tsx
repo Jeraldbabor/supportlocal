@@ -82,6 +82,7 @@ export default function ForgotPassword({ status, sellerCount, featuredArtisans }
                             <span>Remember your password? </span>
                             <TextLink
                                 href="/login"
+                                replace
                                 className="font-medium text-amber-700 transition-colors hover:text-amber-800 hover:underline dark:text-amber-400 dark:hover:text-amber-300"
                             >
                                 Back to login

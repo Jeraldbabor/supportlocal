@@ -251,6 +251,7 @@ export default function About({ artisans = [], pageContents = {} }: AboutProps) 
                     <div className="flex flex-col justify-center gap-4 sm:flex-row">
                         <Link
                             href="/login"
+                            replace
                             className="rounded-lg bg-primary px-8 py-3 text-center font-semibold text-white transition-colors duration-200 hover:bg-primary/90"
                         >
                             Become an Artisan
