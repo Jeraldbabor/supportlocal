@@ -88,8 +88,6 @@ export default function Orders({ orders }: OrdersProps) {
             reloadTimeout = setTimeout(() => {
                 router.reload({
                     only: ['orders'],
-                    preserveState: true,
-                    preserveScroll: true,
                 });
             }, 250);
         };
@@ -100,12 +98,15 @@ export default function Orders({ orders }: OrdersProps) {
             }
         });
 
-        channel.listen('.Illuminate\\Notifications\\Events\\BroadcastNotificationCreated', (event: { order_id?: number; data?: { order_id?: number } }) => {
-            const orderId = event?.order_id ?? event?.data?.order_id;
-            if (orderId) {
-                refreshOrders();
-            }
-        });
+        channel.listen(
+            '.Illuminate\\Notifications\\Events\\BroadcastNotificationCreated',
+            (event: { order_id?: number; data?: { order_id?: number } }) => {
+                const orderId = event?.order_id ?? event?.data?.order_id;
+                if (orderId) {
+                    refreshOrders();
+                }
+            },
+        );
 
         return () => {
             if (reloadTimeout) {
