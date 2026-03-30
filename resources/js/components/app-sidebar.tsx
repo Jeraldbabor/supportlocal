@@ -200,14 +200,14 @@ function getRoleNavItems(userRole?: string, badges?: BadgeCounts): NavItem[] {
 export function AppSidebar() {
     // Get user data from the page props - this ensures session is maintained
     const { auth, newContactMessagesCount, unreadMarketplaceCount, unreadBidNotificationsCount, unreadBidReceivedCount } = usePage<
-        SharedData & {
+        (SharedData & {
             newContactMessagesCount?: number;
             unreadMarketplaceCount?: number;
             unreadBidNotificationsCount?: number;
             unreadBidReceivedCount?: number;
-        }
+        }) & { auth?: SharedData['auth'] }
     >().props;
-    const user = auth.user;
+    const user = auth?.user;
     const [unreadMessagesCount, setUnreadMessagesCount] = useState(0);
     // Track navigation to force re-subscription of Echo channels
     const [navigationCount, setNavigationCount] = useState(0);

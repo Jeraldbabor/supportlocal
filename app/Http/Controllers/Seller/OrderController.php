@@ -109,15 +109,25 @@ class OrderController extends Controller
 
             DB::commit();
 
-            // Notify buyer (outside transaction so order confirmation succeeds even if notification fails)
-            try {
-                $order->buyer->notify(new OrderStatusUpdated($order, 'Your order has been confirmed by the seller'));
-            } catch (\Exception $notificationException) {
-                \Log::warning('Order confirmation notification failed', [
-                    'order_id' => $order->id,
-                    'buyer_id' => $order->buyer->id ?? null,
-                    'error' => $notificationException->getMessage(),
-                ]);
+            // Notify buyer after response so confirmation API returns faster.
+            $orderId = $order->id;
+            $buyerId = $order->buyer->id ?? null;
+            if ($buyerId) {
+                dispatch(function () use ($orderId, $buyerId) {
+                    try {
+                        $freshOrder = Order::with(['orderItems.product', 'seller', 'buyer'])->find($orderId);
+                        $buyer = \App\Models\User::find($buyerId);
+                        if ($freshOrder && $buyer) {
+                            $buyer->notify(new OrderStatusUpdated($freshOrder, 'Your order has been confirmed by the seller'));
+                        }
+                    } catch (\Throwable $notificationException) {
+                        \Log::warning('Order confirmation notification failed', [
+                            'order_id' => $orderId,
+                            'buyer_id' => $buyerId,
+                            'error' => $notificationException->getMessage(),
+                        ]);
+                    }
+                })->afterResponse();
             }
 
             return response()->json([
@@ -189,19 +199,29 @@ class OrderController extends Controller
                 'cancelled_at' => now(),
             ]);
 
-            // Notify buyer (in try-catch so order rejection succeeds even if notification fails)
             $reason = $request->input('rejection_reason') ?
                 "Your order has been cancelled. Reason: {$request->input('rejection_reason')}" :
                 'Your order has been cancelled by the seller';
 
-            try {
-                $order->buyer->notify(new OrderStatusUpdated($order, $reason));
-            } catch (\Exception $notificationException) {
-                \Log::warning('Order rejection notification failed', [
-                    'order_id' => $order->id,
-                    'buyer_id' => $order->buyer->id ?? null,
-                    'error' => $notificationException->getMessage(),
-                ]);
+            // Notify buyer after response so cancellation API returns faster.
+            $orderId = $order->id;
+            $buyerId = $order->buyer->id ?? null;
+            if ($buyerId) {
+                dispatch(function () use ($orderId, $buyerId, $reason) {
+                    try {
+                        $freshOrder = Order::with(['orderItems.product', 'seller', 'buyer'])->find($orderId);
+                        $buyer = \App\Models\User::find($buyerId);
+                        if ($freshOrder && $buyer) {
+                            $buyer->notify(new OrderStatusUpdated($freshOrder, $reason));
+                        }
+                    } catch (\Throwable $notificationException) {
+                        \Log::warning('Order rejection notification failed', [
+                            'order_id' => $orderId,
+                            'buyer_id' => $buyerId,
+                            'error' => $notificationException->getMessage(),
+                        ]);
+                    }
+                })->afterResponse();
             }
 
             return response()->json([
@@ -252,16 +272,27 @@ class OrderController extends Controller
                 'shipped_at' => now(),
             ]);
 
-            // Notify buyer (in try-catch so shipping update succeeds even if notification fails)
             $shippingProviderName = $request->input('shipping_provider') === Order::SHIPPING_JT_EXPRESS ? 'J&T Express' : 'Other';
-            try {
-                $order->buyer->notify(new OrderStatusUpdated($order, "Your order has been shipped via {$shippingProviderName}. Tracking Number: {$request->input('tracking_number')}"));
-            } catch (\Exception $notificationException) {
-                \Log::warning('Order shipping notification failed', [
-                    'order_id' => $order->id,
-                    'buyer_id' => $order->buyer->id ?? null,
-                    'error' => $notificationException->getMessage(),
-                ]);
+            // Notify buyer after response so shipping API returns faster.
+            $shippingMessage = "Your order has been shipped via {$shippingProviderName}. Tracking Number: {$request->input('tracking_number')}";
+            $orderId = $order->id;
+            $buyerId = $order->buyer->id ?? null;
+            if ($buyerId) {
+                dispatch(function () use ($orderId, $buyerId, $shippingMessage) {
+                    try {
+                        $freshOrder = Order::with(['orderItems.product', 'seller', 'buyer'])->find($orderId);
+                        $buyer = \App\Models\User::find($buyerId);
+                        if ($freshOrder && $buyer) {
+                            $buyer->notify(new OrderStatusUpdated($freshOrder, $shippingMessage));
+                        }
+                    } catch (\Throwable $notificationException) {
+                        \Log::warning('Order shipping notification failed', [
+                            'order_id' => $orderId,
+                            'buyer_id' => $buyerId,
+                            'error' => $notificationException->getMessage(),
+                        ]);
+                    }
+                })->afterResponse();
             }
 
             return response()->json([
@@ -306,15 +337,25 @@ class OrderController extends Controller
             // Calculate and apply admin commission
             $commissionDetails = $order->calculateCommission();
 
-            // Notify buyer (in try-catch so completion succeeds even if notification fails)
-            try {
-                $order->buyer->notify(new OrderStatusUpdated($order, 'Your order has been completed and delivered'));
-            } catch (\Exception $notificationException) {
-                \Log::warning('Order completion notification failed', [
-                    'order_id' => $order->id,
-                    'buyer_id' => $order->buyer->id ?? null,
-                    'error' => $notificationException->getMessage(),
-                ]);
+            // Notify buyer after response so completion API returns faster.
+            $orderId = $order->id;
+            $buyerId = $order->buyer->id ?? null;
+            if ($buyerId) {
+                dispatch(function () use ($orderId, $buyerId) {
+                    try {
+                        $freshOrder = Order::with(['orderItems.product', 'seller', 'buyer'])->find($orderId);
+                        $buyer = \App\Models\User::find($buyerId);
+                        if ($freshOrder && $buyer) {
+                            $buyer->notify(new OrderStatusUpdated($freshOrder, 'Your order has been completed and delivered'));
+                        }
+                    } catch (\Throwable $notificationException) {
+                        \Log::warning('Order completion notification failed', [
+                            'order_id' => $orderId,
+                            'buyer_id' => $buyerId,
+                            'error' => $notificationException->getMessage(),
+                        ]);
+                    }
+                })->afterResponse();
             }
 
             return response()->json([
@@ -361,15 +402,25 @@ class OrderController extends Controller
                 'payment_verified_at' => now(),
             ]);
 
-            // Notify buyer (in try-catch so payment verification succeeds even if notification fails)
-            try {
-                $order->buyer->notify(new PaymentVerified($order));
-            } catch (\Exception $notificationException) {
-                \Log::warning('Payment verification notification failed', [
-                    'order_id' => $order->id,
-                    'buyer_id' => $order->buyer->id ?? null,
-                    'error' => $notificationException->getMessage(),
-                ]);
+            // Notify buyer after response so verification API returns faster.
+            $orderId = $order->id;
+            $buyerId = $order->buyer->id ?? null;
+            if ($buyerId) {
+                dispatch(function () use ($orderId, $buyerId) {
+                    try {
+                        $freshOrder = Order::with(['orderItems.product', 'seller', 'buyer'])->find($orderId);
+                        $buyer = \App\Models\User::find($buyerId);
+                        if ($freshOrder && $buyer) {
+                            $buyer->notify(new PaymentVerified($freshOrder));
+                        }
+                    } catch (\Throwable $notificationException) {
+                        \Log::warning('Payment verification notification failed', [
+                            'order_id' => $orderId,
+                            'buyer_id' => $buyerId,
+                            'error' => $notificationException->getMessage(),
+                        ]);
+                    }
+                })->afterResponse();
             }
 
             return response()->json([
@@ -422,15 +473,26 @@ class OrderController extends Controller
                 'payment_verified_at' => null,
             ]);
 
-            // Notify buyer (in try-catch so payment rejection succeeds even if notification fails)
-            try {
-                $order->buyer->notify(new PaymentRejected($order, $request->input('payment_verification_notes')));
-            } catch (\Exception $notificationException) {
-                \Log::warning('Payment rejection notification failed', [
-                    'order_id' => $order->id,
-                    'buyer_id' => $order->buyer->id ?? null,
-                    'error' => $notificationException->getMessage(),
-                ]);
+            // Notify buyer after response so rejection API returns faster.
+            $rejectionNotes = $request->input('payment_verification_notes');
+            $orderId = $order->id;
+            $buyerId = $order->buyer->id ?? null;
+            if ($buyerId) {
+                dispatch(function () use ($orderId, $buyerId, $rejectionNotes) {
+                    try {
+                        $freshOrder = Order::with(['orderItems.product', 'seller', 'buyer'])->find($orderId);
+                        $buyer = \App\Models\User::find($buyerId);
+                        if ($freshOrder && $buyer) {
+                            $buyer->notify(new PaymentRejected($freshOrder, $rejectionNotes));
+                        }
+                    } catch (\Throwable $notificationException) {
+                        \Log::warning('Payment rejection notification failed', [
+                            'order_id' => $orderId,
+                            'buyer_id' => $buyerId,
+                            'error' => $notificationException->getMessage(),
+                        ]);
+                    }
+                })->afterResponse();
             }
 
             return response()->json([

@@ -57,6 +57,7 @@ export default function BuyerChatModal({ conversationId, currentUserId, onClose,
     const [isOtherUserTyping, setIsOtherUserTyping] = useState(false);
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+    const typingActiveRef = useRef(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const scrollToBottom = () => {
@@ -92,6 +93,11 @@ export default function BuyerChatModal({ conversationId, currentUserId, onClose,
 
         window.Echo.private(`conversation.${conversationId}`)
             .listen('.message.sent', (e: { message: Message }) => {
+                // A real incoming message means typing indicator should be cleared.
+                if (e.message.sender_id !== currentUserId) {
+                    setIsOtherUserTyping(false);
+                }
+
                 setMessages((prev) => {
                     const exists = prev.some((msg) => msg.id === e.message.id);
                     return exists ? prev : [...prev, e.message];
@@ -160,31 +166,60 @@ export default function BuyerChatModal({ conversationId, currentUserId, onClose,
     const sendMessage = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        if (!newMessage.trim() && !selectedImage) return;
+        const messageText = newMessage.trim();
+        const imageFile = selectedImage;
+        const imagePreviewUrl = imagePreview;
+
+        if (!messageText && !imageFile) return;
+
+        const temporaryMessageId = -Date.now();
+        const optimisticMessage: Message = {
+            id: temporaryMessageId,
+            conversation_id: conversationId,
+            sender_id: currentUserId,
+            message: messageText,
+            image_url: imagePreviewUrl ?? undefined,
+            is_read: true,
+            created_at: new Date().toISOString(),
+            sender: {
+                id: currentUserId,
+                name: 'You',
+                avatar_url: undefined,
+            },
+        };
+
+        // Optimistic UI: show message instantly while request is in flight
+        setMessages((prev) => [...prev, optimisticMessage]);
+        setNewMessage('');
+        clearImageSelection();
 
         setIsLoading(true);
         try {
             const formData = new FormData();
-            if (newMessage.trim()) {
-                formData.append('message', newMessage);
+            if (messageText) {
+                formData.append('message', messageText);
             }
-            if (selectedImage) {
-                formData.append('image', selectedImage);
+            if (imageFile) {
+                formData.append('image', imageFile);
             }
 
-            const response = await postWithCsrf(`/chat/conversation/${conversationId}/message`, formData, { maxRetries: 2 });
+            const response = await postWithCsrf(`/chat/conversation/${conversationId}/message`, formData, { maxRetries: 1 });
 
             if (response.ok) {
                 const data = await response.json();
                 setMessages((prev) => {
-                    // Avoid duplicates if WebSocket already added this message
-                    const exists = prev.some((msg) => msg.id === data.message.id);
-                    return exists ? prev : [...prev, data.message];
+                    // Replace temp message with real message and avoid duplicates from Echo
+                    const withoutTemp = prev.filter((msg) => msg.id !== temporaryMessageId);
+                    const exists = withoutTemp.some((msg) => msg.id === data.message.id);
+                    return exists ? withoutTemp : [...withoutTemp, data.message];
                 });
-                setNewMessage('');
-                clearImageSelection();
+            } else {
+                setMessages((prev) => prev.filter((msg) => msg.id !== temporaryMessageId));
+                setNewMessage(messageText);
             }
         } catch (error) {
+            setMessages((prev) => prev.filter((msg) => msg.id !== temporaryMessageId));
+            setNewMessage(messageText);
             console.error('Failed to send message:', error);
         } finally {
             setIsLoading(false);
@@ -192,16 +227,20 @@ export default function BuyerChatModal({ conversationId, currentUserId, onClose,
     };
 
     const handleTyping = () => {
-        // Fire and forget - typing indicators are not critical
-        postWithCsrf(`/chat/conversation/${conversationId}/typing/start`).catch(() => {
-            // Silently ignore typing indicator errors
-        });
+        // Send "typing start" once per typing session instead of every keystroke
+        if (!typingActiveRef.current) {
+            typingActiveRef.current = true;
+            postWithCsrf(`/chat/conversation/${conversationId}/typing/start`).catch(() => {
+                // Silently ignore typing indicator errors
+            });
+        }
 
         if (typingTimeoutRef.current) {
             clearTimeout(typingTimeoutRef.current);
         }
 
         typingTimeoutRef.current = setTimeout(() => {
+            typingActiveRef.current = false;
             postWithCsrf(`/chat/conversation/${conversationId}/typing/stop`).catch(() => {
                 // Silently ignore typing indicator errors
             });

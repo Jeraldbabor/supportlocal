@@ -4,7 +4,7 @@ import { Package, Shield, ShoppingBag } from 'lucide-react';
 
 export default function UserRoleDisplay() {
     const { auth } = usePage<SharedData>().props;
-    const user = auth.user;
+    const user = auth?.user;
 
     if (!user) return null;
 

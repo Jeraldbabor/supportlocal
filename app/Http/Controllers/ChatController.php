@@ -8,6 +8,7 @@ use App\Models\Conversation;
 use App\Models\Message;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\File;
 use Inertia\Inertia;
 
@@ -158,13 +159,6 @@ class ChatController extends Controller
      */
     public function sendMessage(Request $request, $conversationId)
     {
-        // Log request data for debugging
-        \Log::info('Chat message request received', [
-            'conversation_id' => $conversationId,
-            'has_image' => $request->hasFile('image'),
-            'content_length' => $request->header('Content-Length'),
-        ]);
-
         // Check for PHP upload errors first (e.g. exceeds post_max_size)
         if ($request->hasFile('image') && ! $request->file('image')->isValid()) {
             \Log::error('Chat image upload failed at PHP level', [
@@ -184,10 +178,6 @@ class ChatController extends Controller
         ]);
 
         if ($validator->fails()) {
-            \Log::error('Chat message validation failed', [
-                'errors' => $validator->errors()->toArray(),
-            ]);
-
             return response()->json([
                 'message' => 'Validation failed',
                 'errors' => $validator->errors(),
@@ -231,24 +221,22 @@ class ChatController extends Controller
             'image' => $imagePath,
         ]);
 
+        // If sender was typing, clear it immediately to avoid stale indicators.
+        $typingKey = "chat:typing:{$conversation->id}:{$user->id}";
+        if (Cache::forget($typingKey)) {
+            broadcast(new UserTyping($conversation->id, $user->id, $user->name, false));
+        }
+
         // Restore conversation for recipient if they deleted it
         $updateData = ['last_message_at' => now()];
         if ($conversation->buyer_id === $user->id && $conversation->deleted_by_seller_at) {
             $updateData['deleted_by_seller_at'] = null;
-            \Log::info('Restoring conversation for seller', ['conversation_id' => $conversation->id]);
         } elseif ($conversation->seller_id === $user->id && $conversation->deleted_by_buyer_at) {
             $updateData['deleted_by_buyer_at'] = null;
-            \Log::info('Restoring conversation for buyer', ['conversation_id' => $conversation->id, 'buyer_id' => $conversation->buyer_id]);
         }
 
         // Update conversation's last message timestamp and restore if needed
         $conversation->update($updateData);
-
-        \Log::info('Conversation updated', [
-            'conversation_id' => $conversation->id,
-            'deleted_by_buyer_at' => $conversation->fresh()->deleted_by_buyer_at,
-            'deleted_by_seller_at' => $conversation->fresh()->deleted_by_seller_at,
-        ]);
 
         // Broadcast the message
         broadcast(new MessageSent($message))->toOthers();
@@ -342,7 +330,12 @@ class ChatController extends Controller
             abort(403);
         }
 
-        broadcast(new UserTyping($conversationId, $user->id, $user->name, true));
+        $typingKey = "chat:typing:{$conversationId}:{$user->id}";
+
+        // Only broadcast "typing started" once within the TTL window.
+        if (Cache::add($typingKey, true, now()->addSeconds(5))) {
+            broadcast(new UserTyping($conversationId, $user->id, $user->name, true));
+        }
 
         return response()->json(['status' => 'typing']);
     }
@@ -360,7 +353,12 @@ class ChatController extends Controller
             abort(403);
         }
 
-        broadcast(new UserTyping($conversationId, $user->id, $user->name, false));
+        $typingKey = "chat:typing:{$conversationId}:{$user->id}";
+
+        // Only broadcast stop if there is an active typing state.
+        if (Cache::forget($typingKey)) {
+            broadcast(new UserTyping($conversationId, $user->id, $user->name, false));
+        }
 
         return response()->json(['status' => 'stopped']);
     }
@@ -371,8 +369,6 @@ class ChatController extends Controller
     public function getConversations()
     {
         $user = auth()->user();
-
-        \Log::info('Getting conversations for user', ['user_id' => $user->id]);
 
         // Get all conversations for the current user that haven't been deleted by them
         $conversations = Conversation::where(function ($query) use ($user) {
@@ -411,8 +407,6 @@ class ChatController extends Controller
                     'unread_count' => $conversation->getUnreadCountForUser($user->id),
                 ];
             });
-
-        \Log::info('Found conversations', ['count' => $conversations->count()]);
 
         return response()->json($conversations);
     }

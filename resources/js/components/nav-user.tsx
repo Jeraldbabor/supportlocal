@@ -11,6 +11,12 @@ export function NavUser() {
     const { auth } = usePage<SharedData>().props;
     const { state } = useSidebar();
     const isMobile = useIsMobile();
+    const user = auth?.user;
+
+    // During partial reloads, auth may be temporarily unavailable.
+    if (!user) {
+        return null;
+    }
 
     return (
         <SidebarMenu>
@@ -21,7 +27,7 @@ export function NavUser() {
                             size="lg"
                             className="group mx-2 rounded-lg px-3 py-3 text-gray-700 transition-all duration-200 hover:bg-gray-100 data-[state=open]:bg-gray-100"
                         >
-                            <UserInfo user={auth.user} />
+                            <UserInfo user={user} />
                             <ChevronsUpDown className="ml-auto size-4 text-gray-500 transition-transform duration-200 group-hover:translate-y-0.5" />
                         </SidebarMenuButton>
                     </DropdownMenuTrigger>
@@ -31,7 +37,7 @@ export function NavUser() {
                         side={isMobile ? 'bottom' : state === 'collapsed' ? 'left' : 'bottom'}
                         style={{ colorScheme: 'light' }}
                     >
-                        <UserMenuContent user={auth.user} />
+                        <UserMenuContent user={user} />
                     </DropdownMenuContent>
                 </DropdownMenu>
             </SidebarMenuItem>

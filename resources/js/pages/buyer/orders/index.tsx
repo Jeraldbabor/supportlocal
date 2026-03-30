@@ -1,8 +1,9 @@
 import BuyerLayout from '@/layouts/BuyerLayout';
+import Echo from '@/lib/echo';
 import { formatPeso } from '@/utils/currency';
-import { Head, Link, router } from '@inertiajs/react';
+import { Head, Link, router, usePage } from '@inertiajs/react';
 import { Ban, CheckCircle, Clock, Eye, MessageSquare, Package, Trash2, X, XCircle } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 interface OrderItem {
     id: number;
@@ -44,12 +45,58 @@ interface OrdersIndexProps {
 }
 
 export default function Orders({ orders }: OrdersIndexProps) {
+    const { auth } = usePage<{ auth?: { user?: { id: number } } }>().props;
+    const userId = auth?.user?.id;
     const [showClearAllConfirm, setShowClearAllConfirm] = useState(false);
     const [showDeleteConfirm, setShowDeleteConfirm] = useState<number | null>(null);
     const [showCancelConfirm, setShowCancelConfirm] = useState<number | null>(null);
     const [cancellationReason, setCancellationReason] = useState('');
     const [isDeleting, setIsDeleting] = useState(false);
     const [isCancelling, setIsCancelling] = useState(false);
+
+    useEffect(() => {
+        if (!userId || !Echo) return;
+
+        const channel = Echo.private(`App.Models.User.${userId}`);
+        let reloadTimeout: ReturnType<typeof setTimeout> | null = null;
+
+        const refreshOrders = () => {
+            if (document.hidden) return;
+            if (showClearAllConfirm || showDeleteConfirm !== null || showCancelConfirm !== null || isDeleting || isCancelling) return;
+
+            if (reloadTimeout) {
+                clearTimeout(reloadTimeout);
+            }
+            reloadTimeout = setTimeout(() => {
+                router.reload({
+                    only: ['orders'],
+                    preserveState: true,
+                    preserveScroll: true,
+                });
+            }, 250);
+        };
+
+        channel.notification((notification: { order_id?: number }) => {
+            if (notification?.order_id) {
+                refreshOrders();
+            }
+        });
+
+        channel.listen('.Illuminate\\Notifications\\Events\\BroadcastNotificationCreated', (event: { order_id?: number; data?: { order_id?: number } }) => {
+            const orderId = event?.order_id ?? event?.data?.order_id;
+            if (orderId) {
+                refreshOrders();
+            }
+        });
+
+        return () => {
+            if (reloadTimeout) {
+                clearTimeout(reloadTimeout);
+            }
+            channel.stopListening('.Illuminate\\Notifications\\Events\\BroadcastNotificationCreated');
+            Echo?.leave(`private-App.Models.User.${userId}`);
+        };
+    }, [userId, showClearAllConfirm, showDeleteConfirm, showCancelConfirm, isDeleting, isCancelling]);
 
     const handleClearAllHistory = () => {
         setIsDeleting(true);

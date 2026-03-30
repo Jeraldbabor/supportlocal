@@ -2,11 +2,13 @@
 
 namespace App\Notifications;
 
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Bus\Queueable;
+use Illuminate\Notifications\Messages\BroadcastMessage;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class OrderCancelledByBuyer extends Notification
+class OrderCancelledByBuyer extends Notification implements ShouldQueue
 {
     use Queueable;
 
@@ -27,7 +29,7 @@ class OrderCancelledByBuyer extends Notification
      */
     public function via(object $notifiable): array
     {
-        return ['database', 'mail'];
+        return ['database', 'mail', 'broadcast'];
     }
 
     /**
@@ -89,5 +91,13 @@ class OrderCancelledByBuyer extends Notification
             'cancellation_reason' => $order->cancellation_reason,
             'action_url' => '/seller/orders/'.$order->id,
         ];
+    }
+
+    /**
+     * Get the broadcastable representation of the notification.
+     */
+    public function toBroadcast(object $notifiable): BroadcastMessage
+    {
+        return new BroadcastMessage($this->toArray($notifiable));
     }
 }

@@ -1,5 +1,5 @@
 // Service Worker for Support Local PWA
-const CACHE_NAME = 'support-local-v1';
+const CACHE_NAME = 'support-local-v2';
 
 // Assets to cache on install (app shell)
 const PRECACHE_ASSETS = [
@@ -62,19 +62,28 @@ self.addEventListener('fetch', (event) => {
     // For static assets, use stale-while-revalidate strategy
     event.respondWith(
         caches.match(event.request).then((cachedResponse) => {
-            const fetchPromise = fetch(event.request).then((networkResponse) => {
-                // Update cache with fresh response
-                if (networkResponse.ok) {
-                    const responseClone = networkResponse.clone();
-                    caches.open(CACHE_NAME).then((cache) => {
-                        cache.put(event.request, responseClone);
+            const fetchPromise = fetch(event.request)
+                .then((networkResponse) => {
+                    // Update cache with fresh response
+                    if (networkResponse.ok) {
+                        const responseClone = networkResponse.clone();
+                        caches.open(CACHE_NAME).then((cache) => {
+                            cache.put(event.request, responseClone);
+                        });
+                    }
+                    return networkResponse;
+                })
+                .catch(() => {
+                    // Always return a valid Response object.
+                    if (cachedResponse) {
+                        return cachedResponse;
+                    }
+
+                    return new Response('Offline', {
+                        status: 503,
+                        statusText: 'Service Unavailable',
                     });
-                }
-                return networkResponse;
-            }).catch(() => {
-                // Network failed, return cached or nothing
-                return cachedResponse;
-            });
+                });
 
             return cachedResponse || fetchPromise;
         })

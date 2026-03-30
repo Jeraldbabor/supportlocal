@@ -108,6 +108,17 @@
         <script>
             if ('serviceWorker' in navigator) {
                 window.addEventListener('load', function() {
+                    const isLocalDev = ['localhost', '127.0.0.1'].includes(window.location.hostname);
+
+                    if (isLocalDev) {
+                        navigator.serviceWorker.getRegistrations().then(function(registrations) {
+                            registrations.forEach(function(registration) {
+                                registration.unregister();
+                            });
+                        });
+                        return;
+                    }
+
                     navigator.serviceWorker.register('/sw.js').then(function(registration) {
                         console.log('SW registered: ', registration.scope);
                     }).catch(function(error) {
