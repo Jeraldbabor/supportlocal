@@ -57,6 +57,7 @@ export default function ChatWindow({ conversationId, currentUserId }: ChatWindow
     const [isPolling, setIsPolling] = useState(false);
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+    const otherUserTypingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
     const typingActiveRef = useRef(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const pollingIntervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -150,6 +151,10 @@ export default function ChatWindow({ conversationId, currentUserId }: ChatWindow
                 // A real incoming message means typing indicator should be cleared.
                 if (e.message.sender_id !== currentUserId) {
                     setIsOtherUserTyping(false);
+                    if (otherUserTypingTimeoutRef.current) {
+                        clearTimeout(otherUserTypingTimeoutRef.current);
+                        otherUserTypingTimeoutRef.current = null;
+                    }
                 }
 
                 setMessages((prev) => {
@@ -163,7 +168,24 @@ export default function ChatWindow({ conversationId, currentUserId }: ChatWindow
             })
             .listen('.user.typing', (e: { userId: number; userName: string; isTyping: boolean }) => {
                 if (e.userId !== currentUserId) {
-                    setIsOtherUserTyping(e.isTyping);
+                    if (e.isTyping) {
+                        setIsOtherUserTyping(true);
+
+                        // Safety: auto-clear stale typing if a "stop" event is missed.
+                        if (otherUserTypingTimeoutRef.current) {
+                            clearTimeout(otherUserTypingTimeoutRef.current);
+                        }
+                        otherUserTypingTimeoutRef.current = setTimeout(() => {
+                            setIsOtherUserTyping(false);
+                            otherUserTypingTimeoutRef.current = null;
+                        }, 3000);
+                    } else {
+                        setIsOtherUserTyping(false);
+                        if (otherUserTypingTimeoutRef.current) {
+                            clearTimeout(otherUserTypingTimeoutRef.current);
+                            otherUserTypingTimeoutRef.current = null;
+                        }
+                    }
                 }
             });
 
@@ -215,6 +237,10 @@ export default function ChatWindow({ conversationId, currentUserId }: ChatWindow
         return () => {
             if (conversationId && window.Echo) {
                 window.Echo.leave(`conversation.${conversationId}`);
+            }
+            if (otherUserTypingTimeoutRef.current) {
+                clearTimeout(otherUserTypingTimeoutRef.current);
+                otherUserTypingTimeoutRef.current = null;
             }
             // Clean up polling interval
             if (pollingIntervalRef.current) {
