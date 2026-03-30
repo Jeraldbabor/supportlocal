@@ -37,6 +37,26 @@ export function NotificationsProvider({
         router.reload({ only: ['unreadNotificationsCount'] });
     }, []);
 
+    const postNotificationAction = useCallback(async (url: string) => {
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': csrfToken,
+                Accept: 'application/json',
+                'X-Requested-With': 'XMLHttpRequest',
+            },
+            credentials: 'same-origin',
+        });
+
+        if (!response.ok) {
+            throw new Error(`Notification request failed: ${response.status}`);
+        }
+
+        return response.json();
+    }, []);
+
     const clearBadge = () => {
         setUnreadCount(0);
     };
@@ -44,39 +64,37 @@ export function NotificationsProvider({
     const markAsRead = (notificationId: string) => {
         const baseRoute = userRole === 'seller' ? 'seller' : userRole === 'administrator' ? 'admin' : 'buyer';
 
-        router.post(
-            `/${baseRoute}/notifications/${notificationId}/read`,
-            {},
-            {
-                preserveState: true,
-                preserveScroll: true,
-                onSuccess: () => {
-                    // Page will reload automatically, updating the notification state
-                },
-                onError: (errors) => {
-                    console.error('Error marking notification as read:', errors);
-                },
-            },
-        );
+        // Optimistic update for immediate badge feedback
+        setUnreadCount((prev) => Math.max(0, prev - 1));
+
+        postNotificationAction(`/${baseRoute}/notifications/${notificationId}/read`)
+            .then((data) => {
+                if (typeof data?.unread_count === 'number') {
+                    setUnreadCount(data.unread_count);
+                }
+            })
+            .catch((error) => {
+                console.error('Error marking notification as read:', error);
+                refreshUnreadCount();
+            });
     };
 
     const markAllAsRead = () => {
         const baseRoute = userRole === 'seller' ? 'seller' : userRole === 'administrator' ? 'admin' : 'buyer';
 
-        router.post(
-            `/${baseRoute}/notifications/read-all`,
-            {},
-            {
-                preserveState: true,
-                preserveScroll: true,
-                onSuccess: () => {
-                    // Page will reload automatically, updating all notifications
-                },
-                onError: (errors) => {
-                    console.error('Error marking all notifications as read:', errors);
-                },
-            },
-        );
+        // Optimistic update for immediate badge feedback
+        setUnreadCount(0);
+
+        postNotificationAction(`/${baseRoute}/notifications/read-all`)
+            .then((data) => {
+                if (typeof data?.unread_count === 'number') {
+                    setUnreadCount(data.unread_count);
+                }
+            })
+            .catch((error) => {
+                console.error('Error marking all notifications as read:', error);
+                refreshUnreadCount();
+            });
     };
 
     // Listen for Inertia navigation to trigger re-subscription

@@ -1,7 +1,8 @@
 import Toast from '@/components/Toast';
 import AppLayout from '@/layouts/app-layout';
+import Echo from '@/lib/echo';
 import { formatPeso } from '@/utils/currency';
-import { Head, router } from '@inertiajs/react';
+import { Head, router, usePage } from '@inertiajs/react';
 import {
     AlertTriangle,
     Calendar,
@@ -18,7 +19,7 @@ import {
     User,
     XCircle,
 } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 interface OrderItem {
     id: number;
@@ -62,12 +63,59 @@ interface OrdersProps {
 }
 
 export default function Orders({ orders }: OrdersProps) {
+    const { auth } = usePage<{ auth?: { user?: { id: number } } }>().props;
+    const userId = auth?.user?.id;
     const [showToast, setShowToast] = useState(false);
     const [toastMessage, setToastMessage] = useState('');
     const [toastType, setToastType] = useState<'success' | 'error'>('success');
     const [showCancelModal, setShowCancelModal] = useState<number | null>(null);
     const [cancelReason, setCancelReason] = useState('');
     const [isCancelling, setIsCancelling] = useState(false);
+
+    useEffect(() => {
+        if (!userId || !Echo) return;
+
+        const channel = Echo.private(`App.Models.User.${userId}`);
+        let reloadTimeout: ReturnType<typeof setTimeout> | null = null;
+
+        const refreshOrders = () => {
+            if (document.hidden) return;
+            if (showCancelModal !== null || isCancelling) return;
+
+            if (reloadTimeout) {
+                clearTimeout(reloadTimeout);
+            }
+            reloadTimeout = setTimeout(() => {
+                router.reload({
+                    only: ['orders'],
+                });
+            }, 250);
+        };
+
+        channel.notification((notification: { order_id?: number }) => {
+            if (notification?.order_id) {
+                refreshOrders();
+            }
+        });
+
+        channel.listen(
+            '.Illuminate\\Notifications\\Events\\BroadcastNotificationCreated',
+            (event: { order_id?: number; data?: { order_id?: number } }) => {
+                const orderId = event?.order_id ?? event?.data?.order_id;
+                if (orderId) {
+                    refreshOrders();
+                }
+            },
+        );
+
+        return () => {
+            if (reloadTimeout) {
+                clearTimeout(reloadTimeout);
+            }
+            channel.stopListening('.Illuminate\\Notifications\\Events\\BroadcastNotificationCreated');
+            Echo?.leave(`private-App.Models.User.${userId}`);
+        };
+    }, [userId, showCancelModal, isCancelling]);
 
     const getStatusIcon = (status: string) => {
         switch (status) {

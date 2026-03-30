@@ -36,6 +36,13 @@ class NotificationController extends Controller
 
         $notification->markAsRead();
 
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'unread_count' => auth()->user()->unreadNotifications()->count(),
+            ]);
+        }
+
         return back()->with('success', 'Notification marked as read.');
     }
 
@@ -61,11 +68,18 @@ class NotificationController extends Controller
     /**
      * Mark all notifications as read.
      */
-    public function markAllAsRead()
+    public function markAllAsRead(Request $request)
     {
         auth()->user()
             ->unreadNotifications
             ->markAsRead();
+
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'unread_count' => 0,
+            ]);
+        }
 
         return back()->with('success', 'All notifications marked as read.');
     }

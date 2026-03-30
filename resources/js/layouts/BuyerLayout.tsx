@@ -45,7 +45,7 @@ function BuyerLayoutContent({ children, title }: BuyerLayoutProps) {
             };
         }
     >().props;
-    const user = auth.user;
+    const user = auth?.user;
     const currentPath = usePage().url;
 
     const handleLogout = () => {
@@ -158,7 +158,7 @@ function BuyerLayoutContent({ children, title }: BuyerLayoutProps) {
                         {/* Right side - User specific actions */}
                         <div className="flex flex-shrink-0 items-center space-x-1">
                             {/* Messages Dropdown */}
-                            <MessagesDropdown currentUserId={user.id} />
+                            <MessagesDropdown currentUserId={user?.id ?? 0} />
 
                             {/* Notifications Dropdown */}
                             <NotificationsDropdown

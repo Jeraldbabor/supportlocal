@@ -27,7 +27,7 @@ export default function NotificationsDropdown({ userRole = 'buyer', buttonClassN
     const [notifications, setNotifications] = useState<Notification[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
-    const { unreadCount, markAsRead, refreshUnreadCount } = useNotifications();
+    const { unreadCount, markAsRead, markAllAsRead, refreshUnreadCount } = useNotifications();
 
     const baseRoute = userRole === 'seller' ? 'seller' : userRole === 'administrator' ? 'admin' : 'buyer';
 
@@ -90,18 +90,10 @@ export default function NotificationsDropdown({ userRole = 'buyer', buttonClassN
     };
 
     const handleMarkAllAsRead = () => {
-        router.post(
-            `/${baseRoute}/notifications/read-all`,
-            {},
-            {
-                preserveState: true,
-                preserveScroll: true,
-                onSuccess: () => {
-                    refreshUnreadCount();
-                    loadNotifications();
-                },
-            },
-        );
+        markAllAsRead();
+        setNotifications((prev) => prev.map((n) => ({ ...n, read_at: n.read_at || new Date().toISOString() })));
+        refreshUnreadCount();
+        loadNotifications();
     };
 
     const unreadNotifications = notifications.filter((n) => !n.read_at);

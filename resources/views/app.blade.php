@@ -108,7 +108,26 @@
         <script>
             if ('serviceWorker' in navigator) {
                 window.addEventListener('load', function() {
-                    navigator.serviceWorker.register('/sw.js').then(function(registration) {
+                    const isLocalDev = ['localhost', '127.0.0.1'].includes(window.location.hostname);
+
+                    if (isLocalDev) {
+                        navigator.serviceWorker.getRegistrations().then(function(registrations) {
+                            registrations.forEach(function(registration) {
+                                registration.unregister();
+                            });
+                        });
+                        if ('caches' in window) {
+                            caches.keys().then(function(cacheNames) {
+                                cacheNames.forEach(function(cacheName) {
+                                    caches.delete(cacheName);
+                                });
+                            });
+                        }
+                        return;
+                    }
+
+                    navigator.serviceWorker.register('/sw.js', { updateViaCache: 'none' }).then(function(registration) {
+                        registration.update();
                         console.log('SW registered: ', registration.scope);
                     }).catch(function(error) {
                         console.log('SW registration failed: ', error);

@@ -1,7 +1,8 @@
 import Toast from '@/components/Toast';
 import AppLayout from '@/layouts/app-layout';
+import Echo from '@/lib/echo';
 import { formatPeso } from '@/utils/currency';
-import { Head, router } from '@inertiajs/react';
+import { Head, router, usePage } from '@inertiajs/react';
 import {
     AlertCircle,
     ArrowLeft,
@@ -21,7 +22,7 @@ import {
     X,
     XCircle,
 } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 interface OrderItem {
     id: number;
@@ -70,6 +71,8 @@ interface OrderShowProps {
 }
 
 export default function OrderShow({ order }: OrderShowProps) {
+    const { auth } = usePage<{ auth?: { user?: { id: number } } }>().props;
+    const userId = auth?.user?.id;
     const [showToast, setShowToast] = useState(false);
     const [toastMessage, setToastMessage] = useState('');
     const [toastType, setToastType] = useState<'success' | 'error'>('success');
@@ -84,6 +87,53 @@ export default function OrderShow({ order }: OrderShowProps) {
         waybill_number: '',
     });
     const [shippingOrder, setShippingOrder] = useState(false);
+
+    useEffect(() => {
+        if (!userId || !Echo) return;
+
+        const channel = Echo.private(`App.Models.User.${userId}`);
+        let reloadTimeout: ReturnType<typeof setTimeout> | null = null;
+
+        const refreshOrder = () => {
+            if (document.hidden) return;
+            if (verifying || rejecting || shippingOrder || showRejectModal || showShipModal) return;
+
+            if (reloadTimeout) {
+                clearTimeout(reloadTimeout);
+            }
+            reloadTimeout = setTimeout(() => {
+                router.reload({
+                    only: ['order'],
+                });
+            }, 250);
+        };
+
+        const handleEvent = (payload: { order_id?: number; data?: { order_id?: number } }) => {
+            const changedOrderId = payload?.order_id ?? payload?.data?.order_id;
+            if (changedOrderId && Number(changedOrderId) === Number(order.id)) {
+                refreshOrder();
+            }
+        };
+
+        channel.notification((notification: { order_id?: number }) => {
+            handleEvent(notification);
+        });
+
+        channel.listen(
+            '.Illuminate\\Notifications\\Events\\BroadcastNotificationCreated',
+            (event: { order_id?: number; data?: { order_id?: number } }) => {
+                handleEvent(event);
+            },
+        );
+
+        return () => {
+            if (reloadTimeout) {
+                clearTimeout(reloadTimeout);
+            }
+            channel.stopListening('.Illuminate\\Notifications\\Events\\BroadcastNotificationCreated');
+            Echo?.leave(`private-App.Models.User.${userId}`);
+        };
+    }, [userId, order.id, verifying, rejecting, shippingOrder, showRejectModal, showShipModal]);
 
     const getStatusColor = (status: string) => {
         switch (status) {
