@@ -57,6 +57,7 @@ export default function BuyerChatModal({ conversationId, currentUserId, onClose,
     const [isOtherUserTyping, setIsOtherUserTyping] = useState(false);
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+    const otherUserTypingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
     const typingActiveRef = useRef(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -96,6 +97,10 @@ export default function BuyerChatModal({ conversationId, currentUserId, onClose,
                 // A real incoming message means typing indicator should be cleared.
                 if (e.message.sender_id !== currentUserId) {
                     setIsOtherUserTyping(false);
+                    if (otherUserTypingTimeoutRef.current) {
+                        clearTimeout(otherUserTypingTimeoutRef.current);
+                        otherUserTypingTimeoutRef.current = null;
+                    }
                 }
 
                 setMessages((prev) => {
@@ -109,7 +114,24 @@ export default function BuyerChatModal({ conversationId, currentUserId, onClose,
             })
             .listen('.user.typing', (e: { userId: number; userName: string; isTyping: boolean }) => {
                 if (e.userId !== currentUserId) {
-                    setIsOtherUserTyping(e.isTyping);
+                    if (e.isTyping) {
+                        setIsOtherUserTyping(true);
+
+                        // Safety: auto-clear stale typing if a "stop" event is missed.
+                        if (otherUserTypingTimeoutRef.current) {
+                            clearTimeout(otherUserTypingTimeoutRef.current);
+                        }
+                        otherUserTypingTimeoutRef.current = setTimeout(() => {
+                            setIsOtherUserTyping(false);
+                            otherUserTypingTimeoutRef.current = null;
+                        }, 3000);
+                    } else {
+                        setIsOtherUserTyping(false);
+                        if (otherUserTypingTimeoutRef.current) {
+                            clearTimeout(otherUserTypingTimeoutRef.current);
+                            otherUserTypingTimeoutRef.current = null;
+                        }
+                    }
                 }
             });
     }, [conversationId, currentUserId, markAsRead]);
@@ -123,6 +145,10 @@ export default function BuyerChatModal({ conversationId, currentUserId, onClose,
         return () => {
             if (conversationId && window.Echo) {
                 window.Echo.leave(`conversation.${conversationId}`);
+            }
+            if (otherUserTypingTimeoutRef.current) {
+                clearTimeout(otherUserTypingTimeoutRef.current);
+                otherUserTypingTimeoutRef.current = null;
             }
         };
     }, [conversationId, loadMessages, subscribeToChannel]);
